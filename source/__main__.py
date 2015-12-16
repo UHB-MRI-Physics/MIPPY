@@ -91,14 +91,14 @@ class ToolboxHome(Frame):
 		self.master.loadmodulebutton = Button(self.master,text="Load module",command=lambda:self.load_selected_module())
 		
 		# Use "grid" to position objects within "master"
-		self.master.dirframe.grid(row=0,column=0,columnspan=2,sticky='nsew')
-		self.master.imcanvas.grid(row=1,column=0,rowspan=2,sticky='nsew')
+		self.master.dirframe.grid(row=0,column=0,columnspan=2,rowspan=1,sticky='nsew')
+		self.master.imcanvas.grid(row=1,column=0,rowspan=2,columnspan=1,sticky='nsew')
 		self.master.moduleframe.grid(row=1,column=1,sticky='nsew')
 		self.master.loadmodulebutton.grid(row=2,column=1,sticky='nsew')
 		
 		# Set row and column weights to handle resizing
 		self.master.rowconfigure(0,weight=10)
-		self.master.rowconfigure(1,weight=10)
+		self.master.rowconfigure(1,weight=1)
 		self.master.rowconfigure(2,weight=1)
 		self.master.columnconfigure(0,weight=1)
 		self.master.columnconfigure(1,weight=10)
@@ -160,8 +160,8 @@ class ToolboxHome(Frame):
 				except:
 					continue
 					
-				desc = ds.SeriesDescription
-				if "PHOENIXZIPREPORT" in desc.upper():
+				seriesdesc = ds.SeriesDescription
+				if "PHOENIXZIPREPORT" in seriesdesc.upper():
 					continue
 				mode = "Assumed MR Image Storage"
 				try:
@@ -178,18 +178,21 @@ class ToolboxHome(Frame):
 					frames = 1
 				study_uid = ds.StudyInstanceUID
 				series_uid = ds.SeriesInstanceUID
+				instance_uid = ds.SOPInstanceUID
 				name = ds.PatientName
 				date = ds.StudyDate
 				series = ds.SeriesNumber
 				time = ds.StudyTime
+				studydesc = ds.StudyDescription
 				if enhanced:
 					instance = np.array(range(frames))+1
 				else:
 					instance = [ds.InstanceNumber]
 				for i in instance:
 					tag_list.append(dict([('date',date),('time',time),('name',name),('studyuid',study_uid),
-									('series',series),('seriesuid',series_uid),('desc',desc),
-									('instance',i),('path',p),('enhanced',enhanced)]))
+									('series',series),('seriesuid',series_uid),('studydesc',studydesc),
+									('seriesdesc',seriesdesc),('instance',i),('instanceuid',instance_uid),
+									('path',p),('enhanced',enhanced)]))
 		
 		# This should sort the list in to your initial order for the tree
 		sorted_list = sorted(tag_list)
@@ -200,8 +203,23 @@ class ToolboxHome(Frame):
 		# into the file_functions methods rather than here?  Easier to call then, especially in other modules.
 		#~ for scan in sorted_list:
 			#~ if not scan['enhanced']:
-				
-			
+		
+		i=0
+		self.master.dirframe.dicomtree['columns']=('date','name','desc')
+		self.master.dirframe.dicomtree.heading('date',text='Study Date')
+		self.master.dirframe.dicomtree.heading('name',text='Patient Name')
+		self.master.dirframe.dicomtree.heading('desc',text='Description')
+		for scan in sorted_list:
+			if not self.master.dirframe.dicomtree.exists(scan['studyuid']):
+				self.master.dirframe.dicomtree.insert('','end',scan['studyuid'],text=str(i).zfill(4),
+												values=(scan['date'],scan['name'],scan['studydesc']))
+			if not self.master.dirframe.dicomtree.exists(scan['seriesuid']):
+				self.master.dirframe.dicomtree.insert(scan['studyuid'],'end',scan['seriesuid'],
+											text='Series '+str(scan['series']).zfill(3),
+											values=('','',scan['seriesdesc']))
+			self.master.dirframe.dicomtree.insert(scan['seriesuid'],'end',scan['instanceuid'],
+											text='Image '+str(scan['instance']).zfill(3),
+											values=('','',''))
 		
 		
 		self.master.dirframe.dicomtree.scrollbarx = Scrollbar(self.master.dirframe.dicomtree,orient='horizontal')
@@ -211,7 +229,9 @@ class ToolboxHome(Frame):
 		self.master.dirframe.dicomtree.scrollbary.pack(side='right',fill='y')
 		self.master.dirframe.dicomtree.scrollbary.config(command=self.master.dirframe.dicomtree.yview)
 		
-		self.master.dirframe.dicomtree.pack()
+		self.master.dirframe.dicomtree.grid(row=0,column=0,sticky='nsew')
+		self.master.dirframe.rowconfigure(0,weight=10)
+		self.master.dirframe.columnconfigure(0,weight=10)
 		
 		
 		
