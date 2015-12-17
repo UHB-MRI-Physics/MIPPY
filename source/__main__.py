@@ -80,7 +80,7 @@ class ToolboxHome(Frame):
 		self.master.config(menu=self.master.menubar)
 		
 		# Create frames to hold DICOM directory tree and module list
-		self.master.dirframe = Frame(self.master,height=100)
+		self.master.dirframe = Frame(self.master)
 		self.master.moduleframe = Frame(self.master)
 		self.master.dirframe = Frame(self.master)
 		self.master.moduleframe = Frame(self.master)
@@ -153,22 +153,11 @@ class ToolboxHome(Frame):
 		self.master.loadmodulebutton.grid(row=2,column=1,sticky='nsew')
 		
 		# Set row and column weights to handle resizing
-		self.master.rowconfigure(0,weight=10)
-		self.master.rowconfigure(1,weight=10)
-		self.master.rowconfigure(2,weight=1)
-		self.master.columnconfigure(0,weight=10)
-		self.master.columnconfigure(1,weight=10)
-		
-		
-		#~ self.master.test_button_1 = Button(master, text="Test button 1",command=lambda:self.load_test_module())
-		#~ self.master.test_button_2 = Button(master, text="Test button 2")
-		
-		#~ self.master.test_button_1.grid(row=0,column=0,sticky='nsew')
-		#~ self.master.test_button_2.grid(row=0,column=1,sticky='nsew')
-		
-		#~ self.master.rowconfigure(0,weight=1)
-		#~ self.master.columnconfigure(0,weight=1)
-		#~ self.master.columnconfigure(1,weight=1)
+		self.master.rowconfigure(0,weight=1)
+		self.master.rowconfigure(1,weight=0)
+		self.master.rowconfigure(2,weight=0)
+		self.master.columnconfigure(0,weight=0)
+		self.master.columnconfigure(1,weight=1)
 		
 		master.focus()
 		
