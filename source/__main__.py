@@ -85,12 +85,65 @@ class ToolboxHome(Frame):
 		self.master.dirframe = Frame(self.master)
 		self.master.moduleframe = Frame(self.master)
 		
+		# Create DICOM treeview
+		self.master.dirframe.dicomtree = Treeview(self.master.dirframe)
+		
+		# Set names and widths of columns in treeviews
+		self.master.dirframe.dicomtree['columns']=('date','name','desc')
+		self.master.dirframe.dicomtree.heading('date',text='Study Date')
+		self.master.dirframe.dicomtree.heading('name',text='Patient Name')
+		self.master.dirframe.dicomtree.heading('desc',text='Description')
+		self.master.dirframe.dicomtree.column('#0',width=100,stretch=False)
+		self.master.dirframe.dicomtree.column('date',width=100,stretch=False)
+		self.master.dirframe.dicomtree.column('name',width=200)
+		self.master.dirframe.dicomtree.column('desc',width=500)
+		
+		# Create scrollbars
+		self.master.dirframe.scrollbarx = Scrollbar(self.master.dirframe,orient='horizontal')
+		self.master.dirframe.scrollbarx.config(command=self.master.dirframe.dicomtree.xview)
+		self.master.dirframe.scrollbary = Scrollbar(self.master.dirframe)
+		self.master.dirframe.scrollbary.config(command=self.master.dirframe.dicomtree.yview)
+		self.master.dirframe.dicomtree.configure(yscroll=self.master.dirframe.scrollbary.set, xscroll=self.master.dirframe.scrollbarx.set)
+		
+		# Use "grid" to postion treeview and scrollbars in DICOM frame and assign weights to columns and rows
+		self.master.dirframe.dicomtree.grid(row=0,column=0,sticky='nsew')
+		self.master.dirframe.scrollbarx.grid(row=1,column=0,sticky='nsew')
+		self.master.dirframe.scrollbary.grid(row=0,column=1,sticky='nsew')
+		
+		# Set "weights" (relatve amount of stretchability when resizing window) for each row and column
+		self.master.dirframe.rowconfigure(0,weight=1)
+		self.master.dirframe.columnconfigure(0,weight=1)
+		self.master.dirframe.rowconfigure(1,weight=0)
+		self.master.dirframe.columnconfigure(1,weight=0)
+		
+		# Bind "change selection" event to method to update the image display
+		self.master.dirframe.dicomtree.bind('<<TreeviewSelect>>',self.new_image_view)
+		
+		
+		
+		
+		# Create module treeview
+		self.master.moduleframe.moduletree = Treeview(self.master.moduleframe)
+		
+		# Use grid to position module list in frame
+		self.master.moduleframe.moduletree.grid(row=0,column=0,sticky='nsew')
+		
+		# Configure column and row weights (relative stretchability when resizing)
+		self.master.moduleframe.rowconfigure(0,weight=1)
+		self.master.moduleframe.columnconfigure(0,weight=1)
+		
+		# Bind "module select" event to required action
+		self.master.moduleframe.moduletree.bind('<<TreeviewSelect>>',self.module_window_click)
+		
+		# Just adding a random line to the tree for testing
+		self.master.moduleframe.moduletree.insert('','end',"test row",text="Blah blah",values=("Option 1","Option 2"))
+				
 		# Create canvas object to draw images in
 		self.master.imcanvas = Canvas(self.master,bd=0,width=256, height=256)
 		self.master.imcanvas.create_rectangle((0,0,256,256),fill='black')
 		
 		# Create buttons:
-		# "Start module"
+		# "Load module"
 		self.master.loadmodulebutton = Button(self.master,text="Load module",command=lambda:self.load_selected_module())
 		
 		# Use "grid" to position objects within "master"
@@ -101,9 +154,9 @@ class ToolboxHome(Frame):
 		
 		# Set row and column weights to handle resizing
 		self.master.rowconfigure(0,weight=10)
-		self.master.rowconfigure(1,weight=1)
+		self.master.rowconfigure(1,weight=10)
 		self.master.rowconfigure(2,weight=1)
-		self.master.columnconfigure(0,weight=1)
+		self.master.columnconfigure(0,weight=10)
 		self.master.columnconfigure(1,weight=10)
 		
 		
@@ -126,6 +179,14 @@ class ToolboxHome(Frame):
 			sys.exit()
 		return
 		
+	def new_image_view(self, event):
+		selection = self.master.dirframe.dicomtree.selection()
+		print selection
+		return
+		
+	def module_window_click(self,event):
+		print "You clicked on the module window."
+		
 	def load_image_directory(self):
 		print "Load image directory"
 		dicomdir = tkFileDialog.askdirectory(parent=self.master,initialdir=r"M:",title="Select image directory")
@@ -134,33 +195,40 @@ class ToolboxHome(Frame):
 		ask_recursive = tkMessageBox.askyesno("Search recursively?","Do you want to include all subdirectories?")
 		print dicomdir
 		print ask_recursive
-		path_list = []
-		path_list = list_all_files(dicomdir,recursive=ask_recursive)
-		self.build_dicom_tree(path_list)
-		
+		self.path_list = []
+		print self.path_list
+		self.path_list = list_all_files(dicomdir,self.path_list,recursive=ask_recursive)
+		print self.path_list
+		self.build_dicom_tree()		
 		return
 		
-	def build_dicom_tree(self,path_list):
+	def build_dicom_tree(self):
 		# Build tree by first organising list - inspecting study UID, series UID, instance number
-		#~ currentframeheight=self.master.dirframe.config()['height']
-		#~ currentframewidth=self.master.dirframe.config()['width']
 		
-		tag_list = []
+		self.tag_list = []
 		
-		for p in path_list:
+		for p in self.path_list:
+			#~ print "path: "+p
+			
+			# This automatically excludes Philips "XX_" files, but only based on name.  If they've been renamed they
+			# won't be picked up until the "try/except" below.
+			if os.path.split(p)[1].startswith("XX_"):
+				continue
+			
 			ds = None
 			try:
 				ds = dicom.read_file(p)				
-			except:
+			except Exception:
 				print p+'\n...is not a valid DICOM file and is being ignored.'
 				continue
 			if ds:
 				#~ print os.path.split(p)[1]
 				
 				try:
-					# There has to be a better way of testing this...? If "ImageType" tag doesn't exist...
+					# There has to be a better way of testing this...?
+					# If "ImageType" tag doesn't exist, then it's probably an annoying "XX" type file from Philips
 					type = ds.ImageType
-				except:
+				except Exception:
 					continue
 					
 				seriesdesc = ds.SeriesDescription
@@ -169,7 +237,7 @@ class ToolboxHome(Frame):
 				mode = "Assumed MR Image Storage"
 				try:
 					mode = str(ds.SOPClassUID)
-				except:
+				except Exception:
 					pass
 				if "SOFTCOPY" in mode.upper() or "BASIC TEXT" in mode.upper():
 					continue
@@ -181,43 +249,46 @@ class ToolboxHome(Frame):
 					frames = 1
 				study_uid = ds.StudyInstanceUID
 				series_uid = ds.SeriesInstanceUID
-				instance_uid = ds.SOPInstanceUID
 				name = ds.PatientName
 				date = ds.StudyDate
 				series = ds.SeriesNumber
 				time = ds.StudyTime
-				studydesc = ds.StudyDescription
+				try:
+					studydesc = ds.StudyDescription
+				except Exception:
+					try:
+						studydesc = ds.BodyPartExamined
+					except Exception:
+						studydesc = "Unknown Study Type"
 				if enhanced:
 					instance = np.array(range(frames))+1
 				else:
 					instance = [ds.InstanceNumber]
+				
 				for i in instance:
-					tag_list.append(dict([('date',date),('time',time),('name',name),('studyuid',study_uid),
+					if not enhanced:
+						instance_uid = ds.SOPInstanceUID
+					else:
+						instance_uid = ds.SOPInstanceUID+"_"+str(i).zfill(3)
+					self.tag_list.append(dict([('date',date),('time',time),('name',name),('studyuid',study_uid),
 									('series',series),('seriesuid',series_uid),('studydesc',studydesc),
 									('seriesdesc',seriesdesc),('instance',i),('instanceuid',instance_uid),
 									('path',p),('enhanced',enhanced)]))
 		
-		# This should sort the list in to your initial order for the tree
-		sorted_list = sorted(tag_list)
-		
-		# This is to finish tomorrow.  Add to tree based on study UID, then instance number/UID.
-		# Use the UID as the ID of the list item???  Then there's at least some logic to it!
-		# Need to remember to split correct tag info for enhanced files.  Maybe build a function for that
-		# into the file_functions methods rather than here?  Easier to call then, especially in other modules.
-		#~ for scan in sorted_list:
-			#~ if not scan['enhanced']:
+		# This should sort the list into your initial order for the tree - maybe implement a more customised sort if necessary?
+		self.sorted_list = sorted(self.tag_list)
 		
 		i=0
+		print self.master.dirframe.dicomtree.get_children()
 		try:
-			self.master.dirframe.dicomtree.destroy()
-		except:
+			for item in self.master.dirframe.dicomtree.get_children():
+				self.master.dirframe.dicomtree.delete(item)
+			print "Existing tree cleared"
+		except Exception:
+			print "New tree created"
 			pass
-		self.master.dirframe.dicomtree = Treeview(self.master.dirframe)
-		self.master.dirframe.dicomtree['columns']=('date','name','desc')
-		self.master.dirframe.dicomtree.heading('date',text='Study Date')
-		self.master.dirframe.dicomtree.heading('name',text='Patient Name')
-		self.master.dirframe.dicomtree.heading('desc',text='Description')
-		for scan in sorted_list:
+		for scan in self.sorted_list:
+			print "Adding to tree: "+scan['path']
 			if not self.master.dirframe.dicomtree.exists(scan['studyuid']):
 				i+=1
 				self.master.dirframe.dicomtree.insert('','end',scan['studyuid'],text=str(i).zfill(4),
@@ -227,31 +298,9 @@ class ToolboxHome(Frame):
 											text='Series '+str(scan['series']).zfill(3),
 											values=('','',scan['seriesdesc']))
 			self.master.dirframe.dicomtree.insert(scan['seriesuid'],'end',scan['instanceuid'],
-											text='Image '+str(scan['instance']).zfill(3),
+											text=str(scan['instance']).zfill(3),
 											values=('','',''))
-		
-		
-		self.master.dirframe.dicomtree.scrollbarx = Scrollbar(self.master.dirframe.dicomtree,orient='horizontal')
-		self.master.dirframe.dicomtree.scrollbarx.pack(side='bottom',fill='x')
-		self.master.dirframe.dicomtree.scrollbarx.config(command=self.master.dirframe.dicomtree.xview)
-		self.master.dirframe.dicomtree.scrollbary = Scrollbar(self.master.dirframe.dicomtree)
-		self.master.dirframe.dicomtree.scrollbary.pack(side='right',fill='y')
-		self.master.dirframe.dicomtree.scrollbary.config(command=self.master.dirframe.dicomtree.yview)
-		
-		
-		
-		self.master.dirframe.dicomtree.grid(row=0,column=0,sticky='nsew')
-		self.master.dirframe.rowconfigure(0,weight=1)
-		self.master.dirframe.columnconfigure(0,weight=1)
-		
-		#~ self.master.dirframe.config(width=currentframewidth,height=currentframeheight)
-		
-		#~ self.master.dirframe.dicomtree.pack(expand=True)
-		
-		
-		
-		
-		
+		self.master.dirframe.dicomtree.update()
 		return
 		
 		
@@ -277,7 +326,8 @@ class ToolboxHome(Frame):
 		return
 		
 	def load_selected_module(self):
-		pass
+		print "DO NOTHING!"
+		return
 		
 		
 
