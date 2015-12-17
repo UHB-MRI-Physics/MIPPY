@@ -80,11 +80,14 @@ class ToolboxHome(Frame):
 		self.master.config(menu=self.master.menubar)
 		
 		# Create frames to hold DICOM directory tree and module list
+		self.master.dirframe = Frame(self.master,height=100)
+		self.master.moduleframe = Frame(self.master)
 		self.master.dirframe = Frame(self.master)
 		self.master.moduleframe = Frame(self.master)
 		
 		# Create canvas object to draw images in
-		self.master.imcanvas = Canvas(self.master)
+		self.master.imcanvas = Canvas(self.master,bd=0,width=256, height=256)
+		self.master.imcanvas.create_rectangle((0,0,256,256),fill='black')
 		
 		# Create buttons:
 		# "Start module"
@@ -92,7 +95,7 @@ class ToolboxHome(Frame):
 		
 		# Use "grid" to position objects within "master"
 		self.master.dirframe.grid(row=0,column=0,columnspan=2,rowspan=1,sticky='nsew')
-		self.master.imcanvas.grid(row=1,column=0,rowspan=2,columnspan=1,sticky='nsew')
+		self.master.imcanvas.grid(row=1,column=0,sticky='nsew')
 		self.master.moduleframe.grid(row=1,column=1,sticky='nsew')
 		self.master.loadmodulebutton.grid(row=2,column=1,sticky='nsew')
 		
@@ -138,10 +141,10 @@ class ToolboxHome(Frame):
 		return
 		
 	def build_dicom_tree(self,path_list):
-		# Create Treeview object
-		self.master.dirframe.dicomtree = Treeview(self.master.dirframe)
-		
 		# Build tree by first organising list - inspecting study UID, series UID, instance number
+		#~ currentframeheight=self.master.dirframe.config()['height']
+		#~ currentframewidth=self.master.dirframe.config()['width']
+		
 		tag_list = []
 		
 		for p in path_list:
@@ -205,12 +208,18 @@ class ToolboxHome(Frame):
 			#~ if not scan['enhanced']:
 		
 		i=0
+		try:
+			self.master.dirframe.dicomtree.destroy()
+		except:
+			pass
+		self.master.dirframe.dicomtree = Treeview(self.master.dirframe)
 		self.master.dirframe.dicomtree['columns']=('date','name','desc')
 		self.master.dirframe.dicomtree.heading('date',text='Study Date')
 		self.master.dirframe.dicomtree.heading('name',text='Patient Name')
 		self.master.dirframe.dicomtree.heading('desc',text='Description')
 		for scan in sorted_list:
 			if not self.master.dirframe.dicomtree.exists(scan['studyuid']):
+				i+=1
 				self.master.dirframe.dicomtree.insert('','end',scan['studyuid'],text=str(i).zfill(4),
 												values=(scan['date'],scan['name'],scan['studydesc']))
 			if not self.master.dirframe.dicomtree.exists(scan['seriesuid']):
@@ -229,15 +238,21 @@ class ToolboxHome(Frame):
 		self.master.dirframe.dicomtree.scrollbary.pack(side='right',fill='y')
 		self.master.dirframe.dicomtree.scrollbary.config(command=self.master.dirframe.dicomtree.yview)
 		
+		
+		
 		self.master.dirframe.dicomtree.grid(row=0,column=0,sticky='nsew')
-		self.master.dirframe.rowconfigure(0,weight=10)
-		self.master.dirframe.columnconfigure(0,weight=10)
+		self.master.dirframe.rowconfigure(0,weight=1)
+		self.master.dirframe.columnconfigure(0,weight=1)
+		
+		#~ self.master.dirframe.config(width=currentframewidth,height=currentframeheight)
+		
+		#~ self.master.dirframe.dicomtree.pack(expand=True)
 		
 		
 		
 		
 		
-		pass
+		return
 		
 		
 	def refresh_directory(self):
@@ -275,6 +290,7 @@ the GUI package), then given a title and dimensions as attributes, then used to 
 
 root_window = Tk()
 root_window.title("MIPPY: Modular Image Processing in Python")
+root_window.minsize(650,400)
 #root_window.geometry("+50+50")
 #root_window.wm_resizeable(False,False)
 root_app = ToolboxHome(master = root_window)
