@@ -28,8 +28,24 @@ import time
 import importlib
 import sys
 from functions.file_functions import list_all_files
+import ScrolledText
 
 print "Initialising GUI...\n"
+
+class RedirectText(object):
+	""""""
+	#----------------------------------------------------------------------
+	def __init__(self, text_ctrl, log):
+		"""Constructor"""
+		self.output = text_ctrl
+		self.logfile = log
+	#----------------------------------------------------------------------
+	def write(self, string):
+		""""""
+		self.output.insert(END, string)
+		with open(self.logfile,'a') as f:
+			f.write('\n'+string)
+
 
 class ToolboxHome(Frame):
 	
@@ -146,16 +162,32 @@ class ToolboxHome(Frame):
 		# "Load module"
 		self.master.loadmodulebutton = Button(self.master,text="Load module",command=lambda:self.load_selected_module())
 		
+		# Set up logfile in logs directory
+		logpath=os.path.join(os.getcwd(),"logs",str(datetime.datetime.now()).replace(":",".").replace(" ","_")+".txt")
+		with open(logpath,'w') as logout:
+			logout.write('LOG FILE\n')
+		
+		# Add scrollable text box for stdout output
+		self.master.logoutput = ScrolledText.ScrolledText(self.master,height=6)
+		redir_out = RedirectText(self.master.logoutput,logpath)
+		redir_err = RedirectText(self.master.logoutput,logpath)
+		sys.stdout = redir_out
+		sys.stderr = redir_err
+		
+		
+		
 		# Use "grid" to position objects within "master"
 		self.master.dirframe.grid(row=0,column=0,columnspan=2,rowspan=1,sticky='nsew')
 		self.master.imcanvas.grid(row=1,column=0,sticky='nsew')
 		self.master.moduleframe.grid(row=1,column=1,sticky='nsew')
 		self.master.loadmodulebutton.grid(row=2,column=1,sticky='nsew')
+		self.master.logoutput.grid(row=3,column=0,rowspan=1,columnspan=2,sticky='nsew')
 		
 		# Set row and column weights to handle resizing
 		self.master.rowconfigure(0,weight=1)
 		self.master.rowconfigure(1,weight=0)
 		self.master.rowconfigure(2,weight=0)
+		self.master.rowconfigure(3,weight=0)
 		self.master.columnconfigure(0,weight=0)
 		self.master.columnconfigure(1,weight=1)
 		
