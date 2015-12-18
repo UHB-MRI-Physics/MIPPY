@@ -33,8 +33,6 @@ class DICOMImage(dicom.Dataset):
 		ds._view_pixels = ds._wl_control()
 		ds._image = Image.fromarray(ds._8bitpixels)
 		ds._viewimage = PhotoImage(ds._image, mode='L')
-		ds._window = np.power(2,8)
-		ds._level = np.power(2,8)/2
 		return ds
 		
 	def _generate_fp_pixels(pixels,rs,ri,ss):
@@ -43,4 +41,4 @@ class DICOMImage(dicom.Dataset):
 	def _wl_control(self,window=np.power(2,8),level=np.power(2,8)/2):
 		self._window = window
 		self._level = level
-		return self._8bitpixels-(level-window/2)*(window/np.power(2,8))
+		return np.clip(self._8bitpixels-(level-window/2)*(window/np.power(2,8)),0,255)
