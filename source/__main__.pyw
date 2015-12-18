@@ -1,3 +1,8 @@
+"""
+Icon attribution:
+Icon made by Freepik from www.flaticon.com
+"""
+
 print "Importing packages..."
 print "    DICOM"
 import dicom
@@ -17,7 +22,7 @@ from PIL import Image, ImageTk
 #~ print "    easyGUI"
 #~ from easygui import diropenbox, codebox
 print "    date/time"
-import datetime
+from datetime import datetime
 import time
 #~ print "    SciPy"
 #~ from scipy.signal import convolve2d
@@ -29,6 +34,7 @@ import importlib
 import sys
 from functions.file_functions import list_all_files
 import ScrolledText
+import webbrowser
 
 print "Initialising GUI...\n"
 
@@ -133,7 +139,7 @@ class ToolboxHome(Frame):
 		self.master.dirframe.columnconfigure(1,weight=0)
 		
 		# Bind "change selection" event to method to update the image display
-		self.master.dirframe.dicomtree.bind('<<TreeviewSelect>>',self.new_image_view)
+		self.master.dirframe.dicomtree.bind('<<TreeviewSelect>>',self.dir_window_selection)
 		
 		
 		
@@ -156,14 +162,23 @@ class ToolboxHome(Frame):
 				
 		# Create canvas object to draw images in
 		self.master.imcanvas = Canvas(self.master,bd=0,width=256, height=256)
-		self.master.imcanvas.create_rectangle((0,0,256,256),fill='black')
+		self.reset_small_canvas()
+		
+		# Bind methods for window and level to canvas (right mouse click)
+		self.master.imcanvas.bind('<Button-3>',self.canvas_right_click)
+		self.master.imcanvas.bind('<B3-Motion>',self.canvas_right_drag)
+		
+		# Create button to control image scrolling
+		self.master.scrollbutton = Button(self.master, text="SLICE + / -")
+		self.master.scrollbutton.bind('<Button-1>',self.slice_scroll_button_click)
+		self.master.scrollbutton.bind('<B1-Motion>',self.slice_scroll_button_drag)
 		
 		# Create buttons:
 		# "Load module"
 		self.master.loadmodulebutton = Button(self.master,text="Load module",command=lambda:self.load_selected_module())
 		
 		# Set up logfile in logs directory
-		logpath=os.path.join(os.getcwd(),"logs",str(datetime.datetime.now()).replace(":",".").replace(" ","_")+".txt")
+		logpath=os.path.join(os.getcwd(),"logs",str(datetime.now()).replace(":",".").replace(" ","_")+".txt")
 		with open(logpath,'w') as logout:
 			logout.write('LOG FILE\n')
 		
@@ -181,6 +196,7 @@ class ToolboxHome(Frame):
 		self.master.imcanvas.grid(row=1,column=0,sticky='nsew')
 		self.master.moduleframe.grid(row=1,column=1,sticky='nsew')
 		self.master.loadmodulebutton.grid(row=2,column=1,sticky='nsew')
+		self.master.scrollbutton.grid(row=2,column=0,sticky='nsew')
 		self.master.logoutput.grid(row=3,column=0,rowspan=1,columnspan=2,sticky='nsew')
 		
 		# Set row and column weights to handle resizing
@@ -192,17 +208,99 @@ class ToolboxHome(Frame):
 		self.master.columnconfigure(1,weight=1)
 		
 		master.focus()
+	
+	def reset_small_canvas(self):
+		self.master.imcanvas.delete('all')
+		self.master.imcanvas.create_rectangle((0,0,256,256),fill='black')
+		self.master.preview_slices = []
+		self.master.active_slice = None
+		return
 		
-			
+	def slice_scroll_button_click(self,event):
+		self.master.click_x = event.x
+		self.master.click_y = event.y
+		#~ print "CLICK"
+		return
+		
+	def slice_scroll_button_drag(self,event):
+		#~ print "MOVE"
+		if self.master.preview_slices==[]:
+			# If no active display slices, just skip this whole function
+			return
+		xmove = event.x-self.master.click_x
+		ymove = event.y-self.master.click_y
+		#~ print xmove
+		#~ print ymove
+		
+		# Want to move 1 slice every time the mouse is moved a number of pixels up or down
+		# Higher sensitivity number = less sensitive!
+		sensitivity=20
+		if abs(ymove)>sensitivity:
+			if ymove<0 and not self.master.active_slice+1==len(self.master.preview_slices):
+				self.master.active_slice+=1
+				print "SLICE UP"
+			elif ymove>0 and not self.master.active_slice==0:
+				self.master.active_slice-=1
+				print "SLICE DOWN"
+			self.master.click_x = event.x
+			self.master.click_y = event.y
+		return
+		
+	def canvas_left_click(self):
+		if self.master.preview_slices==[]:
+			# If no active display slices, just skip this whole function
+			return
+		self.master.click_x = event.x
+		self.master.click_y = event.y
+		return
+		
+	def canvas_right_drag(self):
+		xmove = event.x-self.master.click_x
+		ymove = event.y-self.master.click_y
+		return
+	
 	def asktoexit(self):
 		if tkMessageBox.askokcancel("Quit?", "Are you sure you want to exit?"):
 			#self.master.destroy()
 			sys.exit()
 		return
 		
-	def new_image_view(self, event):
+	def dir_window_selection(self,event):
+		print "Selection made"
 		selection = self.master.dirframe.dicomtree.selection()
-		print selection
+		if not len(selection)==1:
+			self.reset_small_canvas()
+		else:
+			parent_item = self.master.dirframe.dicomtree.parent(selection[0])
+			if parent_item=='':
+				# Whole study, so just reset the canvas
+				self.reset_small_canvas()
+			elif self.master.dirframe.dicomtree.parent(parent_item)=='':
+				# Whole series, load all slices
+				self.load_preview_images(self.master.dirframe.dicomtree.get_children(selection[0]))
+			else:
+				# Single image, load single slice
+				self.load_preview_images(selection)
+		return
+			
+		
+	def load_preview_images(self, uid_array):
+		"""
+		Requires an array of unique instance UID's to search for in self.tag_list
+		"""
+		self.reset_small_canvas()
+		
+		self.master.preview_slices=uid_array
+		self.master.active_slice = 0
+		self.master.imcanvas.create_rectangle((0,0,256,256),fill='yellow')
+		print uid_array
+		
+		
+		return
+		
+	def refresh_preview_image(self):
+		# self.master.preview_slices = []
+		# self.master.active_slice = None
 		return
 		
 	def module_window_click(self,event):
@@ -225,44 +323,45 @@ class ToolboxHome(Frame):
 		
 	def build_dicom_tree(self):
 		# Build tree by first organising list - inspecting study UID, series UID, instance number
-		
 		self.tag_list = []
 		
 		for p in self.path_list:
-			#~ print "path: "+p
-			
 			# This automatically excludes Philips "XX_" files, but only based on name.  If they've been renamed they
 			# won't be picked up until the "try/except" below.
 			if os.path.split(p)[1].startswith("XX_"):
 				continue
 			
+			# Remove any previous datasets just held as "ds" in memory
 			ds = None
+			#Read file, if not DICOM then ignore
 			try:
 				ds = dicom.read_file(p)				
 			except Exception:
 				print p+'\n...is not a valid DICOM file and is being ignored.'
 				continue
 			if ds:
-				#~ print os.path.split(p)[1]
-				
 				try:
 					# There has to be a better way of testing this...?
 					# If "ImageType" tag doesn't exist, then it's probably an annoying "XX" type file from Philips
 					type = ds.ImageType
 				except Exception:
 					continue
-					
 				seriesdesc = ds.SeriesDescription
 				if "PHOENIXZIPREPORT" in seriesdesc.upper():
+					# Ignore any phoenix zip report files from Siemens
 					continue
+				# Unless told otherwise, assume normal MR image storage
 				mode = "Assumed MR Image Storage"
 				try:
 					mode = str(ds.SOPClassUID)
 				except Exception:
 					pass
 				if "SOFTCOPY" in mode.upper() or "BASIC TEXT" in mode.upper():
+					# Can't remember why I have these, I think they're possible GE type files???
 					continue
 				if mode.upper()=="ENHANCED MR IMAGE STORAGE":
+					# If enhanced file, record number of frames.  This is important for pulling the right imaging
+					# data out for the DICOM tree and image previews
 					enhanced = True
 					frames = ds.NumberOfFrames
 				else:
@@ -275,22 +374,30 @@ class ToolboxHome(Frame):
 				series = ds.SeriesNumber
 				time = ds.StudyTime
 				try:
+					# Some manufacturers use a handy "study description" tag, some don't
 					studydesc = ds.StudyDescription
 				except Exception:
 					try:
+						# Philips stores "body part examined", which will do for now until I find something better
 						studydesc = ds.BodyPartExamined
 					except Exception:
+						# If all else fails, just use a generic string
 						studydesc = "Unknown Study Type"
 				if enhanced:
+					# Set "instance" array to match number of frames
 					instance = np.array(range(frames))+1
 				else:
+					# Of if not enhanced/multi-frame, just create a single element list so that the code
+					# below still works
 					instance = [ds.InstanceNumber]
 				
 				for i in instance:
 					if not enhanced:
 						instance_uid = ds.SOPInstanceUID
 					else:
+						# Append instance UID with the frame number to give unique reference to each slice
 						instance_uid = ds.SOPInstanceUID+"_"+str(i).zfill(3)
+					# Append the information to the "tag list" object
 					self.tag_list.append(dict([('date',date),('time',time),('name',name),('studyuid',study_uid),
 									('series',series),('seriesuid',series_uid),('studydesc',studydesc),
 									('seriesdesc',seriesdesc),('instance',i),('instanceuid',instance_uid),
@@ -299,7 +406,7 @@ class ToolboxHome(Frame):
 		# This should sort the list into your initial order for the tree - maybe implement a more customised sort if necessary?
 		self.sorted_list = sorted(self.tag_list)
 		
-		i=0
+		#~ i=0
 		print self.master.dirframe.dicomtree.get_children()
 		try:
 			for item in self.master.dirframe.dicomtree.get_children():
@@ -311,8 +418,8 @@ class ToolboxHome(Frame):
 		for scan in self.sorted_list:
 			print "Adding to tree: "+scan['path']
 			if not self.master.dirframe.dicomtree.exists(scan['studyuid']):
-				i+=1
-				self.master.dirframe.dicomtree.insert('','end',scan['studyuid'],text=str(i).zfill(4),
+				#~ i+=1
+				self.master.dirframe.dicomtree.insert('','end',scan['studyuid'],text='------',
 												values=(scan['date'],scan['name'],scan['studydesc']))
 			if not self.master.dirframe.dicomtree.exists(scan['seriesuid']):
 				self.master.dirframe.dicomtree.insert(scan['studyuid'],'end',scan['seriesuid'],
@@ -335,6 +442,7 @@ class ToolboxHome(Frame):
 		
 	def load_wiki(self):
 		print "Load wiki"
+		webbrowser.open_new('https://sourceforge.net/p/mippy/wiki/Home/')
 		return
 		
 	def display_version_info(self):
@@ -362,7 +470,19 @@ the GUI package), then given a title and dimensions as attributes, then used to 
 root_window = Tk()
 root_window.title("MIPPY: Modular Image Processing in Python")
 root_window.minsize(650,400)
+if "nt" == os.name:
+    root_window.wm_iconbitmap(bitmap = "images/brain_orange.ico")
+else:
+    root_window.wm_iconbitmap(bitmap = "images/brain_bw.xbm")
 #root_window.geometry("+50+50")
 #root_window.wm_resizeable(False,False)
 root_app = ToolboxHome(master = root_window)
+#~ iconpath = os.path.join(os.getcwd(),'icon_orange.png')
+#~ root_app.iconbitmap(iconpath)
+#~ im_from_file = Image.open(iconpath)
+#~ icon_img = PhotoImage(im_from_file)
+#~ root_app.tk.call('wm', 'iconphoto', root_app._w, icon_img)
+
+
+
 root_app.mainloop()
