@@ -32,9 +32,10 @@ import time
 #~ from scipy.optimize import curve_fit
 import importlib
 import sys
-from functions.file_functions import list_all_files
+from functions.file_functions import *
 import ScrolledText
 import webbrowser
+from functions.viewer_functions import *
 
 print "Initialising GUI...\n"
 
@@ -84,6 +85,13 @@ class ToolboxHome(Frame):
 		# Catches any calls to close the window (e.g. clicking the X button in Windows) and pops
 		# up an "Are you sure?" dialog
 		self.master.protocol("WM_DELETE_WINDOW", self.asktoexit)
+		
+		# Add capture for stdout and stderr output for log file, and scrollable text box
+		self.master.logoutput = ScrolledText.ScrolledText(self.master,height=6)
+		redir_out = RedirectText(self.master.logoutput,logpath)
+		redir_err = RedirectText(self.master.logoutput,logpath)
+		sys.stdout = redir_out
+		sys.stderr = redir_err
 		
 		# Create menu bar for the top of the window
 		self.master.menubar = Menu(master)
@@ -167,6 +175,8 @@ class ToolboxHome(Frame):
 		# Bind methods for window and level to canvas (right mouse click)
 		self.master.imcanvas.bind('<Button-3>',self.canvas_right_click)
 		self.master.imcanvas.bind('<B3-Motion>',self.canvas_right_drag)
+		self.master.imcanvas.bind('<Double-Button-3>',self.canvas_right_doubleclick)
+		self.master.imcanvas.bind('<ButtonRelease-3>',self.canvas_right_click_release)
 		
 		# Create button to control image scrolling
 		self.master.scrollbutton = Button(self.master, text="SLICE + / -")
@@ -182,12 +192,7 @@ class ToolboxHome(Frame):
 		with open(logpath,'w') as logout:
 			logout.write('LOG FILE\n')
 		
-		# Add scrollable text box for stdout output
-		self.master.logoutput = ScrolledText.ScrolledText(self.master,height=6)
-		redir_out = RedirectText(self.master.logoutput,logpath)
-		redir_err = RedirectText(self.master.logoutput,logpath)
-		sys.stdout = redir_out
-		sys.stderr = redir_err
+		
 		
 		
 		
@@ -238,15 +243,31 @@ class ToolboxHome(Frame):
 		if abs(ymove)>sensitivity:
 			if ymove<0 and not self.master.active_slice+1==len(self.master.preview_slices):
 				self.master.active_slice+=1
-				print "SLICE UP"
+				self.refresh_preview_image()
 			elif ymove>0 and not self.master.active_slice==0:
 				self.master.active_slice-=1
-				print "SLICE DOWN"
+				self.refresh_preview_image()
 			self.master.click_x = event.x
 			self.master.click_y = event.y
 		return
 		
-	def canvas_left_click(self):
+	def canvas_right_doubleclick(self,event):
+		if self.master.preview_slices == []:
+			return
+		
+		self.master.temp_window = self.master.default_window
+		self.master.temp_level = self.master.default_level
+		self.master.window = self.master.default_window
+		self.master.level = self.master.default_level
+		
+		for image in self.master.preview_slices:
+			image.wl_control(window = self.master.default_window, level = self.master.default_level)
+		
+		self.refresh_preview_image()
+		
+		return
+		
+	def canvas_right_click(self,event):
 		if self.master.preview_slices==[]:
 			# If no active display slices, just skip this whole function
 			return
@@ -254,10 +275,39 @@ class ToolboxHome(Frame):
 		self.master.click_y = event.y
 		return
 		
-	def canvas_right_drag(self):
+	def canvas_right_drag(self,event):
 		xmove = event.x-self.master.click_x
 		ymove = event.y-self.master.click_y
+		# Windowing is applied to the series as a whole...
+		# Sensitivity needs to vary with the float pixel scale.  Map default window
+		# (i.e. full range of image) to "sensitivity" px motion => 1px up/down adjusts level by
+		# "default_window/sensitivity".  1px left/right adjusts window by
+		# "default_window/sensitivity"
+		window_sensitivity = 100
+		level_sensitivity = 100
+		min_window = self.master.fullrange/255
+		i = self.master.active_slice
+		self.master.temp_window = self.master.window+xmove*(self.master.fullrange/window_sensitivity)
+		self.master.temp_level = self.master.level-ymove*(self.master.fullrange/level_sensitivity)
+		if self.master.temp_window<min_window:
+			self.master.temp_window=min_window
+		if self.master.temp_level<self.master.global_rangemin+min_window/2:
+			self.master.temp_level=self.master.global_rangemin+min_window/2
+		self.master.preview_slices[i].wl_control(window=self.master.temp_window,level=self.master.temp_level)
+		self.refresh_preview_image()
 		return
+		
+	def canvas_right_click_release(self,event):
+		print "RIGHT MOUSE RELEASED!"
+		if abs(self.master.click_x-event.x)<1 and abs(self.master.click_y-event.y)<1:
+			return
+		self.master.window = self.master.temp_window
+		self.master.level = self.master.temp_level
+		for image in self.master.preview_slices:
+			image.wl_control(window=self.master.window,level=self.master.level)
+		self.refresh_preview_image()
+		return
+		
 	
 	def asktoexit(self):
 		if tkMessageBox.askokcancel("Quit?", "Are you sure you want to exit?"):
@@ -290,17 +340,48 @@ class ToolboxHome(Frame):
 		"""
 		self.reset_small_canvas()
 		
-		self.master.preview_slices=uid_array
+		for tag in self.sorted_list:
+			if tag['instanceuid'] in uid_array:
+				if not tag['enhanced']:
+					print tag['path']
+					print type(tag['path'])
+					self.master.preview_slices.append(MIPPY_8bitviewer(tag['path']))
+				else:
+					ds = dicom.read_file(tag['path'])
+					self.master.preview_slices.append(MIPPY_8bitviewer(split_enhanced_dicom(ds,tag['instance'])))
+		
+		# Set default windowing
+		self.master.global_min,self.master.global_max = get_global_min_and_max(self.master.preview_slices)
+		self.master.global_rangemin = self.master.preview_slices[0].rangemin
+		self.master.global_rangemax = self.master.preview_slices[0].rangemax
+		self.master.fullrange = self.master.global_rangemax-self.master.global_rangemin
+		self.master.default_window = self.master.global_max-self.master.global_min
+		self.master.default_level = self.master.global_min + self.master.default_window/2
+		
+		for i in range(len(self.master.preview_slices)):
+			self.reset_window_level()
+			# This resize command is just hard-wired in for now.  Will probably change if
+			# I build in the ability to zoom.  That may not happen...
+			self.master.preview_slices[i].resize(256,256)
+		
 		self.master.active_slice = 0
-		self.master.imcanvas.create_rectangle((0,0,256,256),fill='yellow')
-		print uid_array
+		self.refresh_preview_image()
+		return
 		
+	def reset_window_level(self):
+		for i in range(len(self.master.preview_slices)):
+			self.master.preview_slices[i].wl_control(window=self.master.default_window,level=self.master.default_level)
 		
+		self.master.level = self.master.default_level
+		self.master.window = self.master.default_window
 		return
 		
 	def refresh_preview_image(self):
 		# self.master.preview_slices = []
 		# self.master.active_slice = None
+		i = self.master.active_slice
+		self.master.imcanvas.delete('all')
+		self.master.imcanvas.create_image(0,0,anchor='nw',image=self.master.preview_slices[i].photoimage)
 		return
 		
 	def module_window_click(self,event):
