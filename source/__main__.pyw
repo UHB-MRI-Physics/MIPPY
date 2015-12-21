@@ -36,6 +36,7 @@ from functions.file_functions import *
 import ScrolledText
 import webbrowser
 from functions.viewer_functions import *
+#import mippy_modules
 
 print "Initialising GUI...\n"
 
@@ -85,6 +86,14 @@ class ToolboxHome(Frame):
 		# Catches any calls to close the window (e.g. clicking the X button in Windows) and pops
 		# up an "Are you sure?" dialog
 		self.master.protocol("WM_DELETE_WINDOW", self.asktoexit)
+		
+		
+		
+		# Set up logfile in logs directory
+		logpath=os.path.join(os.getcwd(),"logs",str(datetime.now()).replace(":",".").replace(" ","_")+".txt")
+		with open(logpath,'w') as logout:
+			logout.write('LOG FILE\n')
+		
 		
 		# Add capture for stdout and stderr output for log file, and scrollable text box
 		self.master.logoutput = ScrolledText.ScrolledText(self.master,height=6)
@@ -166,7 +175,7 @@ class ToolboxHome(Frame):
 		self.master.moduleframe.moduletree.bind('<<TreeviewSelect>>',self.module_window_click)
 		
 		# Just adding a random line to the tree for testing
-		self.master.moduleframe.moduletree.insert('','end',"test row",text="Blah blah",values=("Option 1","Option 2"))
+		#self.master.moduleframe.moduletree.insert('','end',"test row",text="Blah blah",values=("Option 1","Option 2"))
 				
 		# Create canvas object to draw images in
 		self.master.imcanvas = Canvas(self.master,bd=0,width=256, height=256)
@@ -186,12 +195,6 @@ class ToolboxHome(Frame):
 		# Create buttons:
 		# "Load module"
 		self.master.loadmodulebutton = Button(self.master,text="Load module",command=lambda:self.load_selected_module())
-		
-		# Set up logfile in logs directory
-		logpath=os.path.join(os.getcwd(),"logs",str(datetime.now()).replace(":",".").replace(" ","_")+".txt")
-		with open(logpath,'w') as logout:
-			logout.write('LOG FILE\n')
-		
 		
 		
 		
@@ -563,6 +566,8 @@ root_app = ToolboxHome(master = root_window)
 #~ im_from_file = Image.open(iconpath)
 #~ icon_img = PhotoImage(im_from_file)
 #~ root_app.tk.call('wm', 'iconphoto', root_app._w, icon_img)
+
+#~ print dir(mippy_modules)
 
 
 
