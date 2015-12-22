@@ -37,22 +37,11 @@ import ScrolledText
 import webbrowser
 from functions.viewer_functions import *
 #import mippy_modules
+import cPickle as pickle
 
 print "Initialising GUI...\n"
 
-class RedirectText(object):
-	""""""
-	#----------------------------------------------------------------------
-	def __init__(self, text_ctrl, log):
-		"""Constructor"""
-		self.output = text_ctrl
-		self.logfile = log
-	#----------------------------------------------------------------------
-	def write(self, string):
-		""""""
-		self.output.insert(END, string)
-		with open(self.logfile,'a') as f:
-			f.write('\n'+string)
+
 
 
 class ToolboxHome(Frame):
@@ -79,6 +68,8 @@ class ToolboxHome(Frame):
 		the code down further.
 		"""
 		
+		self.root_dir = os.getcwd()
+		
 		# Initialises the GUI as a "Frame" object and gives it the name "master"
 		Frame.__init__(self, master)
 		self.master = master
@@ -89,25 +80,25 @@ class ToolboxHome(Frame):
 		
 		
 		
-		# Set up logfile in logs directory
-		logpath=os.path.join(os.getcwd(),"logs",str(datetime.now()).replace(":",".").replace(" ","_")+".txt")
-		with open(logpath,'w') as logout:
-			logout.write('LOG FILE\n')
+		#~ # Set up logfile in logs directory
+		#~ logpath=os.path.join(os.getcwd(),"logs",str(datetime.now()).replace(":",".").replace(" ","_")+".txt")
+		#~ with open(logpath,'w') as logout:
+			#~ logout.write('LOG FILE\n')
 		
 		
-		# Add capture for stdout and stderr output for log file, and scrollable text box
-		self.master.logoutput = ScrolledText.ScrolledText(self.master,height=6)
-		redir_out = RedirectText(self.master.logoutput,logpath)
-		redir_err = RedirectText(self.master.logoutput,logpath)
-		sys.stdout = redir_out
-		sys.stderr = redir_err
+		#~ # Add capture for stdout and stderr output for log file, and scrollable text box
+		#~ self.master.logoutput = ScrolledText.ScrolledText(self.master,height=6)
+		#~ redir_out = RedirectText(self.master.logoutput,logpath)
+		#~ redir_err = RedirectText(self.master.logoutput,logpath)
+		#~ sys.stdout = redir_out
+		#~ sys.stderr = redir_err
 		
 		# Create menu bar for the top of the window
 		self.master.menubar = Menu(master)
 		# Create and populate "File" menu
 		self.master.filemenu = Menu(self.master.menubar, tearoff=0)
 		self.master.filemenu.add_command(label="Load image directory", command=lambda:self.load_image_directory())
-		self.master.filemenu.add_command(label="Refresh current directory", command=lambda:self.refresh_directory())
+		self.master.filemenu.add_command(label="Refresh module list", command=lambda:self.scan_modules_directory())
 		self.master.filemenu.add_command(label="Exit program",command=lambda:self.exit_program())
 		# Create and populate "Help" menu
 		self.master.helpmenu = Menu(self.master.menubar, tearoff=0)
@@ -160,16 +151,35 @@ class ToolboxHome(Frame):
 		
 		
 		
-		
 		# Create module treeview
 		self.master.moduleframe.moduletree = Treeview(self.master.moduleframe)
 		
-		# Use grid to position module list in frame
-		self.master.moduleframe.moduletree.grid(row=0,column=0,sticky='nsew')
+		# Set names and widths of columns in treeview
+		self.master.moduleframe.moduletree['columns']=('description','author')
+		self.master.moduleframe.moduletree.heading('#0',text='Module Name')
+		self.master.moduleframe.moduletree.heading('description',text='Description')
+		self.master.moduleframe.moduletree.heading('author',text='Author')
 		
-		# Configure column and row weights (relative stretchability when resizing)
+		# Create scrollbars
+		self.master.moduleframe.scrollbarx = Scrollbar(self.master.dirframe,orient='horizontal')
+		self.master.moduleframe.scrollbarx.config(command=self.master.dirframe.dicomtree.xview)
+		self.master.moduleframe.scrollbary = Scrollbar(self.master.dirframe)
+		self.master.moduleframe.scrollbary.config(command=self.master.dirframe.dicomtree.yview)
+		self.master.moduleframe.moduletree.configure(yscroll=self.master.moduleframe.scrollbary.set, xscroll=self.master.moduleframe.scrollbarx.set)
+		
+		# Use "grid" to postion treeview and scrollbars in DICOM frame and assign weights to columns and rows
+		self.master.moduleframe.moduletree.grid(row=0,column=0,sticky='nsew')
+		self.master.moduleframe.scrollbarx.grid(row=1,column=0,sticky='nsew')
+		self.master.moduleframe.scrollbary.grid(row=0,column=1,sticky='nsew')
+		
+		# Set "weights" (relatve amount of stretchability when resizing window) for each row and column
 		self.master.moduleframe.rowconfigure(0,weight=1)
 		self.master.moduleframe.columnconfigure(0,weight=1)
+		self.master.moduleframe.rowconfigure(1,weight=0)
+		self.master.moduleframe.columnconfigure(1,weight=0)
+		
+		# Load modules to list
+		self.scan_modules_directory()
 		
 		# Bind "module select" event to required action
 		self.master.moduleframe.moduletree.bind('<<TreeviewSelect>>',self.module_window_click)
@@ -205,13 +215,13 @@ class ToolboxHome(Frame):
 		self.master.moduleframe.grid(row=1,column=1,sticky='nsew')
 		self.master.loadmodulebutton.grid(row=2,column=1,sticky='nsew')
 		self.master.scrollbutton.grid(row=2,column=0,sticky='nsew')
-		self.master.logoutput.grid(row=3,column=0,rowspan=1,columnspan=2,sticky='nsew')
+		#~ self.master.logoutput.grid(row=3,column=0,rowspan=1,columnspan=2,sticky='nsew')
 		
 		# Set row and column weights to handle resizing
 		self.master.rowconfigure(0,weight=1)
 		self.master.rowconfigure(1,weight=0)
 		self.master.rowconfigure(2,weight=0)
-		self.master.rowconfigure(3,weight=0)
+		#~ self.master.rowconfigure(3,weight=0)
 		self.master.columnconfigure(0,weight=0)
 		self.master.columnconfigure(1,weight=1)
 		
@@ -515,19 +525,30 @@ class ToolboxHome(Frame):
 		self.master.dirframe.dicomtree.update()
 		return
 		
-	#~ def scan_modules_directory(self):
-		#~ self.module_list = []
-		#~ for folder in os.listdir('mippy_modules'):
-			#~ file_list = os.listdir(folder)
-			#~ if ('__init__.py' in file_list
-				#~ and 'module_main.py' in file_list
-				#~ and 'module_info.txt' in file_list):
-					#~ txt_path = 
-					#~ info = np.genfromtxt(folder+'/'+module
-		
-		
-	def refresh_directory(self):
-		print "Refresh directory"
+	def scan_modules_directory(self):
+		self.module_list = []
+		for folder in os.listdir(os.path.join(self.root_dir,'modules')):
+			if not os.path.isdir(os.path.join(self.root_dir,'modules',folder)):
+				continue
+			file_list = os.listdir(os.path.join(self.root_dir,'modules',folder))
+			if ('__init__.py' in file_list
+				and 'module_main.py' in file_list
+				and 'config' in file_list):
+				cfg_file = os.path.join(self.root_dir,'modules',folder,'config')
+				with open(cfg_file,'r') as file_object:
+					module_info = pickle.load(file_object)
+				self.module_list.append(module_info)
+		self.module_list = sorted(self.module_list)
+		try:
+			for item in self.master.moduleframe.moduletree.get_children():
+				self.master.moduleframe.moduletree.delete(item)
+			print "Existing module tree cleared"
+		except Exception:
+			print "New module tree created"
+			pass
+		for module in self.module_list:
+			self.master.moduleframe.moduletree.insert('','end',module_info['dirname'],
+				text=module_info['name'],values=(module_info['description'],module_info['author']))
 		return
 		
 	def exit_program(self):
@@ -550,6 +571,13 @@ class ToolboxHome(Frame):
 		
 	def load_selected_module(self):
 		print "DO NOTHING!"
+		try:
+			moduledir = self.master.moduleframe.moduletree.selection()[0]
+			active_module = importlib.import_module('modules.'+moduledir+'.module_main')
+		except:
+			print "Did you select a module?"
+			pass
+		#~ active_module.load_module()
 		return
 		
 		
@@ -566,7 +594,7 @@ root_window.title("MIPPY: Modular Image Processing in Python")
 root_window.minsize(650,400)
 root_path = os.getcwd()
 if "nt" == os.name:
-    root_window.wm_iconbitmap(bitmap = "images/brain_orange.ico")
+    root_window.wm_iconbitmap(bitmap = "source/images/brain_orange.ico")
 else:
     root_window.wm_iconbitmap('@'+os.path.join(root_path,'images','brain_bw.xbm'))
 #root_window.geometry("+50+50")
