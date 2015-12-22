@@ -515,6 +515,16 @@ class ToolboxHome(Frame):
 		self.master.dirframe.dicomtree.update()
 		return
 		
+	#~ def scan_modules_directory(self):
+		#~ self.module_list = []
+		#~ for folder in os.listdir('mippy_modules'):
+			#~ file_list = os.listdir(folder)
+			#~ if ('__init__.py' in file_list
+				#~ and 'module_main.py' in file_list
+				#~ and 'module_info.txt' in file_list):
+					#~ txt_path = 
+					#~ info = np.genfromtxt(folder+'/'+module
+		
 		
 	def refresh_directory(self):
 		print "Refresh directory"
@@ -554,10 +564,11 @@ the GUI package), then given a title and dimensions as attributes, then used to 
 root_window = Tk()
 root_window.title("MIPPY: Modular Image Processing in Python")
 root_window.minsize(650,400)
+root_path = os.getcwd()
 if "nt" == os.name:
     root_window.wm_iconbitmap(bitmap = "images/brain_orange.ico")
 else:
-    root_window.wm_iconbitmap(bitmap = "images/brain_bw.xbm")
+    root_window.wm_iconbitmap('@'+os.path.join(root_path,'images','brain_bw.xbm'))
 #root_window.geometry("+50+50")
 #root_window.wm_resizeable(False,False)
 root_app = ToolboxHome(master = root_window)
