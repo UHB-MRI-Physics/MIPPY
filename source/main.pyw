@@ -2,8 +2,9 @@
 Icon attribution:
 Icon made by Freepik from www.flaticon.com
 """
-
 print "Importing packages..."
+print "    Pickle/cPickle"
+import cPickle as pickle
 print "    DICOM"
 import dicom
 print "    Tkinter (GUI)"
@@ -15,29 +16,30 @@ print "    os"
 import os
 print "    NumPy"
 import numpy as np
+#~ print "    math"
+#~ from math import ceil
 print "    Python Imaging Library (PIL)"
 from PIL import Image, ImageTk
-#~ print "    math"
-#~ from math import floor
-#~ print "    easyGUI"
-#~ from easygui import diropenbox, codebox
 print "    date/time"
 from datetime import datetime
 import time
-#~ print "    SciPy"
-#~ from scipy.signal import convolve2d
-#~ from scipy.ndimage.measurements import center_of_mass
-#~ from scipy.ndimage.filters import convolve
-#~ from scipy.ndimage import map_coordinates
-#~ from scipy.optimize import curve_fit
+print "    importlib"
 import importlib
-import sys
-from functions.file_functions import *
-import ScrolledText
+print "    web broswer interface"
 import webbrowser
+print "    sys"
+import sys
+print "    MIPPY file functions"
+from functions.file_functions import *
+print "    MIPPY viewer functions"
 from functions.viewer_functions import *
-#import mippy_modules
-import cPickle as pickle
+print "    MIPPY DICOM functions"
+from functions.dicom_functions import *
+
+print "    threading"
+import threading
+print "    queue"
+import Queue as queue
 
 print "Initialising GUI...\n"
 
@@ -149,6 +151,9 @@ class ToolboxHome(Frame):
 		# Bind "change selection" event to method to update the image display
 		self.master.dirframe.dicomtree.bind('<<TreeviewSelect>>',self.dir_window_selection)
 		
+		# Remove focus from dicomtree widget when mouse not hovering
+		#~ self.master.dirframe.dicomtree.bind('<Leave>',self.dicomtree_nofocus)
+		#~ self.master.dirframe.dicomtree.bind('<Enter>',self.dicomtree_focus)	
 		
 		
 		# Create module treeview
@@ -161,10 +166,10 @@ class ToolboxHome(Frame):
 		self.master.moduleframe.moduletree.heading('author',text='Author')
 		
 		# Create scrollbars
-		self.master.moduleframe.scrollbarx = Scrollbar(self.master.dirframe,orient='horizontal')
-		self.master.moduleframe.scrollbarx.config(command=self.master.dirframe.dicomtree.xview)
-		self.master.moduleframe.scrollbary = Scrollbar(self.master.dirframe)
-		self.master.moduleframe.scrollbary.config(command=self.master.dirframe.dicomtree.yview)
+		self.master.moduleframe.scrollbarx = Scrollbar(self.master.moduleframe,orient='horizontal')
+		self.master.moduleframe.scrollbarx.config(command=self.master.moduleframe.moduletree.xview)
+		self.master.moduleframe.scrollbary = Scrollbar(self.master.moduleframe)
+		self.master.moduleframe.scrollbary.config(command=self.master.moduleframe.moduletree.yview)
 		self.master.moduleframe.moduletree.configure(yscroll=self.master.moduleframe.scrollbary.set, xscroll=self.master.moduleframe.scrollbarx.set)
 		
 		# Use "grid" to postion treeview and scrollbars in DICOM frame and assign weights to columns and rows
@@ -177,6 +182,10 @@ class ToolboxHome(Frame):
 		self.master.moduleframe.columnconfigure(0,weight=1)
 		self.master.moduleframe.rowconfigure(1,weight=0)
 		self.master.moduleframe.columnconfigure(1,weight=0)
+		
+		# Remove focus from moduletree widget when mouse not hovering
+		#~ self.master.moduleframe.moduletree.bind('<Leave>',self.moduletree_nofocus)
+		#~ self.master.moduleframe.moduletree.bind('<Enter>',self.moduletree_focus)
 		
 		# Load modules to list
 		self.scan_modules_directory()
@@ -196,6 +205,15 @@ class ToolboxHome(Frame):
 		self.master.imcanvas.bind('<B3-Motion>',self.canvas_right_drag)
 		self.master.imcanvas.bind('<Double-Button-3>',self.canvas_right_doubleclick)
 		self.master.imcanvas.bind('<ButtonRelease-3>',self.canvas_right_click_release)
+		# for Windows
+		#~ self.master.bind('<MouseWheel>',self.slice_scroll_wheel)
+		#~ # for Linux
+		#~ self.master.imcanvas.bind('<Button-4>',self.slice_scroll_wheel)
+		#~ self.master.imcanvas.bind('<Button-5>',self.slice_scroll_wheel)
+		#~ self.master.imcanvas.bind('<Enter>',self.imcanvas_focus)
+		#~ self.master.imcanvas.bind('<Leave>',self.imcanvas_nofocus)
+		#~ self.master.imcanvas.active = False
+		
 		
 		# Create button to control image scrolling
 		self.master.scrollbutton = Button(self.master, text="SLICE + / -")
@@ -206,8 +224,14 @@ class ToolboxHome(Frame):
 		# "Load module"
 		self.master.loadmodulebutton = Button(self.master,text="Load module",command=lambda:self.load_selected_module())
 		
-		
-		
+		# Add progressbar
+		self.master.progressbar = Progressbar(self.master, mode='determinate')
+		# Assign variable to progressbar
+		#~ self.master.progress = 0
+		#~ self.master.progresstarget = 0
+		#~ self.master.progressbar['variable'] = self.master.progress
+		# Create queue for threaded functions???
+		#~ self.master.queue = queue.Queue()
 		
 		# Use "grid" to position objects within "master"
 		self.master.dirframe.grid(row=0,column=0,columnspan=2,rowspan=1,sticky='nsew')
@@ -216,6 +240,7 @@ class ToolboxHome(Frame):
 		self.master.loadmodulebutton.grid(row=2,column=1,sticky='nsew')
 		self.master.scrollbutton.grid(row=2,column=0,sticky='nsew')
 		#~ self.master.logoutput.grid(row=3,column=0,rowspan=1,columnspan=2,sticky='nsew')
+		self.master.progressbar.grid(row=3,column=0,rowspan=1,columnspan=2,sticky='nsew')
 		
 		# Set row and column weights to handle resizing
 		self.master.rowconfigure(0,weight=1)
@@ -226,6 +251,36 @@ class ToolboxHome(Frame):
 		self.master.columnconfigure(1,weight=1)
 		
 		master.focus()
+		
+	#~ def dicomtree_focus(self,event):
+		#~ self.master.dirframe.focus()
+		#~ return
+		
+	#~ def dicomtree_nofocus(self,event):
+		#~ self.master.focus()
+		#~ return
+		
+	#~ def moduletree_focus(self,event):
+		#~ self.master.moduleframe.focus()
+		#~ return
+		
+	#~ def moduletree_nofocus(self,event):
+		#~ self.master.focus()
+		#~ return
+	
+	#~ def imcanvas_focus(self,event):
+		#~ self.master.imcanvas.active = True
+		#~ print "grab"
+		#~ self.master.imcanvas.grab_current()
+		self.master.imcanvas.focus()
+		#~ return
+		
+	#~ def imcanvas_nofocus(self,event):
+		#~ self.master.imcanvas.active = False
+		#~ print "grab release"
+		#~ self.master.imcanvas.grab_release()
+		self.master.focus()
+		#~ return
 	
 	def reset_small_canvas(self):
 		self.master.imcanvas.delete('all')
@@ -252,7 +307,7 @@ class ToolboxHome(Frame):
 		
 		# Want to move 1 slice every time the mouse is moved a number of pixels up or down
 		# Higher sensitivity number = less sensitive!
-		sensitivity=20
+		sensitivity=5
 		if abs(ymove)>sensitivity:
 			if ymove<0 and not self.master.active_slice+1==len(self.master.preview_slices):
 				self.master.active_slice+=1
@@ -263,6 +318,21 @@ class ToolboxHome(Frame):
 			self.master.click_x = event.x
 			self.master.click_y = event.y
 		return
+		
+	#~ def slice_scroll_wheel(self,event):
+		#~ if not self.master.imcanvas.active or self.master.preview_slices == []:
+			#~ return
+		if self.master.preview_slices == []:
+			return
+		#~ print "scroll!"
+		#~ print event
+		#~ if (event.num==5 or event.delta==-120) and not self.master.active_slice==0:
+			#~ self.master.active_slice-=1
+			#~ self.refresh_preview_image()
+		#~ elif (event.num==4 or event.delta==120) and not self.master.active_slice+1==len(self.master.preview_slices):
+			#~ self.master.active_slice+=1
+			#~ self.refresh_preview_image()
+		#~ return
 		
 	def canvas_right_doubleclick(self,event):
 		if self.master.preview_slices == []:
@@ -296,8 +366,8 @@ class ToolboxHome(Frame):
 		# (i.e. full range of image) to "sensitivity" px motion => 1px up/down adjusts level by
 		# "default_window/sensitivity".  1px left/right adjusts window by
 		# "default_window/sensitivity"
-		window_sensitivity = 100
-		level_sensitivity = 100
+		window_sensitivity = 200
+		level_sensitivity = 200
 		min_window = self.master.fullrange/255
 		i = self.master.active_slice
 		self.master.temp_window = self.master.window+xmove*(self.master.fullrange/window_sensitivity)
@@ -316,9 +386,13 @@ class ToolboxHome(Frame):
 			return
 		self.master.window = self.master.temp_window
 		self.master.level = self.master.temp_level
+		#~ i=0
 		for image in self.master.preview_slices:
+			#~ self.progress(100.*i/len(self.master.preview_slices))
 			image.wl_control(window=self.master.window,level=self.master.level)
+			#~ i+=1
 		self.refresh_preview_image()
+		#~ self.progress(0.)
 		return
 		
 	
@@ -346,22 +420,27 @@ class ToolboxHome(Frame):
 				self.load_preview_images(selection)
 		return
 			
+	def progress(self,percentage):
+		self.master.progressbar['value']=percentage
+		self.master.progressbar.update()
 		
 	def load_preview_images(self, uid_array):
 		"""
 		Requires an array of unique instance UID's to search for in self.tag_list
 		"""
 		self.reset_small_canvas()
-		
+		n = 0
 		for tag in self.sorted_list:
 			if tag['instanceuid'] in uid_array:
+				self.progress(50.*n/len(uid_array))
 				if not tag['enhanced']:
 					print tag['path']
 					print type(tag['path'])
 					self.master.preview_slices.append(MIPPY_8bitviewer(tag['path']))
 				else:
 					ds = dicom.read_file(tag['path'])
-					self.master.preview_slices.append(MIPPY_8bitviewer(split_enhanced_dicom(ds,tag['instance'])))
+					self.master.preview_slices.append(MIPPY_8bitviewer(get_frame_ds(ds,tag['instance'])))
+				n+=1
 		
 		# Set default windowing
 		self.master.global_min,self.master.global_max = get_global_min_and_max(self.master.preview_slices)
@@ -370,23 +449,31 @@ class ToolboxHome(Frame):
 		self.master.fullrange = self.master.global_rangemax-self.master.global_rangemin
 		self.master.default_window = self.master.global_max-self.master.global_min
 		self.master.default_level = self.master.global_min + self.master.default_window/2
+		self.master.level = self.master.default_level
+		self.master.window = self.master.default_window
+		#~ self.reset_window_level()
 		
 		for i in range(len(self.master.preview_slices)):
-			self.reset_window_level()
+			self.progress(50.*i/len(self.master.preview_slices)+50)
+			self.master.preview_slices[i].wl_control(window=self.master.window,level=self.master.level)
+			#~ self.reset_window_level()
 			# This resize command is just hard-wired in for now.  Will probably change if
 			# I build in the ability to zoom.  That may not happen...
 			self.master.preview_slices[i].resize(256,256)
 		
 		self.master.active_slice = 0
 		self.refresh_preview_image()
+		self.progress(0.)
 		return
 		
 	def reset_window_level(self):
 		for i in range(len(self.master.preview_slices)):
+			self.progress(100.*i/len(self.master.preview_slices))
 			self.master.preview_slices[i].wl_control(window=self.master.default_window,level=self.master.default_level)
 		
 		self.master.level = self.master.default_level
 		self.master.window = self.master.default_window
+		self.progress(0.)
 		return
 		
 	def refresh_preview_image(self):
@@ -406,97 +493,45 @@ class ToolboxHome(Frame):
 		if not dicomdir:
 			return
 		ask_recursive = tkMessageBox.askyesno("Search recursively?","Do you want to include all subdirectories?")
-		print dicomdir
-		print ask_recursive
+		#~ self.open_progress_window()
 		self.path_list = []
-		print self.path_list
-		self.path_list = list_all_files(dicomdir,self.path_list,recursive=ask_recursive)
-		print self.path_list
-		self.build_dicom_tree()		
+		#~ self.master.progressbar['mode']='indeterminate'
+		#~ self.master.progressbar.start()
+		
+		self.path_list = list_all_files(dicomdir,file_list=self.path_list,recursive=ask_recursive)
+		#~ self.master.progressbar.stop()
+		#~ self.master.progressbar['mode']='determinate'
+		#~ self.master.progressbar['value']=0.
+		self.filter_dicom_files()
+		self.build_dicom_tree()
+		#~ self.close_progress_window()
 		return
 		
-	def build_dicom_tree(self):
-		# Build tree by first organising list - inspecting study UID, series UID, instance number
+	def filter_dicom_files(self):
 		self.tag_list = []
-		
 		for p in self.path_list:
-			# This automatically excludes Philips "XX_" files, but only based on name.  If they've been renamed they
-			# won't be picked up until the "try/except" below.
-			if os.path.split(p)[1].startswith("XX_"):
-				continue
-			
-			# Remove any previous datasets just held as "ds" in memory
-			ds = None
-			#Read file, if not DICOM then ignore
-			try:
-				ds = dicom.read_file(p)				
-			except Exception:
-				print p+'\n...is not a valid DICOM file and is being ignored.'
-				continue
-			if ds:
-				try:
-					# There has to be a better way of testing this...?
-					# If "ImageType" tag doesn't exist, then it's probably an annoying "XX" type file from Philips
-					type = ds.ImageType
-				except Exception:
-					continue
-				seriesdesc = ds.SeriesDescription
-				if "PHOENIXZIPREPORT" in seriesdesc.upper():
-					# Ignore any phoenix zip report files from Siemens
-					continue
-				# Unless told otherwise, assume normal MR image storage
-				mode = "Assumed MR Image Storage"
-				try:
-					mode = str(ds.SOPClassUID)
-				except Exception:
-					pass
-				if "SOFTCOPY" in mode.upper() or "BASIC TEXT" in mode.upper():
-					# Can't remember why I have these, I think they're possible GE type files???
-					continue
-				if mode.upper()=="ENHANCED MR IMAGE STORAGE":
-					# If enhanced file, record number of frames.  This is important for pulling the right imaging
-					# data out for the DICOM tree and image previews
-					enhanced = True
-					frames = ds.NumberOfFrames
-				else:
-					enhanced = False
-					frames = 1
-				study_uid = ds.StudyInstanceUID
-				series_uid = ds.SeriesInstanceUID
-				name = ds.PatientName
-				date = ds.StudyDate
-				series = ds.SeriesNumber
-				time = ds.StudyTime
-				try:
-					# Some manufacturers use a handy "study description" tag, some don't
-					studydesc = ds.StudyDescription
-				except Exception:
-					try:
-						# Philips stores "body part examined", which will do for now until I find something better
-						studydesc = ds.BodyPartExamined
-					except Exception:
-						# If all else fails, just use a generic string
-						studydesc = "Unknown Study Type"
-				if enhanced:
-					# Set "instance" array to match number of frames
-					instance = np.array(range(frames))+1
-				else:
-					# Of if not enhanced/multi-frame, just create a single element list so that the code
-					# below still works
-					instance = [ds.InstanceNumber]
-				
-				for i in instance:
-					if not enhanced:
-						instance_uid = ds.SOPInstanceUID
-					else:
-						# Append instance UID with the frame number to give unique reference to each slice
-						instance_uid = ds.SOPInstanceUID+"_"+str(i).zfill(3)
-					# Append the information to the "tag list" object
-					self.tag_list.append(dict([('date',date),('time',time),('name',name),('studyuid',study_uid),
-									('series',series),('seriesuid',series_uid),('studydesc',studydesc),
-									('seriesdesc',seriesdesc),('instance',i),('instanceuid',instance_uid),
-									('path',p),('enhanced',enhanced)]))
+			self.progress(100*(float(self.path_list.index(p))/float(len(self.path_list))))
+			tags = collect_dicomdir_info(p)
+			if tags:
+				self.tag_list.append(tags)
+		self.master.progressbar['value']=0.
+		return
 		
+	#~ def open_progress_window(self):
+		#~ progress_root = Tk()
+		#~ self.master.queue = queue.Queue()
+		#~ progress_window = ProgressWindow(progress_root,self.master.queue,'indeterminate')
+		#~ thread = threading.Thread(target=progress_window.mainloop())
+		#~ thread.start()
+		#~ thread.join()
+		#~ return
+		
+	#~ def close_progress_window(self):
+		#~ self.master.queue.put('FINISHED')
+		#~ return
+		
+	def build_dicom_tree(self):
+		print "function_started"
 		# This should sort the list into your initial order for the tree - maybe implement a more customised sort if necessary?
 		self.sorted_list = sorted(self.tag_list)
 		
@@ -523,6 +558,7 @@ class ToolboxHome(Frame):
 											text=str(scan['instance']).zfill(3),
 											values=('','',''))
 		self.master.dirframe.dicomtree.update()
+		#~ self.master.progress = 100
 		return
 		
 	def scan_modules_directory(self):
@@ -549,6 +585,8 @@ class ToolboxHome(Frame):
 		for module in self.module_list:
 			self.master.moduleframe.moduletree.insert('','end',module_info['dirname'],
 				text=module_info['name'],values=(module_info['description'],module_info['author']))
+		
+		#~ self.master.progress = 50.
 		return
 		
 	def exit_program(self):
@@ -562,6 +600,7 @@ class ToolboxHome(Frame):
 		
 	def display_version_info(self):
 		print "Display version info"
+		self.master.progressbar['value']=50.
 		return
 			
 	def load_test_module(self):
@@ -580,7 +619,59 @@ class ToolboxHome(Frame):
 		#~ active_module.load_module()
 		return
 		
+	#~ def thread_this(self,target_function):
+		#~ thread = threading.Thread(target=target_function)
+		#~ thread.start()
+		#~ return
 		
+	#~ def check_queue(self):
+		#~ while True:
+			#~ try:
+				#~ self.master.progress = 100
+			#~ except queue.Empty:
+				#~ self.master.after(100, self.check_queue)
+				#~ break
+		#~ return
+		
+
+class ThreadedTask(threading.Thread):
+	def __init__(self,queue,target_function):
+		threading.Thread.__init__(self)
+		self.queue = queue
+		
+class ProgressWindow(Frame):
+	def __init__(self,master,queue1,progressmode='indeterminate'):
+		Frame.__init__(self,master)
+		self.root = master
+		self.root.title('Working...')
+		self.queue = queue1
+		self.msgtext = StringVar()
+		self.msglabel = Label(self.root,textvariable=self.msgtext)
+		self.progressbar = Progressbar(self.root,mode=progressmode)
+		if self.progressbar['mode']=='indeterminate':
+			self.progressbar.start()
+		self.msglabel.pack()
+		self.progressbar.pack()
+		self.running = True
+		self.periodic_call()
+	
+	def periodic_call(self):
+		self.check_queue()
+		if self.running:
+			self._job = self.after(100,self.periodic_call)
+	
+	def check_queue(self):
+		while self.queue.qsize():
+			try:
+				msg = self.queue.get(0)
+				self.msgtext = msg
+				if msg=='FINISHED':
+					self.running = False
+					if self.progressbar['mode']=='indeterminate':
+						self.progressbar.stop()
+					self.root.destroy()
+			except queue.Empty:
+				pass
 
 #########################################################
 """
@@ -607,6 +698,8 @@ root_app = ToolboxHome(master = root_window)
 #~ root_app.tk.call('wm', 'iconphoto', root_app._w, icon_img)
 
 #~ print dir(mippy_modules)
+
+#~ main_queue = queue.Queue()
 
 
 

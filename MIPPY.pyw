@@ -9,8 +9,14 @@ class RedirectText(object):
 	def write(self, string):
 		with open(self.logfile,'a') as f:
 			f.write('\n'+string)
-
-if not sys.argv[1]=='debug':
+try:
+	if sys.argv [1]=='debug':
+		debug_mode=True
+	else:
+		debug_mode=False
+except:
+	debug_mode=False
+if not debug_mode:
 	logpath = os.path.join(os.getcwd(),"logs",str(datetime.now()).replace(":",".").replace(" ","_")+".txt")
 	with open(logpath,'w') as logout:
 		logout.write('LOG FILE\n')
