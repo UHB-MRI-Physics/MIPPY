@@ -22,6 +22,15 @@ def get_global_min_and_max(image_list):
 		if np.amax(image.px_float) > max:
 			max = np.amax(image.px_float)
 	return min,max
+	
+def bits_to_ndarray(bits, shape):
+    abytes = np.frombuffer(bits, dtype=np.uint8)
+    abits = np.zeros(8*len(abytes), np.uint8)
+    
+    for n in range(8):
+        abits[n::8] = (abytes & (2 ** n)) !=0
+    
+    return abits.reshape(shape)
 
 ########################################
 ########################################
@@ -61,21 +70,31 @@ class MIPPY_8bitviewer():
 			ss = ds[0x2005,0x100E].value
 		except:
 			ss = 1
+		self.rows = ds.Rows
+		self.columns = ds.Columns
 		self.px_float = generate_px_float(pixels, rs, ri, ss)
 		self.rangemax = generate_px_float(np.power(2,bitdepth), rs, ri, ss)
 		self.rangemin = generate_px_float(0,rs,ri,ss)
-		self.xscale = ds.PixelSpacing[0]
-		self.yscale = ds.PixelSpacing[1]
+		try:
+			self.xscale = ds.PixelSpacing[0]
+			self.yscale = ds.PixelSpacing[1]
+		except:
+			self.xscale = 1
+			self.yscale = 1
+		try:
+			self.overlay = Image.fromarray(bits_to_ndarray(ds[0x6000,0x3000].value, shape=(self.rows,self.columns))*255)
+		except:
+			self.overlay = None
 		#~ self.px_8bit = np.power(2,8)*(((self.px_float)-np.amin(self.px_float))/(np.amax(self.px_float-np.amin(self.px_float))))
 		#~ self.px_view = self.px_8bit
 		#~ self.image = Image.fromarray(self.px_view)
 		#~ self.photoimage = ImageTk.PhotoImage(image)
 		self.image = None
 		self.photoimage = None
-		self.wl_control()
+		self.wl_and_display()
 		return
 
-	def wl_control(self,window=None,level=None):
+	def wl_and_display(self,window=None,level=None):
 		if window and level:
 			self.window = window
 			self.level = level
@@ -85,7 +104,7 @@ class MIPPY_8bitviewer():
 		if self.image:
 			size=self.image.size
 		else:
-			size=reversed(np.shape(self.px_float))
+			size=(np.shape(self.px_float)[1],np.shape(self.px_float)[0])
 		
 		if self.level-self.rangemin<self.window/2:
 			self.window=2*(self.level-self.rangemin)
@@ -95,13 +114,22 @@ class MIPPY_8bitviewer():
 		windowed_px = np.clip(self.px_float,self.level-self.window/2,self.level+self.window/2-1)
 		px_view = np.clip(((windowed_px-np.amin(windowed_px))/self.window * np.power(2,8)),0.,255.).astype(np.uint8)
 		self.image = Image.fromarray(px_view, mode='L')
+		self.apply_overlay()
 		if not size==self.image.size:
-			self.image = self.image.resize(size,Image.ANTIALIAS)
-		self.photoimage = ImageTk.PhotoImage(self.image)
+			self.resize(size[0],size[1])
+		self.set_display_image()
 		return
 		
 	def resize(self,dim1=256,dim2=256):
 		self.image = self.image.resize((dim1,dim2), Image.ANTIALIAS)
-		self.photoimage = ImageTk.PhotoImage(self.image)
+		self.set_display_image()
+		return
+		
+	def apply_overlay(self):
+		if self.overlay:
+			self.image.paste(self.overlay,box=(0,0),mask=self.overlay)
 		return
 
+	def set_display_image(self):
+		self.photoimage = ImageTk.PhotoImage(self.image)
+		return

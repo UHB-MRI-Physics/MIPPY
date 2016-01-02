@@ -344,7 +344,7 @@ class ToolboxHome(Frame):
 		self.master.level = self.master.default_level
 		
 		for image in self.master.preview_slices:
-			image.wl_control(window = self.master.default_window, level = self.master.default_level)
+			image.wl_and_display(window = self.master.default_window, level = self.master.default_level)
 		
 		self.refresh_preview_image()
 		
@@ -376,7 +376,7 @@ class ToolboxHome(Frame):
 			self.master.temp_window=min_window
 		if self.master.temp_level<self.master.global_rangemin+min_window/2:
 			self.master.temp_level=self.master.global_rangemin+min_window/2
-		self.master.preview_slices[i].wl_control(window=self.master.temp_window,level=self.master.temp_level)
+		self.master.preview_slices[i].wl_and_display(window=self.master.temp_window,level=self.master.temp_level)
 		self.refresh_preview_image()
 		return
 		
@@ -389,7 +389,7 @@ class ToolboxHome(Frame):
 		#~ i=0
 		for image in self.master.preview_slices:
 			#~ self.progress(100.*i/len(self.master.preview_slices))
-			image.wl_control(window=self.master.window,level=self.master.level)
+			image.wl_and_display(window=self.master.window,level=self.master.level)
 			#~ i+=1
 		self.refresh_preview_image()
 		#~ self.progress(0.)
@@ -455,7 +455,7 @@ class ToolboxHome(Frame):
 		
 		for i in range(len(self.master.preview_slices)):
 			self.progress(50.*i/len(self.master.preview_slices)+50)
-			self.master.preview_slices[i].wl_control(window=self.master.window,level=self.master.level)
+			self.master.preview_slices[i].wl_and_display(window=self.master.window,level=self.master.level)
 			#~ self.reset_window_level()
 			# This resize command is just hard-wired in for now.  Will probably change if
 			# I build in the ability to zoom.  That may not happen...
@@ -469,7 +469,7 @@ class ToolboxHome(Frame):
 	def reset_window_level(self):
 		for i in range(len(self.master.preview_slices)):
 			self.progress(100.*i/len(self.master.preview_slices))
-			self.master.preview_slices[i].wl_control(window=self.master.default_window,level=self.master.default_level)
+			self.master.preview_slices[i].wl_and_display(window=self.master.default_window,level=self.master.default_level)
 		
 		self.master.level = self.master.default_level
 		self.master.window = self.master.default_window
@@ -687,7 +687,7 @@ root_path = os.getcwd()
 if "nt" == os.name:
     root_window.wm_iconbitmap(bitmap = "source/images/brain_orange.ico")
 else:
-    root_window.wm_iconbitmap('@'+os.path.join(root_path,'images','brain_bw.xbm'))
+    root_window.wm_iconbitmap('@'+os.path.join(root_path,'source','images','brain_bw.xbm'))
 #root_window.geometry("+50+50")
 #root_window.wm_resizeable(False,False)
 root_app = ToolboxHome(master = root_window)
