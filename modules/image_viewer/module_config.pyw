@@ -3,6 +3,7 @@ from easygui import multenterbox
 import os
 
 cfg_file = 'config'
+init_file = '__init__.py'
 
 if os.path.exists(cfg_file):
 	with open(cfg_file,'r') as file_object:
@@ -30,3 +31,7 @@ module_info = {'name':name,'description':description,'author':author,'dirname':d
 
 with open(cfg_file, 'w') as file_object:
 	pickle.dump(module_info,file_object)
+
+if not os.path.exists(init_file):
+	with open(init_file,'w') as file_object:
+		file_object.write("")

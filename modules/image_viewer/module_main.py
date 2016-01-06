@@ -54,3 +54,19 @@ import tkMessageBox
 	#~ return
 	
 print "MODULE LOADED!"
+
+
+def execute(master_window,dicomdir,images):
+	window = Toplevel(master=master_window)
+	#~ mainframe = Frame(window)
+	#~ mainframe.pack()
+	window.button1=Button(window,text="Press me!",command=lambda:close_window(window))
+	
+	window.label1=Label(window,text=dicomdir)
+	window.label2=Label(window,text=images)
+	window.button1.grid(row=2,column=0,sticky='nsew')
+	window.label1.grid(row=0,column=0,sticky='nsew')
+	window.label2.grid(row=1,column=0,sticky='nsew')
+	
+def close_window(active_frame):
+	active_frame.destroy()

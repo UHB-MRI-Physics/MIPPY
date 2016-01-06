@@ -414,10 +414,12 @@ class ToolboxHome(Frame):
 				self.reset_small_canvas()
 			elif self.master.dirframe.dicomtree.parent(parent_item)=='':
 				# Whole series, load all slices
-				self.load_preview_images(self.master.dirframe.dicomtree.get_children(selection[0]))
+				self.active_uids = self.master.dirframe.dicomtree.get_children(selection[0])
+				self.load_preview_images(self.active_uids)
 			else:
 				# Single image, load single slice
-				self.load_preview_images(selection)
+				self.active_uids=(selection)
+				self.load_preview_images(self.active_uids)
 		return
 			
 	def progress(self,percentage):
@@ -489,8 +491,8 @@ class ToolboxHome(Frame):
 		
 	def load_image_directory(self):
 		print "Load image directory"
-		dicomdir = tkFileDialog.askdirectory(parent=self.master,initialdir=r"M:",title="Select image directory")
-		if not dicomdir:
+		self.dicomdir = tkFileDialog.askdirectory(parent=self.master,initialdir=r"M:",title="Select image directory")
+		if not self.dicomdir:
 			return
 		ask_recursive = tkMessageBox.askyesno("Search recursively?","Do you want to include all subdirectories?")
 		#~ self.open_progress_window()
@@ -498,7 +500,7 @@ class ToolboxHome(Frame):
 		#~ self.master.progressbar['mode']='indeterminate'
 		#~ self.master.progressbar.start()
 		
-		self.path_list = list_all_files(dicomdir,file_list=self.path_list,recursive=ask_recursive)
+		self.path_list = list_all_files(self.dicomdir,file_list=self.path_list,recursive=ask_recursive)
 		#~ self.master.progressbar.stop()
 		#~ self.master.progressbar['mode']='determinate'
 		#~ self.master.progressbar['value']=0.
@@ -613,6 +615,7 @@ class ToolboxHome(Frame):
 		try:
 			moduledir = self.master.moduleframe.moduletree.selection()[0]
 			active_module = importlib.import_module('modules.'+moduledir+'.module_main')
+			active_module.execute(self.master,self.dicomdir,self.active_uids)
 		except:
 			print "Did you select a module?"
 			pass

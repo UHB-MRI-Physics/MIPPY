@@ -1,12 +1,20 @@
-from PIL import Image,ImageTk
 import dicom
 import numpy as np
+from Tkinter import *
+from ttk import *
+from PIL import Image,ImageTk
 
 ########################################
 ########################################
 """
 GENERIC FUNCTIONS NOT ATTACHED TO CLASSES
 """
+def quick_display(im_array):
+	root = Tk()
+	app = EasyViewer(master=root,im_array=im)
+	app.mainloop()
+	return
+
 def generate_px_float(pixels,rs,ri,ss):
 	return (pixels*rs+ri)/(rs*ss)
 	
@@ -31,6 +39,18 @@ def bits_to_ndarray(bits, shape):
         abits[n::8] = (abytes & (2 ** n)) !=0
     
     return abits.reshape(shape)
+	
+
+class EasyViewer(Frame):
+	def __init__(self,master,im_array):
+		Frame.__init__(self)
+		self.master = master
+		self.master.imcanvas = Canvas(self.master,width=im_array.shape[1],height=im_array.shape[0])
+		self.master.imobject = MIPPY_8bitviewer(im_array)
+		self.master.imcanvas.im1 = self.master.imobject.photoimage
+		self.master.imcanvas.create_image((0,0),image=self.master.imcanvas.im1,anchor='nw')
+		self.master.imcanvas.pack()
+		
 
 ########################################
 ########################################
@@ -45,6 +65,8 @@ class MIPPY_8bitviewer():
 	The actual floating point values are stored as an attribute "px_float", so that the actual
 	scaled values can also be called for any given x,y position.  This should help when
 	constructing an actual viewer.
+	
+	I should type "actual" some more...
 	"""
 	
 	def __init__(self,dicom_dataset):
@@ -52,6 +74,9 @@ class MIPPY_8bitviewer():
 			ds = dicom.read_file(dicom_dataset)
 		elif type(dicom_dataset) is dicom.dataset.FileDataset:
 			ds = dicom_dataset
+		elif type(dicom_dataset) is np.ndarray:
+			self.construct_from_array(dicom_dataset)
+			return
 		else:
 			print "ERROR GENERATING IMAGE: Constructor input type not understood"
 			return
@@ -89,6 +114,18 @@ class MIPPY_8bitviewer():
 		#~ self.px_view = self.px_8bit
 		#~ self.image = Image.fromarray(self.px_view)
 		#~ self.photoimage = ImageTk.PhotoImage(image)
+		self.image = None
+		self.photoimage = None
+		self.wl_and_display()
+		return
+		
+	def construct_from_array(self,pixel_array):
+		self.px_float = pixel_array
+		self.rangemax = np.amax(pixel_array)
+		self.rangemin = np.amin(pixel_array)
+		self.xscale=1
+		self.yscale=1
+		self.overlay=None
 		self.image = None
 		self.photoimage = None
 		self.wl_and_display()
