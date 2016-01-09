@@ -1,72 +1,34 @@
 from Tkinter import *
 from ttk import *
-import tkMessageBox
+#~ import tkMessageBox
 
-
-
-#~ class TestModule(Frame):
-	
-	#~ def __init__(self, master):
-		#~ """
-		#~ This is the function which is called automatically when you create an object of
-		#~ this class, to initiate ("init", get it?) the object.
-		
-		#~ This is where the GUI is first created and populated with buttons, image canvasses,
-		#~ tabs, whatever.  This function can also call other functions should you wish to split
-		#~ the code down further.
-		#~ """
-		
-		#~ # Initialises the GUI as a "Frame" object and gives it the name "master"
-		#~ Frame.__init__(self, master)
-		#~ self.master = master
-		
-		#~ # Catches any calls to close the window (e.g. clicking the X button in Windows) and pops
-		#~ # up an "Are you sure?" dialog
-		#~ master.protocol("WM_DELETE_WINDOW", self.asktoexit)
-		
-		#~ self.master.test_button_1 = Button(master, text="Test button 1",command=lambda:self.test_imfunc())
-		#~ self.master.test_button_2 = Button(master, text="Test button 2")
-		
-		#~ self.master.test_button_1.grid(row=0,column=0,sticky='nsew')
-		#~ self.master.test_button_2.grid(row=0,column=1,sticky='nsew')
-		
-		#~ self.master.rowconfigure(0,weight=1)
-		#~ self.master.columnconfigure(0,weight=1)
-		#~ self.master.columnconfigure(1,weight=1)
-		
-		#~ master.focus()
-	
-	#~ def asktoexit(self):
-		#~ if tkMessageBox.askokcancel("Quit?", "Are you sure you want to close this module?"):
-			#~ self.master.destroy()
-	
-	#~ def test_imfunc(self):
-		#~ result = imfunc.add(1,2)
-		#~ tkMessageBox.showinfo("The result is "+str(result))
-		#~ return
-
-
-#~ def __main__():
-	#~ test_analysis_root = Tk()
-	#~ test_analysis_root.title("Test analysis module")
-	#~ test_app = TestModule(master = test_analysis_root)
-	#~ test_app.mainloop()
-	#~ return
-	
-print "MODULE LOADED!"
+def preload_dicom():
+	"""
+	This method is essential for the module to run. MIPPY needs to know whether
+	the module wants preloaded DICOM datasets or just paths to the files.  Most
+	modules will probably want preloaded DICOM datasets so that you don't have
+	to worry about different manufacturers, enhanced vs non-enhanced etc.
+	However, I imagine some people will prefer to work with the raw data files
+	and open the datasets themselves?
+	"""
+	# If you want DICOM datasets pre-loaded, return True.
+	# If you want paths to the files only, return False.
+	# Note the capital letters on True and False.  These are important.
+	return True
 
 
 def execute(master_window,dicomdir,images):
-	window = Toplevel(master=master_window)
-	#~ mainframe = Frame(window)
-	#~ mainframe.pack()
-	window.button1=Button(window,text="Press me!",command=lambda:close_window(window))
+	#~ window = Toplevel(master=master_window)
+	#~ window.button1=Button(window,text="Press me!",command=lambda:close_window(window))
 	
-	window.label1=Label(window,text=dicomdir)
-	window.label2=Label(window,text=images)
-	window.button1.grid(row=2,column=0,sticky='nsew')
-	window.label1.grid(row=0,column=0,sticky='nsew')
-	window.label2.grid(row=1,column=0,sticky='nsew')
+	#~ window.label1=Label(window,text=dicomdir)
+	#~ window.label2=Label(window,text=images)
+	#~ window.button1.grid(row=2,column=0,sticky='nsew')
+	#~ window.label1.grid(row=0,column=0,sticky='nsew')
+	#~ window.label2.grid(row=1,column=0,sticky='nsew')
+	print "Module loaded..."
+	print "Received "+str(len(images))+" image datasets."
+	return
 	
 def close_window(active_frame):
 	active_frame.destroy()

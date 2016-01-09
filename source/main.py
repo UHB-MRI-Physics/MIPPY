@@ -14,6 +14,8 @@ from Tkinter import *
 from ttk import *
 print "    os"
 import os
+#~ print "    io"
+#~ import io
 print "    NumPy"
 import numpy as np
 #~ print "    math"
@@ -519,19 +521,6 @@ class ToolboxHome(Frame):
 		self.master.progressbar['value']=0.
 		return
 		
-	#~ def open_progress_window(self):
-		#~ progress_root = Tk()
-		#~ self.master.queue = queue.Queue()
-		#~ progress_window = ProgressWindow(progress_root,self.master.queue,'indeterminate')
-		#~ thread = threading.Thread(target=progress_window.mainloop())
-		#~ thread.start()
-		#~ thread.join()
-		#~ return
-		
-	#~ def close_progress_window(self):
-		#~ self.master.queue.put('FINISHED')
-		#~ return
-		
 	def build_dicom_tree(self):
 		print "function_started"
 		# This should sort the list into your initial order for the tree - maybe implement a more customised sort if necessary?
@@ -597,12 +586,15 @@ class ToolboxHome(Frame):
 		
 	def load_wiki(self):
 		print "Load wiki"
-		webbrowser.open_new('https://sourceforge.net/p/mippy/wiki/Home/')
+		webbrowser.open_new('https://tree.taiga.io/project/robflintham-mippy/wiki/home')
 		return
 		
 	def display_version_info(self):
 		print "Display version info"
-		self.master.progressbar['value']=50.
+		info = ""
+		with open('source/version.info','r') as infofile:
+			info = infofile.read()
+		tkMessageBox.showinfo("MIPPY: Version info",info)
 		return
 			
 	def load_test_module(self):
@@ -615,66 +607,31 @@ class ToolboxHome(Frame):
 		try:
 			moduledir = self.master.moduleframe.moduletree.selection()[0]
 			active_module = importlib.import_module('modules.'+moduledir+'.module_main')
-			active_module.execute(self.master,self.dicomdir,self.active_uids)
+			preload_dicom = active_module.preload_dicom()
+			if preload_dicom:
+				self.datasets_to_pass = []
+				for tag in self.sorted_list:
+					if tag['instanceuid'] in self.active_uids:
+						if not tag['enhanced']:
+							print tag['path']
+							print type(tag['path'])
+							self.datasets_to_pass.append(dicom.read_file(tag['path']))
+						else:
+							ds = dicom.read_file(tag['path'])
+							self.datasets_to_pass.append(get_frame_ds(dicom.read_file(tag['path'],tag['instance'])))
+			else:
+				self.datasets_to_pass = []
+				for uid in self.active_uids:
+					if tag['instanceuid'] in self.active_uids:
+						if not tag['path'] in self.datasets_to_pass:
+							self.datasets_to_pass.append(tag['path'])
+			
+			active_module.execute(self.master,self.dicomdir,self.datasets_to_pass)
 		except:
-			print "Did you select a module?"
-			pass
-		#~ active_module.load_module()
+			raise
+			#~ print "Did you select a module?"
+			#~ pass
 		return
-		
-	#~ def thread_this(self,target_function):
-		#~ thread = threading.Thread(target=target_function)
-		#~ thread.start()
-		#~ return
-		
-	#~ def check_queue(self):
-		#~ while True:
-			#~ try:
-				#~ self.master.progress = 100
-			#~ except queue.Empty:
-				#~ self.master.after(100, self.check_queue)
-				#~ break
-		#~ return
-		
-
-class ThreadedTask(threading.Thread):
-	def __init__(self,queue,target_function):
-		threading.Thread.__init__(self)
-		self.queue = queue
-		
-class ProgressWindow(Frame):
-	def __init__(self,master,queue1,progressmode='indeterminate'):
-		Frame.__init__(self,master)
-		self.root = master
-		self.root.title('Working...')
-		self.queue = queue1
-		self.msgtext = StringVar()
-		self.msglabel = Label(self.root,textvariable=self.msgtext)
-		self.progressbar = Progressbar(self.root,mode=progressmode)
-		if self.progressbar['mode']=='indeterminate':
-			self.progressbar.start()
-		self.msglabel.pack()
-		self.progressbar.pack()
-		self.running = True
-		self.periodic_call()
-	
-	def periodic_call(self):
-		self.check_queue()
-		if self.running:
-			self._job = self.after(100,self.periodic_call)
-	
-	def check_queue(self):
-		while self.queue.qsize():
-			try:
-				msg = self.queue.get(0)
-				self.msgtext = msg
-				if msg=='FINISHED':
-					self.running = False
-					if self.progressbar['mode']=='indeterminate':
-						self.progressbar.stop()
-					self.root.destroy()
-			except queue.Empty:
-				pass
 
 #########################################################
 """
@@ -691,18 +648,7 @@ if "nt" == os.name:
     root_window.wm_iconbitmap(bitmap = "source/images/brain_orange.ico")
 else:
     root_window.wm_iconbitmap('@'+os.path.join(root_path,'source','images','brain_bw.xbm'))
-#root_window.geometry("+50+50")
-#root_window.wm_resizeable(False,False)
 root_app = ToolboxHome(master = root_window)
-#~ iconpath = os.path.join(os.getcwd(),'icon_orange.png')
-#~ root_app.iconbitmap(iconpath)
-#~ im_from_file = Image.open(iconpath)
-#~ icon_img = PhotoImage(im_from_file)
-#~ root_app.tk.call('wm', 'iconphoto', root_app._w, icon_img)
-
-#~ print dir(mippy_modules)
-
-#~ main_queue = queue.Queue()
 
 
 
