@@ -1,6 +1,6 @@
 from Tkinter import *
 from ttk import *
-#~ import tkMessageBox
+from source.functions.viewer_functions import *
 
 def preload_dicom():
 	"""
@@ -18,16 +18,36 @@ def preload_dicom():
 
 
 def execute(master_window,dicomdir,images):
-	#~ window = Toplevel(master=master_window)
-	#~ window.button1=Button(window,text="Press me!",command=lambda:close_window(window))
-	
-	#~ window.label1=Label(window,text=dicomdir)
-	#~ window.label2=Label(window,text=images)
-	#~ window.button1.grid(row=2,column=0,sticky='nsew')
-	#~ window.label1.grid(row=0,column=0,sticky='nsew')
-	#~ window.label2.grid(row=1,column=0,sticky='nsew')
 	print "Module loaded..."
 	print "Received "+str(len(images))+" image datasets."
+	
+	# Create all GUI elements
+	window = Toplevel(master = master_window)
+	window.imcanvas = Canvas(window,bd=0,width=512,height=512)
+	window.roi_square_button = Button(window,text="Draw square ROI",command=lambda:draw_square_roi)
+	window.roi_ellipse_button = Button(window,text="Draw elliptical ROI",command=lambda:draw_ellipse_roi)
+	window.scrollbutton = Button(window, text="SLICE + / -")
+	window.statsbutton = Button(window,text="Get ROI statistics")
+	window.statstext = StringVar()
+	window.statswindow = Label(window,textvariable=window.statstext)
+	window.zoominbutton = Button(window,text="ZOOM +",command=lambda:zoom_in)
+	window.zoomoutbutton = Button(window,text="ZOOM -",command=lambda:zoom_out)
+	
+	# Pack GUI using "grid" layout
+	window.imcanvas.grid(row=0,column=0,sticky='nsew')
+	
+	window.active_images = []
+	for image in images:
+		viewer_object = MIPPY_8bitviewer(image)
+		window.active_images.append(viewer_object)
+	
+	for image in window.active_images:
+		image.resize(512,512)
+	
+	# Test - just draw slice 1!
+	window.imcanvas.create_image(0,0,anchor='nw',image=window.active_images[0].photoimage)
+	
+	
 	return
 	
 def close_window(active_frame):

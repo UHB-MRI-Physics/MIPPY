@@ -38,10 +38,10 @@ from functions.viewer_functions import *
 print "    MIPPY DICOM functions"
 from functions.dicom_functions import *
 
-print "    threading"
-import threading
-print "    queue"
-import Queue as queue
+#~ print "    threading"
+#~ import threading
+#~ print "    queue"
+#~ import Queue as queue
 
 print "Initialising GUI...\n"
 
@@ -53,9 +53,7 @@ class ToolboxHome(Frame):
 	## Define any global attributes/variables you'll need here.  Use as few of these
 	## as possible as they will exist in RAM for as long as the program is running
 	## and are a waste of memory if they're not needed.  They also create massive
-	## confusion if you want to use similar/the same variable names in other modules.
-	
-	
+	## confusion if you want to use similar/the same variable names in other modules
 	
 	
 	
@@ -207,14 +205,6 @@ class ToolboxHome(Frame):
 		self.master.imcanvas.bind('<B3-Motion>',self.canvas_right_drag)
 		self.master.imcanvas.bind('<Double-Button-3>',self.canvas_right_doubleclick)
 		self.master.imcanvas.bind('<ButtonRelease-3>',self.canvas_right_click_release)
-		# for Windows
-		#~ self.master.bind('<MouseWheel>',self.slice_scroll_wheel)
-		#~ # for Linux
-		#~ self.master.imcanvas.bind('<Button-4>',self.slice_scroll_wheel)
-		#~ self.master.imcanvas.bind('<Button-5>',self.slice_scroll_wheel)
-		#~ self.master.imcanvas.bind('<Enter>',self.imcanvas_focus)
-		#~ self.master.imcanvas.bind('<Leave>',self.imcanvas_nofocus)
-		#~ self.master.imcanvas.active = False
 		
 		
 		# Create button to control image scrolling
@@ -228,12 +218,6 @@ class ToolboxHome(Frame):
 		
 		# Add progressbar
 		self.master.progressbar = Progressbar(self.master, mode='determinate')
-		# Assign variable to progressbar
-		#~ self.master.progress = 0
-		#~ self.master.progresstarget = 0
-		#~ self.master.progressbar['variable'] = self.master.progress
-		# Create queue for threaded functions???
-		#~ self.master.queue = queue.Queue()
 		
 		# Use "grid" to position objects within "master"
 		self.master.dirframe.grid(row=0,column=0,columnspan=2,rowspan=1,sticky='nsew')
@@ -241,48 +225,17 @@ class ToolboxHome(Frame):
 		self.master.moduleframe.grid(row=1,column=1,sticky='nsew')
 		self.master.loadmodulebutton.grid(row=2,column=1,sticky='nsew')
 		self.master.scrollbutton.grid(row=2,column=0,sticky='nsew')
-		#~ self.master.logoutput.grid(row=3,column=0,rowspan=1,columnspan=2,sticky='nsew')
 		self.master.progressbar.grid(row=3,column=0,rowspan=1,columnspan=2,sticky='nsew')
 		
 		# Set row and column weights to handle resizing
 		self.master.rowconfigure(0,weight=1)
 		self.master.rowconfigure(1,weight=0)
 		self.master.rowconfigure(2,weight=0)
-		#~ self.master.rowconfigure(3,weight=0)
+		self.master.rowconfigure(3,weight=0)
 		self.master.columnconfigure(0,weight=0)
 		self.master.columnconfigure(1,weight=1)
 		
 		master.focus()
-		
-	#~ def dicomtree_focus(self,event):
-		#~ self.master.dirframe.focus()
-		#~ return
-		
-	#~ def dicomtree_nofocus(self,event):
-		#~ self.master.focus()
-		#~ return
-		
-	#~ def moduletree_focus(self,event):
-		#~ self.master.moduleframe.focus()
-		#~ return
-		
-	#~ def moduletree_nofocus(self,event):
-		#~ self.master.focus()
-		#~ return
-	
-	#~ def imcanvas_focus(self,event):
-		#~ self.master.imcanvas.active = True
-		#~ print "grab"
-		#~ self.master.imcanvas.grab_current()
-		self.master.imcanvas.focus()
-		#~ return
-		
-	#~ def imcanvas_nofocus(self,event):
-		#~ self.master.imcanvas.active = False
-		#~ print "grab release"
-		#~ self.master.imcanvas.grab_release()
-		self.master.focus()
-		#~ return
 	
 	def reset_small_canvas(self):
 		self.master.imcanvas.delete('all')
@@ -320,21 +273,6 @@ class ToolboxHome(Frame):
 			self.master.click_x = event.x
 			self.master.click_y = event.y
 		return
-		
-	#~ def slice_scroll_wheel(self,event):
-		#~ if not self.master.imcanvas.active or self.master.preview_slices == []:
-			#~ return
-		if self.master.preview_slices == []:
-			return
-		#~ print "scroll!"
-		#~ print event
-		#~ if (event.num==5 or event.delta==-120) and not self.master.active_slice==0:
-			#~ self.master.active_slice-=1
-			#~ self.refresh_preview_image()
-		#~ elif (event.num==4 or event.delta==120) and not self.master.active_slice+1==len(self.master.preview_slices):
-			#~ self.master.active_slice+=1
-			#~ self.refresh_preview_image()
-		#~ return
 		
 	def canvas_right_doubleclick(self,event):
 		if self.master.preview_slices == []:

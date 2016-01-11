@@ -32,14 +32,21 @@ def get_global_min_and_max(image_list):
 	return min,max
 	
 def bits_to_ndarray(bits, shape):
-    abytes = np.frombuffer(bits, dtype=np.uint8)
-    abits = np.zeros(8*len(abytes), np.uint8)
-    
-    for n in range(8):
-        abits[n::8] = (abytes & (2 ** n)) !=0
-    
-    return abits.reshape(shape)
+	abytes = np.frombuffer(bits, dtype=np.uint8)
+	abits = np.zeros(8*len(abytes), np.uint8)
+
+	for n in range(8):
+		abits[n::8] = (abytes & (2 ** n)) !=0
+
+	return abits.reshape(shape)
 	
+	
+# ROI FUNCTIONS
+
+
+########################################
+########################################
+
 
 class EasyViewer(Frame):
 	def __init__(self,master,im_array):
@@ -50,7 +57,6 @@ class EasyViewer(Frame):
 		self.master.imcanvas.im1 = self.master.imobject.photoimage
 		self.master.imcanvas.create_image((0,0),image=self.master.imcanvas.im1,anchor='nw')
 		self.master.imcanvas.pack()
-		
 
 ########################################
 ########################################
