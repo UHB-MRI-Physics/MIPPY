@@ -41,11 +41,28 @@ def bits_to_ndarray(bits, shape):
 	return abits.reshape(shape)
 	
 	
-# ROI FUNCTIONS
 
 
 ########################################
 ########################################
+
+class ROI():
+	def __init__(self,coords):
+		"""
+		Expecting a string of 2- or 3-tuples to define bounding coordinates.
+		Type of ROI will be inferred from number of points.
+		"""
+		self.coords = coords
+		if len(coords)==1:
+			self.roi_type = "point"
+		elif len(coords)==2:
+			self.roi_type = "line"
+		elif len(coords)>len(coords[0]):
+			self.roi_type = "polygon"
+		elif len(coords)==len(coords[0]):
+			self.roi_type = "plane"
+		else:
+			self.roi_type = "Unknown type"
 
 
 class EasyViewer(Frame):
@@ -106,6 +123,8 @@ class MIPPY_8bitviewer():
 		self.px_float = generate_px_float(pixels, rs, ri, ss)
 		self.rangemax = generate_px_float(np.power(2,bitdepth), rs, ri, ss)
 		self.rangemin = generate_px_float(0,rs,ri,ss)
+		self.image_position = np.array(ds.ImagePositionPatient)
+		self.image_orientation = np.array(ds.ImageOrientationPatient).reshape((2,3))
 		try:
 			self.xscale = ds.PixelSpacing[0]
 			self.yscale = ds.PixelSpacing[1]
@@ -136,6 +155,14 @@ class MIPPY_8bitviewer():
 		self.photoimage = None
 		self.wl_and_display()
 		return
+	
+	def get_pt_coords(self,image_coords):
+		"""
+		Assumes you've passed a tuple (x,y) as your image coordinates
+		"""
+		voxel_position =  (self.image_position + image_coords[0]*self.xscale*self.image_orientation[0]
+							+ image_coords[1]*self.yscale*self.image_orientation[1])
+		return (voxel_position[0],voxel_position[1],voxel_position[2])
 
 	def wl_and_display(self,window=None,level=None):
 		if window and level:
