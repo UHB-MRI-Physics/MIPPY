@@ -11,7 +11,7 @@ GENERIC FUNCTIONS NOT ATTACHED TO CLASSES
 """
 def quick_display(im_array):
 	root = Tk()
-	app = EasyViewer(master=root,im_array=im)
+	app = EasyViewer(master=root,im_array=im_array)
 	app.mainloop()
 	return
 
@@ -64,6 +64,58 @@ class ROI():
 		else:
 			self.roi_type = "Unknown type"
 
+
+class DicomCanvas(Canvas):
+	def __init__(self,master,width=256,height=256,bd=0):
+		super(Canvas,self).__init__(self,master,width=width,height=height,bd=bd)
+		self.zoom_factor = 1
+		self.roi_list = []
+		self.roi_mode = 'square'
+		self.bind('<Button-1>',self.left_click)
+		self.bind('<B1-Motion>',self.left_drag)
+		self.bind('<ButtonRelease-1>',self.left_release)
+		self.bind('<Double-Button-1>',self.left_double)
+		self.bind('<Button-3>',self.right_click)
+		self.bind('<B3-Motion>',self.right_drag)
+		self.bind('<ButtonRelease-3>',self.right_release)
+		self.bind('<Double-Button-3>',self.right_double)
+		self.drawing_roi = False
+	
+	def left_click(self,event):
+		self.xmouse = event.x
+		self.ymouse = event.y
+		if len(self.roi_list)==0:
+			self.drawing_roi = True
+	
+	def left_drag(self,event):
+		xmove = event.x-self.xmouse
+		ymove = event.y-self.ymouse
+		if self.drawing_roi:
+			try:
+				self.delete('roi1')
+			except:
+				pass
+			if roi_mode=='square':
+				self.create_rectangle((self.xmouse,self.ymouse,event.x,event.y),fill='',outline='yellow',tags='roi1')
+			elif roi_mode=='ellipse':
+				self.create_oval((self.xmouse,self.ymouse,event.x,event,y),fill='',outline='yellow',tags='roi1')
+		else:
+			# Move ROI's if ROI's already exist???
+			pass
+	
+	def left_release(self,event):
+		if self.drawing_roi:
+			self.add_roi((self.xmouse,self.ymouse,event.x,event.y))
+			self.drawing_roi = False
+		else:
+			self.update_moved_rois(event)
+			
+	def update_moved_rois(self,event)
+		xmove = event.x-self.xmouse
+		ymove = event.y-self.ymouse
+	
+	def add_roi(coords):
+		self.roi_list.append(ROI(coords))
 
 class EasyViewer(Frame):
 	def __init__(self,master,im_array):

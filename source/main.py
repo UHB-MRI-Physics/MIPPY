@@ -14,12 +14,8 @@ from Tkinter import *
 from ttk import *
 print "    os"
 import os
-#~ print "    io"
-#~ import io
 print "    NumPy"
 import numpy as np
-#~ print "    math"
-#~ from math import ceil
 print "    Python Imaging Library (PIL)"
 from PIL import Image, ImageTk
 print "    date/time"
@@ -37,11 +33,6 @@ print "    MIPPY viewer functions"
 from functions.viewer_functions import *
 print "    MIPPY DICOM functions"
 from functions.dicom_functions import *
-
-#~ print "    threading"
-#~ import threading
-#~ print "    queue"
-#~ import Queue as queue
 
 print "Initialising GUI...\n"
 
