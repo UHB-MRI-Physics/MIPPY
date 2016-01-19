@@ -87,60 +87,60 @@ class ToolboxHome(Frame):
 		#~ sys.stderr = redir_err
 		
 		# Create menu bar for the top of the window
-		self.master.menubar = Menu(master)
+		self.menubar = Menu(master)
 		# Create and populate "File" menu
-		self.master.filemenu = Menu(self.master.menubar, tearoff=0)
-		self.master.filemenu.add_command(label="Load image directory", command=lambda:self.load_image_directory())
-		self.master.filemenu.add_command(label="Refresh module list", command=lambda:self.scan_modules_directory())
-		self.master.filemenu.add_command(label="Exit program",command=lambda:self.exit_program())
+		self.filemenu = Menu(self.menubar, tearoff=0)
+		self.filemenu.add_command(label="Load image directory", command=lambda:self.load_image_directory())
+		self.filemenu.add_command(label="Refresh module list", command=lambda:self.scan_modules_directory())
+		self.filemenu.add_command(label="Exit program",command=lambda:self.exit_program())
 		# Create and populate "Help" menu
-		self.master.helpmenu = Menu(self.master.menubar, tearoff=0)
-		self.master.helpmenu.add_command(label="Open the wiki",command=lambda:self.load_wiki())
-		self.master.helpmenu.add_command(label="About...",command=lambda:self.display_version_info())
+		self.helpmenu = Menu(self.menubar, tearoff=0)
+		self.helpmenu.add_command(label="Open the wiki",command=lambda:self.load_wiki())
+		self.helpmenu.add_command(label="About...",command=lambda:self.display_version_info())
 		# Add menus to menubar and display menubar in window
-		self.master.menubar.add_cascade(label="File",menu=self.master.filemenu)
-		self.master.menubar.add_cascade(label="Help",menu=self.master.helpmenu)
-		self.master.config(menu=self.master.menubar)
+		self.menubar.add_cascade(label="File",menu=self.filemenu)
+		self.menubar.add_cascade(label="Help",menu=self.helpmenu)
+		self.master.config(menu=self.menubar)
 		
 		# Create frames to hold DICOM directory tree and module list
-		self.master.dirframe = Frame(self.master)
-		self.master.moduleframe = Frame(self.master)
-		self.master.dirframe = Frame(self.master)
-		self.master.moduleframe = Frame(self.master)
+		self.dirframe = Frame(self.master)
+		self.moduleframe = Frame(self.master)
+		self.dirframe = Frame(self.master)
+		self.moduleframe = Frame(self.master)
 		
 		# Create DICOM treeview
-		self.master.dirframe.dicomtree = Treeview(self.master.dirframe)
+		self.dirframe.dicomtree = Treeview(self.dirframe)
 		
 		# Set names and widths of columns in treeviews
-		self.master.dirframe.dicomtree['columns']=('date','name','desc')
-		self.master.dirframe.dicomtree.heading('date',text='Study Date')
-		self.master.dirframe.dicomtree.heading('name',text='Patient Name')
-		self.master.dirframe.dicomtree.heading('desc',text='Description')
-		self.master.dirframe.dicomtree.column('#0',width=100,stretch=False)
-		self.master.dirframe.dicomtree.column('date',width=100,stretch=False)
-		self.master.dirframe.dicomtree.column('name',width=200)
-		self.master.dirframe.dicomtree.column('desc',width=500)
+		self.dirframe.dicomtree['columns']=('date','name','desc')
+		self.dirframe.dicomtree.heading('date',text='Study Date')
+		self.dirframe.dicomtree.heading('name',text='Patient Name')
+		self.dirframe.dicomtree.heading('desc',text='Description')
+		self.dirframe.dicomtree.column('#0',width=100,stretch=False)
+		self.dirframe.dicomtree.column('date',width=100,stretch=False)
+		self.dirframe.dicomtree.column('name',width=200)
+		self.dirframe.dicomtree.column('desc',width=500)
 		
 		# Create scrollbars
-		self.master.dirframe.scrollbarx = Scrollbar(self.master.dirframe,orient='horizontal')
-		self.master.dirframe.scrollbarx.config(command=self.master.dirframe.dicomtree.xview)
-		self.master.dirframe.scrollbary = Scrollbar(self.master.dirframe)
-		self.master.dirframe.scrollbary.config(command=self.master.dirframe.dicomtree.yview)
-		self.master.dirframe.dicomtree.configure(yscroll=self.master.dirframe.scrollbary.set, xscroll=self.master.dirframe.scrollbarx.set)
+		self.dirframe.scrollbarx = Scrollbar(self.dirframe,orient='horizontal')
+		self.dirframe.scrollbarx.config(command=self.dirframe.dicomtree.xview)
+		self.dirframe.scrollbary = Scrollbar(self.dirframe)
+		self.dirframe.scrollbary.config(command=self.dirframe.dicomtree.yview)
+		self.dirframe.dicomtree.configure(yscroll=self.dirframe.scrollbary.set, xscroll=self.dirframe.scrollbarx.set)
 		
 		# Use "grid" to postion treeview and scrollbars in DICOM frame and assign weights to columns and rows
-		self.master.dirframe.dicomtree.grid(row=0,column=0,sticky='nsew')
-		self.master.dirframe.scrollbarx.grid(row=1,column=0,sticky='nsew')
-		self.master.dirframe.scrollbary.grid(row=0,column=1,sticky='nsew')
+		self.dirframe.dicomtree.grid(row=0,column=0,sticky='nsew')
+		self.dirframe.scrollbarx.grid(row=1,column=0,sticky='nsew')
+		self.dirframe.scrollbary.grid(row=0,column=1,sticky='nsew')
 		
 		# Set "weights" (relatve amount of stretchability when resizing window) for each row and column
-		self.master.dirframe.rowconfigure(0,weight=1)
-		self.master.dirframe.columnconfigure(0,weight=1)
-		self.master.dirframe.rowconfigure(1,weight=0)
-		self.master.dirframe.columnconfigure(1,weight=0)
+		self.dirframe.rowconfigure(0,weight=1)
+		self.dirframe.columnconfigure(0,weight=1)
+		self.dirframe.rowconfigure(1,weight=0)
+		self.dirframe.columnconfigure(1,weight=0)
 		
 		# Bind "change selection" event to method to update the image display
-		self.master.dirframe.dicomtree.bind('<<TreeviewSelect>>',self.dir_window_selection)
+		self.dirframe.dicomtree.bind('<<TreeviewSelect>>',self.dir_window_selection)
 		
 		# Remove focus from dicomtree widget when mouse not hovering
 		#~ self.master.dirframe.dicomtree.bind('<Leave>',self.dicomtree_nofocus)
@@ -148,31 +148,31 @@ class ToolboxHome(Frame):
 		
 		
 		# Create module treeview
-		self.master.moduleframe.moduletree = Treeview(self.master.moduleframe)
+		self.moduleframe.moduletree = Treeview(self.moduleframe)
 		
 		# Set names and widths of columns in treeview
-		self.master.moduleframe.moduletree['columns']=('description','author')
-		self.master.moduleframe.moduletree.heading('#0',text='Module Name')
-		self.master.moduleframe.moduletree.heading('description',text='Description')
-		self.master.moduleframe.moduletree.heading('author',text='Author')
+		self.moduleframe.moduletree['columns']=('description','author')
+		self.moduleframe.moduletree.heading('#0',text='Module Name')
+		self.moduleframe.moduletree.heading('description',text='Description')
+		self.moduleframe.moduletree.heading('author',text='Author')
 		
 		# Create scrollbars
-		self.master.moduleframe.scrollbarx = Scrollbar(self.master.moduleframe,orient='horizontal')
-		self.master.moduleframe.scrollbarx.config(command=self.master.moduleframe.moduletree.xview)
-		self.master.moduleframe.scrollbary = Scrollbar(self.master.moduleframe)
-		self.master.moduleframe.scrollbary.config(command=self.master.moduleframe.moduletree.yview)
-		self.master.moduleframe.moduletree.configure(yscroll=self.master.moduleframe.scrollbary.set, xscroll=self.master.moduleframe.scrollbarx.set)
+		self.moduleframe.scrollbarx = Scrollbar(self.moduleframe,orient='horizontal')
+		self.moduleframe.scrollbarx.config(command=self.moduleframe.moduletree.xview)
+		self.moduleframe.scrollbary = Scrollbar(self.moduleframe)
+		self.moduleframe.scrollbary.config(command=self.moduleframe.moduletree.yview)
+		self.moduleframe.moduletree.configure(yscroll=self.moduleframe.scrollbary.set, xscroll=self.moduleframe.scrollbarx.set)
 		
 		# Use "grid" to postion treeview and scrollbars in DICOM frame and assign weights to columns and rows
-		self.master.moduleframe.moduletree.grid(row=0,column=0,sticky='nsew')
-		self.master.moduleframe.scrollbarx.grid(row=1,column=0,sticky='nsew')
-		self.master.moduleframe.scrollbary.grid(row=0,column=1,sticky='nsew')
+		self.moduleframe.moduletree.grid(row=0,column=0,sticky='nsew')
+		self.moduleframe.scrollbarx.grid(row=1,column=0,sticky='nsew')
+		self.moduleframe.scrollbary.grid(row=0,column=1,sticky='nsew')
 		
 		# Set "weights" (relatve amount of stretchability when resizing window) for each row and column
-		self.master.moduleframe.rowconfigure(0,weight=1)
-		self.master.moduleframe.columnconfigure(0,weight=1)
-		self.master.moduleframe.rowconfigure(1,weight=0)
-		self.master.moduleframe.columnconfigure(1,weight=0)
+		self.moduleframe.rowconfigure(0,weight=1)
+		self.moduleframe.columnconfigure(0,weight=1)
+		self.moduleframe.rowconfigure(1,weight=0)
+		self.moduleframe.columnconfigure(1,weight=0)
 		
 		# Remove focus from moduletree widget when mouse not hovering
 		#~ self.master.moduleframe.moduletree.bind('<Leave>',self.moduletree_nofocus)
@@ -182,40 +182,39 @@ class ToolboxHome(Frame):
 		self.scan_modules_directory()
 		
 		# Bind "module select" event to required action
-		self.master.moduleframe.moduletree.bind('<<TreeviewSelect>>',self.module_window_click)
+		self.moduleframe.moduletree.bind('<<TreeviewSelect>>',self.module_window_click)
 		
 		# Just adding a random line to the tree for testing
 		#self.master.moduleframe.moduletree.insert('','end',"test row",text="Blah blah",values=("Option 1","Option 2"))
 				
 		# Create canvas object to draw images in
-		self.master.imcanvas = Canvas(self.master,bd=0,width=256, height=256)
-		self.reset_small_canvas()
+		self.imcanvas = MIPPYCanvas(self.master,bd=0,width=256, height=256,drawing_enabled=False)
 		
 		# Bind methods for window and level to canvas (right mouse click)
-		self.master.imcanvas.bind('<Button-3>',self.canvas_right_click)
-		self.master.imcanvas.bind('<B3-Motion>',self.canvas_right_drag)
-		self.master.imcanvas.bind('<Double-Button-3>',self.canvas_right_doubleclick)
-		self.master.imcanvas.bind('<ButtonRelease-3>',self.canvas_right_click_release)
+		#~ self.master.imcanvas.bind('<Button-3>',self.canvas_right_click)
+		#~ self.master.imcanvas.bind('<B3-Motion>',self.canvas_right_drag)
+		#~ self.master.imcanvas.bind('<Double-Button-3>',self.canvas_right_doubleclick)
+		#~ self.master.imcanvas.bind('<ButtonRelease-3>',self.canvas_right_click_release)
 		
 		
 		# Create button to control image scrolling
-		self.master.scrollbutton = Button(self.master, text="SLICE + / -")
-		self.master.scrollbutton.bind('<Button-1>',self.slice_scroll_button_click)
-		self.master.scrollbutton.bind('<B1-Motion>',self.slice_scroll_button_drag)
+		self.scrollbutton = Button(self.master, text="SLICE + / -")
+		self.scrollbutton.bind('<Button-1>',self.slice_scroll_button_click)
+		self.scrollbutton.bind('<B1-Motion>',self.slice_scroll_button_drag)
 		
 		# Create buttons:
 		# "Load module"
-		self.master.loadmodulebutton = Button(self.master,text="Load module",command=lambda:self.load_selected_module())
+		self.loadmodulebutton = Button(self.master,text="Load module",command=lambda:self.load_selected_module())
 		
 		# Add progressbar
 		self.master.progressbar = Progressbar(self.master, mode='determinate')
 		
 		# Use "grid" to position objects within "master"
-		self.master.dirframe.grid(row=0,column=0,columnspan=2,rowspan=1,sticky='nsew')
-		self.master.imcanvas.grid(row=1,column=0,sticky='nsew')
-		self.master.moduleframe.grid(row=1,column=1,sticky='nsew')
-		self.master.loadmodulebutton.grid(row=2,column=1,sticky='nsew')
-		self.master.scrollbutton.grid(row=2,column=0,sticky='nsew')
+		self.dirframe.grid(row=0,column=0,columnspan=2,rowspan=1,sticky='nsew')
+		self.imcanvas.grid(row=1,column=0,sticky='nsew')
+		self.moduleframe.grid(row=1,column=1,sticky='nsew')
+		self.loadmodulebutton.grid(row=2,column=1,sticky='nsew')
+		self.scrollbutton.grid(row=2,column=0,sticky='nsew')
 		self.master.progressbar.grid(row=3,column=0,rowspan=1,columnspan=2,sticky='nsew')
 		
 		# Set row and column weights to handle resizing
@@ -228,124 +227,122 @@ class ToolboxHome(Frame):
 		
 		master.focus()
 	
-	def reset_small_canvas(self):
-		self.master.imcanvas.delete('all')
-		self.master.imcanvas.create_rectangle((0,0,256,256),fill='black')
-		self.master.preview_slices = []
-		self.master.active_slice = None
-		return
+	#~ def reset_small_canvas(self):
+		#~ self.master.imcanvas.delete('all')
+		#~ self.master.imcanvas.create_rectangle((0,0,256,256),fill='black')
+		#~ self.master.preview_slices = []
+		#~ self.master.active_slice = None
+		#~ return
 		
 	def slice_scroll_button_click(self,event):
-		self.master.click_x = event.x
-		self.master.click_y = event.y
+		self.click_x = event.x
+		self.click_y = event.y
 		#~ print "CLICK"
 		return
 		
 	def slice_scroll_button_drag(self,event):
 		#~ print "MOVE"
-		if self.master.preview_slices==[]:
+		if self.imcanvas.images==[]:
 			# If no active display slices, just skip this whole function
 			return
-		xmove = event.x-self.master.click_x
-		ymove = event.y-self.master.click_y
+		xmove = event.x-self.click_x
+		ymove = event.y-self.click_y
 		#~ print xmove
 		#~ print ymove
 		
 		# Want to move 1 slice every time the mouse is moved a number of pixels up or down
 		# Higher sensitivity number = less sensitive!
-		sensitivity=5
+		sensitivity=7
 		if abs(ymove)>sensitivity:
-			if ymove<0 and not self.master.active_slice+1==len(self.master.preview_slices):
-				self.master.active_slice+=1
-				self.refresh_preview_image()
-			elif ymove>0 and not self.master.active_slice==0:
-				self.master.active_slice-=1
-				self.refresh_preview_image()
-			self.master.click_x = event.x
-			self.master.click_y = event.y
+			if ymove<0 and not self.imcanvas.active==len(self.imcanvas.images):
+				self.imcanvas.show_image(self.imcanvas.active+1)
+			elif ymove>0 and not self.imcanvas.active==1:
+				self.imcanvas.show_image(self.imcanvas.active-1)
+			self.click_x = event.x
+			self.click_y = event.y
 		return
 		
-	def canvas_right_doubleclick(self,event):
-		if self.master.preview_slices == []:
-			return
+	#~ def canvas_right_doubleclick(self,event):
+		#~ if self.master.preview_slices == []:
+			#~ return
 		
-		self.master.temp_window = self.master.default_window
-		self.master.temp_level = self.master.default_level
-		self.master.window = self.master.default_window
-		self.master.level = self.master.default_level
+		#~ self.master.temp_window = self.master.default_window
+		#~ self.master.temp_level = self.master.default_level
+		#~ self.master.window = self.master.default_window
+		#~ self.master.level = self.master.default_level
 		
-		for image in self.master.preview_slices:
-			image.wl_and_display(window = self.master.default_window, level = self.master.default_level)
+		#~ for image in self.master.preview_slices:
+			#~ image.wl_and_display(window = self.master.default_window, level = self.master.default_level)
 		
-		self.refresh_preview_image()
+		#~ self.refresh_preview_image()
 		
-		return
+		#~ return
 		
-	def canvas_right_click(self,event):
-		if self.master.preview_slices==[]:
-			# If no active display slices, just skip this whole function
-			return
-		self.master.click_x = event.x
-		self.master.click_y = event.y
-		return
+	#~ def canvas_right_click(self,event):
+		#~ if self.master.preview_slices==[]:
+			#~ # If no active display slices, just skip this whole function
+			#~ return
+		#~ self.master.click_x = event.x
+		#~ self.master.click_y = event.y
+		#~ return
 		
-	def canvas_right_drag(self,event):
-		xmove = event.x-self.master.click_x
-		ymove = event.y-self.master.click_y
-		# Windowing is applied to the series as a whole...
-		# Sensitivity needs to vary with the float pixel scale.  Map default window
-		# (i.e. full range of image) to "sensitivity" px motion => 1px up/down adjusts level by
-		# "default_window/sensitivity".  1px left/right adjusts window by
-		# "default_window/sensitivity"
-		window_sensitivity = 200
-		level_sensitivity = 200
-		min_window = self.master.fullrange/255
-		i = self.master.active_slice
-		self.master.temp_window = self.master.window+xmove*(self.master.fullrange/window_sensitivity)
-		self.master.temp_level = self.master.level-ymove*(self.master.fullrange/level_sensitivity)
-		if self.master.temp_window<min_window:
-			self.master.temp_window=min_window
-		if self.master.temp_level<self.master.global_rangemin+min_window/2:
-			self.master.temp_level=self.master.global_rangemin+min_window/2
-		self.master.preview_slices[i].wl_and_display(window=self.master.temp_window,level=self.master.temp_level)
-		self.refresh_preview_image()
-		return
+	#~ def canvas_right_drag(self,event):
+		#~ xmove = event.x-self.master.click_x
+		#~ ymove = event.y-self.master.click_y
+		#~ # Windowing is applied to the series as a whole...
+		#~ # Sensitivity needs to vary with the float pixel scale.  Map default window
+		#~ # (i.e. full range of image) to "sensitivity" px motion => 1px up/down adjusts level by
+		#~ # "default_window/sensitivity".  1px left/right adjusts window by
+		#~ # "default_window/sensitivity"
+		#~ window_sensitivity = 200
+		#~ level_sensitivity = 200
+		#~ min_window = self.master.fullrange/255
+		#~ i = self.master.active_slice
+		#~ self.master.temp_window = self.master.window+xmove*(self.master.fullrange/window_sensitivity)
+		#~ self.master.temp_level = self.master.level-ymove*(self.master.fullrange/level_sensitivity)
+		#~ if self.master.temp_window<min_window:
+			#~ self.master.temp_window=min_window
+		#~ if self.master.temp_level<self.master.global_rangemin+min_window/2:
+			#~ self.master.temp_level=self.master.global_rangemin+min_window/2
+		#~ self.master.preview_slices[i].wl_and_display(window=self.master.temp_window,level=self.master.temp_level)
+		#~ self.refresh_preview_image()
+		#~ return
 		
-	def canvas_right_click_release(self,event):
-		print "RIGHT MOUSE RELEASED!"
-		if abs(self.master.click_x-event.x)<1 and abs(self.master.click_y-event.y)<1:
-			return
-		self.master.window = self.master.temp_window
-		self.master.level = self.master.temp_level
+	#~ def canvas_right_click_release(self,event):
+		#~ print "RIGHT MOUSE RELEASED!"
+		#~ if abs(self.master.click_x-event.x)<1 and abs(self.master.click_y-event.y)<1:
+			#~ return
+		#~ self.master.window = self.master.temp_window
+		#~ self.master.level = self.master.temp_level
 		#~ i=0
-		for image in self.master.preview_slices:
-			#~ self.progress(100.*i/len(self.master.preview_slices))
-			image.wl_and_display(window=self.master.window,level=self.master.level)
+		#~ for image in self.master.preview_slices:
+			#~ self.progress(100.*i/len(self.imcanvas.images))
+			#~ image.wl_and_display(window=self.master.window,level=self.master.level)
 			#~ i+=1
-		self.refresh_preview_image()
+		#~ self.refresh_preview_image()
 		#~ self.progress(0.)
-		return
+		#~ return
 		
 	
 	def asktoexit(self):
 		if tkMessageBox.askokcancel("Quit?", "Are you sure you want to exit?"):
-			#self.master.destroy()
-			sys.exit()
+			self.master.destroy()
+			#~ sys.exit()
 		return
 		
 	def dir_window_selection(self,event):
 		print "Selection made"
-		selection = self.master.dirframe.dicomtree.selection()
+		selection = self.dirframe.dicomtree.selection()
 		if not len(selection)==1:
 			self.reset_small_canvas()
 		else:
-			parent_item = self.master.dirframe.dicomtree.parent(selection[0])
+			parent_item = self.dirframe.dicomtree.parent(selection[0])
 			if parent_item=='':
 				# Whole study, so just reset the canvas
 				self.reset_small_canvas()
-			elif self.master.dirframe.dicomtree.parent(parent_item)=='':
+			elif self.dirframe.dicomtree.parent(parent_item)=='':
 				# Whole series, load all slices
-				self.active_uids = self.master.dirframe.dicomtree.get_children(selection[0])
+				self.active_uids = self.dirframe.dicomtree.get_children(selection[0])
 				self.load_preview_images(self.active_uids)
 			else:
 				# Single image, load single slice
@@ -361,68 +358,70 @@ class ToolboxHome(Frame):
 		"""
 		Requires an array of unique instance UID's to search for in self.tag_list
 		"""
-		self.reset_small_canvas()
+		#~ self.reset_small_canvas()
 		n = 0
+		preview_images = []
 		for tag in self.sorted_list:
 			if tag['instanceuid'] in uid_array:
-				self.progress(50.*n/len(uid_array))
+				self.progress(10.*n/len(uid_array))
 				if not tag['enhanced']:
 					print tag['path']
 					print type(tag['path'])
-					self.master.preview_slices.append(MIPPY_8bitviewer(tag['path']))
+					preview_images.append(tag['path'])
 				else:
 					ds = dicom.read_file(tag['path'])
-					self.master.preview_slices.append(MIPPY_8bitviewer(get_frame_ds(ds,tag['instance'])))
+					preview_images.append(get_frame_ds(ds,tag['instance']))
 				n+=1
+		self.imcanvas.load_images(preview_images)
 		
 		# Set default windowing
-		self.master.global_min,self.master.global_max = get_global_min_and_max(self.master.preview_slices)
-		self.master.global_rangemin = self.master.preview_slices[0].rangemin
-		self.master.global_rangemax = self.master.preview_slices[0].rangemax
-		self.master.fullrange = self.master.global_rangemax-self.master.global_rangemin
-		self.master.default_window = self.master.global_max-self.master.global_min
-		self.master.default_level = self.master.global_min + self.master.default_window/2
-		self.master.level = self.master.default_level
-		self.master.window = self.master.default_window
+		#~ self.master.global_min,self.master.global_max = get_global_min_and_max(self.master.preview_slices)
+		#~ self.master.global_rangemin = self.master.preview_slices[0].rangemin
+		#~ self.master.global_rangemax = self.master.preview_slices[0].rangemax
+		#~ self.master.fullrange = self.master.global_rangemax-self.master.global_rangemin
+		#~ self.master.default_window = self.master.global_max-self.master.global_min
+		#~ self.master.default_level = self.master.global_min + self.master.default_window/2
+		#~ self.master.level = self.master.default_level
+		#~ self.master.window = self.master.default_window
 		#~ self.reset_window_level()
 		
-		for i in range(len(self.master.preview_slices)):
-			self.progress(50.*i/len(self.master.preview_slices)+50)
-			self.master.preview_slices[i].wl_and_display(window=self.master.window,level=self.master.level)
+		#~ for i in range(len(self.master.preview_slices)):
+			#~ self.progress(50.*i/len(self.master.preview_slices)+50)
+			#~ self.master.preview_slices[i].wl_and_display(window=self.master.window,level=self.master.level)
 			#~ self.reset_window_level()
-			# This resize command is just hard-wired in for now.  Will probably change if
-			# I build in the ability to zoom.  That may not happen...
-			self.master.preview_slices[i].resize(256,256)
+			#~ # This resize command is just hard-wired in for now.  Will probably change if
+			#~ # I build in the ability to zoom.  That may not happen...
+			#~ self.master.preview_slices[i].resize(256,256)
 		
-		self.master.active_slice = 0
-		self.refresh_preview_image()
-		self.progress(0.)
+		#~ self.master.active_slice = 0
+		#~ self.refresh_preview_image()
+		#~ self.progress(0.)
 		return
 		
-	def reset_window_level(self):
-		for i in range(len(self.master.preview_slices)):
-			self.progress(100.*i/len(self.master.preview_slices))
-			self.master.preview_slices[i].wl_and_display(window=self.master.default_window,level=self.master.default_level)
+	#~ def reset_window_level(self):
+		#~ for i in range(len(self.master.preview_slices)):
+			#~ self.progress(100.*i/len(self.master.preview_slices))
+			#~ self.master.preview_slices[i].wl_and_display(window=self.master.default_window,level=self.master.default_level)
 		
-		self.master.level = self.master.default_level
-		self.master.window = self.master.default_window
-		self.progress(0.)
-		return
+		#~ self.master.level = self.master.default_level
+		#~ self.master.window = self.master.default_window
+		#~ self.progress(0.)
+		#~ return
 		
-	def refresh_preview_image(self):
-		# self.master.preview_slices = []
-		# self.master.active_slice = None
-		i = self.master.active_slice
-		self.master.imcanvas.delete('all')
-		self.master.imcanvas.create_image(0,0,anchor='nw',image=self.master.preview_slices[i].photoimage)
-		return
+	#~ def refresh_preview_image(self):
+		#~ # self.master.preview_slices = []
+		#~ # self.master.active_slice = None
+		#~ i = self.master.active_slice
+		#~ self.master.imcanvas.delete('all')
+		#~ self.master.imcanvas.create_image(0,0,anchor='nw',image=self.master.preview_slices[i].photoimage)
+		#~ return
 		
 	def module_window_click(self,event):
 		print "You clicked on the module window."
 		
 	def load_image_directory(self):
 		print "Load image directory"
-		self.dicomdir = tkFileDialog.askdirectory(parent=self.master,initialdir=r"M:",title="Select image directory")
+		self.dicomdir = tkFileDialog.askdirectory(parent=self,initialdir=r"M:",title="Select image directory")
 		if not self.dicomdir:
 			return
 		ask_recursive = tkMessageBox.askyesno("Search recursively?","Do you want to include all subdirectories?")
@@ -447,7 +446,7 @@ class ToolboxHome(Frame):
 			tags = collect_dicomdir_info(p)
 			if tags:
 				self.tag_list.append(tags)
-		self.master.progressbar['value']=0.
+		self.progress(0.)
 		return
 		
 	def build_dicom_tree(self):
@@ -456,28 +455,28 @@ class ToolboxHome(Frame):
 		self.sorted_list = sorted(self.tag_list)
 		
 		#~ i=0
-		print self.master.dirframe.dicomtree.get_children()
+		print self.dirframe.dicomtree.get_children()
 		try:
-			for item in self.master.dirframe.dicomtree.get_children():
-				self.master.dirframe.dicomtree.delete(item)
+			for item in self.dirframe.dicomtree.get_children():
+				self.dirframe.dicomtree.delete(item)
 			print "Existing tree cleared"
 		except Exception:
 			print "New tree created"
 			pass
 		for scan in self.sorted_list:
 			print "Adding to tree: "+scan['path']
-			if not self.master.dirframe.dicomtree.exists(scan['studyuid']):
+			if not self.dirframe.dicomtree.exists(scan['studyuid']):
 				#~ i+=1
-				self.master.dirframe.dicomtree.insert('','end',scan['studyuid'],text='------',
+				self.dirframe.dicomtree.insert('','end',scan['studyuid'],text='------',
 												values=(scan['date'],scan['name'],scan['studydesc']))
-			if not self.master.dirframe.dicomtree.exists(scan['seriesuid']):
-				self.master.dirframe.dicomtree.insert(scan['studyuid'],'end',scan['seriesuid'],
+			if not self.dirframe.dicomtree.exists(scan['seriesuid']):
+				self.dirframe.dicomtree.insert(scan['studyuid'],'end',scan['seriesuid'],
 											text='Series '+str(scan['series']).zfill(3),
 											values=('','',scan['seriesdesc']))
-			self.master.dirframe.dicomtree.insert(scan['seriesuid'],'end',scan['instanceuid'],
+			self.dirframe.dicomtree.insert(scan['seriesuid'],'end',scan['instanceuid'],
 											text=str(scan['instance']).zfill(3),
 											values=('','',''))
-		self.master.dirframe.dicomtree.update()
+		self.dirframe.dicomtree.update()
 		#~ self.master.progress = 100
 		return
 		
@@ -496,14 +495,14 @@ class ToolboxHome(Frame):
 				self.module_list.append(module_info)
 		self.module_list = sorted(self.module_list)
 		try:
-			for item in self.master.moduleframe.moduletree.get_children():
-				self.master.moduleframe.moduletree.delete(item)
+			for item in self.moduleframe.moduletree.get_children():
+				self.moduleframe.moduletree.delete(item)
 			print "Existing module tree cleared"
 		except Exception:
 			print "New module tree created"
 			pass
 		for module in self.module_list:
-			self.master.moduleframe.moduletree.insert('','end',module_info['dirname'],
+			self.moduleframe.moduletree.insert('','end',module_info['dirname'],
 				text=module_info['name'],values=(module_info['description'],module_info['author']))
 		
 		#~ self.master.progress = 50.
@@ -534,7 +533,7 @@ class ToolboxHome(Frame):
 	def load_selected_module(self):
 		print "DO NOTHING!"
 		try:
-			moduledir = self.master.moduleframe.moduletree.selection()[0]
+			moduledir = self.moduleframe.moduletree.selection()[0]
 			active_module = importlib.import_module('modules.'+moduledir+'.module_main')
 			preload_dicom = active_module.preload_dicom()
 			if preload_dicom:
