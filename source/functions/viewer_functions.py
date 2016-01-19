@@ -168,7 +168,7 @@ class ROI():
 
 class MIPPYCanvas(Canvas):
 	def __init__(self,master,width=256,height=256,bd=0,drawing_enabled=False):
-		Canvas.__init__(self,master,width=width,height=height,bd=bd)
+		Canvas.__init__(self,master,width=width,height=height,bd=bd,bg='black')
 		self.zoom_factor = 1
 		self.roi_list = []
 		self.roi_mode = 'freehand'
@@ -281,6 +281,9 @@ class MIPPYCanvas(Canvas):
 			elif self.roi_mode=='freehand':
 				self.create_line((self.tempx,self.tempy,event.x,event.y),fill='yellow',width=1,tags='roi')
 				self.tempcoords.append((event.x,event.y))
+			elif self.roi_mode=='line':
+				self.delete('roi')
+				self.create_line((self.xmouse,self.ymouse,event.x,event.y),fill='yellow',width=1,tags='roi')
 			
 		else:
 			self.move('roi',xmove,ymove)
@@ -312,6 +315,8 @@ class MIPPYCanvas(Canvas):
 					#~ if i==len(coords)-1: j=0
 					#~ else: j=i+1
 					#~ self.create_line((coords[i][0],coords[i][1],coords[j][0],coords[j][1]),fill='red',width=1,tag='roi')
+			elif self.roi_mode=='line':
+				self.add_roi([(self.xmouse,self.ymouse),(event.x,event.y)])
 			else:
 				self.create_line((self.tempx,self.tempy,self.xmouse,self.ymouse),fill='yellow',width=1,tags='roi')
 				if len(self.tempcoords)>1:

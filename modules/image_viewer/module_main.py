@@ -1,6 +1,8 @@
 from Tkinter import *
 from ttk import *
 from source.functions.viewer_functions import *
+import os
+from PIL import Image,ImageTk
 
 def preload_dicom():
 	"""
@@ -20,14 +22,27 @@ def preload_dicom():
 def execute(master_window,dicomdir,images):
 	print "Module loaded..."
 	print "Received "+str(len(images))+" image datasets."
+	print os.getcwd()
+	#~ icondir = os.path.join(os.getcwd(),'source','images')
+	
+	
 	
 	# Create all GUI elements
 	window = Toplevel(master = master_window)
-	window.imcanvas = Canvas(window,bd=0,width=512,height=512)
-	window.roi_square_button = Button(window,text="Draw square ROI",command=lambda:draw_square_roi)
-	window.roi_ellipse_button = Button(window,text="Draw elliptical ROI",command=lambda:draw_ellipse_roi)
-	window.roi_polygon_button = Button(window,text="Draw polygon ROI", command=lambda:draw_polygon_roi)
-	window.roi_line_button = Button(window,text="Draw line",command=lambda:draw_line_roi)
+	# Create canvas
+	window.imcanvas = MIPPYCanvas(window,bd=0,width=512,height=512,drawing_enabled=False)
+	# Open icons for button
+	window.roi_sq_im = ImageTk.PhotoImage(file='source/images/square_roi.png')
+	window.roi_el_im = ImageTk.PhotoImage(file='source/images/ellipse_roi.png')
+	window.roi_fr_im = ImageTk.PhotoImage(file='source/images/freehand_roi.png')
+	window.roi_li_im = ImageTk.PhotoImage(file='source/images/line_roi.png')
+	
+	window.toolbar=Frame(window)
+	
+	window.roi_square_button = Button(window.toolbar,text="Draw square ROI",command=lambda:draw_rectangle_roi(window),image=window.roi_sq_im)
+	window.roi_ellipse_button = Button(window.toolbar,text="Draw elliptical ROI",command=lambda:draw_ellipse_roi(window),image=window.roi_el_im)
+	window.roi_polygon_button = Button(window.toolbar,text="Draw freehand ROI", command=lambda:draw_freehand_roi(window),image=window.roi_fr_im)
+	window.roi_line_button = Button(window.toolbar,text="Draw line",command=lambda:draw_line_roi(window),image=window.roi_li_im)
 	window.scrollbutton = Button(window, text="SLICE + / -")
 	window.statsbutton = Button(window,text="Get ROI statistics")
 	window.statstext = StringVar()
@@ -37,27 +52,18 @@ def execute(master_window,dicomdir,images):
 	
 	# Pack GUI using "grid" layout
 	window.imcanvas.grid(row=0,column=0,columnspan=1,rowspan=5,sticky='nsew')
-	window.roi_square_button.grid(row=0,column=1,sticky='ew')
-	window.roi_ellipse_button.grid(row=1,column=1,sticky='ew')
-	window.roi_polygon_button.grid(row=2,column=1,sticky='ew')
-	window.roi_line_button.grid(row=3,column=1,sticky='ew')
+	window.roi_square_button.grid(row=0,column=0)
+	window.roi_ellipse_button.grid(row=1,column=0)
+	window.roi_polygon_button.grid(row=2,column=0)
+	window.roi_line_button.grid(row=3,column=0)
+	window.toolbar.grid(row=0,column=1)
 	window.scrollbutton.grid(row=7,column=0,sticky='nsew')
 	window.statsbutton.grid(row=4,column=1,sticky='ew')
 	window.statswindow.grid(row=5,column=1,columnspan=1,rowspan=3,sticky='nsew')
 	window.zoominbutton.grid(row=5,column=0,sticky='nsew')
 	window.zoomoutbutton.grid(row=6,column=0,sticky='nsew')
 	
-	window.active_images = []
-	for image in images:
-		viewer_object = MIPPY_8bitviewer(image)
-		window.active_images.append(viewer_object)
-	
-	for image in window.active_images:
-		image.resize(512,512)
-	
-	# Test - just draw slice 1!
-	window.imcanvas.create_image(0,0,anchor='nw',image=window.active_images[0].photoimage)
-	
+	window.imcanvas.load_images(images)
 	
 	return
 	
@@ -65,17 +71,21 @@ def close_window(active_frame):
 	active_frame.destroy()
 	return
 
-def draw_square_roi(window):
-	pass
+def draw_rectangle_roi(window):
+	window.imcanvas.drawing_enabled=True
+	window.imcanvas.roi_mode='rectangle'
 
 def draw_ellipse_roi(window):
-	pass
+	window.imcanvas.drawing_enabled=True
+	window.imcanvas.roi_mode='ellipse'
 	
-def draw_polygon_roi(window):
-	pass
+def draw_freehand_roi(window):
+	window.imcanvas.drawing_enabled=True
+	window.imcanvas.roi_mode='freehand'
 
 def draw_line_roi(window):
-	pass
+	window.imcanvas.drawing_enabled=True
+	window.imcanvas.roi_mode='line'
 
 def zoom_in(window):
 	pass
