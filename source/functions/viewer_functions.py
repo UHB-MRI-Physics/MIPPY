@@ -163,6 +163,15 @@ class ROI():
 			#~ print "INSIDE: ",wn
 			return True
 	
+	def update(self,xmove,ymove):
+		for i in range(len(self.coords)):
+			self.coords[i]=(self.coords[i][0]+xmove,self.coords[i][1]+ymove)
+		#~ self.generate_mask()
+		return
+		
+	#~ def generate_mask(self):
+		#~ pass
+	
 
 
 
@@ -191,6 +200,7 @@ class MIPPYCanvas(Canvas):
 		self.drawing_enabled = drawing_enabled
 		self.width=width
 		self.height=height
+		self.zoom_factor=None
 	
 	def show_image(self,num=None):
 		"""
@@ -203,6 +213,22 @@ class MIPPYCanvas(Canvas):
 			self.active = num
 		self.delete('image')
 		self.create_image((0,0),image=self.images[self.active-1].photoimage,anchor='nw')
+	
+	def get_roi_pixels(self):
+		"""
+		Returns a LIST of pixel values from the ROI, with no structure
+		"""
+		px = []
+		im = self.get_active_image()
+		for y in range(im.rows):
+			for x in range(im.columns):
+				for roi in self.roi_list:
+					if roi.contains((x*self.zoom_factor,y*self.zoom_factor)):
+						px.append(im.px_float[y][x])
+		print "GOT PIXELS"
+		return px
+
+
 		
 	def load_images(self,image_list):
 		self.images = []
@@ -223,12 +249,17 @@ class MIPPYCanvas(Canvas):
 		self.default_level = self.global_min + self.default_window/2
 		self.level = self.default_level
 		self.window = self.default_window
+		
 		for i in range(len(self.images)):
 			self.progress(45.*i/len(self.images)+55)
 			self.images[i].wl_and_display(window=self.window,level=self.level)
 		self.show_image(1)
+		self.zoom_factor = np.max([self.width,self.height])/np.max([self.get_active_image().rows,self.get_active_image().columns])
 		self.progress(0.)
 		return
+	
+	def get_active_image(self):
+		return self.images[self.active]
 	
 	def reset_window_level(self):
 		for i in range(len(self.master.preview_slices)):
@@ -329,8 +360,7 @@ class MIPPYCanvas(Canvas):
 			total_ymove = event.y-self.ymouse
 			if len(self.roi_list)>0:
 				for roi in self.roi_list:
-					for i in range(len(roi.coords)):
-						roi.coords[i]=(roi.coords[i][0]+total_xmove,roi.coords[i][1]+total_ymove)
+					roi.update(total_xmove,total_ymove)
 		self.tempcoords = []
 		self.tempx = None
 		self.tempy = None
@@ -398,6 +428,22 @@ class MIPPYCanvas(Canvas):
 			self.master.progressbar.update()
 		except:
 			pass
+	
+	def draw_rectangle_roi(self):
+		self.drawing_enabled=True
+		self.roi_mode='rectangle'
+
+	def draw_ellipse_roi(self):
+		self.drawing_enabled=True
+		self.roi_mode='ellipse'
+		
+	def draw_freehand_roi(self):
+		self.drawing_enabled=True
+		self.roi_mode='freehand'
+
+	def draw_line_roi(self):
+		self.drawing_enabled=True
+		self.roi_mode='line'
 
 class EasyViewer(Frame):
 	def __init__(self,master,im_array):

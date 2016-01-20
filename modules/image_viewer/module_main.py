@@ -1,5 +1,6 @@
 from Tkinter import *
 from ttk import *
+import tkMessageBox
 from source.functions.viewer_functions import *
 import os
 from PIL import Image,ImageTk
@@ -39,16 +40,16 @@ def execute(master_window,dicomdir,images):
 	
 	window.toolbar=Frame(window)
 	
-	window.roi_square_button = Button(window.toolbar,text="Draw square ROI",command=lambda:draw_rectangle_roi(window),image=window.roi_sq_im)
-	window.roi_ellipse_button = Button(window.toolbar,text="Draw elliptical ROI",command=lambda:draw_ellipse_roi(window),image=window.roi_el_im)
-	window.roi_polygon_button = Button(window.toolbar,text="Draw freehand ROI", command=lambda:draw_freehand_roi(window),image=window.roi_fr_im)
-	window.roi_line_button = Button(window.toolbar,text="Draw line",command=lambda:draw_line_roi(window),image=window.roi_li_im)
+	window.roi_square_button = Button(window.toolbar,text="Draw square ROI",command=lambda:window.imcanvas.draw_rectangle_roi(),image=window.roi_sq_im)
+	window.roi_ellipse_button = Button(window.toolbar,text="Draw elliptical ROI",command=lambda:window.imcanvas.draw_ellipse_roi(),image=window.roi_el_im)
+	window.roi_polygon_button = Button(window.toolbar,text="Draw freehand ROI", command=lambda:window.imcanvas.draw_freehand_roi(),image=window.roi_fr_im)
+	window.roi_line_button = Button(window.toolbar,text="Draw line",command=lambda:window.imcanvas.draw_line_roi(),image=window.roi_li_im)
 	window.scrollbutton = Button(window, text="SLICE + / -")
-	window.statsbutton = Button(window,text="Get ROI statistics")
+	window.statsbutton = Button(window,text="Get ROI statistics",command=lambda:get_roi_statistics(window))
 	window.statstext = StringVar()
 	window.statswindow = Label(window,textvariable=window.statstext)
-	window.zoominbutton = Button(window,text="ZOOM +",command=lambda:zoom_in)
-	window.zoomoutbutton = Button(window,text="ZOOM -",command=lambda:zoom_out)
+	window.zoominbutton = Button(window,text="ZOOM +",command=lambda:zoom_in(window))
+	window.zoomoutbutton = Button(window,text="ZOOM -",command=lambda:zoom_out(window))
 	
 	# Pack GUI using "grid" layout
 	window.imcanvas.grid(row=0,column=0,columnspan=1,rowspan=5,sticky='nsew')
@@ -71,21 +72,13 @@ def close_window(active_frame):
 	active_frame.destroy()
 	return
 
-def draw_rectangle_roi(window):
-	window.imcanvas.drawing_enabled=True
-	window.imcanvas.roi_mode='rectangle'
-
-def draw_ellipse_roi(window):
-	window.imcanvas.drawing_enabled=True
-	window.imcanvas.roi_mode='ellipse'
-	
-def draw_freehand_roi(window):
-	window.imcanvas.drawing_enabled=True
-	window.imcanvas.roi_mode='freehand'
-
-def draw_line_roi(window):
-	window.imcanvas.drawing_enabled=True
-	window.imcanvas.roi_mode='line'
+def get_roi_statistics(window):
+	canvas = window.imcanvas
+	px = canvas.get_roi_pixels()
+	mean = np.mean(px)
+	std = np.std(px)
+	area = len(px)*canvas.get_active_image().xscale*canvas.get_active_image().yscale
+	tkMessageBox.showinfo('ROI STATS','Mean: %s\nStandard Deviation %s\nArea: %s' %(np.round(mean,2),np.round(std,2),np.round(area,2)))
 
 def zoom_in(window):
 	pass
