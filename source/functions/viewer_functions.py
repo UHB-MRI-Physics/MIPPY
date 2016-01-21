@@ -3,6 +3,7 @@ import numpy as np
 from Tkinter import *
 from ttk import *
 from PIL import Image,ImageTk
+import platform
 
 ########################################
 ########################################
@@ -185,10 +186,16 @@ class MIPPYCanvas(Canvas):
 		self.bind('<B1-Motion>',self.left_drag)
 		self.bind('<ButtonRelease-1>',self.left_release)
 		self.bind('<Double-Button-1>',self.left_double)
-		self.bind('<Button-3>',self.right_click)
-		self.bind('<B3-Motion>',self.right_drag)
-		self.bind('<ButtonRelease-3>',self.right_release)
-		self.bind('<Double-Button-3>',self.right_double)
+		if not platform.system()=='Darwin':
+			self.bind('<Button-3>',self.right_click)
+			self.bind('<B3-Motion>',self.right_drag)
+			self.bind('<ButtonRelease-3>',self.right_release)
+			self.bind('<Double-Button-3>',self.right_double)
+		else:
+			self.bind('<Button-2>',self.right_click)
+			self.bind('<B2-Motion>',self.right_drag)
+			self.bind('<ButtonRelease-2>',self.right_release)
+			self.bind('<Double-Button-2>',self.right_double)
 		self.drawing_roi = False
 		self.xmouse = None
 		self.ymouse = None
@@ -201,6 +208,7 @@ class MIPPYCanvas(Canvas):
 		self.width=width
 		self.height=height
 		self.zoom_factor=None
+		self.pixel_array=None
 	
 	def show_image(self,num=None):
 		"""
@@ -255,6 +263,9 @@ class MIPPYCanvas(Canvas):
 			self.images[i].wl_and_display(window=self.window,level=self.level)
 		self.show_image(1)
 		self.zoom_factor = np.max([self.width,self.height])/np.max([self.get_active_image().rows,self.get_active_image().columns])
+		
+		#~ self.pixel_array = np.array(a.px_float for a in self.images)
+		
 		self.progress(0.)
 		return
 	
@@ -533,6 +544,8 @@ class MIPPYImage():
 		self.overlay=None
 		self.image = None
 		self.photoimage = None
+		self.rows = np.shape(pixel_array)[0]
+		self.columns = np.shape(pixel_array)[1]
 		self.wl_and_display()
 		return
 	
