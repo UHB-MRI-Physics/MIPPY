@@ -4,6 +4,7 @@ import tkMessageBox
 from source.functions.viewer_functions import *
 import os
 from PIL import Image,ImageTk
+import platform
 
 def preload_dicom():
 	"""
@@ -31,7 +32,11 @@ def execute(master_window,dicomdir,images):
 	# Create all GUI elements
 	window = Toplevel(master = master_window)
 	# Create canvas
-	window.imcanvas = MIPPYCanvas(window,bd=0,width=512,height=512,drawing_enabled=False)
+	if platform.system()=='Linux':
+		canvas_size=320
+	else:
+		canvas_size=512
+	window.imcanvas = MIPPYCanvas(window,bd=0,width=canvas_size,height=canvas_size,drawing_enabled=False)
 	# Open icons for button
 	window.roi_sq_im = ImageTk.PhotoImage(file='source/images/square_roi.png')
 	window.roi_el_im = ImageTk.PhotoImage(file='source/images/ellipse_roi.png')
@@ -44,7 +49,9 @@ def execute(master_window,dicomdir,images):
 	window.roi_ellipse_button = Button(window.toolbar,text="Draw elliptical ROI",command=lambda:window.imcanvas.draw_ellipse_roi(),image=window.roi_el_im)
 	window.roi_polygon_button = Button(window.toolbar,text="Draw freehand ROI", command=lambda:window.imcanvas.draw_freehand_roi(),image=window.roi_fr_im)
 	window.roi_line_button = Button(window.toolbar,text="Draw line",command=lambda:window.imcanvas.draw_line_roi(),image=window.roi_li_im)
-	window.scrollbutton = Button(window, text="SLICE + / -")
+	#~ window.scrollbutton = Button(window, text="SLICE + / -")
+	window.imcanvas.img_scrollbar = Scrollbar(window,orient='horizontal')
+	window.imcanvas.configure_scrollbar()
 	window.statsbutton = Button(window,text="Get ROI statistics",command=lambda:get_roi_statistics(window))
 	window.statstext = StringVar()
 	window.statswindow = Label(window,textvariable=window.statstext)
@@ -58,7 +65,8 @@ def execute(master_window,dicomdir,images):
 	window.roi_polygon_button.grid(row=2,column=0)
 	window.roi_line_button.grid(row=3,column=0)
 	window.toolbar.grid(row=0,column=1)
-	window.scrollbutton.grid(row=7,column=0,sticky='nsew')
+	#~ window.scrollbutton.grid(row=7,column=0,sticky='nsew')
+	window.imcanvas.img_scrollbar.grid(row=7,column=0,sticky='ew')
 	window.statsbutton.grid(row=4,column=1,sticky='ew')
 	window.statswindow.grid(row=5,column=1,columnspan=1,rowspan=3,sticky='nsew')
 	window.zoominbutton.grid(row=5,column=0,sticky='nsew')

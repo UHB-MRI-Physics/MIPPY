@@ -1,7 +1,7 @@
 import dicom
 import numpy as np
 from Tkinter import *
-from ttk import *
+#~ from ttk import *
 from PIL import Image,ImageTk
 import platform
 
@@ -209,6 +209,28 @@ class MIPPYCanvas(Canvas):
 		self.height=height
 		self.zoom_factor=None
 		self.pixel_array=None
+		self.img_scrollbar=None
+	
+	def configure_scrollbar(self):
+		if self.img_scrollbar:
+			self.img_scrollbar.config(command=self.scroll_images)
+		if self.active and not self.images==[]:
+			self.img_scrollbar.set(self.active-1/(len(self.images)-1),self.active/(len(self.images)-1))
+	
+	def scroll_images(self,command,value,mode='unit'):
+		if command=='scroll':
+			self.show_image(self.active+int(value))
+		elif command=='moveto':
+			selected_img = int(np.round((float(value)*float((len(self.images)))),0))+1
+			if not selected_img==self.active:
+				self.show_image(selected_img)
+	
+	def update_scrollbar(self,value):
+		current_img = float(self.active)
+		total_img = float(len(self.images))
+		lo = (self.active-1)/total_img
+		hi = self.active/total_img
+		self.img_scrollbar.set(lo,hi)
 	
 	def show_image(self,num=None):
 		"""
@@ -217,10 +239,12 @@ class MIPPYCanvas(Canvas):
 		"""
 		if len(self.images)==0:
 			return
-		if num:
+		if num and not num<1 and not num>len(self.images):
 			self.active = num
+			self.update_scrollbar((num-1.)/len(self.images))
 		self.delete('image')
 		self.create_image((0,0),image=self.images[self.active-1].photoimage,anchor='nw')
+
 	
 	def get_roi_pixels(self):
 		"""
@@ -261,6 +285,7 @@ class MIPPYCanvas(Canvas):
 		for i in range(len(self.images)):
 			self.progress(45.*i/len(self.images)+55)
 			self.images[i].wl_and_display(window=self.window,level=self.level)
+		self.configure_scrollbar()
 		self.show_image(1)
 		self.zoom_factor = np.max([self.width,self.height])/np.max([self.get_active_image().rows,self.get_active_image().columns])
 		

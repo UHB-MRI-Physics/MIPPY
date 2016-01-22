@@ -198,9 +198,13 @@ class ToolboxHome(Frame):
 		
 		
 		# Create button to control image scrolling
-		self.scrollbutton = Button(self.master, text="SLICE + / -")
-		self.scrollbutton.bind('<Button-1>',self.slice_scroll_button_click)
-		self.scrollbutton.bind('<B1-Motion>',self.slice_scroll_button_drag)
+		#~ self.scrollbutton = Button(self.master, text="SLICE + / -")
+		#~ self.scrollbutton.bind('<Button-1>',self.slice_scroll_button_click)
+		#~ self.scrollbutton.bind('<B1-Motion>',self.slice_scroll_button_drag)
+		
+		# Add a scrollbar to MIPPYCanvas to enable slice scrolling
+		self.imcanvas.img_scrollbar = Scrollbar(self.master,orient='horizontal')
+		self.imcanvas.configure_scrollbar()
 		
 		# Create buttons:
 		# "Load module"
@@ -214,7 +218,8 @@ class ToolboxHome(Frame):
 		self.imcanvas.grid(row=1,column=0,sticky='nsew')
 		self.moduleframe.grid(row=1,column=1,sticky='nsew')
 		self.loadmodulebutton.grid(row=2,column=1,sticky='nsew')
-		self.scrollbutton.grid(row=2,column=0,sticky='nsew')
+		#~ self.scrollbutton.grid(row=2,column=0,sticky='nsew')
+		self.imcanvas.img_scrollbar.grid(row=2,column=0,sticky='ew')
 		self.master.progressbar.grid(row=3,column=0,rowspan=1,columnspan=2,sticky='nsew')
 		
 		# Set row and column weights to handle resizing
