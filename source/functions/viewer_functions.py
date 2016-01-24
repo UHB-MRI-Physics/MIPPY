@@ -154,8 +154,14 @@ class ROI():
 				self.roi_type = "Unknown type"
 		else:
 			self.roi_type = roi_type
+		arr_co=np.array(self.coords)
+		self.bbox=(np.amin(arr_co[:,0]),np.amin(arr_co[:,1]),np.amax(arr_co[:,0]),np.amax(arr_co[:,1]))
 	
 	def contains(self,point):
+		# This bounding box thing is a problem
+		if (not self.bbox[0]<=point[0]<=self.bbox[2]
+			or not self.bbox[1]<=point[1]<=self.bbox[3]):
+			return False
 		wn = wn_PnPoly(point,self.coords)
 		if wn==0:
 			#~ print "OUTSIDE: ",wn
@@ -167,6 +173,7 @@ class ROI():
 	def update(self,xmove,ymove):
 		for i in range(len(self.coords)):
 			self.coords[i]=(self.coords[i][0]+xmove,self.coords[i][1]+ymove)
+		self.bbox=(self.bbox[0]+xmove,self.bbox[1]+ymove,self.bbox[2]+xmove,self.bbox[3]+ymove)
 		#~ self.generate_mask()
 		return
 		
@@ -287,7 +294,10 @@ class MIPPYCanvas(Canvas):
 			self.images[i].wl_and_display(window=self.window,level=self.level)
 		self.configure_scrollbar()
 		self.show_image(1)
-		self.zoom_factor = np.max([self.width,self.height])/np.max([self.get_active_image().rows,self.get_active_image().columns])
+		self.zoom_factor = np.amax([float(self.width)/float(self.get_active_image().columns),float(self.height)/float(self.get_active_image().rows)])
+		print "canvas width,height: %s,%s" %(self.width,self.height)
+		print "image width,height: %s,%s" %(self.get_active_image().columns,self.get_active_image().rows)
+		print "zoom: %s" %(self.zoom_factor)
 		
 		#~ self.pixel_array = np.array(a.px_float for a in self.images)
 		
@@ -295,7 +305,7 @@ class MIPPYCanvas(Canvas):
 		return
 	
 	def get_active_image(self):
-		return self.images[self.active]
+		return self.images[self.active-1]
 	
 	def reset_window_level(self):
 		for i in range(len(self.master.preview_slices)):
