@@ -190,17 +190,6 @@ class ToolboxHome(Frame):
 		# Create canvas object to draw images in
 		self.imcanvas = MIPPYCanvas(self.master,bd=0,width=256, height=256,drawing_enabled=False)
 		
-		# Bind methods for window and level to canvas (right mouse click)
-		#~ self.master.imcanvas.bind('<Button-3>',self.canvas_right_click)
-		#~ self.master.imcanvas.bind('<B3-Motion>',self.canvas_right_drag)
-		#~ self.master.imcanvas.bind('<Double-Button-3>',self.canvas_right_doubleclick)
-		#~ self.master.imcanvas.bind('<ButtonRelease-3>',self.canvas_right_click_release)
-		
-		
-		# Create button to control image scrolling
-		#~ self.scrollbutton = Button(self.master, text="SLICE + / -")
-		#~ self.scrollbutton.bind('<Button-1>',self.slice_scroll_button_click)
-		#~ self.scrollbutton.bind('<B1-Motion>',self.slice_scroll_button_drag)
 		
 		# Add a scrollbar to MIPPYCanvas to enable slice scrolling
 		self.imcanvas.img_scrollbar = Scrollbar(self.master,orient='horizontal')
@@ -230,14 +219,7 @@ class ToolboxHome(Frame):
 		self.master.columnconfigure(0,weight=0)
 		self.master.columnconfigure(1,weight=1)
 		
-		master.focus()
-	
-	#~ def reset_small_canvas(self):
-		#~ self.master.imcanvas.delete('all')
-		#~ self.master.imcanvas.create_rectangle((0,0,256,256),fill='black')
-		#~ self.master.preview_slices = []
-		#~ self.master.active_slice = None
-		#~ return
+		self.focus()
 		
 	def slice_scroll_button_click(self,event):
 		self.click_x = event.x
@@ -245,27 +227,25 @@ class ToolboxHome(Frame):
 		#~ print "CLICK"
 		return
 		
-	def slice_scroll_button_drag(self,event):
+	#~ def slice_scroll_button_drag(self,event):
 		#~ print "MOVE"
-		if self.imcanvas.images==[]:
-			# If no active display slices, just skip this whole function
-			return
-		xmove = event.x-self.click_x
-		ymove = event.y-self.click_y
-		#~ print xmove
-		#~ print ymove
+		#~ if self.imcanvas.images==[]:
+			#~ # If no active display slices, just skip this whole function
+			#~ return
+		#~ xmove = event.x-self.click_x
+		#~ ymove = event.y-self.click_y
 		
-		# Want to move 1 slice every time the mouse is moved a number of pixels up or down
-		# Higher sensitivity number = less sensitive!
-		sensitivity=7
-		if abs(ymove)>sensitivity:
-			if ymove<0 and not self.imcanvas.active==len(self.imcanvas.images):
-				self.imcanvas.show_image(self.imcanvas.active+1)
-			elif ymove>0 and not self.imcanvas.active==1:
-				self.imcanvas.show_image(self.imcanvas.active-1)
-			self.click_x = event.x
-			self.click_y = event.y
-		return
+		#~ # Want to move 1 slice every time the mouse is moved a number of pixels up or down
+		#~ # Higher sensitivity number = less sensitive!
+		#~ sensitivity=7
+		#~ if abs(ymove)>sensitivity:
+			#~ if ymove<0 and not self.imcanvas.active==len(self.imcanvas.images):
+				#~ self.imcanvas.show_image(self.imcanvas.active+1)
+			#~ elif ymove>0 and not self.imcanvas.active==1:
+				#~ self.imcanvas.show_image(self.imcanvas.active-1)
+			#~ self.click_x = event.x
+			#~ self.click_y = event.y
+		#~ return
 		
 	#~ def canvas_right_doubleclick(self,event):
 		#~ if self.master.preview_slices == []:
@@ -336,21 +316,22 @@ class ToolboxHome(Frame):
 		return
 		
 	def dir_window_selection(self,event):
+		### THIS METHOD NEEDS COMPLETELY REWORKING
 		print "Selection made"
 		selection = self.dirframe.dicomtree.selection()
 		if not len(selection)==1:
-			self.reset_small_canvas()
+			#~ self.reset_small_canvas()
 		else:
 			parent_item = self.dirframe.dicomtree.parent(selection[0])
 			if parent_item=='':
 				# Whole study, so just reset the canvas
-				self.reset_small_canvas()
+				#~ self.reset_small_canvas()
 			elif self.dirframe.dicomtree.parent(parent_item)=='':
 				# Whole series, load all slices
 				self.active_uids = self.dirframe.dicomtree.get_children(selection[0])
 				self.load_preview_images(self.active_uids)
 			else:
-				# Single image, load single slice
+				# Single image, load this slice
 				self.active_uids=(selection)
 				self.load_preview_images(self.active_uids)
 		return
@@ -379,28 +360,7 @@ class ToolboxHome(Frame):
 				n+=1
 		self.imcanvas.load_images(preview_images)
 		
-		# Set default windowing
-		#~ self.master.global_min,self.master.global_max = get_global_min_and_max(self.master.preview_slices)
-		#~ self.master.global_rangemin = self.master.preview_slices[0].rangemin
-		#~ self.master.global_rangemax = self.master.preview_slices[0].rangemax
-		#~ self.master.fullrange = self.master.global_rangemax-self.master.global_rangemin
-		#~ self.master.default_window = self.master.global_max-self.master.global_min
-		#~ self.master.default_level = self.master.global_min + self.master.default_window/2
-		#~ self.master.level = self.master.default_level
-		#~ self.master.window = self.master.default_window
-		#~ self.reset_window_level()
-		
-		#~ for i in range(len(self.master.preview_slices)):
-			#~ self.progress(50.*i/len(self.master.preview_slices)+50)
-			#~ self.master.preview_slices[i].wl_and_display(window=self.master.window,level=self.master.level)
-			#~ self.reset_window_level()
-			#~ # This resize command is just hard-wired in for now.  Will probably change if
-			#~ # I build in the ability to zoom.  That may not happen...
-			#~ self.master.preview_slices[i].resize(256,256)
-		
-		#~ self.master.active_slice = 0
-		#~ self.refresh_preview_image()
-		#~ self.progress(0.)
+
 		return
 		
 	#~ def reset_window_level(self):
@@ -507,8 +467,8 @@ class ToolboxHome(Frame):
 			print "New module tree created"
 			pass
 		for module in self.module_list:
-			self.moduleframe.moduletree.insert('','end',module_info['dirname'],
-				text=module_info['name'],values=(module_info['description'],module_info['author']))
+			self.moduleframe.moduletree.insert('','end',module['dirname'],
+				text=module['name'],values=(module['description'],module['author']))
 		
 		#~ self.master.progress = 50.
 		return
@@ -528,11 +488,6 @@ class ToolboxHome(Frame):
 		with open('source/version.info','r') as infofile:
 			info = infofile.read()
 		tkMessageBox.showinfo("MIPPY: Version info",info)
-		return
-			
-	def load_test_module(self):
-		current_module = this_module = importlib.import_module("analysis_modules.test_module_1.module_main")
-		current_module.load_module()
 		return
 		
 	def load_selected_module(self):
