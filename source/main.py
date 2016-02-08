@@ -315,26 +315,55 @@ class ToolboxHome(Frame):
 			#~ sys.exit()
 		return
 		
-	def dir_window_selection(self,event):
-		### THIS METHOD NEEDS COMPLETELY REWORKING
-		print "Selection made"
-		selection = self.dirframe.dicomtree.selection()
-		if not len(selection)==1:
+	#~ def dir_window_selection(self,event):
+		#~ ### THIS METHOD NEEDS COMPLETELY REWORKING
+		#~ print "Selection made"
+		#~ selection = self.dirframe.dicomtree.selection()
+		#~ if not len(selection)==1:
 			#~ self.reset_small_canvas()
-		else:
-			parent_item = self.dirframe.dicomtree.parent(selection[0])
-			if parent_item=='':
-				# Whole study, so just reset the canvas
+		#~ else:
+			#~ parent_item = self.dirframe.dicomtree.parent(selection[0])
+			#~ if parent_item=='':
+				#~ # Whole study, so just reset the canvas
 				#~ self.reset_small_canvas()
+			#~ elif self.dirframe.dicomtree.parent(parent_item)=='':
+				#~ # Whole series, load all slices
+				#~ self.active_uids = self.dirframe.dicomtree.get_children(selection[0])
+				#~ self.load_preview_images(self.active_uids)
+			#~ else:
+				#~ # Single image, load this slice
+				#~ self.active_uids=(selection)
+				#~ self.load_preview_images(self.active_uids)
+		#~ return
+	
+	def dir_window_selection(self,event):
+		# THIS NEEDS IF len==1 to decide how to draw preview images
+		selection = self.dirframe.dicomtree.selection()
+		self.active_uids = []
+		for item in selection:
+			parent_item = self.dirframe.dicomtree.parent(item)
+			if parent_item=='':
+				# Whole study, not sure what to do...
+				self.imcanvas.reset()
+				#~ print "Whole study selected, no action determined yet."
 			elif self.dirframe.dicomtree.parent(parent_item)=='':
-				# Whole series, load all slices
-				self.active_uids = self.dirframe.dicomtree.get_children(selection[0])
-				self.load_preview_images(self.active_uids)
+				# Whole series, add children to list
+				for image_uid in self.dirframe.dicomtree.get_children(item):
+					self.active_uids.append(image_uid)
+				if len(selection)==1:
+					if not item==self.active_series:
+						self.load_preview_images(self.dirframe.dicomtree.get_children(item))
+						self.active_series = item
+					self.imcanvas.show_image(1)
 			else:
-				# Single image, load this slice
-				self.active_uids=(selection)
-				self.load_preview_images(self.active_uids)
-		return
+				# Single slice
+				self.active_uids.append(item)
+				if len(selection)==1:
+					parent = self.dirframe.dicomtree.parent(item)
+					if not parent==self.active_series:
+						self.load_preview_images(self.dirframe.dicomtree.get_children(parent))
+						self.active_series = parent
+					self.imcanvas.show_image(self.dirframe.dicomtree.index(item)+1)
 			
 	def progress(self,percentage):
 		self.master.progressbar['value']=percentage
@@ -392,6 +421,7 @@ class ToolboxHome(Frame):
 		ask_recursive = tkMessageBox.askyesno("Search recursively?","Do you want to include all subdirectories?")
 		#~ self.open_progress_window()
 		self.path_list = []
+		self.active_series = None
 		#~ self.master.progressbar['mode']='indeterminate'
 		#~ self.master.progressbar.start()
 		
@@ -494,7 +524,12 @@ class ToolboxHome(Frame):
 		print "DO NOTHING!"
 		try:
 			moduledir = self.moduleframe.moduletree.selection()[0]
-			active_module = importlib.import_module('modules.'+moduledir+'.module_main')
+			module_name = 'modules.'+moduledir+'.module_main'
+			if not module_name in sys.modules:
+				active_module = importlib.import_module(module_name)
+			else:
+				active_module = importlib.import_module(module_name)
+				reload(active_module)
 			preload_dicom = active_module.preload_dicom()
 			if preload_dicom:
 				self.datasets_to_pass = []

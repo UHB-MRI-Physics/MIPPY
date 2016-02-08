@@ -93,3 +93,5 @@ def zoom_in(window):
 
 def zoom_out(window):
 	pass
+	
+print "Apple"

@@ -10,6 +10,8 @@ class RedirectText(object):
 	def write(self, string):
 		with open(self.logfile,'a') as f:
 			f.write('\n'+string)
+
+
 try:
 	if sys.argv [1]=='debug':
 		debug_mode=True

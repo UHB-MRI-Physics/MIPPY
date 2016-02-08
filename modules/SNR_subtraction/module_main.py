@@ -1,6 +1,7 @@
 from Tkinter import *
 from ttk import *
 from source.functions.viewer_functions import *
+import source.functions.image_processing as imp
 import tkMessageBox
 import os
 from PIL import Image,ImageTk
@@ -35,10 +36,110 @@ def execute(master_window,dicomdir,images):
 								+"Please check your selection and reload the module.")
 		return
 	
+	win = Toplevel(master_window)
+	
+	win.im1 = MIPPYCanvas(win,width=300,height=300,drawing_enabled=True)
+	win.im2 = MIPPYCanvas(win,width=300,height=300,drawing_enabled=True)
+	win.im1.img_scrollbar = Scrollbar(win,orient='horizontal')
+	win.im2.img_scrollbar = Scrollbar(win,orient='horizontal')
+	win.im1.configure_scrollbar()
+	win.im2.configure_scrollbar()
+	win.im1.grid(row=0,column=0,sticky='nsew')
+	win.im2.grid(row=0,column=1,sticky='nsew')
+	win.im1.img_scrollbar.grid(row=1,column=0,sticky='ew')
+	win.im2.img_scrollbar.grid(row=1,column=1,sticky='ew')
+	
+	win.toolbar = Frame(win)
+	win.roi_button = Button(win.toolbar,text="Create/reset ROIs",command=lambda:roi_reset(win))
+	win.subtract_button = Button(win.toolbar,text="View subtraction image",command=lambda:view_subtraction(win))
+	win.calc_button = Button(win.toolbar,text="Calculate SNR",command=lambda:snr_calc(win))
+	
+	win.toolbar.grid(row=0,column=2,sticky='nsew')
+	win.roi_button.grid(row=0,column=0,sticky='ew')
+	win.subtract_button.grid(row=1,column=0,sticky='ew')
+	win.calc_button.grid(row=2,column=0,sticky='ew')
+	
+	win.rowconfigure(0,weight=1)
+	win.rowconfigure(1,weight=0)
+	win.columnconfigure(0,weight=1)
+	win.columnconfigure(1,weight=1)
+	win.columnconfigure(2,weight=0)
+	win.toolbar.rowconfigure(0,weight=0)
+	win.toolbar.rowconfigure(1,weight=0)
+	win.toolbar.rowconfigure(2,weight=0)
+	win.toolbar.columnconfigure(0,weight=0)
+	
+	win.images_split = [[]]
+	for image in images:
+		matched=False
+		series = image.SeriesInstanceUID
+		for imlist in win.images_split:
+			if len(imlist)==0:
+				imlist.append(image)
+				matched=True
+				break
+			if imlist[0].SeriesInstanceUID==series:
+				imlist.append(image)
+				matched=True
+				break
+		if not matched:
+			win.images_split.append([image])
+	win.im1.load_images(win.images_split[0])
+	win.im2.load_images(win.images_split[1])
+				
 	
 	return
 	
 def close_window(window):
 	"""Closes the window passed as an argument"""
 	active_frame.destroy()
+	return
+
+def roi_reset(win):
+	print "ROI reset"
+	win.im1.delete_rois()
+	center = imp.find_phantom_center(win.im1.get_active_image(),phantom='ACR',subpixel=False)
+	xc = center[0]
+	yc = center[1]
+	dim = 10
+	# Add five ROI's
+	win.im1.roi_rectangle(xc-dim,yc-5*dim,dim*2,dim*2,tags=['top'],system='image')
+	win.im1.roi_rectangle(xc+dim*3,yc-dim,dim*2,dim*2,tags=['right'],system='image')
+	win.im1.roi_rectangle(xc-dim,yc+dim*3,dim*2,dim*2,tags=['bottom'],system='image')
+	win.im1.roi_rectangle(xc-5*dim,yc-dim,dim*2,dim*2,tags=['left'],system='image')
+	win.im1.roi_rectangle(xc-dim,yc-dim,dim*2,dim*2,tags=['center'],system='image')
+	return
+	
+def snr_calc(win):
+	print "SNR calc"
+	rois = win.im1.find_withtag('roi')
+	if len(rois)==0:
+		tkMessageBox.showerror("ERROR", "No ROI selected. Please create one or more"
+							+" regions to analyse.")
+		return
+	px1 = win.im1.get_active_image().px_float
+	sub_images = []
+	im_number = win.im2.active
+	for i in range(len(win.im2.images)):
+		sub_images.append(win.im2.images[i].px_float-win.im1.images[i].px_float)
+	win.im2.load_images(sub_images)
+	win.im2.show_image(im_number)
+	win.im2.roi_list = win.im1.roi_list
+	snr_list = []
+	for i in range(len(win.im1.roi_list)):
+		sig = win.im1.get_roi_pixels([i])
+		noi = win.im2.get_roi_pixels([i])
+		snr_list.append(np.mean(sig)/np.std(noi,ddof=1)*np.sqrt(2))
+	snr = np.mean(snr_list)
+	tkMessageBox.showinfo("RESULT","SNR = "+str(np.round(snr,2)))
+	win.im2.load_images(win.images_split[1])
+	win.im2.show_image(im_number)
+	return
+
+def view_subtraction(win):
+	print "View subtraction"
+	px1 = win.im1.get_active_image().px_float
+	px2 = win.im2.get_active_image().px_float
+	sub = px1-px2
+	quick_display(win,sub)
 	return

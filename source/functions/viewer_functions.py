@@ -10,14 +10,35 @@ import platform
 """
 GENERIC FUNCTIONS NOT ATTACHED TO CLASSES
 """
-def quick_display(im_array):
-	root = Tk()
-	app = EasyViewer(master=root,im_array=im_array)
-	app.mainloop()
+def quick_display(master_window,im_array):
+	"""
+	Requires a numpy array and an existing Tk instance to use as a
+	master window.  im_array can be 2D or 3D.
+	"""
+	dim = len(np.shape(im_array))
+	if dim==2:
+		im_array = [im_array]
+	win = Toplevel(master_window)
+	win.imcanvas = MIPPYCanvas(win)
+	win.imcanvas.img_scrollbar = Scrollbar(win,orient='horizontal')
+	win.imcanvas.configure_scrollbar()
+	win.imcanvas.grid(row=0,column=0,sticky='nsew')
+	win.imcanvas.img_scrollbar.grid(row=1,column=0,sticky='ew')
+	win.rowconfigure(0,weight=1)
+	win.rowconfigure(1,weight=0)
+	win.columnconfigure(0,weight=1)
+	
+	win.imcanvas.load_images(im_array)
 	return
 
-def generate_px_float(pixels,rs,ri,ss):
-	return (pixels*rs+ri)/(rs*ss)
+#~ def generate_px_float(pixels,rs,ri,ss):
+	#~ return (pixels*rs+ri)/(rs*ss)
+	
+def generate_px_float(pixels,rs,ri,ss=None):
+	if ss:
+		return (pixels*rs+ri)/(rs*ss)
+	else:
+		return (pixels*rs+ri)
 	
 def get_global_min_and_max(image_list):
 	"""
@@ -186,9 +207,10 @@ class ROI():
 class MIPPYCanvas(Canvas):
 	def __init__(self,master,width=256,height=256,bd=0,drawing_enabled=False):
 		Canvas.__init__(self,master,width=width,height=height,bd=bd,bg='black')
+		self.master = master
 		self.zoom_factor = 1
 		self.roi_list = []
-		self.roi_mode = 'freehand'
+		self.roi_mode = 'rectangle'
 		self.bind('<Button-1>',self.left_click)
 		self.bind('<B1-Motion>',self.left_drag)
 		self.bind('<ButtonRelease-1>',self.left_release)
@@ -221,8 +243,12 @@ class MIPPYCanvas(Canvas):
 	def configure_scrollbar(self):
 		if self.img_scrollbar:
 			self.img_scrollbar.config(command=self.scroll_images)
+			self.img_scrollbar.set(0,1)
 		if self.active and not self.images==[]:
-			self.img_scrollbar.set(self.active-1/(len(self.images)-1),self.active/(len(self.images)-1))
+			if not len(self.images)==1:
+				self.img_scrollbar.set(self.active-1/(len(self.images)-1),self.active/(len(self.images)-1))
+			else:
+				self.img_scrollbar.set(0,1)
 	
 	def scroll_images(self,command,value,mode='unit'):
 		if command=='scroll':
@@ -239,6 +265,11 @@ class MIPPYCanvas(Canvas):
 		hi = self.active/total_img
 		self.img_scrollbar.set(lo,hi)
 	
+	def reset(self):
+		self.images = []
+		self.delete('all')
+		self.active=None
+	
 	def show_image(self,num=None):
 		"""
 		Takes slice number (which starts from 1, not zero).  Doesn't do anything
@@ -253,20 +284,48 @@ class MIPPYCanvas(Canvas):
 		self.create_image((0,0),image=self.images[self.active-1].photoimage,anchor='nw')
 
 	
-	def get_roi_pixels(self):
+	def get_roi_pixels(self,rois=[]):
 		"""
-		Returns a LIST of pixel values from the ROI, with no structure
+		Returns a LIST of pixel values from an ROI.
+		ROIS must be a list of ROI numbers.
 		"""
 		px = []
 		im = self.get_active_image()
+		if len(rois)==0:
+			rois = range(len(self.roi_list))
 		for y in range(im.rows):
 			for x in range(im.columns):
-				for roi in self.roi_list:
-					if roi.contains((x*self.zoom_factor,y*self.zoom_factor)):
+				for i in rois:
+					if self.roi_list[i].contains((x*self.zoom_factor,y*self.zoom_factor)):
 						px.append(im.px_float[y][x])
+		
 		print "GOT PIXELS"
 		return px
-
+	
+	def new_roi(self,coords,tags=[]):
+		for i in range(len(coords)):
+			j = i+1
+			if j==len(coords):
+				j=0
+			tags.append('roi')
+			self.create_line((coords[i][0],coords[i][1],coords[j][0],coords[j][1]),fill='yellow',width=1,tags=tags)
+		self.add_roi(coords)
+	
+	def roi_rectangle(self,x_start,y_start,width,height,tags=[],system='canvas'):
+		x1 = x_start
+		x2 = x_start+width
+		y1 = y_start
+		y2 = y_start+height
+		if system=='image':
+			x1 = x1*self.zoom_factor
+			x2 = x2*self.zoom_factor
+			y1 = y1*self.zoom_factor
+			y2 = y2*self.zoom_factor
+		elif not system=='canvas':
+			print "Invalid coordinate system specified"
+			return
+		self.new_roi([(x1,y1),(x2,y1),(x2,y2),(x1,y2)],tags=tags)
+		return
 
 		
 	def load_images(self,image_list):
@@ -276,6 +335,7 @@ class MIPPYCanvas(Canvas):
 		for ref in image_list:
 			self.progress(45.*n/len(image_list)+10)
 			self.images.append(MIPPYImage(ref))
+			n+=1
 		
 		for image in self.images:
 			image.resize(self.width,self.height)
@@ -308,14 +368,14 @@ class MIPPYCanvas(Canvas):
 		return self.images[self.active-1]
 	
 	def reset_window_level(self):
-		for i in range(len(self.master.preview_slices)):
-			self.progress(100.*i/len(self.master.preview_slices))
-			self.master.preview_slices[i].wl_and_display(window=self.master.default_window,level=self.master.default_level)
+		self.temp_window = self.default_window
+		self.temp_level = self.default_level
+		self.window = self.default_window
+		self.level = self.default_level
 		
-		self.level = self.master.default_level
-		self.window = self.master.default_window
-		self.show_image()
-		self.progress(0.)
+		for image in self.images:
+			image.wl_and_display(window = self.default_window, level = self.default_level)
+		self.show_image(self.active)
 		return
 		
 	
@@ -335,11 +395,7 @@ class MIPPYCanvas(Canvas):
 				break
 		if not moving:
 			self.drawing_roi = True
-			self.roi_list = []
-			try:
-				self.delete('roi')
-			except:
-				pass
+			self.delete_rois()
 			self.temp = []
 			self.tempcoords.append((self.xmouse,self.ymouse))
 	
@@ -468,11 +524,16 @@ class MIPPYCanvas(Canvas):
 	def add_roi(self,coords,roi_type=None):
 		self.roi_list.append(ROI(coords,roi_type))
 	
+	def delete_rois(self):
+		self.roi_list = []
+		self.delete('roi')
+	
 	def progress(self,percentage):
 		try:
 			self.master.progressbar['value']=percentage
 			self.master.progressbar.update()
 		except:
+			print sys.exc_info()[0]
 			pass
 	
 	def draw_rectangle_roi(self):
@@ -533,22 +594,22 @@ class MIPPYImage():
 		pixels = ds.pixel_array.astype(np.float64)
 		# DO NOT KNOW IF PIXEL ARRAY ALREADY HANDLES RS AND RI
 		try:
-			rs = ds[0x28,0x1053].value
+			self.rs = ds[0x28,0x1053].value
 		except:
-			rs = 1
+			self.rs = 1
 		try:
-			ri = ds[0x28,0x1052].value
+			self.ri = ds[0x28,0x1052].value
 		except:
-			ri = 0
+			self.ri = 0
 		try:
-			ss = ds[0x2005,0x100E].value
+			self.ss = ds[0x2005,0x100E].value
 		except:
-			ss = 1
+			self.ss = None
 		self.rows = ds.Rows
 		self.columns = ds.Columns
-		self.px_float = generate_px_float(pixels, rs, ri, ss)
-		self.rangemax = generate_px_float(np.power(2,bitdepth), rs, ri, ss)
-		self.rangemin = generate_px_float(0,rs,ri,ss)
+		self.px_float = generate_px_float(pixels, self.rs, self.ri, self.ss)
+		self.rangemax = generate_px_float(np.power(2,bitdepth), self.rs, self.ri, self.ss)
+		self.rangemin = generate_px_float(0,self.rs,self.ri,self.ss)
 		self.image_position = np.array(ds.ImagePositionPatient)
 		self.image_orientation = np.array(ds.ImageOrientationPatient).reshape((2,3))
 		try:
