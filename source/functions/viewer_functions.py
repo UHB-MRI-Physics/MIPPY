@@ -533,7 +533,6 @@ class MIPPYCanvas(Canvas):
 			self.master.progressbar['value']=percentage
 			self.master.progressbar.update()
 		except:
-			print sys.exc_info()[0]
 			pass
 	
 	def draw_rectangle_roi(self):

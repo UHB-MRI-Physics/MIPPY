@@ -50,14 +50,30 @@ def execute(master_window,dicomdir,images):
 	win.im2.img_scrollbar.grid(row=1,column=1,sticky='ew')
 	
 	win.toolbar = Frame(win)
-	win.roi_button = Button(win.toolbar,text="Create/reset ROIs",command=lambda:roi_reset(win))
+	win.roi_button = Button(win.toolbar,text="Create/reset ROIs",command=lambda:roi_reset(win),width=30)
 	win.subtract_button = Button(win.toolbar,text="View subtraction image",command=lambda:view_subtraction(win))
 	win.calc_button = Button(win.toolbar,text="Calculate SNR",command=lambda:snr_calc(win))
+	win.phantom_label = Label(win.toolbar,text='\nPhantom selection:')
+	win.phantom = StringVar(win)
+	win.phantom.set('ACR (TRA)')		# default value	
+	win.phantom_choice = OptionMenu(win.toolbar,win.phantom,
+							'ACR (TRA)','ACR (SAG)','ACR (COR)','MagNET Flood (TRA)',
+							'MagNET Flood (SAG)', 'MagNET Flood (COR)')
+	win.mode=StringVar()
+	win.mode.set('valid')
+	win.advanced_checkbox = Checkbutton(win.toolbar,text='Use advanced ROI positioning?',var=win.mode,
+								onvalue='same',offvalue='valid')
+	win.mode_label = Label(win.toolbar,text='N.B. Advanced positioning is much slower, but accounts for the phantom not being fully contained in the image.',
+					wraplength=200,justify=LEFT)
 	
 	win.toolbar.grid(row=0,column=2,sticky='nsew')
 	win.roi_button.grid(row=0,column=0,sticky='ew')
 	win.subtract_button.grid(row=1,column=0,sticky='ew')
 	win.calc_button.grid(row=2,column=0,sticky='ew')
+	win.phantom_label.grid(row=3,column=0,sticky='w')
+	win.phantom_choice.grid(row=4,column=0,sticky='ew')
+	win.advanced_checkbox.grid(row=5,column=0,sticky='w')
+	win.mode_label.grid(row=6,column=0,sticky='w')
 	
 	win.rowconfigure(0,weight=1)
 	win.rowconfigure(1,weight=0)
@@ -67,6 +83,10 @@ def execute(master_window,dicomdir,images):
 	win.toolbar.rowconfigure(0,weight=0)
 	win.toolbar.rowconfigure(1,weight=0)
 	win.toolbar.rowconfigure(2,weight=0)
+	win.toolbar.rowconfigure(3,weight=0)
+	win.toolbar.rowconfigure(4,weight=0)
+	win.toolbar.rowconfigure(5,weight=0)
+	win.toolbar.rowconfigure(6,weight=0)
 	win.toolbar.columnconfigure(0,weight=0)
 	
 	win.images_split = [[]]
@@ -98,9 +118,11 @@ def close_window(window):
 def roi_reset(win):
 	print "ROI reset"
 	win.im1.delete_rois()
-	center = imp.find_phantom_center(win.im1.get_active_image(),phantom='ACR',subpixel=False)
+	center = imp.find_phantom_center(win.im1.get_active_image(),phantom=win.phantom.get(),
+							subpixel=False,mode=win.mode.get())
 	xc = center[0]
 	yc = center[1]
+	print xc, yc
 	dim = 10
 	# Add five ROI's
 	win.im1.roi_rectangle(xc-dim,yc-5*dim,dim*2,dim*2,tags=['top'],system='image')
