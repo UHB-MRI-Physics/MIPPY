@@ -55,7 +55,17 @@ def collect_dicomdir_info(path):
 			type = ds.ImageType
 		except Exception:
 			return tags
-		seriesdesc = ds.SeriesDescription
+		try:
+			# Some manufacturers use a handy "series description" tag, some don't
+			seriesdesc = ds.SeriesDescription
+		except Exception:
+			try:
+				# Some store "protocol name", which will do for now until I find something better
+				seriesdesc = ds.ProtocolName
+			except Exception:
+				# If all else fails, just use a generic string
+				seriesdesc = "Unknown Study Type"
+		
 		if "PHOENIXZIPREPORT" in seriesdesc.upper():
 			# Ignore any phoenix zip report files from Siemens
 			return tags
@@ -92,6 +102,7 @@ def collect_dicomdir_info(path):
 			except Exception:
 				# If all else fails, just use a generic string
 				studydesc = "Unknown Study Type"
+		
 		if enhanced:
 			# Set "instance" array to match number of frames
 			instance = np.array(range(frames))+1
