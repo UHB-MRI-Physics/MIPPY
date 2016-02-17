@@ -227,86 +227,7 @@ class ToolboxHome(Frame):
 		#~ print "CLICK"
 		return
 		
-	#~ def slice_scroll_button_drag(self,event):
-		#~ print "MOVE"
-		#~ if self.imcanvas.images==[]:
-			#~ # If no active display slices, just skip this whole function
-			#~ return
-		#~ xmove = event.x-self.click_x
-		#~ ymove = event.y-self.click_y
-		
-		#~ # Want to move 1 slice every time the mouse is moved a number of pixels up or down
-		#~ # Higher sensitivity number = less sensitive!
-		#~ sensitivity=7
-		#~ if abs(ymove)>sensitivity:
-			#~ if ymove<0 and not self.imcanvas.active==len(self.imcanvas.images):
-				#~ self.imcanvas.show_image(self.imcanvas.active+1)
-			#~ elif ymove>0 and not self.imcanvas.active==1:
-				#~ self.imcanvas.show_image(self.imcanvas.active-1)
-			#~ self.click_x = event.x
-			#~ self.click_y = event.y
-		#~ return
-		
-	#~ def canvas_right_doubleclick(self,event):
-		#~ if self.master.preview_slices == []:
-			#~ return
-		
-		#~ self.master.temp_window = self.master.default_window
-		#~ self.master.temp_level = self.master.default_level
-		#~ self.master.window = self.master.default_window
-		#~ self.master.level = self.master.default_level
-		
-		#~ for image in self.master.preview_slices:
-			#~ image.wl_and_display(window = self.master.default_window, level = self.master.default_level)
-		
-		#~ self.refresh_preview_image()
-		
-		#~ return
-		
-	#~ def canvas_right_click(self,event):
-		#~ if self.master.preview_slices==[]:
-			#~ # If no active display slices, just skip this whole function
-			#~ return
-		#~ self.master.click_x = event.x
-		#~ self.master.click_y = event.y
-		#~ return
-		
-	#~ def canvas_right_drag(self,event):
-		#~ xmove = event.x-self.master.click_x
-		#~ ymove = event.y-self.master.click_y
-		#~ # Windowing is applied to the series as a whole...
-		#~ # Sensitivity needs to vary with the float pixel scale.  Map default window
-		#~ # (i.e. full range of image) to "sensitivity" px motion => 1px up/down adjusts level by
-		#~ # "default_window/sensitivity".  1px left/right adjusts window by
-		#~ # "default_window/sensitivity"
-		#~ window_sensitivity = 200
-		#~ level_sensitivity = 200
-		#~ min_window = self.master.fullrange/255
-		#~ i = self.master.active_slice
-		#~ self.master.temp_window = self.master.window+xmove*(self.master.fullrange/window_sensitivity)
-		#~ self.master.temp_level = self.master.level-ymove*(self.master.fullrange/level_sensitivity)
-		#~ if self.master.temp_window<min_window:
-			#~ self.master.temp_window=min_window
-		#~ if self.master.temp_level<self.master.global_rangemin+min_window/2:
-			#~ self.master.temp_level=self.master.global_rangemin+min_window/2
-		#~ self.master.preview_slices[i].wl_and_display(window=self.master.temp_window,level=self.master.temp_level)
-		#~ self.refresh_preview_image()
-		#~ return
-		
-	#~ def canvas_right_click_release(self,event):
-		#~ print "RIGHT MOUSE RELEASED!"
-		#~ if abs(self.master.click_x-event.x)<1 and abs(self.master.click_y-event.y)<1:
-			#~ return
-		#~ self.master.window = self.master.temp_window
-		#~ self.master.level = self.master.temp_level
-		#~ i=0
-		#~ for image in self.master.preview_slices:
-			#~ self.progress(100.*i/len(self.imcanvas.images))
-			#~ image.wl_and_display(window=self.master.window,level=self.master.level)
-			#~ i+=1
-		#~ self.refresh_preview_image()
-		#~ self.progress(0.)
-		#~ return
+
 		
 	
 	def asktoexit(self):
@@ -315,26 +236,7 @@ class ToolboxHome(Frame):
 			#~ sys.exit()
 		return
 		
-	#~ def dir_window_selection(self,event):
-		#~ ### THIS METHOD NEEDS COMPLETELY REWORKING
-		#~ print "Selection made"
-		#~ selection = self.dirframe.dicomtree.selection()
-		#~ if not len(selection)==1:
-			#~ self.reset_small_canvas()
-		#~ else:
-			#~ parent_item = self.dirframe.dicomtree.parent(selection[0])
-			#~ if parent_item=='':
-				#~ # Whole study, so just reset the canvas
-				#~ self.reset_small_canvas()
-			#~ elif self.dirframe.dicomtree.parent(parent_item)=='':
-				#~ # Whole series, load all slices
-				#~ self.active_uids = self.dirframe.dicomtree.get_children(selection[0])
-				#~ self.load_preview_images(self.active_uids)
-			#~ else:
-				#~ # Single image, load this slice
-				#~ self.active_uids=(selection)
-				#~ self.load_preview_images(self.active_uids)
-		#~ return
+
 	
 	def dir_window_selection(self,event):
 		# THIS NEEDS IF len==1 to decide how to draw preview images
@@ -392,23 +294,7 @@ class ToolboxHome(Frame):
 
 		return
 		
-	#~ def reset_window_level(self):
-		#~ for i in range(len(self.master.preview_slices)):
-			#~ self.progress(100.*i/len(self.master.preview_slices))
-			#~ self.master.preview_slices[i].wl_and_display(window=self.master.default_window,level=self.master.default_level)
-		
-		#~ self.master.level = self.master.default_level
-		#~ self.master.window = self.master.default_window
-		#~ self.progress(0.)
-		#~ return
-		
-	#~ def refresh_preview_image(self):
-		#~ # self.master.preview_slices = []
-		#~ # self.master.active_slice = None
-		#~ i = self.master.active_slice
-		#~ self.master.imcanvas.delete('all')
-		#~ self.master.imcanvas.create_image(0,0,anchor='nw',image=self.master.preview_slices[i].photoimage)
-		#~ return
+
 		
 	def module_window_click(self,event):
 		print "You clicked on the module window."
@@ -419,19 +305,15 @@ class ToolboxHome(Frame):
 		if not self.dicomdir:
 			return
 		ask_recursive = tkMessageBox.askyesno("Search recursively?","Do you want to include all subdirectories?")
-		#~ self.open_progress_window()
+
 		self.path_list = []
 		self.active_series = None
-		#~ self.master.progressbar['mode']='indeterminate'
-		#~ self.master.progressbar.start()
 		
 		self.path_list = list_all_files(self.dicomdir,file_list=self.path_list,recursive=ask_recursive)
-		#~ self.master.progressbar.stop()
-		#~ self.master.progressbar['mode']='determinate'
-		#~ self.master.progressbar['value']=0.
+		
 		self.filter_dicom_files()
 		self.build_dicom_tree()
-		#~ self.close_progress_window()
+		
 		return
 		
 	def filter_dicom_files(self):
@@ -458,6 +340,8 @@ class ToolboxHome(Frame):
 		except Exception:
 			print "New tree created"
 			pass
+		repeats_found = False
+		n_repeats = 0
 		for scan in self.sorted_list:
 			print "Adding to tree: "+scan['path']
 			if not self.dirframe.dicomtree.exists(scan['studyuid']):
@@ -468,9 +352,15 @@ class ToolboxHome(Frame):
 				self.dirframe.dicomtree.insert(scan['studyuid'],'end',scan['seriesuid'],
 											text='Series '+str(scan['series']).zfill(3),
 											values=('','',scan['seriesdesc']))
-			self.dirframe.dicomtree.insert(scan['seriesuid'],'end',scan['instanceuid'],
-											text=str(scan['instance']).zfill(3),
-											values=('','',''))
+			try:
+				self.dirframe.dicomtree.insert(scan['seriesuid'],'end',scan['instanceuid'],
+										text=str(scan['instance']).zfill(3),
+										values=('','',''))
+			except:
+				repeats_found = True
+				n_repeats+=1
+		if repeats_found:
+			tkMessageBox.showwarning("WARNING",str(n_repeats)+" repeat image UID's found and ignored.")
 		self.dirframe.dicomtree.update()
 		#~ self.master.progress = 100
 		return
