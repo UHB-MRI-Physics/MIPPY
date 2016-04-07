@@ -2,6 +2,7 @@ import os
 import dicom
 from dicom.tag import Tag
 import copy
+import numpy as np
 
 def get_frame_ds(ds,frame):
 	# "frame" starts from 1, not 0.  Need to subtract 1 for correct indexing.
@@ -33,7 +34,7 @@ def add_all(dataset1,dataset2):
 			dataset1.add_new(element.tag, element.VR, element.value)
 	return dataset1
 	
-def collect_dicomdir_info(path):
+def collect_dicomdir_info(path,force_read=False):
 	tags= None
 	# This automatically excludes Philips "XX_" files, but only based on name.  If they've been renamed they
 	# won't be picked up until the "try/except" below.
@@ -44,7 +45,7 @@ def collect_dicomdir_info(path):
 	ds = None
 	#Read file, if not DICOM then ignore
 	try:
-		ds = dicom.read_file(path)				
+		ds = dicom.read_file(path, force=force_read)				
 	except Exception:
 		print path+'\n...is not a valid DICOM file and is being ignored.'
 		return tags
@@ -103,6 +104,9 @@ def collect_dicomdir_info(path):
 				# If all else fails, just use a generic string
 				studydesc = "Unknown Study Type"
 		
+		if not tags:
+			tags = []
+		
 		if enhanced:
 			# Set "instance" array to match number of frames
 			instance = np.array(range(frames))+1
@@ -118,7 +122,7 @@ def collect_dicomdir_info(path):
 				# Append instance UID with the frame number to give unique reference to each slice
 				instance_uid = ds.SOPInstanceUID+"_"+str(i).zfill(3)
 			# Append the information to the "tag list" object
-			tags = (dict([('date',date),('time',time),('name',name),('studyuid',study_uid),
+			tags.append(dict([('date',date),('time',time),('name',name),('studyuid',study_uid),
 					('series',series),('seriesuid',series_uid),('studydesc',studydesc),
 					('seriesdesc',seriesdesc),('instance',i),('instanceuid',instance_uid),
 					('path',path),('enhanced',enhanced)]))

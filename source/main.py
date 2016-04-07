@@ -322,7 +322,8 @@ class ToolboxHome(Frame):
 			self.progress(100*(float(self.path_list.index(p))/float(len(self.path_list))))
 			tags = collect_dicomdir_info(p)
 			if tags:
-				self.tag_list.append(tags)
+				for row in tags:
+					self.tag_list.append(row)
 		self.progress(0.)
 		return
 		
