@@ -3,9 +3,7 @@ import dicom
 from dicom.tag import Tag
 from dicom.dataset import Dataset
 import copy
-import ujson
 import numpy as np
-import cPickle as pickle
 
 
 
