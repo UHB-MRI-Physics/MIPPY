@@ -6,6 +6,7 @@ from scipy.ndimage.measurements import center_of_mass
 from matplotlib import pyplot as plt
 from scipy.optimize import minimize
 from time import sleep
+from copy import deepcopy
 #from source.functions.viewer_functions import *
 
 """
@@ -64,13 +65,16 @@ def find_phantom_center(image,phantom='ACR',subpixel=True,mode='valid'):
 #	sleep(1)
 	
 	# Create binary image
-	px = image.px_float
+	px = deepcopy(image.px_float)
 	threshold = np.mean(px)/5
 	px[px<threshold]=0
 	px[px>=threshold]=1
 	
-	plt.imshow(px)
-	plt.show()
+	print "made binary"
+#	plt.imshow(px)
+#	plt.show()
+	print "continuing"
+	print mode
 	
 	if mode=='valid':
 		mega_smooth=convolve2d(px,mask,mode='valid')

@@ -140,12 +140,13 @@ def snr_calc(win):
 							+" regions to analyse.")
 		return
 	px1 = win.im1.get_active_image().px_float
-	sub_images = []
+	sub_images = None
 	im_number = win.im2.active
+	print im_number
 	for i in range(len(win.im2.images)):
-		sub_images.append(win.im2.images[i].px_float-win.im1.images[i].px_float)
-	win.im2.load_images(sub_images)
-	win.im2.show_image(im_number)
+		sub_image = [win.im1.get_active_image().px_float-win.im2.get_active_image().px_float]
+	win.im2.load_images(sub_image)
+#	win.im2.show_image(im_number)
 	win.im2.roi_list = win.im1.roi_list
 	snr_list = []
 	for i in range(len(win.im1.roi_list)):

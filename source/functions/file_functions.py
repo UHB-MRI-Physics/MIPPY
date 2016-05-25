@@ -12,3 +12,10 @@ def list_all_files(dir,file_list=[],recursive=False):
 		else:
 			file_list.append(path)
 	return file_list
+
+def save_results(test_name):
+	"""
+	Standardised way of saving results in TXT files. Not sure what
+	to do with them afterwards yet...
+	"""
+	pass
