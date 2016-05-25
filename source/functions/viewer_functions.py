@@ -33,6 +33,32 @@ def quick_display(master_window,im_array):
 
 #~ def generate_px_float(pixels,rs,ri,ss):
 	#~ return (pixels*rs+ri)/(rs*ss)
+
+def bits_to_ndarray(bits, shape):
+    abytes = np.frombuffer(bits, dtype=np.uint8)
+    abits = np.zeros(8*len(abytes), np.uint8)
+    
+    for n in range(8):
+        abits[n::8] = (abytes & (2 ** n)) !=0
+    
+    return abits.reshape(shape)
+
+def px_bytes_to_array(byte_array,rows,cols,bitdepth=16,mode='littleendian',rs=1,ri=0,ss=None):
+	if bitdepth==16:
+		if mode=='littleendian':
+			this_dtype = np.dtype('<u2')
+		else:
+			this_dtype = np.dtype('>u2')
+	elif bitdepth==8:
+		this_dtype = np.dytpe('u1')
+	abytes = np.frombuffer(byte_array, dtype=this_dtype)
+	print np.mean(abytes)
+	print np.shape(abytes)
+	print abytes
+	abytes = abytes.reshape((cols,rows))
+	px_float = generate_px_float(abytes,rs,ri,ss)
+	print np.mean(px_float)
+	return px_float
 	
 def generate_px_float(pixels,rs,ri,ss=None):
 	if ss:
@@ -332,7 +358,10 @@ class MIPPYCanvas(Canvas):
 		self.images = []
 		self.delete('all')
 		n=0
+#		open_ds = None
+#		current_path = None
 		for ref in image_list:
+			
 			self.progress(45.*n/len(image_list)+10)
 			self.images.append(MIPPYImage(ref))
 			n+=1
@@ -593,15 +622,15 @@ class MIPPYImage():
 		pixels = ds.pixel_array.astype(np.float64)
 		# DO NOT KNOW IF PIXEL ARRAY ALREADY HANDLES RS AND RI
 		try:
-			self.rs = ds[0x28,0x1053].value
+			self.rs = float(ds[0x28,0x1053].value)
 		except:
-			self.rs = 1
+			self.rs = 1.
 		try:
-			self.ri = ds[0x28,0x1052].value
+			self.ri = float(ds[0x28,0x1052].value)
 		except:
-			self.ri = 0
+			self.ri = 0.
 		try:
-			self.ss = ds[0x2005,0x100E].value
+			self.ss = float(ds[0x2005,0x100E].value)
 		except:
 			self.ss = None
 		self.rows = ds.Rows
@@ -634,6 +663,10 @@ class MIPPYImage():
 		self.px_float = pixel_array
 		self.rangemax = np.amax(pixel_array)
 		self.rangemin = np.amin(pixel_array)
+		print "Max",self.rangemax
+		print "Min",self.rangemin
+#		self.rangemax = np.ones(np.shape(pixel_array)).astype(np.float64)*maxval
+#		self.rangemin = np.ones(np.shape(pixel_array)).astype(np.float64)*minval
 		self.xscale=1
 		self.yscale=1
 		self.overlay=None

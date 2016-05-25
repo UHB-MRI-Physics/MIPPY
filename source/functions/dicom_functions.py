@@ -1,22 +1,39 @@
 import os
 import dicom
 from dicom.tag import Tag
+from dicom.dataset import Dataset
 import copy
+import ujson
 import numpy as np
+import cPickle as pickle
+
+
+
 
 def get_frame_ds(ds,frame):
 	# "frame" starts from 1, not 0.  Need to subtract 1 for correct indexing.
-	slice = frame-1
+	slicenum = frame-1
+	print "    Copying original dataset"
 	ds_new = copy.deepcopy(ds)
+#	ds_new = pickle.loads(pickle.dumps(ds))
+#	ds_new = ujson.loads(ujson.dumps(ds))
+#	ds_new = Dataset()
+#	ds_new = add_all(ds_new,ds)
+	print "    Stripping out old tags"
 	del ds_new[Tag(0x5200,0x9230)]
 	del ds_new[Tag(0x5200,0x9229)]
+	print "    Adding new tags"
 	ds_new = add_all(ds_new,ds[0x5200,0x9229][0])
-	ds_new = add_all(ds_new,ds[0x5200,0x9230][slice])
+	ds_new = add_all(ds_new,ds[0x5200,0x9230][slicenum])
+	print "    Correcting rows and columns"
 	rows = int(ds_new.Rows)
 	cols = int(ds_new.Columns)
-	ds_new.PixelData = ds.PixelData[slice*(rows*cols*2):(slice+1)*(rows*cols*2)]
+	print "    Copying pixel data"
+	ds_new.PixelData = ds.PixelData[slicenum*(rows*cols*2):(slicenum+1)*(rows*cols*2)]
+	print "    Replacing instance number"
 	ds_new.InstanceNumber = frame
 	ds_new.NumberOfFrames = 1
+	print "    Returning split dataset"
 	return ds_new
 
 def add_all(dataset1,dataset2):

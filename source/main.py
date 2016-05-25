@@ -221,6 +221,10 @@ class ToolboxHome(Frame):
 		
 		self.focus()
 		
+		# Here are some variables that may be useful
+		self.open_ds = None
+		self.open_file = None
+		
 	def slice_scroll_button_click(self,event):
 		self.click_x = event.x
 		self.click_y = event.y
@@ -281,13 +285,45 @@ class ToolboxHome(Frame):
 		for tag in self.sorted_list:
 			if tag['instanceuid'] in uid_array:
 				self.progress(10.*n/len(uid_array))
+				print "-------"
+				print tag['path']
+				print self.open_file
+				if not tag['path']==self.open_file:
+					print "Loading DICOM dataset"
+					self.open_ds=dicom.read_file(tag['path'])
+					self.open_file = tag['path']
 				if not tag['enhanced']:
-					print tag['path']
-					print type(tag['path'])
-					preview_images.append(tag['path'])
+#					print tag['path']
+#					print type(tag['path'])
+					preview_images.append(self.open_ds)
 				else:
-					ds = dicom.read_file(tag['path'])
-					preview_images.append(get_frame_ds(ds,tag['instance']))
+#					ds = dicom.read_file(tag['path'])
+					print "Splitting slice "+str(tag['instance'])
+#					preview_images.append(get_frame_ds(self.open_ds,tag['instance']))
+					rows = int(self.open_ds.Rows)
+					cols = int(self.open_ds.Columns)
+					try:
+						rs = float(self.open_ds[0x28,0x1053].value)
+					except:
+						rs = 1.
+					try:
+						ri = float(self.open_ds[0x28,0x1052].value)
+					except:
+						ri = 0.
+					try:
+						ss = float(self.open_ds[0x2005,0x100E].value)
+					except:
+						ss = None
+					print "Bits stored",self.open_ds.BitsStored
+					print "Rows",rows
+					print "Cols",cols
+					px_bytes = self.open_ds.PixelData[(tag['instance']-1)*(rows*cols*2):(tag['instance'])*(rows*cols*2)]
+					print "Len extracted bytes",len(px_bytes)
+					print "Len total px data",len(self.open_ds.PixelData)
+					print "Len image list",len(self.sorted_list)
+					px_float = px_bytes_to_array(px_bytes,rows,cols,rs=rs,ri=ri,ss=ss)
+					preview_images.append(px_float)
+					
 				n+=1
 		self.imcanvas.load_images(preview_images)
 		
@@ -425,14 +461,20 @@ class ToolboxHome(Frame):
 			if preload_dicom:
 				self.datasets_to_pass = []
 				for tag in self.sorted_list:
+					
 					if tag['instanceuid'] in self.active_uids:
+						if not tag['path']==self.open_file:
+							self.open_ds = dicom.read_file(tag['path'])
+							self.open_file = tag['path']
 						if not tag['enhanced']:
 							print tag['path']
 							print type(tag['path'])
-							self.datasets_to_pass.append(dicom.read_file(tag['path']))
+							self.datasets_to_pass.append(self.open_ds)
 						else:
-							ds = dicom.read_file(tag['path'])
-							self.datasets_to_pass.append(get_frame_ds(dicom.read_file(tag['path'],tag['instance'])))
+#							ds = dicom.read_file(tag['path'])
+							print tag['path']
+							print type(tag['path'])
+							self.datasets_to_pass.append(get_frame_ds(self.open_ds,tag['instance']))
 			else:
 				self.datasets_to_pass = []
 				for uid in self.active_uids:
@@ -443,8 +485,8 @@ class ToolboxHome(Frame):
 			active_module.execute(self.master,self.dicomdir,self.datasets_to_pass)
 		except:
 			raise
-			#~ print "Did you select a module?"
-			#~ pass
+			print "Did you select a module?"
+			print "Bet you didn't, you idiot."
 		return
 
 #########################################################
