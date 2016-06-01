@@ -49,7 +49,6 @@ def T1_mapping(Im4D,TI,images,rev=False):
 
     for s in range(slcs):		                            							    
         print "Fitting slice "+str(s+1)+" of "+str(slcs)
-        print TI[s::dyns-1]
         for y in range(rows):
             print "..."+str(int((float(y)/float(rows))*100))+"%"
             for x in range(cols):
@@ -108,7 +107,7 @@ def T1_mapping(Im4D,TI,images,rev=False):
                         M0_var[s,y,x] = 0
                         print "Fit failed, no optimised parameters"
                         
-                    if T1_R2[s,y,x]<50:
+                    if T1_R2[s,y,x]<70:
                         T1_map[s,y,x] = 0
                         T1_var[s,y,x] = 0
                         T1_R2[s,y,x] = 0                                                                                                   # If calculated variance on result is larger than the result, also ignore and set to zero

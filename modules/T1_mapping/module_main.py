@@ -275,7 +275,8 @@ def T1_map(win,images):
         else:
                 txt=("Fitting completed in %s seconds. \n" %(int(np.ceil(run_time))) )
         status(win,txt)        
-
+        test=win.maps[0]
+        quick_display(win,test)
         win.imcanvas_maps.load_images([b for b in (np.reshape(win.maps,(5*win.slcs,win.rows,win.cols)) )])
                 
         return
