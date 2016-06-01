@@ -1,0 +1,11883 @@
+LOG FILE
+
+Importing packages...
+
+
+    Pickle/cPickle
+
+
+    DICOM
+
+
+    Tkinter (GUI)
+
+
+    os
+
+
+    NumPy
+
+
+    Python Imaging Library (PIL)
+
+
+    date/time
+
+
+    importlib
+
+
+    web broswer interface
+
+
+    sys
+
+
+    MIPPY file functions
+
+
+    MIPPY viewer functions
+
+
+    MIPPY DICOM functions
+
+
+Initialising GUI...
+
+
+
+Existing module tree cleared
+
+
+Load image directory
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/.DS_Store
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_001.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_002.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_003.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_004.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_005.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_006.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_007.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_008.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_009.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_variance_001
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_variance_002
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_variance_003
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_variance_004
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_variance_005
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_variance_006
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_variance_007
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_variance_008
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_variance_009
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_001.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_002.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_003.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_004.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_005.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_006.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_007.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_008.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_009.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_001.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_002.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_003.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_004.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_005.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_006.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_007.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_008.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_009.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_variance_001.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_variance_002.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_variance_003.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_variance_004.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_variance_005.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_variance_006.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_variance_007.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_variance_008.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_variance_009.txt
+...is not a valid DICOM file and is being ignored.
+
+
+function_started
+
+
+()
+
+
+Existing tree cleared
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0001.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0002.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0003.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0004.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0005.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0006.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0007.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0008.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0009.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0010.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0011.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0012.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0013.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0014.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0015.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0016.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0017.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0018.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0019.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0020.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0021.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0022.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0023.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0024.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0025.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0026.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0027.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0028.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0029.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0030.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0031.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0032.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0033.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0034.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0035.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0036.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0037.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0038.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0039.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0040.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0041.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0042.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0043.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0044.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0045.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0046.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0047.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0048.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0049.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0050.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0051.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0052.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0053.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0054.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0055.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0056.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0057.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0058.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0059.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0060.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0061.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0062.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0063.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0064.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0065.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0066.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0067.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0068.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0069.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0070.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0071.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0072.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0073.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0074.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0075.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0076.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0077.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0078.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0079.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0080.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0081.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0082.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0083.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0084.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0085.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0086.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0087.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0088.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0089.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0090.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_map_001.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_map_002.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_map_003.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_map_004.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_map_005.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_map_006.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_map_007.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_map_008.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_map_009.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_map_001.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_map_002.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_map_003.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_map_004.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_map_005.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_map_006.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_map_007.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_map_008.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_map_009.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_Var_map_001.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_Var_map_002.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_Var_map_003.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_Var_map_004.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_Var_map_005.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_Var_map_006.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_Var_map_007.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_Var_map_008.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_Var_map_009.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_map_001.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_map_002.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_map_003.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_map_004.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_map_005.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_map_006.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_map_007.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_map_008.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_map_009.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_Var_map_001.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_Var_map_002.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_Var_map_003.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_Var_map_004.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_Var_map_005.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_Var_map_006.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_Var_map_007.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_Var_map_008.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_Var_map_009.dcm
+
+
+Max
+ 
+770.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+896.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+919.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+766.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+751.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+655.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+845.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+877.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1185.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+524.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+585.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+595.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+557.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+601.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+931.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1064.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1039.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1391.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+309.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+397.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+417.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+386.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+765.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1138.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1249.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1177.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1526.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+255.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+372.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+499.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+483.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+924.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1316.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1406.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1283.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1627.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+394.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+512.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+629.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+560.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1053.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1453.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1527.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1370.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1718.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+481.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+596.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+702.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+634.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1164.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1564.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1621.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1434.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1793.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+557.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+666.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+783.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+779.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1281.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1656.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1700.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1494.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1848.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+630.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+742.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+855.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+924.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1487.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1728.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1754.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1596.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1900.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+691.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+803.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+989.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1058.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1669.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1793.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1803.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1715.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1933.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+740.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+849.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1123.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1177.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1831.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1840.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1842.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1821.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1997.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1020.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1030.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1068.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1128.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1167.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1172.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1195.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1309.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1128.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+9988.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+9992.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+9996.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+9998.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+9998.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+9999.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+9999.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+9999.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+9999.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+19850.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+51094.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+29471.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+43893.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+64022.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+65211.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+64983.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+59718.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+44985.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1059.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1498.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1948.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1858.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+2842.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+2564.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+2338.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+2486.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+2659.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+4827.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+14422.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+15662.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+32551.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+59118.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+53800.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+58978.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+46074.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+34348.0
+
+
+Min
+ 
+0.0
+
+
+canvas width,height: 256,256
+
+
+image width,height: 96,96
+
+
+zoom: 2.66666666667
+
+
+Max
+ 
+770.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+896.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+919.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+766.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+751.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+655.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+845.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+877.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1185.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+524.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+585.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+595.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+557.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+601.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+931.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1064.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1039.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1391.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+309.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+397.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+417.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+386.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+765.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1138.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1249.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1177.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1526.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+255.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+372.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+499.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+483.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+924.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1316.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1406.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1283.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1627.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+394.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+512.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+629.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+560.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1053.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1453.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1527.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1370.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1718.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+481.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+596.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+702.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+634.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1164.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1564.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1621.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1434.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1793.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+557.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+666.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+783.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+779.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1281.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1656.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1700.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1494.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1848.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+630.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+742.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+855.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+924.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1487.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1728.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1754.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1596.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1900.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+691.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+803.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+989.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1058.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1669.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1793.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1803.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1715.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1933.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+740.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+849.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1123.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1177.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1831.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1840.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1842.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1821.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1997.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1020.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1030.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1068.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1128.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1167.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1172.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1195.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1309.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1128.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+9988.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+9992.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+9996.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+9998.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+9998.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+9999.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+9999.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+9999.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+9999.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+19850.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+51094.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+29471.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+43893.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+64022.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+65211.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+64983.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+59718.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+44985.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1059.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1498.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1948.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1858.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+2842.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+2564.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+2338.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+2486.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+2659.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+4827.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+14422.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+15662.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+32551.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+59118.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+53800.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+58978.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+46074.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+34348.0
+
+
+Min
+ 
+0.0
+
+
+canvas width,height: 256,256
+
+
+image width,height: 96,96
+
+
+zoom: 2.66666666667
+
+
+Existing module tree cleared
+
+
+Load image directory
+
+
+/Users/Rob/Documents/Python_input/.DS_Store
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/headT1_test/.DS_Store
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/.DS_Store
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/.DS_Store
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_001.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_002.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_003.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_004.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_005.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_006.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_007.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_008.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_009.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_variance_001
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_variance_002
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_variance_003
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_variance_004
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_variance_005
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_variance_006
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_variance_007
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_variance_008
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_variance_009
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_001.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_002.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_003.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_004.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_005.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_006.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_007.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_008.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_009.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_001.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_002.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_003.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_004.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_005.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_006.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_007.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_008.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_009.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_variance_001.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_variance_002.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_variance_003.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_variance_004.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_variance_005.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_variance_006.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_variance_007.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_variance_008.txt
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_variance_009.txt
+...is not a valid DICOM file and is being ignored.
+
+
+function_started
+
+
+('1.3.12.2.1107.5.2.36.40492.30000015102206591821800000004',)
+
+
+Existing tree cleared
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0001.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0002.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0003.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0004.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0005.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0006.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0007.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0008.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0009.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0010.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0011.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0012.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0013.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0014.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0015.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0016.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0017.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0018.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0019.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0020.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0021.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0022.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0023.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0024.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0025.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0026.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0027.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0028.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0029.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0030.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0031.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0032.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0033.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0034.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0035.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0036.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0037.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0038.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0039.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0040.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0041.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0042.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0043.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0044.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0045.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0046.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0047.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0048.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0049.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0050.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0051.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0052.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0053.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0054.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0055.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0056.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0057.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0058.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0059.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0060.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0061.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0062.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0063.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0064.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0065.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0066.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0067.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0068.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0069.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0070.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0071.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0072.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0073.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0074.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0075.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0076.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0077.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0078.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0079.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0080.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0081.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0082.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0083.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0084.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0085.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0086.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0087.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0088.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0089.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0090.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0001.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0002.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0003.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0004.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0005.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0006.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0007.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0008.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0009.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0010.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0011.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0012.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0013.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0014.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0015.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0016.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0017.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0018.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0019.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0020.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0021.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0022.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0023.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0024.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0025.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0026.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0027.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0028.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0029.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0030.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0031.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0032.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0033.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0034.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0035.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0036.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0037.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0038.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0039.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0040.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0041.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0042.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0043.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0044.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0045.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0046.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0047.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0048.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0049.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0050.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0051.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0052.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0053.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0054.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0055.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0056.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0057.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0058.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0059.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0060.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0061.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0062.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0063.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0064.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0065.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0066.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0067.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0068.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0069.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0070.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0071.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0072.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0073.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0074.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0075.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0076.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0077.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0078.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0079.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0080.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0081.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0082.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0083.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0084.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0085.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0086.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0087.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0088.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0089.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0090.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0001.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0002.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0003.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0004.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0005.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0006.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0007.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0008.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0009.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0010.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0011.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0012.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0013.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0014.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0015.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0016.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0017.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0018.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0019.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0020.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0021.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0022.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0023.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0024.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0025.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0026.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0027.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0028.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0029.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0030.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0031.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0032.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0033.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0034.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0035.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0036.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0037.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0038.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0039.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0040.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0041.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0042.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0043.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0044.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0045.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0046.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0047.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0048.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0049.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0050.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0051.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0052.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0053.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0054.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0055.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0056.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0057.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0058.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0059.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0060.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0061.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0062.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0063.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0064.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0065.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0066.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0067.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0068.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0069.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0070.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0071.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0072.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0073.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0074.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0075.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0076.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0077.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0078.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0079.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0080.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0081.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0082.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0083.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0084.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0085.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0086.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0087.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0088.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0089.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0090.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0001.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0002.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0003.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0004.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0005.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0006.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0007.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0008.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0009.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0010.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0011.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0012.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0013.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0014.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0015.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0016.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0017.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0018.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0019.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0020.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0021.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0022.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0023.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0024.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0025.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0026.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0027.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0028.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0029.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0030.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0031.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0032.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0033.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0034.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0035.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0036.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0037.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0038.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0039.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0040.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0041.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0042.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0043.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0044.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0045.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0046.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0047.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0048.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0049.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0050.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0051.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0052.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0053.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0054.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0055.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0056.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0057.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0058.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0059.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0060.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0061.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0062.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0063.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0064.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0065.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0066.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0067.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0068.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0069.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0070.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0071.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0072.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0073.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0074.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0075.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0076.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0077.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0078.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0079.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0080.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0081.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0082.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0083.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0084.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0085.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0086.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0087.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0088.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0089.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0090.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0001.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0002.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0003.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0004.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0005.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0006.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0007.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0008.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0009.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0010.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0011.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0012.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0013.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0014.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0015.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0016.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0017.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0018.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0019.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0020.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0021.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0022.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0023.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0024.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0025.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0026.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0027.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0028.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0029.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0030.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0031.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0032.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0033.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0034.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0035.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0036.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0037.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0038.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0039.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0040.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0041.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0042.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0043.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0044.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0045.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0046.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0047.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0048.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0049.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0050.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0051.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0052.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0053.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0054.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0055.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0056.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0057.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0058.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0059.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0060.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0061.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0062.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0063.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0064.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0065.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0066.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0067.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0068.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0069.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0070.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0071.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0072.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0073.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0074.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0075.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0076.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0077.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0078.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0079.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0080.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0081.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0082.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0083.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0084.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0085.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0086.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0087.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0088.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0089.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/IM-0001-0090.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_map_001.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_map_002.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_map_003.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_map_004.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_map_005.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_map_006.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_map_007.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_map_008.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_map_009.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_map_001.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_map_002.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_map_003.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_map_004.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_map_005.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_map_006.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_map_007.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_map_008.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_R2_map_009.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_Var_map_001.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_Var_map_002.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_Var_map_003.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_Var_map_004.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_Var_map_005.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_Var_map_006.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_Var_map_007.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_Var_map_008.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/T1_Var_map_009.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_map_001.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_map_002.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_map_003.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_map_004.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_map_005.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_map_006.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_map_007.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_map_008.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_map_009.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_Var_map_001.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_Var_map_002.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_Var_map_003.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_Var_map_004.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_Var_map_005.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_Var_map_006.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_Var_map_007.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_Var_map_008.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/rw_se_epi_T1map_v1_5_FOCI_asc/maps/M0_Var_map_009.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/Testimage.dcm
+
+
+Max
+ 
+1968.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1990.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1969.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1911.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+2847.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+2003.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1791.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1015.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+352.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1691.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1889.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1767.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1698.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+2630.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1751.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1625.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+899.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+135.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1420.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1665.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1503.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1534.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+2408.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1636.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1464.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+816.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+179.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1162.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1495.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1295.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1346.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+2096.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1445.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1102.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+701.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+172.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+937.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1445.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1141.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1103.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1929.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1422.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1173.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+374.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+154.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+899.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1391.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+727.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1080.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1680.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1268.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1071.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+418.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+144.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+981.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1419.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+766.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+918.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1495.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1158.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+889.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+436.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+175.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+841.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1363.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+658.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+750.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1384.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1038.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+789.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+381.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+195.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+663.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+995.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+559.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+701.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1235.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+893.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+653.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+393.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+225.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+536.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+894.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+480.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+651.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1097.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+809.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+644.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+435.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+254.0
+
+
+Min
+ 
+0.0
+
+
+canvas width,height: 256,256
+
+
+image width,height: 96,96
+
+
+zoom: 2.66666666667
+
+
+Max
+ 
+720.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1113.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1272.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1511.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+2778.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+2291.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+2595.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1818.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+832.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+525.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1082.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1038.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1324.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+2569.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+2067.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+2306.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1646.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+733.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+441.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+847.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+563.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1083.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+2384.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1940.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+2006.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1532.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+704.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+436.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+781.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+761.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1022.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1989.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1780.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1887.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1483.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+619.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+397.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+724.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+619.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+832.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1882.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1568.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1675.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1340.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+554.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+460.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+631.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+523.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+732.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1743.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1282.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1480.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1187.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+490.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+556.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+548.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+433.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+671.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1543.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1294.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1252.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1113.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+421.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+647.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+498.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+574.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+629.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1350.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1156.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1210.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1000.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+357.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+740.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+459.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+689.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+623.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1193.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1031.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1078.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+709.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+270.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+811.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+510.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+826.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+749.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1016.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+897.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+985.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+644.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+163.0
+
+
+Min
+ 
+0.0
+
+
+canvas width,height: 256,256
+
+
+image width,height: 96,96
+
+
+zoom: 2.66666666667
+
+
+You clicked on the module window.
+
+
+DO NOTHING!
+
+
+Apple
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0001.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0002.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0003.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0004.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0005.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0006.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0007.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0008.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0009.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0010.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0011.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0012.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0013.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0014.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0015.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0016.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0017.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0018.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0019.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0020.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0021.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0022.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0023.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0024.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0025.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0026.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0027.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0028.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0029.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0030.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0031.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0032.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0033.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0034.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0035.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0036.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0037.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0038.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0039.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0040.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0041.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0042.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0043.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0044.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0045.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0046.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0047.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0048.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0049.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0050.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0051.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0052.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0053.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0054.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0055.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0056.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0057.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0058.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0059.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0060.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0061.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0062.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0063.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0064.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0065.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0066.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0067.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0068.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0069.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0070.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0071.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0072.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0073.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0074.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0075.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0076.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0077.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0078.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0079.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0080.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0081.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0082.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0083.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0084.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0085.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0086.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0087.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0088.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0089.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0090.dcm
+
+
+<type 'str'>
+
+
+Module loaded...
+
+
+Received 90 image datasets.
+
+
+/Users/Rob/programming/MIPPY
+
+
+canvas width,height: 512,512
+
+
+image width,height: 96,96
+
+
+zoom: 5.33333333333
+
+
+GOT PIXELS
+
+
+Load image directory
+
+
+/Users/Rob/Dropbox/Work/QA/2014-BCH002-QAA_final.pdf
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Dropbox/Work/QA/Oswestry 2016/2015-OSW001-QAA.pdf
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Dropbox/Work/QA/Oswestry 2016/MRIF004 QA Survey Notes Form.docx
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Dropbox/Work/QA/Oswestry 2016/MRIF005 Annual Safety Checking Form.docx
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Dropbox/Work/QA/Oswestry 2016/QA-survey-notes.pdf
+...is not a valid DICOM file and is being ignored.
+
+
+function_started
+
+
+('1.3.12.2.1107.5.2.36.40492.30000015100114130320300000001', '1.3.12.2.1107.5.2.36.40492.30000015102206591821800000004', '1.3.12.2.1107.5.2.36.40492.30000015081306375696800000003')
+
+
+Existing tree cleared
+
+
+Load image directory
+
+
+/Users/Rob/Documents/Python_input/headT1_test/.DS_Store
+...is not a valid DICOM file and is being ignored.
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/.DS_Store
+...is not a valid DICOM file and is being ignored.
+
+
+function_started
+
+
+()
+
+
+Existing tree cleared
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0001.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0002.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0003.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0004.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0005.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0006.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0007.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0008.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0009.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0010.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0011.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0012.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0013.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0014.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0015.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0016.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0017.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0018.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0019.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0020.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0021.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0022.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0023.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0024.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0025.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0026.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0027.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0028.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0029.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0030.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0031.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0032.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0033.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0034.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0035.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0036.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0037.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0038.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0039.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0040.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0041.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0042.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0043.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0044.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0045.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0046.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0047.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0048.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0049.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0050.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0051.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0052.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0053.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0054.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0055.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0056.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0057.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0058.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0059.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0060.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0061.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0062.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0063.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0064.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0065.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0066.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0067.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0068.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0069.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0070.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0071.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0072.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0073.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0074.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0075.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0076.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0077.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0078.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0079.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0080.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0081.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0082.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0083.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0084.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0085.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0086.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0087.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0088.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0089.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0090.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0001.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0002.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0003.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0004.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0005.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0006.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0007.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0008.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0009.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0010.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0011.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0012.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0013.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0014.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0015.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0016.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0017.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0018.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0019.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0020.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0021.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0022.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0023.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0024.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0025.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0026.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0027.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0028.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0029.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0030.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0031.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0032.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0033.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0034.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0035.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0036.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0037.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0038.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0039.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0040.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0041.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0042.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0043.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0044.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0045.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0046.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0047.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0048.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0049.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0050.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0051.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0052.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0053.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0054.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0055.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0056.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0057.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0058.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0059.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0060.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0061.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0062.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0063.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0064.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0065.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0066.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0067.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0068.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0069.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0070.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0071.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0072.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0073.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0074.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0075.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0076.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0077.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0078.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0079.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0080.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0081.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0082.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0083.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0084.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0085.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0086.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0087.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0088.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0089.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0090.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0001.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0002.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0003.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0004.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0005.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0006.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0007.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0008.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0009.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0010.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0011.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0012.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0013.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0014.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0015.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0016.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0017.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0018.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0019.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0020.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0021.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0022.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0023.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0024.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0025.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0026.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0027.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0028.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0029.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0030.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0031.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0032.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0033.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0034.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0035.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0036.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0037.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0038.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0039.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0040.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0041.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0042.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0043.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0044.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0045.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0046.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0047.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0048.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0049.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0050.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0051.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0052.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0053.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0054.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0055.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0056.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0057.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0058.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0059.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0060.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0061.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0062.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0063.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0064.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0065.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0066.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0067.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0068.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0069.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0070.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0071.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0072.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0073.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0074.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0075.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0076.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0077.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0078.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0079.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0080.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0081.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0082.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0083.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0084.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0085.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0086.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0087.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0088.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0089.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_24asc/IM-0001-0090.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0001.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0002.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0003.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0004.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0005.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0006.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0007.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0008.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0009.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0010.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0011.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0012.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0013.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0014.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0015.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0016.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0017.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0018.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0019.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0020.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0021.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0022.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0023.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0024.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0025.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0026.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0027.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0028.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0029.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0030.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0031.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0032.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0033.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0034.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0035.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0036.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0037.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0038.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0039.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0040.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0041.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0042.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0043.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0044.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0045.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0046.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0047.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0048.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0049.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0050.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0051.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0052.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0053.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0054.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0055.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0056.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0057.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0058.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0059.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0060.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0061.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0062.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0063.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0064.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0065.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0066.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0067.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0068.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0069.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0070.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0071.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0072.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0073.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0074.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0075.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0076.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0077.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0078.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0079.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0080.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0081.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0082.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0083.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0084.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0085.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0086.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0087.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0088.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0089.dcm
+
+
+Adding to tree: /Users/Rob/Documents/Python_input/headT1_test/GS7_Head_25desc/IM-0001-0090.dcm
+
+
+Max
+ 
+1968.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1990.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1969.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1911.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+2847.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+2003.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1791.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1015.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+352.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1691.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1889.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1767.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1698.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+2630.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1751.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1625.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+899.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+135.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1420.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1665.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1503.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1534.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+2408.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1636.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1464.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+816.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+179.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1162.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1495.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1295.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1346.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+2096.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1445.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1102.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+701.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+172.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+937.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1445.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1141.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1103.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1929.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1422.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1173.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+374.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+154.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+899.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1391.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+727.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1080.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1680.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1268.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1071.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+418.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+144.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+981.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1419.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+766.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+918.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1495.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1158.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+889.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+436.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+175.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+841.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1363.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+658.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+750.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1384.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1038.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+789.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+381.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+195.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+663.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+995.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+559.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+701.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1235.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+893.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+653.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+393.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+225.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+536.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+894.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+480.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+651.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1097.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+809.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+644.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+435.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+254.0
+
+
+Min
+ 
+0.0
+
+
+canvas width,height: 256,256
+
+
+image width,height: 96,96
+
+
+zoom: 2.66666666667
+
+
+Max
+ 
+1968.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1990.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1969.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1911.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+2847.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+2003.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1791.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1015.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+352.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1691.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1889.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1767.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1698.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+2630.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1751.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1625.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+899.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+135.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1420.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1665.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1503.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1534.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+2408.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1636.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1464.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+816.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+179.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1162.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1495.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1295.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1346.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+2096.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1445.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1102.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+701.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+172.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+937.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1445.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1141.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1103.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1929.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1422.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1173.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+374.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+154.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+899.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1391.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+727.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1080.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1680.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1268.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1071.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+418.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+144.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+981.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1419.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+766.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+918.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1495.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1158.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+889.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+436.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+175.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+841.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1363.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+658.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+750.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1384.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1038.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+789.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+381.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+195.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+663.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+995.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+559.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+701.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1235.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+893.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+653.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+393.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+225.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+536.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+894.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+480.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+651.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+1097.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+809.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+644.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+435.0
+
+
+Min
+ 
+0.0
+
+
+Max
+ 
+254.0
+
+
+Min
+ 
+0.0
+
+
+canvas width,height: 256,256
+
+
+image width,height: 96,96
+
+
+zoom: 2.66666666667
+
+
+You clicked on the module window.
+
+
+DO NOTHING!
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0001.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0002.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0003.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0004.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0005.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0006.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0007.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0008.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0009.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0010.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0011.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0012.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0013.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0014.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0015.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0016.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0017.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0018.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0019.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0020.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0021.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0022.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0023.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0024.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0025.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0026.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0027.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0028.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0029.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0030.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0031.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0032.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0033.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0034.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0035.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0036.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0037.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0038.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0039.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0040.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0041.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0042.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0043.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0044.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0045.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0046.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0047.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0048.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0049.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0050.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0051.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0052.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0053.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0054.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0055.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0056.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0057.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0058.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0059.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0060.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0061.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0062.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0063.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0064.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0065.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0066.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0067.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0068.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0069.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0070.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0071.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0072.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0073.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0074.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0075.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0076.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0077.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0078.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0079.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0080.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0081.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0082.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0083.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0084.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0085.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0086.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0087.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0088.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0089.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_22asc/IM-0001-0090.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0001.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0002.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0003.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0004.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0005.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0006.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0007.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0008.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0009.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0010.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0011.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0012.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0013.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0014.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0015.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0016.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0017.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0018.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0019.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0020.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0021.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0022.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0023.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0024.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0025.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0026.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0027.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0028.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0029.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0030.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0031.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0032.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0033.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0034.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0035.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0036.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0037.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0038.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0039.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0040.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0041.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0042.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0043.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0044.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0045.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0046.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0047.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0048.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0049.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0050.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0051.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0052.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0053.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0054.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0055.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0056.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0057.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0058.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0059.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0060.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0061.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0062.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0063.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0064.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0065.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0066.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0067.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0068.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0069.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0070.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0071.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0072.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0073.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0074.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0075.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0076.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0077.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0078.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0079.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0080.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0081.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0082.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0083.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0084.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0085.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0086.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0087.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0088.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0089.dcm
+
+
+<type 'str'>
+
+
+/Users/Rob/Documents/Python_input/headT1_test/FOCI_Head_23desc/IM-0001-0090.dcm
+
+
+<type 'str'>
+
+
+canvas width,height: 300,300
+
+
+image width,height: 96,96
+
+
+zoom: 3.125
+
+
+canvas width,height: 300,300
+
+
+image width,height: 96,96
+
+
+zoom: 3.125
+
+
+View subtraction
+
+
+Max
+ 
+1781.0
+
+
+Min
+ 
+-69.0
+
+
+canvas width,height: 256,256
+
+
+image width,height: 96,96
+
+
+zoom: 2.66666666667
+
+
+View subtraction
+
+
+Max
+ 
+336.0
+
+
+Min
+ 
+-566.0
+
+
+canvas width,height: 256,256
+
+
+image width,height: 96,96
+
+
+zoom: 2.66666666667
+
+
+ROI reset
+
+
+made binary
+
+
+continuing
+
+
+valid
+
+
+[(14, 14)]
+
+
+(14, 14)
+
+
+47
+ 
+47
+
+
+47
+ 
+47
+
+
+47
+ 
+47
+
+
+115.625
+ 
+-9.375
+ 
+178.125
+ 
+53.125
+
+
+ROI should be on image now...
+
+
+240.625
+ 
+115.625
+ 
+303.125
+ 
+178.125
+
+
+ROI should be on image now...
+
+
+115.625
+ 
+240.625
+ 
+178.125
+ 
+303.125
+
+
+ROI should be on image now...
+
+
+-9.375
+ 
+115.625
+ 
+53.125
+ 
+178.125
+
+
+ROI should be on image now...
+
+
+115.625
+ 
+115.625
+ 
+178.125
+ 
+178.125
+
+
+ROI should be on image now...
+
+
+ROI reset
+
+
+made binary
+
+
+continuing
+
+
+valid
+
+
+[(14, 14)]
+
+
+(14, 14)
+
+
+47
+ 
+47
+
+
+47
+ 
+47
+
+
+47
+ 
+47
+
+
+115.625
+ 
+-9.375
+ 
+178.125
+ 
+53.125
+
+
+ROI should be on image now...
+
+
+240.625
+ 
+115.625
+ 
+303.125
+ 
+178.125
+
+
+ROI should be on image now...
+
+
+115.625
+ 
+240.625
+ 
+178.125
+ 
+303.125
+
+
+ROI should be on image now...
+
+
+-9.375
+ 
+115.625
+ 
+53.125
+ 
+178.125
+
+
+ROI should be on image now...
+
+
+115.625
+ 
+115.625
+ 
+178.125
+ 
+178.125
+
+
+ROI should be on image now...
+
+
+SNR calc
+
+
+1
+
+
+Max
+ 
+336.0
+
+
+Min
+ 
+-566.0
+
+
+canvas width,height: 300,300
+
+
+image width,height: 96,96
+
+
+zoom: 3.125
+
+
+GOT PIXELS
+
+
+GOT PIXELS
+
+
+GOT PIXELS
+
+
+GOT PIXELS
+
+
+/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/numpy/core/_methods.py:59: RuntimeWarning: Mean of empty slice.
+  warnings.warn("Mean of empty slice.", RuntimeWarning)
+
+/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/numpy/core/_methods.py:70: RuntimeWarning: invalid value encountered in double_scalars
+  ret = ret.dtype.type(ret / rcount)
+
+/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/numpy/core/_methods.py:82: RuntimeWarning: Degrees of freedom <= 0 for slice
+  warnings.warn("Degrees of freedom <= 0 for slice", RuntimeWarning)
+
+/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/numpy/core/_methods.py:94: RuntimeWarning: invalid value encountered in true_divide
+  arrmean, rcount, out=arrmean, casting='unsafe', subok=False)
+
+/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/numpy/core/_methods.py:116: RuntimeWarning: invalid value encountered in double_scalars
+  ret = ret.dtype.type(ret / rcount)
+
+GOT PIXELS
+
+
+GOT PIXELS
+
+
+GOT PIXELS
+
+
+GOT PIXELS
+
+
+GOT PIXELS
+
+
+GOT PIXELS
+
+
+canvas width,height: 300,300
+
+
+image width,height: 96,96
+
+
+zoom: 3.125
+
+
+SNR calc
+
+
+1
+
+
+Max
+ 
+336.0
+
+
+Min
+ 
+-566.0
+
+
+canvas width,height: 300,300
+
+
+image width,height: 96,96
+
+
+zoom: 3.125
+
+
+GOT PIXELS
+
+
+GOT PIXELS
+
+
+GOT PIXELS
+
+
+GOT PIXELS
+
+
+GOT PIXELS
+
+
+GOT PIXELS
+
+
+GOT PIXELS
+
+
+GOT PIXELS
+
+
+GOT PIXELS
+
+
+GOT PIXELS
+
+
+canvas width,height: 300,300
+
+
+image width,height: 96,96
+
+
+zoom: 3.125
+

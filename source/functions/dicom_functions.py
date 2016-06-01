@@ -4,6 +4,38 @@ from dicom.tag import Tag
 from dicom.dataset import Dataset
 import copy
 import numpy as np
+from viewer_functions import *
+
+def get_px_array(ds,enhanced=False,instance=None):
+	try:
+		rs = float(self.open_ds[0x28,0x1053].value)
+	except:
+		rs = 1.
+	try:
+		ri = float(self.open_ds[0x28,0x1052].value)
+	except:
+		ri = 0.
+	try:
+		ss = float(self.open_ds[0x2005,0x100E].value)
+	except:
+		ss = None
+	if enhanced:
+		if not instance:
+			print "PREVIEW ERROR: Instance/frame number not specified"
+			return None
+		rows = int(self.open_ds.Rows)
+		cols = int(self.open_ds.Columns)
+		print "Bits stored",self.open_ds.BitsStored
+		print "Rows",rows
+		print "Cols",cols
+		px_bytes = self.open_ds.PixelData[(tag['instance']-1)*(rows*cols*2):(tag['instance'])*(rows*cols*2)]
+		print "Len extracted bytes",len(px_bytes)
+		print "Len total px data",len(self.open_ds.PixelData)
+		print "Len image list",len(self.sorted_list)
+		px_float = px_bytes_to_array(px_bytes,rows,cols,rs=rs,ri=ri,ss=ss)
+	else:
+		px_float = generate_px_float(ds.pixel_array.astype(np.float64),rs,ri,ss)
+	return px_float
 
 
 
@@ -48,6 +80,9 @@ def add_all(dataset1,dataset2):
 				raise
 			dataset1.add_new(element.tag, element.VR, element.value)
 	return dataset1
+
+#def tag_sorter(dictitem):
+#	return dictitem[0:-2:1]
 	
 def collect_dicomdir_info(path,force_read=False):
 	tags= None
@@ -136,9 +171,10 @@ def collect_dicomdir_info(path,force_read=False):
 			else:
 				# Append instance UID with the frame number to give unique reference to each slice
 				instance_uid = ds.SOPInstanceUID+"_"+str(i).zfill(3)
+			pxfloat=get_px_array(ds,enhanced,i)
 			# Append the information to the "tag list" object
 			tags.append(dict([('date',date),('time',time),('name',name),('studyuid',study_uid),
 					('series',series),('seriesuid',series_uid),('studydesc',studydesc),
 					('seriesdesc',seriesdesc),('instance',i),('instanceuid',instance_uid),
-					('path',path),('enhanced',enhanced)]))
+					('path',path),('enhanced',enhanced),('px_array',pxfloat)]))
 	return tags
