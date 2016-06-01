@@ -285,44 +285,45 @@ class ToolboxHome(Frame):
 		for tag in self.sorted_list:
 			if tag['instanceuid'] in uid_array:
 				self.progress(10.*n/len(uid_array))
-				print "-------"
-				print tag['path']
-				print self.open_file
-				if not tag['path']==self.open_file:
-					print "Loading DICOM dataset"
-					self.open_ds=dicom.read_file(tag['path'])
-					self.open_file = tag['path']
-				if not tag['enhanced']:
-#					print tag['path']
-#					print type(tag['path'])
-					preview_images.append(self.open_ds)
-				else:
-#					ds = dicom.read_file(tag['path'])
-					print "Splitting slice "+str(tag['instance'])
-#					preview_images.append(get_frame_ds(self.open_ds,tag['instance']))
-					rows = int(self.open_ds.Rows)
-					cols = int(self.open_ds.Columns)
-					try:
-						rs = float(self.open_ds[0x28,0x1053].value)
-					except:
-						rs = 1.
-					try:
-						ri = float(self.open_ds[0x28,0x1052].value)
-					except:
-						ri = 0.
-					try:
-						ss = float(self.open_ds[0x2005,0x100E].value)
-					except:
-						ss = None
-					print "Bits stored",self.open_ds.BitsStored
-					print "Rows",rows
-					print "Cols",cols
-					px_bytes = self.open_ds.PixelData[(tag['instance']-1)*(rows*cols*2):(tag['instance'])*(rows*cols*2)]
-					print "Len extracted bytes",len(px_bytes)
-					print "Len total px data",len(self.open_ds.PixelData)
-					print "Len image list",len(self.sorted_list)
-					px_float = px_bytes_to_array(px_bytes,rows,cols,rs=rs,ri=ri,ss=ss)
-					preview_images.append(px_float)
+				preview_images.append(tag['px_array'])
+#				print "-------"
+#				print tag['path']
+#				print self.open_file
+#				if not tag['path']==self.open_file:
+#					print "Loading DICOM dataset"
+#					self.open_ds=dicom.read_file(tag['path'])
+#					self.open_file = tag['path']
+#				if not tag['enhanced']:
+##					print tag['path']
+##					print type(tag['path'])
+#					preview_images.append(self.open_ds)
+#				else:
+##					ds = dicom.read_file(tag['path'])
+#					print "Splitting slice "+str(tag['instance'])
+##					preview_images.append(get_frame_ds(self.open_ds,tag['instance']))
+#					rows = int(self.open_ds.Rows)
+#					cols = int(self.open_ds.Columns)
+#					try:
+#						rs = float(self.open_ds[0x28,0x1053].value)
+#					except:
+#						rs = 1.
+#					try:
+#						ri = float(self.open_ds[0x28,0x1052].value)
+#					except:
+#						ri = 0.
+#					try:
+#						ss = float(self.open_ds[0x2005,0x100E].value)
+#					except:
+#						ss = None
+#					print "Bits stored",self.open_ds.BitsStored
+#					print "Rows",rows
+#					print "Cols",cols
+#					px_bytes = self.open_ds.PixelData[(tag['instance']-1)*(rows*cols*2):(tag['instance'])*(rows*cols*2)]
+#					print "Len extracted bytes",len(px_bytes)
+#					print "Len total px data",len(self.open_ds.PixelData)
+#					print "Len image list",len(self.sorted_list)
+#					px_float = px_bytes_to_array(px_bytes,rows,cols,rs=rs,ri=ri,ss=ss)
+#					preview_images.append(px_float)
 					
 				n+=1
 		self.imcanvas.load_images(preview_images)
@@ -366,7 +367,8 @@ class ToolboxHome(Frame):
 	def build_dicom_tree(self):
 		print "function_started"
 		# This should sort the list into your initial order for the tree - maybe implement a more customised sort if necessary?
-		self.sorted_list = sorted(self.tag_list)
+		from operator import itemgetter
+		self.sorted_list = sorted(self.tag_list, key=itemgetter('name','date','time','studyuid','series','seriesuid','instance','instanceuid'))
 		
 		#~ i=0
 		print self.dirframe.dicomtree.get_children()
