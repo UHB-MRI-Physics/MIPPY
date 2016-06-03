@@ -4,6 +4,7 @@ from Tkinter import *
 #~ from ttk import *
 from PIL import Image,ImageTk
 import platform
+import scipy.stats as sps
 
 ########################################
 ########################################
@@ -322,12 +323,39 @@ class MIPPYCanvas(Canvas):
 		for y in range(im.rows):
 			for x in range(im.columns):
 				for i in rois:
+					if i==len(px):
+						px.append([])
 					if self.roi_list[i].contains((x*self.zoom_factor,y*self.zoom_factor)):
-						px.append(im.px_float[y][x])
+						px[i].append(im.px_float[y][x])
 		
 		print "GOT PIXELS"
 		return px
 	
+	def get_roi_statistics(self,rois=[]):
+		if len(self.roi_list)<1:
+			return None
+		else:
+			stats = []
+		px_list = self.get_roi_pixels()
+		for px in px_list:
+			stats.append(
+						{
+							'mean':		np.mean(px),
+							'std':		np.std(px),
+							'min':		np.amin(px),
+							'max':		np.amax(px),
+							'mode':		sps.mode(px),
+							'skewness':		sps.skew(px),
+							'kurtosis':		sps.kurtosis(px),
+							'cov':		sps.variation(px),
+#							'histogram':	sps.cumfreq(px),
+							'sum':		np.sum(px),
+							'area_px':		len(px)
+						}
+					)
+		print stats
+		return stats
+
 	def new_roi(self,coords,tags=[]):
 		for i in range(len(coords)):
 			j = i+1
@@ -427,6 +455,8 @@ class MIPPYCanvas(Canvas):
 				break
 		if not moving:
 			self.drawing_roi = True
+			# Need to add stuff to detect if "shift" or "ctrl" held when drawing, as
+			# in this case, don't want to delete existing ROIs
 			self.delete_rois()
 			self.temp = []
 			self.tempcoords.append((self.xmouse,self.ymouse))
@@ -582,6 +612,10 @@ class MIPPYCanvas(Canvas):
 	def draw_line_roi(self):
 		self.drawing_enabled=True
 		self.roi_mode='line'
+	
+
+		
+		
 
 class EasyViewer(Frame):
 	def __init__(self,master,im_array):
