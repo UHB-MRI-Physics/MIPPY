@@ -8,30 +8,29 @@ from viewer_functions import *
 
 def get_px_array(ds,enhanced=False,instance=None):
 	try:
-		rs = float(self.open_ds[0x28,0x1053].value)
+		rs = float(ds[0x28,0x1053].value)
 	except:
 		rs = 1.
 	try:
-		ri = float(self.open_ds[0x28,0x1052].value)
+		ri = float(ds[0x28,0x1052].value)
 	except:
 		ri = 0.
 	try:
-		ss = float(self.open_ds[0x2005,0x100E].value)
+		ss = float(ds[0x2005,0x100E].value)
 	except:
 		ss = None
 	if enhanced:
 		if not instance:
 			print "PREVIEW ERROR: Instance/frame number not specified"
 			return None
-		rows = int(self.open_ds.Rows)
-		cols = int(self.open_ds.Columns)
-		print "Bits stored",self.open_ds.BitsStored
+		rows = int(ds.Rows)
+		cols = int(ds.Columns)
+		print "Bits stored",ds.BitsStored
 		print "Rows",rows
 		print "Cols",cols
-		px_bytes = self.open_ds.PixelData[(tag['instance']-1)*(rows*cols*2):(tag['instance'])*(rows*cols*2)]
+		px_bytes = ds.PixelData[(instance-1)*(rows*cols*2):(instance)*(rows*cols*2)]
 		print "Len extracted bytes",len(px_bytes)
-		print "Len total px data",len(self.open_ds.PixelData)
-		print "Len image list",len(self.sorted_list)
+		print "Len total px data",len(ds.PixelData)
 		px_float = px_bytes_to_array(px_bytes,rows,cols,rs=rs,ri=ri,ss=ss)
 	else:
 		px_float = generate_px_float(ds.pixel_array.astype(np.float64),rs,ri,ss)
