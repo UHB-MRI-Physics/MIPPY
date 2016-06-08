@@ -1,5 +1,8 @@
 import os
 import csv
+from datetime import datetime
+import numpy as np
+import tkMessageBox
 
 def list_all_files(directory,file_list=[],recursive=False):
 	files_in_dir = os.listdir(directory)
@@ -27,6 +30,44 @@ def save_results(results,name=None,directory=None):
 			'SNR Mean': snr_mean,
 			'SNR Std': snr_std,
 			'SNR CoV': snr_cov}
-	"""
 	
-	pass
+	Values can be lists, e.g. multiple ROIs or profiles. However, all lists
+	must be of the same length.
+	"""
+	timestamp = str(datetime.now()).replace(" ","_").replace(":","-")
+	
+	if not name:
+		fname = "RESULTS_"+timestamp+".csv"
+	else:
+		fname = "RESULTS_"+timestamp+"_"+name+".csv"
+	
+	result_header = []
+	result_values = []
+	for key,value in results.items():
+		result_header.append(key)
+		result_values.append(value)
+	result_array = np.array(result_values,dtype=np.float64)
+	result_array = np.transpose(result_array)
+	try:
+		lines = np.shape(result_array)[1]
+	except IndexError:
+		result_array = np.reshape(result_array,(1,np.shape(result_array)[0]))
+	if not directory:
+		current_dir = os.getcwd()
+		outputdir = os.path.join(current_dir,"Results")
+		if not os.path.exists(outputdir):
+			os.makedirs(outputdir)
+	else:
+		outputdir = directory
+		if not os.path.exists(outputdir):
+			os.makedirs(outputdir)
+	outpath = os.path.join(outputdir,fname)
+	with open(outpath,'wb') as csvfile:
+		csvwriter = csv.writer(csvfile,delimiter=',')
+		csvwriter.writerow(result_header)
+		for row in result_array:
+			csvwriter.writerow(row)
+	
+	tkMessageBox.showinfo("INFO","Results saved to:\n"+outpath)
+	
+	return

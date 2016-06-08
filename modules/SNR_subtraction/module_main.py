@@ -2,6 +2,7 @@ from Tkinter import *
 from ttk import *
 from source.functions.viewer_functions import *
 import source.functions.image_processing as imp
+from source.functions.file_functions import *
 import tkMessageBox
 import os
 from PIL import Image,ImageTk
@@ -139,6 +140,7 @@ def snr_calc(win):
 		tkMessageBox.showerror("ERROR", "No ROI selected. Please create one or more"
 							+" regions to analyse.")
 		return
+	imnum = win.im2.active
 	sub_image = [win.im1.get_active_image().px_float-win.im2.get_active_image().px_float]
 	win.im2.load_images(sub_image)
 	win.im2.roi_list = win.im1.roi_list
@@ -149,6 +151,17 @@ def snr_calc(win):
 		snr_list.append(signal[i]['mean']/noise[i]['std']*np.sqrt(2))
 	print snr_list
 	print np.mean(snr_list)
+	
+	results = {
+		'SNR': np.mean(snr_list),
+		'Stdev': np.std(snr_list)
+		}
+	
+	save_results(results)
+	
+	win.im2.load_images(win.images_split[1])
+	win.im2.show_image(imnum)
+	
 	return
 
 def view_subtraction(win):
