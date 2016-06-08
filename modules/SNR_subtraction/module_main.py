@@ -139,24 +139,6 @@ def snr_calc(win):
 		tkMessageBox.showerror("ERROR", "No ROI selected. Please create one or more"
 							+" regions to analyse.")
 		return
-#	px1 = win.im1.get_active_image().px_float
-#	sub_images = None
-#	im_number = win.im2.active
-#	print im_number
-#	for i in range(len(win.im2.images)):
-#		sub_image = [win.im1.get_active_image().px_float-win.im2.get_active_image().px_float]
-#	win.im2.load_images(sub_image)
-##	win.im2.show_image(im_number)
-#	win.im2.roi_list = win.im1.roi_list
-#	snr_list = []
-#	for i in range(len(win.im1.roi_list)):
-#		sig = win.im1.get_roi_pixels([i])
-#		noi = win.im2.get_roi_pixels([i])
-#		snr_list.append(np.mean(sig)/np.std(noi,ddof=1)*np.sqrt(2))
-#	snr = np.mean(snr_list)
-#	tkMessageBox.showinfo("RESULT","SNR = "+str(np.round(snr,2)))
-#	win.im2.load_images(win.images_split[1])
-#	win.im2.show_image(im_number)
 	sub_image = [win.im1.get_active_image().px_float-win.im2.get_active_image().px_float]
 	win.im2.load_images(sub_image)
 	win.im2.roi_list = win.im1.roi_list
