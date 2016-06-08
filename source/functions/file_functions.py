@@ -34,7 +34,7 @@ def save_results(results,name=None,directory=None):
 	Values can be lists, e.g. multiple ROIs or profiles. However, all lists
 	must be of the same length.
 	"""
-	timestamp = str(datetime.now()).replace(" ","_").replace(":","-")
+	timestamp = str(datetime.now()).replace(" ","_").replace(":","")
 	
 	if not name:
 		fname = "RESULTS_"+timestamp+".csv"
