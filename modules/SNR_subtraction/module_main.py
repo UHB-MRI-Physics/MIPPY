@@ -147,8 +147,8 @@ def snr_calc(win):
 	signal = win.im1.get_roi_statistics()
 	noise = win.im2.get_roi_statistics()
 	snr_list = []
-	for i in range(len(signal)):
-		snr_list.append(signal[i]['mean']/noise[i]['std']*np.sqrt(2))
+	for i in range(len(signal['mean'])):
+		snr_list.append(signal['mean'][i]/noise['std'][i]*np.sqrt(2))
 	print snr_list
 	print np.mean(snr_list)
 	
@@ -169,5 +169,5 @@ def view_subtraction(win):
 	px1 = win.im1.get_active_image().px_float
 	px2 = win.im2.get_active_image().px_float
 	sub = px1-px2
-	quick_display(win,sub)
+	quick_display(sub,win)
 	return

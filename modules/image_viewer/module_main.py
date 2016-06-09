@@ -87,7 +87,9 @@ def get_roi_statistics(window):
 #	std = np.std(px)
 #	area = len(px)*canvas.get_active_image().xscale*canvas.get_active_image().yscale
 #	tkMessageBox.showinfo('ROI STATS','Mean: %s\nStandard Deviation %s\nArea: %s' %(np.round(mean,2),np.round(std,2),np.round(area,2)))
-	window.imcanvas.get_roi_statistics()
+	results = window.imcanvas.get_roi_statistics()
+	
+	display_results(results,window)
 
 def zoom_in(window):
 	pass

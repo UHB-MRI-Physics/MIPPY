@@ -1,17 +1,97 @@
 import dicom
 import numpy as np
 from Tkinter import *
-#~ from ttk import *
+from ttk import *
 from PIL import Image,ImageTk
 import platform
 import scipy.stats as sps
+from datetime import datetime
 
 ########################################
 ########################################
 """
 GENERIC FUNCTIONS NOT ATTACHED TO CLASSES
 """
-def quick_display(master_window,im_array):
+
+def display_results(results,master_window):
+	"""
+	Method for displaying results table in a pop-up window.
+	
+	Results are expected in the format of a dictionary, e.g.
+		results = {
+			'SNR Tra': snr_tra,
+			'SNR Sag': snr_sag,
+			'SNR Cor': snr_cor,
+			'SNR Mean': snr_mean,
+			'SNR Std': snr_std,
+			'SNR CoV': snr_cov}
+	
+	Master needs to be the variable pointing to the parent window.
+	
+	"""
+	timestamp = str(datetime.now()).replace(" ","_").replace(":","")
+	
+#	if not name:
+#		fname = "RESULTS_"+timestamp+".csv"
+#	else:
+#		fname = "RESULTS_"+timestamp+"_"+name+".csv"
+	
+	result_header = []
+	result_values = []
+	for key,value in results.items():
+		result_header.append(key)
+		result_values.append(value)
+	result_array = np.array(result_values,dtype=np.float64)	# There's a problem here but I'm not sure what it is...
+	result_array = np.transpose(result_array)
+	try:
+		lines = np.shape(result_array)[1]
+	except IndexError:
+		result_array = np.reshape(result_array,(1,np.shape(result_array)[0]))
+#	if not directory:
+#		current_dir = os.getcwd()
+#		outputdir = os.path.join(current_dir,"Results")
+#		if not os.path.exists(outputdir):
+#			os.makedirs(outputdir)
+#	else:
+#		outputdir = directory
+#		if not os.path.exists(outputdir):
+#			os.makedirs(outputdir)
+#	outpath = os.path.join(outputdir,fname)
+#	with open(outpath,'wb') as csvfile:
+#		csvwriter = csv.writer(csvfile,delimiter=',')
+#		csvwriter.writerow(result_header)
+#		for row in result_array:
+#			csvwriter.writerow(row)
+#	
+#	tkMessageBox.showinfo("INFO","Results saved to:\n"+outpath)
+	
+	popup = Toplevel(master_window)
+	popup.title = 'Results'
+	popup.holder = Frame(popup)
+	popup.tree = Treeview(popup.holder)
+	popup.tree['columns']=range(len(result_header))
+	for i,value in enumerate(result_header):
+		popup.tree.heading(i,text=value)
+		popup.tree.column(i,width=200,stretch=True)
+	popup.tree.column('#0',width=100,stretch=False)
+	popup.scrollbarx = Scrollbar(popup.holder,orient='horizontal')
+	popup.scrollbarx.config(command=popup.tree.xview)
+	popup.scrollbary = Scrollbar(popup.holder,orient='vertical')
+	popup.scrollbary.config(command=popup.tree.yview)
+	for row in result_array:
+		popup.tree.insert('','end',values=row)
+	popup.tree.grid(row=0,column=0)
+	popup.scrollbarx.grid(row=1,column=0)
+	popup.scrollbary.grid(row=0,column=1)
+	popup.holder.pack()
+	
+
+	
+	
+	return
+
+
+def quick_display(im_array,master_window):
 	"""
 	Requires a numpy array and an existing Tk instance to use as a
 	master window.  im_array can be 2D or 3D.
@@ -334,25 +414,23 @@ class MIPPYCanvas(Canvas):
 	def get_roi_statistics(self,rois=[]):
 		if len(self.roi_list)<1:
 			return None
-		else:
-			stats = []
+#		else:
+#			stats = []
 		px_list = self.get_roi_pixels()
-		for px in px_list:
-			stats.append(
-						{
-							'mean':		np.mean(px),
-							'std':		np.std(px),
-							'min':		np.amin(px),
-							'max':		np.amax(px),
-							'mode':		sps.mode(px),
-							'skewness':		sps.skew(px),
-							'kurtosis':		sps.kurtosis(px),
-							'cov':		sps.variation(px),
+		stats = {
+				'mean':		map(np.mean,px_list),
+				'std':		map(np.std,px_list),
+				'min':		map(np.amin,px_list),
+				'max':		map(np.amax,px_list),
+				'mode':		map(sps.mode,px_list),
+				'skewness':		map(sps.skew,px_list),
+				'kurtosis':		map(sps.kurtosis,px_list),
+				'cov':		map(sps.variation,px_list),
 #							'histogram':	sps.cumfreq(px),
-							'sum':		np.sum(px),
-							'area_px':		len(px)
-						}
-					)
+				'sum':		map(np.sum,px_list),
+				'area_px':		map(len,px_list)
+				}
+
 		print stats
 		return stats
 
