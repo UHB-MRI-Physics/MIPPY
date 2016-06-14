@@ -343,7 +343,7 @@ class MIPPYCanvas(Canvas):
 		self.drawing_enabled = drawing_enabled
 		self.width=width
 		self.height=height
-		self.zoom_factor=None
+		#~ self.zoom_factor=None
 		self.pixel_array=None
 		self.img_scrollbar=None
 	
@@ -475,8 +475,9 @@ class MIPPYCanvas(Canvas):
 			self.images.append(MIPPYImage(ref))
 			n+=1
 		
-		for image in self.images:
-			image.resize(self.width,self.height)
+		#~ for image in self.images:
+			#~ image.resize(self.width,self.height)
+			#~ image.zoom(self.zoom_factor)
 			
 		self.global_min,self.global_max = get_global_min_and_max(self.images)
 		self.global_rangemin = self.images[0].rangemin
@@ -486,13 +487,15 @@ class MIPPYCanvas(Canvas):
 		self.default_level = self.global_min + self.default_window/2
 		self.level = self.default_level
 		self.window = self.default_window
+		self.zoom_factor = np.amin([float(self.width)/float(self.images[0].columns),float(self.height)/float(self.images[0].rows)])
 		
 		for i in range(len(self.images)):
 			self.progress(45.*i/len(self.images)+55)
+			self.images[i].zoom(self.zoom_factor)
 			self.images[i].wl_and_display(window=self.window,level=self.level)
 		self.configure_scrollbar()
 		self.show_image(1)
-		self.zoom_factor = np.amax([float(self.width)/float(self.get_active_image().columns),float(self.height)/float(self.get_active_image().rows)])
+		
 		print "canvas width,height: %s,%s" %(self.width,self.height)
 		print "image width,height: %s,%s" %(self.get_active_image().columns,self.get_active_image().rows)
 		print "zoom: %s" %(self.zoom_factor)
@@ -829,6 +832,11 @@ class MIPPYImage():
 	def resize(self,dim1=256,dim2=256):
 		self.image = self.image.resize((dim1,dim2), Image.ANTIALIAS)
 		self.set_display_image()
+		return
+	
+	def zoom(self,zoom):
+		self.image = self.image.resize((int(np.round(self.columns*zoom,0)),int(np.round(self.rows*zoom,0))), Image.ANTIALIAS)
+		self.set_display_image
 		return
 		
 	def apply_overlay(self):

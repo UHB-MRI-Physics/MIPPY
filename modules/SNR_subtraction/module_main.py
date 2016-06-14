@@ -153,11 +153,25 @@ def snr_calc(win):
 	print np.mean(snr_list)
 	
 	results = {
-		'SNR': np.mean(snr_list),
-		'Stdev': np.std(snr_list)
+		#~ 'Signal': signal['mean'],
+		#~ 'Noise': noise['std'],
+		'Sig 1': signal['mean'][0],
+		'Sig 2': signal['mean'][1],
+		'Sig 3': signal['mean'][2],
+		'Sig 4': signal['mean'][3],
+		'Sig 5': signal['mean'][4],
+		'Noi 1': noise['std'][0],
+		'Noi 2': noise['std'][1],
+		'Noi 3': noise['std'][2],
+		'Noi 4': noise['std'][3],
+		'Noi 5': noise['std'][4],
+		'SNR (mean)': np.mean(snr_list),
+		'Stdev (SNR)': np.std(snr_list)
 		}
+	print results
 	
 	save_results(results)
+	#~ display_results(results,win)
 	
 	win.im2.load_images(win.images_split[1])
 	win.im2.show_image(imnum)

@@ -33,6 +33,8 @@ print "    MIPPY viewer functions"
 from functions.viewer_functions import *
 print "    MIPPY DICOM functions"
 from functions.dicom_functions import *
+print "    Garbage Collectio"
+import gc
 
 print "Initialising GUI...\n"
 
@@ -460,6 +462,7 @@ class ToolboxHome(Frame):
 				active_module = importlib.import_module(module_name)
 				reload(active_module)
 			preload_dicom = active_module.preload_dicom()
+			#~ if preload_dicom=='full':
 			if preload_dicom:
 				self.datasets_to_pass = []
 				for tag in self.sorted_list:
@@ -468,6 +471,7 @@ class ToolboxHome(Frame):
 						if not tag['path']==self.open_file:
 							self.open_ds = dicom.read_file(tag['path'])
 							self.open_file = tag['path']
+							gc.collect()
 						if not tag['enhanced']:
 							print tag['path']
 							print type(tag['path'])
@@ -477,6 +481,11 @@ class ToolboxHome(Frame):
 							print tag['path']
 							print type(tag['path'])
 							self.datasets_to_pass.append(get_frame_ds(self.open_ds,tag['instance']))
+			#~ elif preload_dicom=='minimal':
+				#~ self.datasets_to_pass = []
+				#~ for tag in self.sorted_list:
+					#~ if tag['instanceuid'] in self.active_uids:
+						#~ self.datasets_to_pass.append(tag)
 			else:
 				self.datasets_to_pass = []
 				for uid in self.active_uids:
