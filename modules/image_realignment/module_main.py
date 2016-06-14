@@ -1,17 +1,10 @@
-import sys
 from Tkinter import *
 from ttk import *
 from source.functions.viewer_functions import *
 import os
 from PIL import Image,ImageTk
-if not "image_registration" in sys.modules:
-        import image_registration
-        from image_registration import im_reg as im_reg
-##        from image_registration import image_registration as im_reg
-else:
-        reload(image_registration)        
+from image_registration import image_registration as im_reg
 import time
-
 
 def preload_dicom():
 	"""
@@ -110,14 +103,13 @@ def execute(master_window,dicomdir,images):
         win.ref = StringVar(win)
         win.ref.set("Dynamic Number")
         win.b_reference = OptionMenu(win.buttons,win.ref,"Dynamic Number","Average Image")
-        if win.ref.get()=="Dynamic Number":
-                command=lambda:show_ref(win)
-        elif win.ref.get()=="Average Image":
-                command=lambda:hide_ref(win)
         win.ref_in = StringVar(win)
         win.ref_in.set(1)
         win.l_ref_in = Label(win.buttons, text="Ref.#:", width=5)
         win.b_ref_in = Entry(win.buttons,textvariable=win.ref_in,width=4)
+        # win.buttons.bind(win.ref.get()=="Average Image",win.b_ref_in.configure(state="disabled"))
+        # win.buttons.pack()
+        # win.b_ref_in.bind(win.ref.get()=="Dynamic Number",win.b_ref_in.configure(state="normal"))
 
         win.l_method=Label(win.buttons,text="Optimisation Method:")
         win.method = StringVar(win)
@@ -186,7 +178,7 @@ def execute(master_window,dicomdir,images):
 
         # Run buttons
         win.run_buttons=Frame(win)
-        print win.c_2D_in.get()
+
         win.Im4D=np.array([a.px_float for a in win.imcanvas_orig.images]).reshape((win.dyns,win.slcs,win.rows,win.cols))
         win.b_run = Button(win.run_buttons, text="Realign", command=lambda:realign(win))
         win.b_save = Button(win.run_buttons, text="Save", command=lambda:save(win,dicomdir,images))
@@ -217,18 +209,6 @@ def status_clear(win):
         win.b_message.config(state=DISABLED)
         win.update()
 
-def hide_ref(win):
-        """Greys out Dynamic Nmber window"""
-        if win.ref.get()=="Average Image":
-                win.b_ref_in.configure(state="disabled")
-        return
-
-def show_ref(win):
-        """Activates Dynamic Number windows"""
-        if win.ref.get()=="Dynamic Number":
-                win.b_ref_in.configure(state="normal")
-                win.b_ref_in.focus()        
-
 def realign(win):
         status_clear(win)
         status(win,"Checking parameters... \n") 
@@ -239,8 +219,7 @@ def realign(win):
                                                         tolerance=float(win.tol_in.get()),
                                                         max_iter=int(win.maxiter_in.get()),
                                                         edge=win.edges_in.get(),
-                                                        c_2D=win.c_2D_in.get())
-                        status(win,"Parameters OK! \n")
+                                                        2D=win.c_2D_in.get())
                 except TypeError:
                         start_time=time.time()
                         status(win,"Incorrect Optimisation Method for this data-set! \n")
@@ -249,7 +228,7 @@ def realign(win):
                                                         tolerance=float(win.tol_in.get()),
                                                         max_iter=int(win.maxiter_in.get()),
                                                         edge=win.edges_in.get(),
-                                                        c_2D=win.c_2D_in.get())                                
+                                                        2D=win.c_2D_in.get())                                
         else:
                 try:
                         start_time=time.time()
@@ -258,7 +237,7 @@ def realign(win):
                                                         tolerance=float(win.tol_in.get()),
                                                         max_iter=int(win.maxiter_in.get()),
                                                         edge=win.edges_in.get(),
-                                                        c_2D=win.c_2D_in.get())
+                                                        2D=win.c_2D_in.get())
                 except TypeError:
                         start_time=time.time()
                         status(win,"Incorrect Optimisation Method for this data-set! \n")
@@ -267,7 +246,7 @@ def realign(win):
                                                         tolerance=float(win.tol_in.get()),
                                                         max_iter=int(win.maxiter_in.get()),
                                                         edge=win.edges_in.get(),
-                                                        c_2D=win.c_2D_in.get())
+                                                        2D=win.c_2D_in.get())
 
         run_time = time.time()-start_time
         

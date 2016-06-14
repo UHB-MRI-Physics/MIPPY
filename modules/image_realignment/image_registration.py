@@ -10,7 +10,6 @@ import os
 import sys
 from subprocess import call
 import time
-#import matplotlib.pyplot as plt
 
 def search_directory(dirs):
     """Function recursively searches input directory and appends found images
@@ -28,65 +27,62 @@ def search_directory(dirs):
             except:
                 continue
 
-def search_min(fits,Im_in,Im_ref,edge,c_2D):
-    if c_2D==0:
-        Im_in_=rotate(Im_in,fits[3],axes=(0,1), reshape=False)
-        Im_in_=rotate(Im_in_,fits[4],axes=(0,2), reshape=False)
-        Im_in_=rotate(Im_in_,fits[5],axes=(1,2), reshape=False)
-        Im_in_=shift(Im_in_,[fits[0],fits[1],fits[2]])
-    elif c_2D==1:
-        Im_in_=rotate(Im_in,fits[3],axes=(0,1), reshape=False)
-        Im_in_=rotate(Im_in_,fits[4],axes=(0,2), reshape=False)
-        Im_in_=shift(Im_in_,[0,0,fits[2]])
-    Im_in_edge=make_edges(Im_in_,c_2D)
-    Im_in_ref_edge=make_edges(Im_ref,c_2D)
+def search_min(fits,Im_in,Im_ref,edge):
+    Im_in_=rotate(Im_in,fits[3],axes=(0,1), reshape=False)
+    Im_in_=rotate(Im_in_,fits[4],axes=(0,2), reshape=False)
+    Im_in_=rotate(Im_in_,fits[5],axes=(1,2), reshape=False)
+    Im_in_=shift(Im_in_,[fits[0],fits[1],fits[2]])
+    Im_in_edge=make_edges(Im_in_)
+    Im_in_ref_edge=make_edges(Im_ref)
+#    print np.sum((Im_ref-Im_in_)*(Im_ref-Im_in_))
     return np.sum((100-edge)*(Im_ref-Im_in_)*(Im_ref-Im_in_)
                   +edge*(Im_in_ref_edge-Im_in_edge)*(Im_in_ref_edge-Im_in_edge))
 
-def search_min_Tx(Tx,Im_in,Im_ref,edge,c_2D):
+def search_min_Tx(Tx,Im_in,Im_ref,edge):
     Im_in_=shift(Im_in,[Tx,0,0])
-    Im_in_edge=make_edges(Im_in_,c_2D)
-    Im_in_ref_edge=make_edges(Im_ref,c_2D)
+    Im_in_edge=make_edges(Im_in_)
+    Im_in_ref_edge=make_edges(Im_ref)
 #    print np.sum((Im_ref-Im_in_)*(Im_ref-Im_in_))
     return np.sum((100-edge)*(Im_ref-Im_in_)*(Im_ref-Im_in_)
                   +edge*(Im_in_ref_edge-Im_in_edge)*(Im_in_ref_edge-Im_in_edge))
 
-def search_min_Ty(Ty,Im_in,Im_ref,edge,c_2D):
+def search_min_Ty(Ty,Im_in,Im_ref,edge):
     Im_in_=shift(Im_in,[0,Ty,0])
-    Im_in_edge=make_edges(Im_in_,c_2D)
-    Im_in_ref_edge=make_edges(Im_ref,c_2D)
+    Im_in_edge=make_edges(Im_in_)
+    Im_in_ref_edge=make_edges(Im_ref)
 #    print np.sum((Im_ref-Im_in_)*(Im_ref-Im_in_))
     return np.sum((100-edge)*(Im_ref-Im_in_)*(Im_ref-Im_in_)
                   +edge*(Im_in_ref_edge-Im_in_edge)*(Im_in_ref_edge-Im_in_edge))
 
-def search_min_Tz(Tz,Im_in,Im_ref,edge,c_2D):
+def search_min_Tz(Tz,Im_in,Im_ref,edge):
     Im_in_=shift(Im_in,[0,0,Tz])
-    Im_in_edge=make_edges(Im_in_,c_2D)
-    Im_in_ref_edge=make_edges(Im_ref,c_2D)
+    Im_in_edge=make_edges(Im_in_)
+    Im_in_ref_edge=make_edges(Im_ref)
 #    print np.sum((Im_ref-Im_in_)*(Im_ref-Im_in_))
     return np.sum((100-edge)*(Im_ref-Im_in_)*(Im_ref-Im_in_)
                   +edge*(Im_in_ref_edge-Im_in_edge)*(Im_in_ref_edge-Im_in_edge))
 
-def search_min_x(alpha,Im_in,Im_ref,edge,c_2D):
+def search_min_x(alpha,Im_in,Im_ref,edge):
     Im_in_=rotate(Im_in,alpha,axes=(0,1),reshape=False)
-    Im_in_edge=make_edges(Im_in_,c_2D)
-    Im_in_ref_edge=make_edges(Im_ref,c_2D)    
+    Im_in_edge=make_edges(Im_in_)
+    Im_in_ref_edge=make_edges(Im_ref)
+    
 #    print np.sum((Im_ref-Im_in_)*(Im_ref-Im_in_))
     return np.sum((100-edge)*(Im_ref-Im_in_)*(Im_ref-Im_in_)
                   +edge*(Im_in_ref_edge-Im_in_edge)*(Im_in_ref_edge-Im_in_edge))
 
-def search_min_y(beta,Im_in,Im_ref,edge,c_2D):
+def search_min_y(beta,Im_in,Im_ref,edge):
     Im_in_=rotate(Im_in,beta,axes=(0,2),reshape=False)
-    Im_in_edge=make_edges(Im_in_,c_2D)
-    Im_in_ref_edge=make_edges(Im_ref,c_2D)
+    Im_in_edge=make_edges(Im_in_)
+    Im_in_ref_edge=make_edges(Im_ref)
 #    print np.sum((Im_ref-Im_in_)*(Im_ref-Im_in_))
     return np.sum((100-edge)*(Im_ref-Im_in_)*(Im_ref-Im_in_)
                   +edge*(Im_in_ref_edge-Im_in_edge)*(Im_in_ref_edge-Im_in_edge))
 
-def search_min_z(gamma,Im_in,Im_ref,edge,c_2D):
+def search_min_z(gamma,Im_in,Im_ref,edge):
     Im_in_=rotate(Im_in,gamma,axes=(1,2),reshape=False)
-    Im_in_edge=make_edges(Im_in_,c_2D)
-    Im_in_ref_edge=make_edges(Im_ref,c_2D)
+    Im_in_edge=make_edges(Im_in_)
+    Im_in_ref_edge=make_edges(Im_ref)
 #    print np.sum((Im_ref-Im_in_)*(Im_ref-Im_in_))
     return np.sum((100-edge)*(Im_ref-Im_in_)*(Im_ref-Im_in_)
                   +edge*(Im_in_ref_edge-Im_in_edge)*(Im_in_ref_edge-Im_in_edge))
@@ -94,29 +90,12 @@ def search_min_z(gamma,Im_in,Im_ref,edge,c_2D):
 def rad(deg):
     return np.pi*deg/180
 
-def make_edges(Im3D_in,c_2D):
-    Im3D=np.zeros(np.shape(Im3D_in))
-    if c_2D==0:
-        dz=sp.ndimage.sobel(Im3D_in,0)
-        dy=sp.ndimage.sobel(Im3D_in,1)
-        dx=sp.ndimage.sobel(Im3D_in,2)
-        Im3D=np.hypot(dz,dy,dx)        
-    elif c_2D==1:
-        for n in range(np.size(Im3D_in,0)):
-            dy=sp.ndimage.sobel(Im3D_in[n,:,:],0)
-            dx=sp.ndimage.sobel(Im3D_in[n,:,:],1)
-            Im3D[n,:,:]=np.hypot(dy,dx)
-
+def make_edges(Im3D_in):
+    dz=sp.ndimage.sobel(Im3D_in,0)
+    dy=sp.ndimage.sobel(Im3D_in,1)
+    dx=sp.ndimage.sobel(Im3D_in,2)
+    Im3D=np.hypot(dz,dy,dx)
     Im3D*=255.0/np.max(Im3D)
-    print np.max(Im3D)
-##    plt.imshow(Im3D_in[np.floor(np.size(Im3D_in,0)/2),:,:])
-##    plt.axis('off')
-##    plt.show()
-##    plt.close()
-##    plt.imshow(Im3D[np.floor(np.size(Im3D,0)/2),:,:])
-##    plt.axis('off')
-##    plt.show()
-##    plt.close()
     return(Im3D)
 
 # MAIN
@@ -129,7 +108,7 @@ def make_edges(Im3D_in,c_2D):
 #T  = [[1,0,0,Tx],[0,1,0,Ty],[0,0,1,Tz],[0,0,0,1]]
 
 # loading data set
-def im_reg(Im4D,ref=1,ref_av=False,min_method='L-BFGS-B',tolerance=0.001,max_iter=100,edge=0,c_2D=1):
+def image_registration(Im4D,ref=1,ref_av=False,min_method='L-BFGS-B',tolerance=0.001,max_iter=100,edge=0,2D=1):
 
     start_time = time.time()
 
@@ -137,12 +116,12 @@ def im_reg(Im4D,ref=1,ref_av=False,min_method='L-BFGS-B',tolerance=0.001,max_ite
     Im4D_out = np.zeros(np.shape(Im4D))
     fits=np.zeros((dyns,6))
 
-    Tx=0.
-    Ty=0.
-    Tz=0.
-    alpha=0.
-    beta=0.
-    gamma=0.
+    Tx=0.1
+    Ty=0.1
+    Tz=0.1
+    alpha=1.
+    beta=1.
+    gamma=1.
     
     if ref_av==True:
         Im_ref = Im4D.mean(0)
@@ -151,77 +130,60 @@ def im_reg(Im4D,ref=1,ref_av=False,min_method='L-BFGS-B',tolerance=0.001,max_ite
 
     for dyn in range(dyns):
         start_loop=time.time()
-        
         start_fit=time.time()
-        result = minimize(search_min_Tx,Tx,args=(Im4D[dyn,:,:,:],Im_ref,edge,c_2D),tol=tolerance,method=min_method,options={'maxiter':max_iter},
+        result = minimize(search_min_Tx,Tx,args=(Im4D[dyn,:,:,:],Im_ref,edge),tol=tolerance,method=min_method,options={'maxiter':max_iter},
                          bounds=[(-round(0.2*np.size(Im4D,2)),round(0.2*np.size(Im4D,2)))])
         Tx = result.x
         Im4D_out[dyn,:,:,:] = shift(Im4D[dyn,:,:,:],[Tx,0,0])
         print("Tx fit took %s seconds" %int(time.time()-start_fit))
 
         start_fit=time.time()
-        result = minimize(search_min_Ty,Ty,args=(Im4D_out[dyn,:,:,:],Im_ref,edge,c_2D),tol=tolerance,method=min_method,options={'maxiter':max_iter},
+        result = minimize(search_min_Ty,Ty,args=(Im4D_out[dyn,:,:,:],Im_ref,edge),tol=tolerance,method=min_method,options={'maxiter':max_iter},
                          bounds=[(-round(0.2*np.size(Im4D,3)),round(0.2*np.size(Im4D,3)))])
         Ty = result.x
         Im4D_out[dyn,:,:,:] = shift(Im4D_out[dyn,:,:,:],[0,Ty,0])
         print("Ty fit took %s seconds" %int(time.time()-start_fit))
 
-        if c_2D==0:
-            start_fit=time.time()
-            result = minimize(search_min_Tz,Tz,args=(Im4D_out[dyn,:,:,:],Im_ref,edge,c_2D),tol=tolerance,method=min_method,options={'maxiter':max_iter},
-                             bounds=[(-round(0.2*np.size(Im4D,1)),round(0.2*np.size(Im4D,1)))])
+        start_fit=time.time()
+        result = minimize(search_min_Tz,Tz,args=(Im4D_out[dyn,:,:,:],Im_ref,edge),tol=tolerance,method=min_method,options={'maxiter':max_iter},
+                         bounds=[(-round(0.2*np.size(Im4D,1)),round(0.2*np.size(Im4D,1)))])
+        if 2D=1:
             Tz = result.x
             Im4D_out[dyn,:,:,:] = shift(Im4D_out[dyn,:,:,:],[0,0,Tz])
             print("Tz fit took %s seconds" %int(time.time()-start_fit))
 
             start_fit=time.time()
-            result = minimize(search_min_y,beta,args=(Im4D_out[dyn,:,:,:],Im_ref,edge,c_2D),tol=tolerance,method=min_method,
+            result = minimize(search_min_z,gamma,args=(Im4D_out[dyn,:,:,:],Im_ref,edge),tol=tolerance,method=min_method,
                               bounds=[(-45,45)],options={'maxiter':max_iter})
-            beta = result.x
-            Im4D_out[dyn,:,:,:] = rotate(Im4D_out[dyn,:,:,:],beta,axes=(0,2),reshape=False)
-            print("beta fit took %s seconds" %int(time.time()-start_fit))
+            gamma = result.x
+            Im4D_out[dyn,:,:,:] = rotate(Im4D_out[dyn,:,:,:],gamma,axes=(1,2),reshape=False)
+            print("gamma fit took %s seconds" %int(time.time()-start_fit))
 
             start_fit=time.time()
-            result = minimize(search_min_x,alpha,args=(Im4D_out[dyn,:,:,:],Im_ref,edge,c_2D),tol=tolerance,method=min_method,
+            result = minimize(search_min_y,beta,args=(Im4D_out[dyn,:,:,:],Im_ref,edge),tol=tolerance,method=min_method,
                               bounds=[(-45,45)],options={'maxiter':max_iter})
-            alpha = result.x
-            Im4D_out[dyn,:,:,:] = rotate(Im4D_out[dyn,:,:,:],alpha,axes=(0,1),reshape=False)
-            print("alpha fit took %s seconds" %int(time.time()-start_fit))
-            
-        elif c_2D==1:
-            Tz = 0
-            alpha = 0
-            beta = 0
+        beta = result.x
+        Im4D_out[dyn,:,:,:] = rotate(Im4D_out[dyn,:,:,:],beta,axes=(0,2),reshape=False)
+        print("beta fit took %s seconds" %int(time.time()-start_fit))
 
-        
         start_fit=time.time()
-        result = minimize(search_min_z,gamma,args=(Im4D_out[dyn,:,:,:],Im_ref,edge,c_2D),tol=tolerance,method=min_method,
+        result = minimize(search_min_x,alpha,args=(Im4D_out[dyn,:,:,:],Im_ref,edge),tol=tolerance,method=min_method,
                           bounds=[(-45,45)],options={'maxiter':max_iter})
-        gamma = result.x
-        Im4D_out[dyn,:,:,:] = rotate(Im4D_out[dyn,:,:,:],gamma,axes=(1,2),reshape=False)
-        print("gamma fit took %s seconds" %int(time.time()-start_fit))           
-        
-        if c_2D==0:
-            fits[dyn,:]=[Tx[0],Ty[0],Tz[0],alpha[0],beta[0],gamma[0]]
-        elif c_2D==1:
-            fits[dyn,:]=[Tx[0],Ty[0],0,0,0,gamma[0]]
+        alpha = result.x
+        Im4D_out[dyn,:,:,:] = rotate(Im4D_out[dyn,:,:,:],alpha,axes=(0,1),reshape=False)
+        print("alpha fit took %s seconds" %int(time.time()-start_fit))
+
+        fits[dyn,:]=[Tx[0],Ty[0],Tz[0],alpha[0],beta[0],gamma[0]]
 
         start_fit=time.time()
 ##        try:
-##        if c_2D==0:
-        result = minimize(search_min,fits[dyn,:],args=(Im4D_out[dyn,:,:,:],Im_ref,edge,c_2D),tol=tolerance*0.1,method=min_method,options={'maxiter':10*max_iter},
-                          bounds=[(fits[dyn,0]-0.2*abs(fits[dyn,0]),fits[dyn,0]+0.2*abs(fits[dyn,0])),
-                                  (fits[dyn,1]-0.2*abs(fits[dyn,1]),fits[dyn,1]+0.2*abs(fits[dyn,1])),
-                                  (fits[dyn,2]-0.2*abs(fits[dyn,2]),fits[dyn,2]+0.2*abs(fits[dyn,2])),
-                                  (fits[dyn,3]-0.2*abs(fits[dyn,3]),fits[dyn,3]+0.2*abs(fits[dyn,3])),
-                                  (fits[dyn,4]-0.2*abs(fits[dyn,4]),fits[dyn,4]+0.2*abs(fits[dyn,4])),
-                                  (fits[dyn,5]-0.2*abs(fits[dyn,5]),fits[dyn,5]+0.2*abs(fits[dyn,5]))])
-##        elif c_2D==1:
-##            result = minimize(search_min,fits[dyn,:],args=(Im4D_out[dyn,:,:,:],Im_ref,edge,c_2D),tol=tolerance*0.1,method=min_method,options={'maxiter':10*max_iter},
-##                          bounds=[(fits[dyn,0]-0.2*abs(fits[dyn,0]),fits[dyn,0]+0.2*abs(fits[dyn,0])),
-##                                  (fits[dyn,1]-0.2*abs(fits[dyn,1]),fits[dyn,1]+0.2*abs(fits[dyn,1])),
-##                                  (fits[dyn,3]-0.2*abs(fits[dyn,3]),fits[dyn,3]+0.2*abs(fits[dyn,3])),
-##                                  (fits[dyn,4]-0.2*abs(fits[dyn,4]),fits[dyn,4]+0.2*abs(fits[dyn,4]))])
+        result = minimize(search_min,fits[dyn,:],args=(Im4D_out[dyn,:,:,:],Im_ref,edge),tol=tolerance*0.1,method=min_method,options={'maxiter':10*max_iter},
+                      bounds=[(fits[dyn,0]-0.2*abs(fits[dyn,0]),fits[dyn,0]+0.2*abs(fits[dyn,0])),
+                              (fits[dyn,1]-0.2*abs(fits[dyn,1]),fits[dyn,1]+0.2*abs(fits[dyn,1])),
+                              (fits[dyn,2]-0.2*abs(fits[dyn,2]),fits[dyn,2]+0.2*abs(fits[dyn,2])),
+                              (fits[dyn,3]-0.2*abs(fits[dyn,3]),fits[dyn,3]+0.2*abs(fits[dyn,3])),
+                              (fits[dyn,4]-0.2*abs(fits[dyn,4]),fits[dyn,4]+0.2*abs(fits[dyn,4])),
+                              (fits[dyn,5]-0.2*abs(fits[dyn,5]),fits[dyn,5]+0.2*abs(fits[dyn,5]))])
 ##        except TypeError:
 ##            result = minimize(search_min,fits[dyn,:],args=(Im4D_out[dyn,:,:,:],Im_ref),tol=tolerance*0.1,options={'maxiter':10*max_iter},
 ##                      bounds=[(fits[dyn,0]-0.2*fits[dyn,0],fits[dyn,0]+0.2*fits[dyn,0]),
