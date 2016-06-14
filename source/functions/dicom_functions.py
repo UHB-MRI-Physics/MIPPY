@@ -5,6 +5,7 @@ from dicom.dataset import Dataset
 import copy
 import numpy as np
 from viewer_functions import *
+import gc
 
 def get_px_array(ds,enhanced=False,instance=None):
 	try:
@@ -95,6 +96,7 @@ def collect_dicomdir_info(path,force_read=False):
 	#Read file, if not DICOM then ignore
 	try:
 		ds = dicom.read_file(path, force=force_read)				
+		gc.collect()
 	except Exception:
 		print path+'\n...is not a valid DICOM file and is being ignored.'
 		return tags

@@ -2,6 +2,7 @@ from Tkinter import *
 from ttk import *
 from source.functions.viewer_functions import *
 import source.functions.image_processing as imp
+from source.functions.file_functions import *
 import tkMessageBox
 import os
 from PIL import Image,ImageTk
@@ -139,24 +140,42 @@ def snr_calc(win):
 		tkMessageBox.showerror("ERROR", "No ROI selected. Please create one or more"
 							+" regions to analyse.")
 		return
-	px1 = win.im1.get_active_image().px_float
-	sub_images = None
-	im_number = win.im2.active
-	print im_number
-	for i in range(len(win.im2.images)):
-		sub_image = [win.im1.get_active_image().px_float-win.im2.get_active_image().px_float]
+	imnum = win.im2.active
+	sub_image = [win.im1.get_active_image().px_float-win.im2.get_active_image().px_float]
 	win.im2.load_images(sub_image)
-#	win.im2.show_image(im_number)
 	win.im2.roi_list = win.im1.roi_list
+	signal = win.im1.get_roi_statistics()
+	noise = win.im2.get_roi_statistics()
 	snr_list = []
-	for i in range(len(win.im1.roi_list)):
-		sig = win.im1.get_roi_pixels([i])
-		noi = win.im2.get_roi_pixels([i])
-		snr_list.append(np.mean(sig)/np.std(noi,ddof=1)*np.sqrt(2))
-	snr = np.mean(snr_list)
-	tkMessageBox.showinfo("RESULT","SNR = "+str(np.round(snr,2)))
+	for i in range(len(signal['mean'])):
+		snr_list.append(signal['mean'][i]/noise['std'][i]*np.sqrt(2))
+	print snr_list
+	print np.mean(snr_list)
+	
+	results = {
+		#~ 'Signal': signal['mean'],
+		#~ 'Noise': noise['std'],
+		'Sig 1': signal['mean'][0],
+		'Sig 2': signal['mean'][1],
+		'Sig 3': signal['mean'][2],
+		'Sig 4': signal['mean'][3],
+		'Sig 5': signal['mean'][4],
+		'Noi 1': noise['std'][0],
+		'Noi 2': noise['std'][1],
+		'Noi 3': noise['std'][2],
+		'Noi 4': noise['std'][3],
+		'Noi 5': noise['std'][4],
+		'SNR (mean)': np.mean(snr_list),
+		'Stdev (SNR)': np.std(snr_list)
+		}
+	print results
+	
+	save_results(results)
+	#~ display_results(results,win)
+	
 	win.im2.load_images(win.images_split[1])
-	win.im2.show_image(im_number)
+	win.im2.show_image(imnum)
+	
 	return
 
 def view_subtraction(win):
@@ -164,5 +183,5 @@ def view_subtraction(win):
 	px1 = win.im1.get_active_image().px_float
 	px2 = win.im2.get_active_image().px_float
 	sub = px1-px2
-	quick_display(win,sub)
+	quick_display(sub,win)
 	return

@@ -1,16 +1,97 @@
 import dicom
 import numpy as np
 from Tkinter import *
-#~ from ttk import *
+from ttk import *
 from PIL import Image,ImageTk
 import platform
+import scipy.stats as sps
+from datetime import datetime
 
 ########################################
 ########################################
 """
 GENERIC FUNCTIONS NOT ATTACHED TO CLASSES
 """
-def quick_display(master_window,im_array):
+
+def display_results(results,master_window):
+	"""
+	Method for displaying results table in a pop-up window.
+	
+	Results are expected in the format of a dictionary, e.g.
+		results = {
+			'SNR Tra': snr_tra,
+			'SNR Sag': snr_sag,
+			'SNR Cor': snr_cor,
+			'SNR Mean': snr_mean,
+			'SNR Std': snr_std,
+			'SNR CoV': snr_cov}
+	
+	Master needs to be the variable pointing to the parent window.
+	
+	"""
+	timestamp = str(datetime.now()).replace(" ","_").replace(":","")
+	
+#	if not name:
+#		fname = "RESULTS_"+timestamp+".csv"
+#	else:
+#		fname = "RESULTS_"+timestamp+"_"+name+".csv"
+	
+	result_header = []
+	result_values = []
+	for key,value in results.items():
+		result_header.append(key)
+		result_values.append(value)
+	result_array = np.array(result_values,dtype=np.float64)	# There's a problem here but I'm not sure what it is...
+	result_array = np.transpose(result_array)
+	try:
+		lines = np.shape(result_array)[1]
+	except IndexError:
+		result_array = np.reshape(result_array,(1,np.shape(result_array)[0]))
+#	if not directory:
+#		current_dir = os.getcwd()
+#		outputdir = os.path.join(current_dir,"Results")
+#		if not os.path.exists(outputdir):
+#			os.makedirs(outputdir)
+#	else:
+#		outputdir = directory
+#		if not os.path.exists(outputdir):
+#			os.makedirs(outputdir)
+#	outpath = os.path.join(outputdir,fname)
+#	with open(outpath,'wb') as csvfile:
+#		csvwriter = csv.writer(csvfile,delimiter=',')
+#		csvwriter.writerow(result_header)
+#		for row in result_array:
+#			csvwriter.writerow(row)
+#	
+#	tkMessageBox.showinfo("INFO","Results saved to:\n"+outpath)
+	
+	popup = Toplevel(master_window)
+	popup.title = 'Results'
+	popup.holder = Frame(popup)
+	popup.tree = Treeview(popup.holder)
+	popup.tree['columns']=range(len(result_header))
+	for i,value in enumerate(result_header):
+		popup.tree.heading(i,text=value)
+		popup.tree.column(i,width=200,stretch=True)
+	popup.tree.column('#0',width=100,stretch=False)
+	popup.scrollbarx = Scrollbar(popup.holder,orient='horizontal')
+	popup.scrollbarx.config(command=popup.tree.xview)
+	popup.scrollbary = Scrollbar(popup.holder,orient='vertical')
+	popup.scrollbary.config(command=popup.tree.yview)
+	for row in result_array:
+		popup.tree.insert('','end',values=row)
+	popup.tree.grid(row=0,column=0)
+	popup.scrollbarx.grid(row=1,column=0)
+	popup.scrollbary.grid(row=0,column=1)
+	popup.holder.pack()
+	
+
+	
+	
+	return
+
+
+def quick_display(im_array,master_window):
 	"""
 	Requires a numpy array and an existing Tk instance to use as a
 	master window.  im_array can be 2D or 3D.
@@ -262,7 +343,7 @@ class MIPPYCanvas(Canvas):
 		self.drawing_enabled = drawing_enabled
 		self.width=width
 		self.height=height
-		self.zoom_factor=None
+		#~ self.zoom_factor=None
 		self.pixel_array=None
 		self.img_scrollbar=None
 	
@@ -322,12 +403,37 @@ class MIPPYCanvas(Canvas):
 		for y in range(im.rows):
 			for x in range(im.columns):
 				for i in rois:
+					if i==len(px):
+						px.append([])
 					if self.roi_list[i].contains((x*self.zoom_factor,y*self.zoom_factor)):
-						px.append(im.px_float[y][x])
+						px[i].append(im.px_float[y][x])
 		
 		print "GOT PIXELS"
 		return px
 	
+	def get_roi_statistics(self,rois=[]):
+		if len(self.roi_list)<1:
+			return None
+#		else:
+#			stats = []
+		px_list = self.get_roi_pixels()
+		stats = {
+				'mean':		map(np.mean,px_list),
+				'std':		map(np.std,px_list),
+				'min':		map(np.amin,px_list),
+				'max':		map(np.amax,px_list),
+				'mode':		map(sps.mode,px_list),
+				'skewness':		map(sps.skew,px_list),
+				'kurtosis':		map(sps.kurtosis,px_list),
+				'cov':		map(sps.variation,px_list),
+#							'histogram':	sps.cumfreq(px),
+				'sum':		map(np.sum,px_list),
+				'area_px':		map(len,px_list)
+				}
+
+		print stats
+		return stats
+
 	def new_roi(self,coords,tags=[]):
 		for i in range(len(coords)):
 			j = i+1
@@ -369,8 +475,9 @@ class MIPPYCanvas(Canvas):
 			self.images.append(MIPPYImage(ref))
 			n+=1
 		
-		for image in self.images:
-			image.resize(self.width,self.height)
+		#~ for image in self.images:
+			#~ image.resize(self.width,self.height)
+			#~ image.zoom(self.zoom_factor)
 			
 		self.global_min,self.global_max = get_global_min_and_max(self.images)
 		self.global_rangemin = self.images[0].rangemin
@@ -380,13 +487,15 @@ class MIPPYCanvas(Canvas):
 		self.default_level = self.global_min + self.default_window/2
 		self.level = self.default_level
 		self.window = self.default_window
+		self.zoom_factor = np.amin([float(self.width)/float(self.images[0].columns),float(self.height)/float(self.images[0].rows)])
 		
 		for i in range(len(self.images)):
 			self.progress(45.*i/len(self.images)+55)
+			self.images[i].zoom(self.zoom_factor)
 			self.images[i].wl_and_display(window=self.window,level=self.level)
 		self.configure_scrollbar()
 		self.show_image(1)
-		self.zoom_factor = np.amax([float(self.width)/float(self.get_active_image().columns),float(self.height)/float(self.get_active_image().rows)])
+		
 		print "canvas width,height: %s,%s" %(self.width,self.height)
 		print "image width,height: %s,%s" %(self.get_active_image().columns,self.get_active_image().rows)
 		print "zoom: %s" %(self.zoom_factor)
@@ -427,6 +536,8 @@ class MIPPYCanvas(Canvas):
 				break
 		if not moving:
 			self.drawing_roi = True
+			# Need to add stuff to detect if "shift" or "ctrl" held when drawing, as
+			# in this case, don't want to delete existing ROIs
 			self.delete_rois()
 			self.temp = []
 			self.tempcoords.append((self.xmouse,self.ymouse))
@@ -582,6 +693,10 @@ class MIPPYCanvas(Canvas):
 	def draw_line_roi(self):
 		self.drawing_enabled=True
 		self.roi_mode='line'
+	
+
+		
+		
 
 class EasyViewer(Frame):
 	def __init__(self,master,im_array):
@@ -717,6 +832,11 @@ class MIPPYImage():
 	def resize(self,dim1=256,dim2=256):
 		self.image = self.image.resize((dim1,dim2), Image.ANTIALIAS)
 		self.set_display_image()
+		return
+	
+	def zoom(self,zoom):
+		self.image = self.image.resize((int(np.round(self.columns*zoom,0)),int(np.round(self.rows*zoom,0))), Image.ANTIALIAS)
+		self.set_display_image
 		return
 		
 	def apply_overlay(self):
