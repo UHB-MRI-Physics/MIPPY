@@ -781,8 +781,8 @@ class MIPPYImage():
 		self.px_float = pixel_array
 		self.rangemax = np.amax(pixel_array)
 		self.rangemin = np.amin(pixel_array)
-		print "Max",self.rangemax
-		print "Min",self.rangemin
+#		print "Max",self.rangemax
+#		print "Min",self.rangemin
 #		self.rangemax = np.ones(np.shape(pixel_array)).astype(np.float64)*maxval
 #		self.rangemin = np.ones(np.shape(pixel_array)).astype(np.float64)*minval
 		self.xscale=1
