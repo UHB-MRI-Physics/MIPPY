@@ -178,7 +178,7 @@ def collect_dicomdir_info(path,force_read=False):
 				instance_uid = ds.SOPInstanceUID+"_"+str(i).zfill(3)
 			
 			pxfloat=get_px_array(ds,enhanced,i)
-			if not pxfloat:
+			if pxfloat is None:
 				continue
 			
 			# Append the information to the "tag list" object
