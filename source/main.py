@@ -452,7 +452,7 @@ class ToolboxHome(Frame):
 		return
 		
 	def load_selected_module(self):
-		print "DO NOTHING!"
+#		print "DO NOTHING!"
 		try:
 			moduledir = self.moduleframe.moduletree.selection()[0]
 			module_name = 'modules.'+moduledir+'.module_main'
@@ -473,13 +473,13 @@ class ToolboxHome(Frame):
 							self.open_file = tag['path']
 							gc.collect()
 						if not tag['enhanced']:
-							print tag['path']
-							print type(tag['path'])
+#							print tag['path']
+#							print type(tag['path'])
 							self.datasets_to_pass.append(self.open_ds)
 						else:
 #							ds = dicom.read_file(tag['path'])
-							print tag['path']
-							print type(tag['path'])
+#							print tag['path']
+#							print type(tag['path'])
 							self.datasets_to_pass.append(get_frame_ds(self.open_ds,tag['instance']))
 			#~ elif preload_dicom=='minimal':
 				#~ self.datasets_to_pass = []
@@ -497,7 +497,7 @@ class ToolboxHome(Frame):
 		except:
 			raise
 			print "Did you select a module?"
-			print "Bet you didn't, you idiot."
+			print "Bet you didn't."
 		return
 
 #########################################################
