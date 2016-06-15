@@ -20,21 +20,24 @@ def get_px_array(ds,enhanced=False,instance=None):
 		ss = float(ds[0x2005,0x100E].value)
 	except:
 		ss = None
-	if enhanced:
-		if not instance:
-			print "PREVIEW ERROR: Instance/frame number not specified"
-			return None
-		rows = int(ds.Rows)
-		cols = int(ds.Columns)
-		print "Bits stored",ds.BitsStored
-		print "Rows",rows
-		print "Cols",cols
-		px_bytes = ds.PixelData[(instance-1)*(rows*cols*2):(instance)*(rows*cols*2)]
-		print "Len extracted bytes",len(px_bytes)
-		print "Len total px data",len(ds.PixelData)
-		px_float = px_bytes_to_array(px_bytes,rows,cols,rs=rs,ri=ri,ss=ss)
-	else:
-		px_float = generate_px_float(ds.pixel_array.astype(np.float64),rs,ri,ss)
+	try:
+		if enhanced:
+			if not instance:
+				print "PREVIEW ERROR: Instance/frame number not specified"
+				return None
+			rows = int(ds.Rows)
+			cols = int(ds.Columns)
+			print "Bits stored",ds.BitsStored
+			print "Rows",rows
+			print "Cols",cols
+			px_bytes = ds.PixelData[(instance-1)*(rows*cols*2):(instance)*(rows*cols*2)]
+			print "Len extracted bytes",len(px_bytes)
+			print "Len total px data",len(ds.PixelData)
+			px_float = px_bytes_to_array(px_bytes,rows,cols,rs=rs,ri=ri,ss=ss)
+		else:
+			px_float = generate_px_float(ds.pixel_array.astype(np.float64),rs,ri,ss)
+	except:
+		return None
 	return px_float
 
 
@@ -173,7 +176,11 @@ def collect_dicomdir_info(path,force_read=False):
 			else:
 				# Append instance UID with the frame number to give unique reference to each slice
 				instance_uid = ds.SOPInstanceUID+"_"+str(i).zfill(3)
+			
 			pxfloat=get_px_array(ds,enhanced,i)
+			if not pxfloat:
+				continue
+			
 			# Append the information to the "tag list" object
 			tags.append(dict([('date',date),('time',time),('name',name),('studyuid',study_uid),
 					('series',series),('seriesuid',series_uid),('studydesc',studydesc),
