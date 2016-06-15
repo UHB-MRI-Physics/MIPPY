@@ -90,6 +90,7 @@ def collect_dicomdir_info(path,force_read=False):
 	# won't be picked up until the "try/except" below.
 	if os.path.split(path)[1].startswith("XX_"):
 		return tags
+	print os.path.split(path)[1]
 	
 	# Remove any previous datasets just held as "ds" in memory
 	ds = None
