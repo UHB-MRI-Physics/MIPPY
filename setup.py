@@ -5,8 +5,9 @@ setup(	name			=	'MIPPY',
 		description		=	'Modular Image Processing in Python',
 		author		=	'Robert Flintham',
 		author_email	=	'robert.flintham@uhb.nhs.uk',
-		install_requires	=	[
+		requires	=	[
 						'numpy',
+						'scipy',
 						'importlib',
 						'pydicom',
 						'datetime',
