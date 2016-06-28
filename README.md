@@ -12,7 +12,7 @@ After starting MIPPY, use the FILE menu to open the directory containing your im
 
 ## Contributing
 
-Contributors and developers are welcomed with open arms! However, given the infant stage of this project, we ask that would-be developers get in touch so we can add you to the project and keep a handle on who's doing what.  The developers can be contacted via email - rbf906@gitlab.com
+Contributors and developers are welcomed with open arms! However, given the infant stage of this project, we ask that would-be developers get in touch so we can add you to the project and keep a handle on who's doing what.  The developers can be contacted via the Google group (see below).
 
 For bug/issue reporting, please head here:
 https://gitlab.com/rbf906/mippy/issues
@@ -50,7 +50,7 @@ RW
 
 ## Contact
 
-Best method of contact is via email (rbf906@gitlab.com) or via the Google Group (see above).
+Best method of contact is via the Google Group (see above).
 
 ## License
 
