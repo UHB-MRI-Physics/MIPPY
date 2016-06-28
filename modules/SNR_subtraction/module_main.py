@@ -171,7 +171,7 @@ def snr_calc(win):
 	print results
 	
 	save_results(results)
-	#~ display_results(results,win)
+	display_results(results,win)
 	
 	win.im2.load_images(win.images_split[1])
 	win.im2.show_image(imnum)

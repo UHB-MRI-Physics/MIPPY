@@ -79,7 +79,7 @@ def display_results(results,master_window):
 	popup.scrollbary = Scrollbar(popup.holder,orient='vertical')
 	popup.scrollbary.config(command=popup.tree.yview)
 	for row in result_array:
-		popup.tree.insert('','end',values=row)
+		popup.tree.insert('','end',values=row)	# row[0]?
 	popup.tree.grid(row=0,column=0)
 	popup.scrollbarx.grid(row=1,column=0)
 	popup.scrollbary.grid(row=0,column=1)
