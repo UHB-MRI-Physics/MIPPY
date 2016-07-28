@@ -6,6 +6,7 @@ from PIL import Image,ImageTk
 import platform
 import scipy.stats as sps
 from datetime import datetime
+import scipy.ndimage.interpolation as spim
 
 ########################################
 ########################################
@@ -274,6 +275,12 @@ class ROI():
 				self.roi_type = "point"
 			elif len(coords)==2:
 				self.roi_type = "line"
+			elif (len(coords)==4
+				and coords[0][0]==coords[3][0]
+				and coords[0][1]==coords[1][1]
+				and coords[1][0]==coords[2][0]
+				and coords[2][1]==coords[3][1]):
+				self.roi_type = 'rectangle'
 			elif len(coords)>len(coords[0]):
 				self.roi_type = "3d"
 			elif len(coords)==len(coords[0]):
@@ -416,6 +423,8 @@ class MIPPYCanvas(Canvas):
 			return None
 #		else:
 #			stats = []
+		if self.roi_list[0].roi_type=='line':
+			return None
 		px_list = self.get_roi_pixels()
 		stats = {
 				'mean':		map(np.mean,px_list),
@@ -433,6 +442,63 @@ class MIPPYCanvas(Canvas):
 
 		print stats
 		return stats
+	
+	def get_profile(self,resolution=1,width=1,interpolate=True,direction='horizontal'):
+		"""Returns a line profile from the image"""
+		
+#		if not len(self.roi_list)==1:
+#			return None
+#		if not len(self.roi_list[0].coords)==2:
+#			return None
+		print self.roi_list[0].roi_type
+		if not (self.roi_list[0].roi_type=='line' or self.roi_list[0].roi_type=='rectangle'):
+				return None
+		
+		roi = self.roi_list[0]
+		coords = roi.coords/self.zoom_factor
+		
+		if roi.roi_type=='line':
+			profile_length = np.sqrt( (coords[1][0]-coords[0][0])**2 + (coords[1][1]-coords[0][1])**2 )
+		elif direction=='horizontal':
+			profile_length = coords[1][0]-coords[0][0]
+		elif direction=='vertical':
+			profile_length = coords[3][1]-coords[0][1]
+		else:
+			print "Profile direction not understood!"
+			return None
+
+		length_int = int(np.round(profile_length,0))
+		if interpolate:
+			intorder=1
+		else:
+			intorder=0
+			
+		profile = None
+		
+		if roi.roi_type=='line':
+			x_arr = np.linspace(coords[0][0],coords[1][0],length_int)
+			y_arr = np.linspace(coords[0][1],coords[1][1],length_int)
+				
+			profile = spim.map_coordinates(self.get_active_image().px_float,np.vstack((y_arr,x_arr)),order=intorder,prefilter=False)
+		
+		elif direction=='horizontal':
+			y_len = int(np.round(coords[3][1]-coords[0][1],0))
+			x_arr = np.linspace(coords[0][0],coords[1][0],length_int)
+			profiles = np.zeros((y_len,len(x_arr)))
+			for i in range(y_len):
+				y_arr = np.zeros(np.shape(x_arr))+coords[0][1]+i
+				profiles[i] = spim.map_coordinates(self.get_active_image().px_float,np.vstack((y_arr,x_arr)),order=intorder,prefilter=False)
+			profile = np.mean(profiles,axis=0)
+		elif direction=='vertical':
+			x_len = int(np.round(coords[1][0]-coords[0][0],0))
+			y_arr = np.linspace(coords[0][1],coords[3][1],length_int)
+			profiles = np.zeros((x_len,len(y_arr)))
+			for i in range(x_len):
+				x_arr = np.zeros(np.shape(y_arr))+coords[0][0]+i
+				profiles[i] = spim.map_coordinates(self.get_active_image().px_float,np.vstack((y_arr,x_arr)),order=intorder,prefilter=False)
+			profile = np.mean(profiles,axis=1)
+		
+		return profile, np.array(range(length_int))
 
 	def new_roi(self,coords,tags=[]):
 		for i in range(len(coords)):
@@ -459,7 +525,7 @@ class MIPPYCanvas(Canvas):
 			print "Invalid coordinate system specified"
 			return
 		print x1,y1,x2,y2
-		self.new_roi([(x1,y1),(x2,y1),(x2,y2),(x1,y2)],tags=tags)
+		self.new_roi([(x1,y1),(x2,y1),(x2,y2),(x1,y2)],tags=tags,roi_type='rectangle')
 		return
 
 		
