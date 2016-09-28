@@ -539,7 +539,7 @@ class MIPPYCanvas(Canvas):
 			print "Invalid coordinate system specified"
 			return
 		print x1,y1,x2,y2
-		self.new_roi([(x1,y1),(x2,y1),(x2,y2),(x1,y2)],tags=tags)
+		self.new_roi([(x1,y1),(x2,y1),(x2,y2),(x1,y2)],tags=tags,roi_type='rectangle')
 		return
 
 		
