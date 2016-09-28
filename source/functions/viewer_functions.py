@@ -324,6 +324,7 @@ class MIPPYCanvas(Canvas):
 		self.master = master
 		self.zoom_factor = 1
 		self.roi_list = []
+		self.shift = False
 		self.roi_mode = 'rectangle'
 		self.bind('<Button-1>',self.left_click)
 		self.bind('<B1-Motion>',self.left_drag)
@@ -353,6 +354,14 @@ class MIPPYCanvas(Canvas):
 		#~ self.zoom_factor=None
 		self.pixel_array=None
 		self.img_scrollbar=None
+	
+#	def shift_down(self,event):
+#		self.shift = True
+#		print "SHIFT DOWN"
+#	
+#	def shift_up(self,event):
+#		self.shift = False
+#		print "SHIFT UP"
 	
 	def configure_scrollbar(self):
 		if self.img_scrollbar:
@@ -443,7 +452,7 @@ class MIPPYCanvas(Canvas):
 		print stats
 		return stats
 	
-	def get_profile(self,resolution=1,width=1,interpolate=True,direction='horizontal'):
+	def get_profile(self,resolution=1,width=1,interpolate=False,direction='horizontal'):
 		"""Returns a line profile from the image"""
 		
 #		if not len(self.roi_list)==1:
@@ -452,7 +461,12 @@ class MIPPYCanvas(Canvas):
 #			return None
 		print self.roi_list[0].roi_type
 		if not (self.roi_list[0].roi_type=='line' or self.roi_list[0].roi_type=='rectangle'):
-				return None
+			print "Not a valid ROI type for profile.  Line or rectangle required."
+			return None
+#		if self.shift:
+#			direction='vertical'
+#		else:
+#			direction='horizontal'
 		
 		roi = self.roi_list[0]
 		coords = roi.coords/self.zoom_factor
@@ -496,7 +510,7 @@ class MIPPYCanvas(Canvas):
 			for i in range(x_len):
 				x_arr = np.zeros(np.shape(y_arr))+coords[0][0]+i
 				profiles[i] = spim.map_coordinates(self.get_active_image().px_float,np.vstack((y_arr,x_arr)),order=intorder,prefilter=False)
-			profile = np.mean(profiles,axis=1)
+			profile = np.mean(profiles,axis=0)
 		
 		return profile, np.array(range(length_int))
 
@@ -525,7 +539,7 @@ class MIPPYCanvas(Canvas):
 			print "Invalid coordinate system specified"
 			return
 		print x1,y1,x2,y2
-		self.new_roi([(x1,y1),(x2,y1),(x2,y2),(x1,y2)],tags=tags,roi_type='rectangle')
+		self.new_roi([(x1,y1),(x2,y1),(x2,y2),(x1,y2)],tags=tags)
 		return
 
 		
@@ -694,8 +708,8 @@ class MIPPYCanvas(Canvas):
 		# (i.e. full range of image) to "sensitivity" px motion => 1px up/down adjusts level by
 		# "default_window/sensitivity".  1px left/right adjusts window by
 		# "default_window/sensitivity"
-		window_sensitivity = 200
-		level_sensitivity = 200
+		window_sensitivity = 300
+		level_sensitivity = 500
 		min_window = self.fullrange/255
 		i = self.active-1
 		self.temp_window = self.window+xmove*(self.fullrange/window_sensitivity)
