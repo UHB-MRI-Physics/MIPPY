@@ -52,25 +52,30 @@ def execute(master_window,dicomdir,images):
 	#~ window.scrollbutton = Button(window, text="SLICE + / -")
 	window.imcanvas.img_scrollbar = Scrollbar(window,orient='horizontal')
 	window.imcanvas.configure_scrollbar()
-	window.statsbutton = Button(window,text="Get ROI statistics",command=lambda:get_roi_statistics(window))
+	window.statsbutton = Button(window,text="Get ROI statistics",command=lambda:get_stats(window))
+	window.profilebutton = Button(window,text="Get Horizontal Profile",command=lambda:get_profile(window))
+	window.vertprofilebutton = Button(window,text="Get Vertical Profile",command=lambda:get_vert_profile(window))
 	window.statstext = StringVar()
 	window.statswindow = Label(window,textvariable=window.statstext)
 	window.zoominbutton = Button(window,text="ZOOM +",command=lambda:zoom_in(window))
 	window.zoomoutbutton = Button(window,text="ZOOM -",command=lambda:zoom_out(window))
 	
 	# Pack GUI using "grid" layout
-	window.imcanvas.grid(row=0,column=0,columnspan=1,rowspan=5,sticky='nsew')
+	
 	window.roi_square_button.grid(row=0,column=0)
 	window.roi_ellipse_button.grid(row=1,column=0)
 	window.roi_polygon_button.grid(row=2,column=0)
 	window.roi_line_button.grid(row=3,column=0)
+	window.imcanvas.grid(row=0,column=0,columnspan=1,rowspan=6,sticky='nsew')
 	window.toolbar.grid(row=0,column=1)
 	#~ window.scrollbutton.grid(row=7,column=0,sticky='nsew')
-	window.imcanvas.img_scrollbar.grid(row=7,column=0,sticky='ew')
-	window.statsbutton.grid(row=4,column=1,sticky='ew')
-	window.statswindow.grid(row=5,column=1,columnspan=1,rowspan=3,sticky='nsew')
-	window.zoominbutton.grid(row=5,column=0,sticky='nsew')
-	window.zoomoutbutton.grid(row=6,column=0,sticky='nsew')
+	window.imcanvas.img_scrollbar.grid(row=6,column=0,sticky='ew')
+	window.statsbutton.grid(row=3,column=1,sticky='ew')
+	window.profilebutton.grid(row=4,column=1,sticky='ew')
+	window.vertprofilebutton.grid(row=5,column=1,sticky='ew')
+	window.statswindow.grid(row=6,column=1,columnspan=1,rowspan=3,sticky='nsew')
+	window.zoominbutton.grid(row=7,column=0,sticky='nsew')
+	window.zoomoutbutton.grid(row=8,column=0,sticky='nsew')
 	
 	window.imcanvas.load_images(images)
 	
@@ -80,7 +85,7 @@ def close_window(active_frame):
 	active_frame.destroy()
 	return
 
-def get_roi_statistics(window):
+def get_stats(window):
 #	canvas = window.imcanvas
 #	px = canvas.get_roi_pixels()
 #	mean = np.mean(px)
@@ -89,7 +94,19 @@ def get_roi_statistics(window):
 #	tkMessageBox.showinfo('ROI STATS','Mean: %s\nStandard Deviation %s\nArea: %s' %(np.round(mean,2),np.round(std,2),np.round(area,2)))
 	results = window.imcanvas.get_roi_statistics()
 	
-	display_results(results,window)
+#	display_results(results,window)
+	
+def get_profile(window):
+#	if not window.imcanvas.roi_list[0].roi_type=='line':
+#		print "Only a line ROI can be used to generate profiles"
+#		return
+	profile,scale = window.imcanvas.get_profile()
+	print profile
+	return
+def get_vert_profile(window):
+	profile,scale = window.imcanvas.get_profile(direction='vertical')
+	print profile
+	return
 
 def zoom_in(window):
 	pass

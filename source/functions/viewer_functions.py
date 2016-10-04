@@ -6,6 +6,7 @@ from PIL import Image,ImageTk
 import platform
 import scipy.stats as sps
 from datetime import datetime
+import scipy.ndimage.interpolation as spim
 
 ########################################
 ########################################
@@ -79,7 +80,7 @@ def display_results(results,master_window):
 	popup.scrollbary = Scrollbar(popup.holder,orient='vertical')
 	popup.scrollbary.config(command=popup.tree.yview)
 	for row in result_array:
-		popup.tree.insert('','end',values=row)
+		popup.tree.insert('','end',values=row)	# row[0]?
 	popup.tree.grid(row=0,column=0)
 	popup.scrollbarx.grid(row=1,column=0)
 	popup.scrollbary.grid(row=0,column=1)
@@ -274,6 +275,12 @@ class ROI():
 				self.roi_type = "point"
 			elif len(coords)==2:
 				self.roi_type = "line"
+			elif (len(coords)==4
+				and coords[0][0]==coords[3][0]
+				and coords[0][1]==coords[1][1]
+				and coords[1][0]==coords[2][0]
+				and coords[2][1]==coords[3][1]):
+				self.roi_type = 'rectangle'
 			elif len(coords)>len(coords[0]):
 				self.roi_type = "3d"
 			elif len(coords)==len(coords[0]):
@@ -317,6 +324,7 @@ class MIPPYCanvas(Canvas):
 		self.master = master
 		self.zoom_factor = 1
 		self.roi_list = []
+		self.shift = False
 		self.roi_mode = 'rectangle'
 		self.bind('<Button-1>',self.left_click)
 		self.bind('<B1-Motion>',self.left_drag)
@@ -346,6 +354,14 @@ class MIPPYCanvas(Canvas):
 		#~ self.zoom_factor=None
 		self.pixel_array=None
 		self.img_scrollbar=None
+	
+#	def shift_down(self,event):
+#		self.shift = True
+#		print "SHIFT DOWN"
+#	
+#	def shift_up(self,event):
+#		self.shift = False
+#		print "SHIFT UP"
 	
 	def configure_scrollbar(self):
 		if self.img_scrollbar:
@@ -416,6 +432,8 @@ class MIPPYCanvas(Canvas):
 			return None
 #		else:
 #			stats = []
+		if self.roi_list[0].roi_type=='line':
+			return None
 		px_list = self.get_roi_pixels()
 		stats = {
 				'mean':		map(np.mean,px_list),
@@ -433,6 +451,68 @@ class MIPPYCanvas(Canvas):
 
 		print stats
 		return stats
+	
+	def get_profile(self,resolution=1,width=1,interpolate=False,direction='horizontal'):
+		"""Returns a line profile from the image"""
+		
+#		if not len(self.roi_list)==1:
+#			return None
+#		if not len(self.roi_list[0].coords)==2:
+#			return None
+		print self.roi_list[0].roi_type
+		if not (self.roi_list[0].roi_type=='line' or self.roi_list[0].roi_type=='rectangle'):
+			print "Not a valid ROI type for profile.  Line or rectangle required."
+			return None
+#		if self.shift:
+#			direction='vertical'
+#		else:
+#			direction='horizontal'
+		
+		roi = self.roi_list[0]
+		coords = roi.coords/self.zoom_factor
+		
+		if roi.roi_type=='line':
+			profile_length = np.sqrt( (coords[1][0]-coords[0][0])**2 + (coords[1][1]-coords[0][1])**2 )
+		elif direction=='horizontal':
+			profile_length = coords[1][0]-coords[0][0]
+		elif direction=='vertical':
+			profile_length = coords[3][1]-coords[0][1]
+		else:
+			print "Profile direction not understood!"
+			return None
+
+		length_int = int(np.round(profile_length,0))
+		if interpolate:
+			intorder=1
+		else:
+			intorder=0
+			
+		profile = None
+		
+		if roi.roi_type=='line':
+			x_arr = np.linspace(coords[0][0],coords[1][0],length_int)
+			y_arr = np.linspace(coords[0][1],coords[1][1],length_int)
+				
+			profile = spim.map_coordinates(self.get_active_image().px_float,np.vstack((y_arr,x_arr)),order=intorder,prefilter=False)
+		
+		elif direction=='horizontal':
+			y_len = int(np.round(coords[3][1]-coords[0][1],0))
+			x_arr = np.linspace(coords[0][0],coords[1][0],length_int)
+			profiles = np.zeros((y_len,len(x_arr)))
+			for i in range(y_len):
+				y_arr = np.zeros(np.shape(x_arr))+coords[0][1]+i
+				profiles[i] = spim.map_coordinates(self.get_active_image().px_float,np.vstack((y_arr,x_arr)),order=intorder,prefilter=False)
+			profile = np.mean(profiles,axis=0)
+		elif direction=='vertical':
+			x_len = int(np.round(coords[1][0]-coords[0][0],0))
+			y_arr = np.linspace(coords[0][1],coords[3][1],length_int)
+			profiles = np.zeros((x_len,len(y_arr)))
+			for i in range(x_len):
+				x_arr = np.zeros(np.shape(y_arr))+coords[0][0]+i
+				profiles[i] = spim.map_coordinates(self.get_active_image().px_float,np.vstack((y_arr,x_arr)),order=intorder,prefilter=False)
+			profile = np.mean(profiles,axis=0)
+		
+		return profile, np.array(range(length_int))
 
 	def new_roi(self,coords,tags=[]):
 		for i in range(len(coords)):
@@ -459,7 +539,7 @@ class MIPPYCanvas(Canvas):
 			print "Invalid coordinate system specified"
 			return
 		print x1,y1,x2,y2
-		self.new_roi([(x1,y1),(x2,y1),(x2,y2),(x1,y2)],tags=tags)
+		self.new_roi([(x1,y1),(x2,y1),(x2,y2),(x1,y2)],tags=tags,roi_type='rectangle')
 		return
 
 		
@@ -628,8 +708,8 @@ class MIPPYCanvas(Canvas):
 		# (i.e. full range of image) to "sensitivity" px motion => 1px up/down adjusts level by
 		# "default_window/sensitivity".  1px left/right adjusts window by
 		# "default_window/sensitivity"
-		window_sensitivity = 200
-		level_sensitivity = 200
+		window_sensitivity = 300
+		level_sensitivity = 500
 		min_window = self.fullrange/255
 		i = self.active-1
 		self.temp_window = self.window+xmove*(self.fullrange/window_sensitivity)

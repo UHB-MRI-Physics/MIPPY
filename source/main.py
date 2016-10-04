@@ -33,12 +33,12 @@ print "    MIPPY viewer functions"
 from functions.viewer_functions import *
 print "    MIPPY DICOM functions"
 from functions.dicom_functions import *
-print "    Garbage Collectio"
+print "    Garbage Collection"
 import gc
 
 print "Initialising GUI...\n"
 
-
+#os.system('xset r off')
 
 
 class ToolboxHome(Frame):
