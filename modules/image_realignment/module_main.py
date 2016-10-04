@@ -219,7 +219,7 @@ def realign(win):
                                                         tolerance=float(win.tol_in.get()),
                                                         max_iter=int(win.maxiter_in.get()),
                                                         edge=win.edges_in.get(),
-                                                        2D=win.c_2D_in.get())
+                                                        scan2D=win.c_2D_in.get())
                 except TypeError:
                         start_time=time.time()
                         status(win,"Incorrect Optimisation Method for this data-set! \n")
@@ -228,7 +228,7 @@ def realign(win):
                                                         tolerance=float(win.tol_in.get()),
                                                         max_iter=int(win.maxiter_in.get()),
                                                         edge=win.edges_in.get(),
-                                                        2D=win.c_2D_in.get())                                
+                                                        scan2D=win.c_2D_in.get())                                
         else:
                 try:
                         start_time=time.time()
@@ -237,7 +237,7 @@ def realign(win):
                                                         tolerance=float(win.tol_in.get()),
                                                         max_iter=int(win.maxiter_in.get()),
                                                         edge=win.edges_in.get(),
-                                                        2D=win.c_2D_in.get())
+                                                        scan2D=win.c_2D_in.get())
                 except TypeError:
                         start_time=time.time()
                         status(win,"Incorrect Optimisation Method for this data-set! \n")
@@ -246,7 +246,7 @@ def realign(win):
                                                         tolerance=float(win.tol_in.get()),
                                                         max_iter=int(win.maxiter_in.get()),
                                                         edge=win.edges_in.get(),
-                                                        2D=win.c_2D_in.get())
+                                                        scan2D=win.c_2D_in.get())
 
         run_time = time.time()-start_time
         

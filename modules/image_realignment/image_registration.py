@@ -108,7 +108,7 @@ def make_edges(Im3D_in):
 #T  = [[1,0,0,Tx],[0,1,0,Ty],[0,0,1,Tz],[0,0,0,1]]
 
 # loading data set
-def image_registration(Im4D,ref=1,ref_av=False,min_method='L-BFGS-B',tolerance=0.001,max_iter=100,edge=0,2D=1):
+def image_registration(Im4D,ref=1,ref_av=False,min_method='L-BFGS-B',tolerance=0.001,max_iter=100,edge=0,scan2D=1):
 
     start_time = time.time()
 
@@ -147,7 +147,7 @@ def image_registration(Im4D,ref=1,ref_av=False,min_method='L-BFGS-B',tolerance=0
         start_fit=time.time()
         result = minimize(search_min_Tz,Tz,args=(Im4D_out[dyn,:,:,:],Im_ref,edge),tol=tolerance,method=min_method,options={'maxiter':max_iter},
                          bounds=[(-round(0.2*np.size(Im4D,1)),round(0.2*np.size(Im4D,1)))])
-        if 2D=1:
+        if scan2D==1:
             Tz = result.x
             Im4D_out[dyn,:,:,:] = shift(Im4D_out[dyn,:,:,:],[0,0,Tz])
             print("Tz fit took %s seconds" %int(time.time()-start_fit))

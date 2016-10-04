@@ -5,6 +5,7 @@ import os
 from PIL import Image,ImageTk
 from T1_mapping import T1_mapping as T1map
 import time
+import datetime
 import numpy as np
 import numpy.matlib
 from copy import deepcopy
@@ -46,10 +47,16 @@ def execute(master_window,dicomdir,images):
         win.rows=images[-1].Rows
         win.cols=images[-1].Columns
         if 'PHILIPS' in images[0].Manufacturer.upper():
-                win.slcs=images[-1].TemporalPositionIdentifier
+                print images[0]
+                try:
+                        win.slcs=eval(images[-1][0x0028,0x0008].value)/eval(images[-1][0x2001,0x1081].value)
+                except:
+                        win.slcs=int(images[-1][0x2001,0x1018].value)
+                        print "number of slices = "+str(win.slcs)
+                win.dyns=int(images[-1][0x2001,0x1081].value)
         else:
                 win.slcs=images[-1].InstanceNumber/images[-1].AcquisitionNumber
-        win.dyns=images[-1].AcquisitionNumber
+                win.dyns=images[-1].AcquisitionNumber
         
         # Create canvases
 	win.imcanvases=Frame(win)
@@ -276,10 +283,15 @@ def T1_map(win,images):
                 txt=("Fitting completed in %s seconds. \n" %(int(np.ceil(run_time))) )
         status(win,txt)        
         test=win.maps[0]
-        quick_display(win,test)
+#        quick_display(win,test)
         win.imcanvas_maps.load_images([b for b in (np.reshape(win.maps,(5*win.slcs,win.rows,win.cols)) )])
                 
         return
+def time_convert(win,t):
+        h=str(t)[0:2]
+        m=str(t)[2:4]
+        s=str(t)[4:6]
+        hms=int()
 
 def sort_TIs(win,images):
         """Sorting TIs for each individual image"""
@@ -288,24 +300,48 @@ def sort_TIs(win,images):
         TIs=np.zeros(win.dyns*win.slcs)
         if win.rb_TAvar.get()==1:
                 for a in range(win.slcs-1):
-                        TA[a] = 1000*(float(images[a+1].AcquisitionTime)-float(images[a].AcquisitionTime))
+                        tst_a = str(images[a].AcquisitionTime)
+                        tst_b = str(images[a+1].AcquisitionTime)
+                        dst = str(images[a].StudyDate)
+ 
+                        time_a = datetime.datetime(int(dst[0:4]),int(dst[4:6]),int(dst[6:8]),int(tst_a[0:2]),int(tst_a[2:4]),int(tst_a[4:6]),int(tst_a[7:]))
+                        time_b = datetime.datetime(int(dst[0:4]),int(dst[4:6]),int(dst[6:8]),int(tst_b[0:2]),int(tst_b[2:4]),int(tst_b[4:6]),int(tst_b[7:]))
+ 
+                        TA[a] = (time_b-time_a).total_seconds()*1000
+                     
                 TAav=int(np.mean(TA,0))
-                win.TA_in.set(TAav)
+                win.TA_in.set(abs(int(TAav)))
                 txt=("Estimated TA is %s [ms]\n" %(win.TA_in.get()))
                 status(win,txt)
-        if win.rb_TIvar.get()==1:
-                for d in range(win.dyns):
-                        for s in range(win.slcs):
-                                TIs[int(win.slcs)*d+s]=int(win.TI_in.get())+d*int(win.TIinc_in.get())+s*int(win.TA_in.get())
-        elif win.rb_TIvar.get()==2:
-                TI=np.genfromtxt([win.TIs_in.get()],delimiter=",")
-                if np.size(TI,0)!=win.dyns:
-                        status(win,"Provided number of TIs does not match number of dynamics...\n")
-                        return None
+        if win.TA_in.get()>0:
+                if win.rb_TIvar.get()==1:
+                        for d in range(win.dyns):
+                                for s in range(win.slcs):
+                                        TIs[int(win.slcs)*d+s]=int(win.TI_in.get())+d*int(win.TIinc_in.get())+s*int(win.TA_in.get())
+                elif win.rb_TIvar.get()==2:
+                        TI=np.genfromtxt([win.TIs_in.get()],delimiter=",")
+                        if np.size(TI,0)!=win.dyns:
+                                status(win,"Provided number of TIs does not match number of dynamics...\n"
+                                       +"number of dynamics = "+str(win.dyns))
+                                return None
                         
-                for d in range(win.dyns):
-                        for s in range(win.slcs):
-                                TIs[int(win.slcs)*d+s]=TI[d]+s*win.TA_in
+                        for d in range(win.dyns):
+                                for s in range(win.slcs):
+                                        TIs[int(win.slcs)*d+s]=TI[d]+s*int(win.TA_in)
+        elif win.TA_in.get()<0:
+                if win.rb_TIvar.get()==1:
+                        for d in range(win.dyns):
+                                for s in range(win.slcs):
+                                        TIs[int(win.slcs)*d+s]=int(win.TI_in.get())+d*int(win.TIinc_in.get())+(win.slcs-s-1)*int(win.TA_in.get())
+                elif win.rb_TIvar.get()==2:
+                        TI=np.genfromtxt([win.TIs_in.get()],delimiter=",")
+                        if np.size(TI,0)!=win.dyns:
+                                status(win,"Provided number of TIs does not match number of dynamics...\n")
+                                return None
+                        
+                        for d in range(win.dyns):
+                                for s in range(win.slcs):
+                                        TIs[int(win.slcs)*d+s]=TI[d]+(win.slcs-s-1)*win.TA_in
 
         status(win,"These are the follwing times for each image:\n")
         status(win,TIs)

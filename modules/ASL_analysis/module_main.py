@@ -33,19 +33,19 @@ def execute(master_window,dicomdir,images):
 	set the "preload_dicom" message above to "return True", these will be dicom
 	datasets.  If you set "return False", these will just be paths to the image files.
 	"""
-     print "Module loaded..."
-     print "Received "+str(len(images))+" images."
-     print os.getcwd()
-     print dicomdir
-        
+	print "Module loaded..."
+	print "Received "+str(len(images))+" images."
+	print os.getcwd()
+	print dicomdir
+
 	# Create all GUI elements
 	win = Toplevel(master = master_window)
 	
-        # Image Set Matrix Size
-     win.rows=images[-1].Rows
-     win.cols=images[-1].Columns
-     win.slcs=images[-1].InstanceNumber/images[-1].AcquisitionNumber
-     win.dyns=images[-1].AcquisitionNumber
+	# Image Set Matrix Size
+	win.rows=images[-1].Rows
+	win.cols=images[-1].Columns
+	win.slcs=images[-1].InstanceNumber/images[-1].AcquisitionNumber
+	win.dyns=images[-1].AcquisitionNumber
         
 	# Create canvases
 	win.imcanvases=Frame(win)
