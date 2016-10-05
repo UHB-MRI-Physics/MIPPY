@@ -93,6 +93,7 @@ def get_stats(window):
 #	area = len(px)*canvas.get_active_image().xscale*canvas.get_active_image().yscale
 #	tkMessageBox.showinfo('ROI STATS','Mean: %s\nStandard Deviation %s\nArea: %s' %(np.round(mean,2),np.round(std,2),np.round(area,2)))
 	results = window.imcanvas.get_roi_statistics()
+	tkMessageBox.showinfo('ROI STATS',results)
 	
 #	display_results(results,window)
 	

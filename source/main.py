@@ -480,6 +480,7 @@ class ToolboxHome(Frame):
 #							ds = dicom.read_file(tag['path'])
 #							print tag['path']
 #							print type(tag['path'])
+							# Check if image already exists in temp files
 							self.datasets_to_pass.append(get_frame_ds(self.open_ds,tag['instance']))
 			#~ elif preload_dicom=='minimal':
 				#~ self.datasets_to_pass = []
