@@ -481,7 +481,7 @@ class MIPPYCanvas(Canvas):
 			print "Profile direction not understood!"
 			return None
 
-		length_int = int(np.round(profile_length,0))
+		length_int = int(np.round(profile_length/resolution,0))
 		if interpolate:
 			intorder=1
 		else:
@@ -539,7 +539,7 @@ class MIPPYCanvas(Canvas):
 			print "Invalid coordinate system specified"
 			return
 		print x1,y1,x2,y2
-		self.new_roi([(x1,y1),(x2,y1),(x2,y2),(x1,y2)],tags=tags,roi_type='rectangle')
+		self.new_roi([(x1,y1),(x2,y1),(x2,y2),(x1,y2)],tags=tags)
 		return
 
 		

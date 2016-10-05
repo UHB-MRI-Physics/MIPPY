@@ -440,7 +440,7 @@ class ToolboxHome(Frame):
 		
 	def load_wiki(self):
 		print "Load wiki"
-		webbrowser.open_new('https://tree.taiga.io/project/robflintham-mippy/wiki/home')
+		webbrowser.open_new('http://tree.taiga.io/project/robflintham-mippy/wiki/home')
 		return
 		
 	def display_version_info(self):
