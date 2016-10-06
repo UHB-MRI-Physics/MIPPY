@@ -72,14 +72,6 @@ def get_frame_ds(ds,frame):
 	ds_new.NumberOfFrames = 1
 	ds_new._character_set = ds._character_set
 #	print "    Returning split dataset"
-	'''
-	I don't know why this bit needs to be done, but if you don't create these strings
-	for each slice, python isn't able to pickle the objects properly and complains
-	about not having the Attribute _character_set - perhaps the character set isn't
-	defined until a string representation of the object is required?
-	'''
-	ds_str = str(ds)
-	ds_new_str = str(ds_new)
 	
 	return ds_new
 
@@ -211,6 +203,13 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 	return tags
 	
 def save_temp_ds(ds,tempdir,fname):
+	'''
+	I don't know why this bit needs to be done, but if you don't create these strings
+	for each slice, python isn't able to pickle the objects properly and complains
+	about not having the Attribute _character_set - perhaps the character set isn't
+	defined until a string representation of the object is required?
+	'''
+	ds_str = str(ds)
 	if not os.path.exists(tempdir):
 		os.makedirs(tempdir)
 	temppath = os.path.join(tempdir,fname)

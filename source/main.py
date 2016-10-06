@@ -97,10 +97,10 @@ class ToolboxHome(Frame):
 		Mac = /tmp
 		Linux = /tmp
 		'''
-		if sys.platform == 'win32' or sys.platform =='win64':
-			self.tempdir = r'C:\Temp\MIPPY_temp'
-		elif sys.platform == 'darwin' or sys.platform == 'linux':
+		if 'darwin' in sys.platform or 'linux' in sys.platform:
 			self.tempdir = '/tmp/MIPPY_temp'
+		elif 'win' in sys.platform:
+			self.tempdir = r'C:\Temp\MIPPY_temp'
 		else:
 			tkMessageBox.showerror('ERROR', 'Unsupported operating system, please contact the developers.')
 			sys.exit()
