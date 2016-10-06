@@ -9,7 +9,7 @@ import datetime
 import numpy as np
 import numpy.matlib
 from copy import deepcopy
-from dicom.dataset import Dataset
+from dicom.tag import Tag
 
 def preload_dicom():
 	"""
@@ -47,16 +47,32 @@ def execute(master_window,dicomdir,images):
         win.rows=images[-1].Rows
         win.cols=images[-1].Columns
         if 'PHILIPS' in images[0].Manufacturer.upper():
-                print images[0]
                 try:
                         win.slcs=eval(images[-1][0x0028,0x0008].value)/eval(images[-1][0x2001,0x1081].value)
                 except:
                         win.slcs=int(images[-1][0x2001,0x1018].value)
-                        print "number of slices = "+str(win.slcs)
                 win.dyns=int(images[-1][0x2001,0x1081].value)
         else:
                 win.slcs=images[-1].InstanceNumber/images[-1].AcquisitionNumber
                 win.dyns=images[-1].AcquisitionNumber
+
+        try:
+                if (images[0].ImagePositionPatient==images[1].ImagePositionPatient):
+                        resort_needed = True
+                else:
+                        resort_needed = False
+        except AttributeError:
+                if (images[0].PlanePositionSequence==images[1].PlanePositionSequence):
+                        resort_needed = True
+                else:
+                        resort_needed = False
+
+        if resort_needed:
+                sorted_images = []
+                for d in range(win.dyns):
+                        for s in range(win.slcs):
+                                sorted_images.append(images[s*win.dyns+d])
+                images=sorted_images
         
         # Create canvases
 	win.imcanvases=Frame(win)
@@ -132,7 +148,7 @@ def execute(master_window,dicomdir,images):
         win.rb_TAvar = IntVar()
         win.rb_TAvar.set(1)
         win.rb_TAauto = Radiobutton(win.buttons, text="Set TA automatically from the DICOM header", variable=win.rb_TAvar, value=1, command=lambda:hide_TA(win))
-
+        
         win.rb_TA = Radiobutton(win.buttons, text="Set TA manually [ms]:", variable=win.rb_TAvar, value=2, command=lambda:show_TA(win))
         win.TA_in=StringVar(win)
         win.TA_in.set(65)
@@ -140,7 +156,7 @@ def execute(master_window,dicomdir,images):
 
         win.c_rev_in=IntVar(win)
         win.c_rev_in.set(0)
-        win.c_rev=Checkbutton(win.buttons,text="Use Reversed Aquisition",variable=win.c_rev_in)
+        win.c_rev=Checkbutton(win.buttons,text="Use Reversed Slice Aquisition",variable=win.c_rev_in,state="disabled")
         
         # Window layout
         win.rb_TI.grid(row=0,column=0,sticky='nw',columnspan=4)
@@ -182,21 +198,6 @@ def execute(master_window,dicomdir,images):
         # Run buttons
         win.run_buttons=Frame(win)
 
-##        test_time_s=time.time()
-##        test=numpy.matlib.repmat(images[0],win.dyns*win.slcs,1).astype(Dataset)
-##        test_time_e=time.time()-test_time_s
-##        print type(test[0])
-##        test[10].TemporalPositionIdentifier=1000
-##        print test[:,10].TemporalPositionIdentifier
-##        print test[:,0].TemporalPositionIdentifier
-##
-##        print("repmat in %s [s]\n" %(test_time_e))
-##
-##        test_time_s=time.time()
-##        test=deepcopy(images[0])
-##        test_time_e=time.time()-test_time_s
-##
-##        print("deepcopy in %s [s]\n" %(test_time_e))
         try:
                 win.Im4D=np.array([a.px_float for a in win.imcanvas_orig.images]).reshape((win.dyns,win.slcs,win.rows,win.cols))
         except Exception,win.Im4D:
@@ -211,6 +212,12 @@ def execute(master_window,dicomdir,images):
         win.b_save.grid(row=1,column=0,sticky='new')
 
         win.run_buttons.grid(row=1,column=1,sticky="new")
+
+        if not 'AcquisitionTime' in images[0]:
+                win.rb_TAvar.set(2)
+                show_TA(win)
+                win.rb_TAauto.configure(state='disabled')
+                win.c_rev.configure(stat='normal')
         
 	return
 	
@@ -282,7 +289,7 @@ def T1_map(win,images):
         else:
                 txt=("Fitting completed in %s seconds. \n" %(int(np.ceil(run_time))) )
         status(win,txt)        
-        test=win.maps[0]
+#        test=win.maps[0]
 #        quick_display(win,test)
         win.imcanvas_maps.load_images([b for b in (np.reshape(win.maps,(5*win.slcs,win.rows,win.cols)) )])
                 
@@ -317,7 +324,7 @@ def sort_TIs(win,images):
                 if win.rb_TIvar.get()==1:
                         for d in range(win.dyns):
                                 for s in range(win.slcs):
-                                        TIs[int(win.slcs)*d+s]=int(win.TI_in.get())+d*int(win.TIinc_in.get())+s*int(win.TA_in.get())
+                                        TIs[win.slcs*d+s]=win.TI_in.get()+d*win.TIinc_in.get()+s*win.TA_in.get()
                 elif win.rb_TIvar.get()==2:
                         TI=np.genfromtxt([win.TIs_in.get()],delimiter=",")
                         if np.size(TI,0)!=win.dyns:
@@ -327,12 +334,12 @@ def sort_TIs(win,images):
                         
                         for d in range(win.dyns):
                                 for s in range(win.slcs):
-                                        TIs[int(win.slcs)*d+s]=TI[d]+s*int(win.TA_in)
+                                        TIs[win.slcs*d+s]=TI[d]+s*int(win.TA_in.get())
         elif win.TA_in.get()<0:
                 if win.rb_TIvar.get()==1:
                         for d in range(win.dyns):
                                 for s in range(win.slcs):
-                                        TIs[int(win.slcs)*d+s]=int(win.TI_in.get())+d*int(win.TIinc_in.get())+(win.slcs-s-1)*int(win.TA_in.get())
+                                        TIs[win.slcs*d+s]=win.TI_in.get()+d*win.TIinc_in.get()+(win.slcs-s-1)*win.TA_in.get()
                 elif win.rb_TIvar.get()==2:
                         TI=np.genfromtxt([win.TIs_in.get()],delimiter=",")
                         if np.size(TI,0)!=win.dyns:
@@ -341,8 +348,25 @@ def sort_TIs(win,images):
                         
                         for d in range(win.dyns):
                                 for s in range(win.slcs):
-                                        TIs[int(win.slcs)*d+s]=TI[d]+(win.slcs-s-1)*win.TA_in
+                                        TIs[int(win.slcs)*d+s]=TI[d]+(win.slcs-s-1)*int(win.TA_in.get())
 
+        if (win.c_rev_in.get()==1 and win.rb_TAvar.get()==2):
+                if win.rb_TIvar.get()==1:
+                        for d in range(win.dyns):
+                                for s in range(win.slcs):
+                                        TIs[win.slcs*d+s]=win.TI_in.get()+d*win.TIinc_in.get()+(win.slcs-s-1)*win.TA_in.get()
+                elif win.rb_TIvar.get()==2:
+                        TI=np.genfromtxt([win.TIs_in.get()],delimiter=",")                                       
+                        if np.size(TI,0)!=win.dyns:
+                                status(win,"Provided number of TIs does not match number of dynamics...\n")
+                                return None
+                        
+                        for d in range(win.dyns):
+                                for s in range(win.slcs):
+                                        TIs[int(win.slcs)*d+s]=TI[d]+(win.slcs-s-1)*int(win.TA_in.get())
+                
+                
+                                        
         status(win,"These are the follwing times for each image:\n")
         status(win,TIs)
         status(win,"\n")
@@ -364,15 +388,24 @@ def save(win,dicomdir,images):
                 images_T1.InstanceNumber=dyns*slcs+s+1
                 T1_map=win.maps[0][s][:][:]
                 images_T1.PixelData = np.reshape(T1_map,(cols*rows)).astype(np.uint16)
-                images_T1.AcquisitionTime = str(float(images_T1.AcquisitionTime) + 0.1)
-                images_T1.SmallestImagePixelValue = min(images_T1.PixelData)
-                images_T1.LargestImagePixelValue = max(images_T1.PixelData)
+                try:
+                        images_T1.AcquisitionTime = str(float(images_T1.AcquisitionTime) + 0.1)
+                except AttributeError:
+                        pass
+                try:
+                        images_T1.SmallestImagePixelValue = min(images_T1.PixelData)
+                        images_T1[0x0028,0x0106].VR='US'
+                        images_T1.LargestImagePixelValue = max(images_T1.PixelData)
+                        images_T1[0x0028,0x0107].VR='US'
+                except:
+                        pass
                 images_T1.SOPInstanceUID = ''.join([images_T1.SOPInstanceUID,".1"])
                 images_T1.RescaleSlope = 1
                 images_T1.RescaleIntercept = np.min(T1_map)
         ##        images_T1.SeriesDescription = "T1 result"
                 
                 file_out=os.path.join(dicomdir,"_Series_"+str(images_T1.SeriesNumber).zfill(3)+"_maps","T1_map_"+str(s+1).zfill(3)+".dcm")
+                print file_out
                 try:
                         os.makedirs(os.path.split(file_out)[0])
                 except:
@@ -386,9 +419,15 @@ def save(win,dicomdir,images):
                 images_T1_R2.InstanceNumber=(dyns+1)*slcs+s+1
                 T1_R2=win.maps[1][s][:][:]
                 images_T1_R2.PixelData = np.uint16(T1_R2.reshape(cols*rows)) # Adjust the multiplication and then the RescaleSlope field
-                images_T1_R2.AcquisitionTime = str(float(images_T1_R2.AcquisitionTime) + 0.2)
-                images_T1_R2.SmallestImagePixelValue = min(images_T1_R2.PixelData)
-                images_T1_R2.LargestImagePixelValue = max(images_T1_R2.PixelData)
+                try:
+                        images_T1_R2.AcquisitionTime = str(float(images_T1_R2.AcquisitionTime) + 0.2)
+                except AttributeError:
+                        pass
+                try:
+                        images_T1_R2.SmallestImagePixelValue = min(images_T1_R2.PixelData)
+                        images_T1_R2.LargestImagePixelValue = max(images_T1_R2.PixelData)
+                except ValueError:
+                        pass
                 images_T1_R2.SOPInstanceUID = ''.join([images_T1_R2.SOPInstanceUID,".2"])
                 images_T1_R2.RescaleSlope = 1                                   # This should give you 100*R1, i.e. 99.55% => 99.55
 ##                images_T1_R2.RescaleIntercept = np.min(T1_R2)
@@ -404,9 +443,15 @@ def save(win,dicomdir,images):
                 images_T1_Var.InstanceNumber=(dyns+2)*slcs+s+1
                 T1_var=win.maps[2][s][:][:]
                 images_T1_Var.PixelData = np.uint16(10.*T1_var.reshape(cols*rows))
-                images_T1_Var.AcquisitionTime = str(float(images_T1_Var.AcquisitionTime) + 0.3)
-                images_T1_Var.SmallestImagePixelValue = min(images_T1_Var.PixelData)
-                images_T1_Var.LargestImagePixelValue = max(images_T1_Var.PixelData)
+                try:
+                        images_T1_Var.AcquisitionTime = str(float(images_T1_Var.AcquisitionTime) + 0.3)
+                except AttributeError:
+                        pass
+                try:
+                        images_T1_Var.SmallestImagePixelValue = min(images_T1_Var.PixelData)
+                        images_T1_Var.LargestImagePixelValue = max(images_T1_Var.PixelData)
+                except ValueError:
+                        pass
                 images_T1_Var.SOPInstanceUID = ''.join([images_T1_Var.SOPInstanceUID,".3"])
                 images_T1_Var.RescaleSlope = 1./10
                 images_T1_Var.RescaleIntercept = np.min(10*T1_var)
@@ -421,9 +466,15 @@ def save(win,dicomdir,images):
                 images_M0.InstanceNumber=(dyns+3)*slcs+s+1
                 M0_map=win.maps[3][s][:][:]
                 images_M0.PixelData = np.uint16(M0_map.reshape(cols*rows))
-                images_M0.AcquisitionTime = str(float(images_M0.AcquisitionTime) + 0.4)
-                images_M0.SmallestImagePixelValue = min(images_M0.PixelData)
-                images_M0.LargestImagePixelValue = max(images_M0.PixelData)
+                try:
+                        images_M0.AcquisitionTime = str(float(images_M0.AcquisitionTime) + 0.4)
+                except AttributeError:
+                        pass
+                try:
+                        images_M0.SmallestImagePixelValue = min(images_M0.PixelData)
+                        images_M0.LargestImagePixelValue = max(images_M0.PixelData)
+                except ValueError:
+                        pass
                 images_M0.SOPInstanceUID = ''.join([images_M0.SOPInstanceUID,".4"])
                 images_M0.RescaleSlope = 1
 ##                images_M0.RescaleIntercept = np.min(M0_map)
@@ -439,9 +490,15 @@ def save(win,dicomdir,images):
                 images_M0_Var.InstanceNumber=(dyns+4)*slcs+s+1
                 M0_var=win.maps[4][s][:][:]
                 images_M0_Var.PixelData = np.uint16(10.*M0_var.reshape(cols*rows))
-                images_M0_Var.AcquisitionTime = str(float(images_M0_Var.AcquisitionTime) + 0.5)
-                images_M0_Var.SmallestImagePixelValue = min(images_M0_Var.PixelData)
-                images_M0_Var.LargestImagePixelValue = max(images_M0_Var.PixelData)
+                try:
+                        images_M0_Var.AcquisitionTime = str(float(images_M0_Var.AcquisitionTime) + 0.5)
+                except AttributeError:
+                        pass
+                try:
+                        images_M0_Var.SmallestImagePixelValue = min(images_M0_Var.PixelData)
+                        images_M0_Var.LargestImagePixelValue = max(images_M0_Var.PixelData)
+                except ValueError:
+                        pass
                 images_M0_Var.SOPInstanceUID = ''.join([images_M0_Var.SOPInstanceUID,".5"])
                 images_M0_Var.RescaleSlope = 1./10
 ##                images_M0_Var.RescaleIntercept = np.min(10.*M0_var)

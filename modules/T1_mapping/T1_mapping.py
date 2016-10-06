@@ -43,8 +43,8 @@ def T1_mapping(Im4D,TI,images,rev=False):
     T1 = float(500)
     #tolerance = 0.1
 								
-    threshold = 0.05*np.amax(np.fabs(Im4D))
-
+    threshold = 0.1*np.mean(np.fabs(Im4D))
+#    threshold = 0
     # print threshold
 
     for s in range(slcs):		                            							    
@@ -113,7 +113,7 @@ def T1_mapping(Im4D,TI,images,rev=False):
                         T1_R2[s,y,x] = 0                                                                                                   # If calculated variance on result is larger than the result, also ignore and set to zero
                         M0_map[s,y,x] = 0
                         M0_var[s,y,x] = 0
-                        print "goodness of fit < 50%"
+                        print "goodness of fit < 70%"
 ##                        x_fit=np.array(range(0,int(np.round(np.amax(xdata),0))+10))
 ##                        plt.errorbar(xdata,ydata,marker='o',linestyle='None',color='blue')
 ##                        plt.errorbar(x_fit,inv_recovery(x_fit,popt[0],popt[1]),marker='None',linestyle='-',color='blue')
