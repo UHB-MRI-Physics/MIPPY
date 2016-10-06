@@ -320,11 +320,12 @@ def sort_TIs(win,images):
                 win.TA_in.set(abs(int(TAav)))
                 txt=("Estimated TA is %s [ms]\n" %(win.TA_in.get()))
                 status(win,txt)
-        if win.TA_in.get()>0:
+        if (win.TA_in.get()>0 and win.rb_TAvar.get()==1):
                 if win.rb_TIvar.get()==1:
                         for d in range(win.dyns):
                                 for s in range(win.slcs):
-                                        TIs[win.slcs*d+s]=win.TI_in.get()+d*win.TIinc_in.get()+s*win.TA_in.get()
+                                        TIs[win.slcs*d+s]=int(win.TI_in.get())+d*int(win.TIinc_in.get())+s*int(win.TA_in.get())
+                                        
                 elif win.rb_TIvar.get()==2:
                         TI=np.genfromtxt([win.TIs_in.get()],delimiter=",")
                         if np.size(TI,0)!=win.dyns:
@@ -335,11 +336,11 @@ def sort_TIs(win,images):
                         for d in range(win.dyns):
                                 for s in range(win.slcs):
                                         TIs[win.slcs*d+s]=TI[d]+s*int(win.TA_in.get())
-        elif win.TA_in.get()<0:
+        elif (win.TA_in.get()<0 and win.rb_TAvar.get()==1):
                 if win.rb_TIvar.get()==1:
                         for d in range(win.dyns):
                                 for s in range(win.slcs):
-                                        TIs[win.slcs*d+s]=win.TI_in.get()+d*win.TIinc_in.get()+(win.slcs-s-1)*win.TA_in.get()
+                                        TIs[win.slcs*d+s]=int(win.TI_in.get())+d*int(win.TIinc_in.get())+(win.slcs-s-1)*int(win.TA_in.get())
                 elif win.rb_TIvar.get()==2:
                         TI=np.genfromtxt([win.TIs_in.get()],delimiter=",")
                         if np.size(TI,0)!=win.dyns:
@@ -350,11 +351,12 @@ def sort_TIs(win,images):
                                 for s in range(win.slcs):
                                         TIs[int(win.slcs)*d+s]=TI[d]+(win.slcs-s-1)*int(win.TA_in.get())
 
-        if (win.c_rev_in.get()==1 and win.rb_TAvar.get()==2):
+        elif (win.c_rev_in.get()==1 and win.rb_TAvar.get()==2):
                 if win.rb_TIvar.get()==1:
                         for d in range(win.dyns):
                                 for s in range(win.slcs):
-                                        TIs[win.slcs*d+s]=win.TI_in.get()+d*win.TIinc_in.get()+(win.slcs-s-1)*win.TA_in.get()
+                                        TIs[win.slcs*d+s]=int(win.TI_in.get())+d*int(win.TIinc_in.get())+(win.slcs-s-1)*int(win.TA_in.get())
+#                                        status(win,str(TIs[win.slcs*d+s])+"\t s= "+str(s)+"\t d= "+str(d)+"\n")
                 elif win.rb_TIvar.get()==2:
                         TI=np.genfromtxt([win.TIs_in.get()],delimiter=",")                                       
                         if np.size(TI,0)!=win.dyns:
@@ -364,12 +366,25 @@ def sort_TIs(win,images):
                         for d in range(win.dyns):
                                 for s in range(win.slcs):
                                         TIs[int(win.slcs)*d+s]=TI[d]+(win.slcs-s-1)*int(win.TA_in.get())
-                
-                
+
+        elif win.rb_TAvar.get()==2:
+                if win.rb_TIvar.get()==1:
+                        for d in range(win.dyns):
+                                for s in range(win.slcs):
+                                        TIs[win.slcs*d+s]=int(win.TI_in.get())+d*int(win.TIinc_in.get())+s*int(win.TA_in.get())
+                elif win.rb_TIvar.get()==2:
+                        TI=np.genfromtxt([win.TIs_in.get()],delimiter=",")                                       
+                        if np.size(TI,0)!=win.dyns:
+                                status(win,"Provided number of TIs does not match number of dynamics...\n")
+                                return None
+                        
+                        for d in range(win.dyns):
+                                for s in range(win.slcs):
+                                        TIs[int(win.slcs)*d+s]=TI[d]+s*int(win.TA_in.get())
+                                        
                                         
         status(win,"These are the follwing times for each image:\n")
-        status(win,TIs)
-        status(win,"\n")
+        status(win,str(TIs)+"\n")
         return TIs
 
 def save(win,dicomdir,images):
