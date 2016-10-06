@@ -6,6 +6,7 @@ import copy
 import numpy as np
 from viewer_functions import *
 import gc
+import cPickle as pickle
 
 def get_px_array(ds,enhanced=False,instance=None):
 	try:
@@ -27,12 +28,12 @@ def get_px_array(ds,enhanced=False,instance=None):
 				return None
 			rows = int(ds.Rows)
 			cols = int(ds.Columns)
-			print "Bits stored",ds.BitsStored
-			print "Rows",rows
-			print "Cols",cols
+#			print "Bits stored",ds.BitsStored
+#			print "Rows",rows
+#			print "Cols",cols
 			px_bytes = ds.PixelData[(instance-1)*(rows*cols*2):(instance)*(rows*cols*2)]
-			print "Len extracted bytes",len(px_bytes)
-			print "Len total px data",len(ds.PixelData)
+#			print "Len extracted bytes",len(px_bytes)
+#			print "Len total px data",len(ds.PixelData)
 			px_float = px_bytes_to_array(px_bytes,rows,cols,rs=rs,ri=ri,ss=ss)
 		else:
 			px_float = generate_px_float(ds.pixel_array.astype(np.float64),rs,ri,ss)
@@ -46,27 +47,40 @@ def get_px_array(ds,enhanced=False,instance=None):
 def get_frame_ds(ds,frame):
 	# "frame" starts from 1, not 0.  Need to subtract 1 for correct indexing.
 	slicenum = frame-1
-	print "    Copying original dataset"
+	n_frames = ds.NumberOfFrames
+	print "Extracting frame "+str(frame)+" of "+str(n_frames)
+#	print "    Copying original dataset"
 	ds_new = copy.deepcopy(ds)
 #	ds_new = pickle.loads(pickle.dumps(ds))
 #	ds_new = ujson.loads(ujson.dumps(ds))
 #	ds_new = Dataset()
 #	ds_new = add_all(ds_new,ds)
-	print "    Stripping out old tags"
+#	print ds._character_set
+#	print "    Stripping out old tags"
 	del ds_new[Tag(0x5200,0x9230)]
 	del ds_new[Tag(0x5200,0x9229)]
-	print "    Adding new tags"
+#	print "    Adding new tags"
 	ds_new = add_all(ds_new,ds[0x5200,0x9229][0])
 	ds_new = add_all(ds_new,ds[0x5200,0x9230][slicenum])
-	print "    Correcting rows and columns"
+#	print "    Correcting rows and columns"
 	rows = int(ds_new.Rows)
 	cols = int(ds_new.Columns)
-	print "    Copying pixel data"
+#	print "    Copying pixel data"
 	ds_new.PixelData = ds.PixelData[slicenum*(rows*cols*2):(slicenum+1)*(rows*cols*2)]
-	print "    Replacing instance number"
+#	print "    Replacing instance number"
 	ds_new.InstanceNumber = frame
 	ds_new.NumberOfFrames = 1
-	print "    Returning split dataset"
+	ds_new._character_set = ds._character_set
+#	print "    Returning split dataset"
+	'''
+	I don't know why this bit needs to be done, but if you don't create these strings
+	for each slice, python isn't able to pickle the objects properly and complains
+	about not having the Attribute _character_set - perhaps the character set isn't
+	defined until a string representation of the object is required?
+	'''
+	ds_str = str(ds)
+	ds_new_str = str(ds_new)
+	
 	return ds_new
 
 def add_all(dataset1,dataset2):
@@ -87,7 +101,7 @@ def add_all(dataset1,dataset2):
 #def tag_sorter(dictitem):
 #	return dictitem[0:-2:1]
 	
-def collect_dicomdir_info(path,force_read=False):
+def collect_dicomdir_info(path,tempdir=None,force_read=False):
 	tags= None
 	# This automatically excludes Philips "XX_" files, but only based on name.  If they've been renamed they
 	# won't be picked up until the "try/except" below.
@@ -170,6 +184,8 @@ def collect_dicomdir_info(path,force_read=False):
 			# below still works
 			instance = [ds.InstanceNumber]
 		
+		instance_uid = 'UNKNOWN'
+		
 		for i in instance:
 			if not enhanced:
 				instance_uid = ds.SOPInstanceUID
@@ -186,4 +202,20 @@ def collect_dicomdir_info(path,force_read=False):
 					('series',series),('seriesuid',series_uid),('studydesc',studydesc),
 					('seriesdesc',seriesdesc),('instance',i),('instanceuid',instance_uid),
 					('path',path),('enhanced',enhanced),('px_array',pxfloat)]))
+		# Assuming all this has worked, serialise the dataset (ds) for later use, with the instance UID
+		# as the file number
+		if not enhanced:
+			if tempdir:
+				save_temp_ds(ds,tempdir,instance_uid+'.mds')
+		
 	return tags
+	
+def save_temp_ds(ds,tempdir,fname):
+	if not os.path.exists(tempdir):
+		os.makedirs(tempdir)
+	temppath = os.path.join(tempdir,fname)
+	if not os.path.exists(temppath):
+		with open(temppath,'wb') as tempfile:
+			pickle.dump(ds,tempfile,protocol=2)
+			tempfile.close()
+	return

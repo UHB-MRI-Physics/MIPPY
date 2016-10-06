@@ -27,6 +27,8 @@ print "    web broswer interface"
 import webbrowser
 print "    sys"
 import sys
+print "    high-level file operations (shutil)"
+import shutil
 print "    MIPPY file functions"
 from functions.file_functions import *
 print "    MIPPY viewer functions"
@@ -87,6 +89,22 @@ class ToolboxHome(Frame):
 		#~ redir_err = RedirectText(self.master.logoutput,logpath)
 		#~ sys.stdout = redir_out
 		#~ sys.stderr = redir_err
+		
+		'''
+		This section is to determine the host OS, and set up the appropriate temp
+		directory for images.
+		Windows = C:\Temp
+		Mac = /tmp
+		Linux = /tmp
+		'''
+		if sys.platform == 'win32' or sys.platform =='win64':
+			self.tempdir = r'C:\Temp\MIPPY_temp'
+		elif sys.platform == 'Darwin' or sys.platform == 'Linux':
+			self.tempdir = '/tmp/MIPPY_temp'
+		else:
+			tkMessageBox.showerror('ERROR', 'Unsupported operating system, please contact the developers.')
+			sys.exit()
+#		print self.tempdir
 		
 		# Create menu bar for the top of the window
 		self.menubar = Menu(master)
@@ -237,9 +255,23 @@ class ToolboxHome(Frame):
 		
 	
 	def asktoexit(self):
-		if tkMessageBox.askokcancel("Quit?", "Are you sure you want to exit?"):
-			self.master.destroy()
+#		if tkMessageBox.askokcancel("Quit?", "Are you sure you want to exit?"):
+#			self.master.destroy()
 			#~ sys.exit()
+		mbox = tkMessageBox.Message(
+			title='Delete temporary files?',
+			message='Would you like to delete all MIPPY temp files?',
+			icon=tkMessageBox.QUESTION,
+			type=tkMessageBox.YESNOCANCEL,
+			master = self)
+		reply = mbox.show()
+		if reply=='yes':
+			self.clear_temp_dir()
+			self.master.destroy()
+		elif reply=='no':
+			self.master.destroy()
+		else:
+			return
 		return
 		
 
@@ -359,7 +391,7 @@ class ToolboxHome(Frame):
 		self.tag_list = []
 		for p in self.path_list:
 			self.progress(100*(float(self.path_list.index(p))/float(len(self.path_list))))
-			tags = collect_dicomdir_info(p)
+			tags = collect_dicomdir_info(p,tempdir=self.tempdir)
 			if tags:
 				for row in tags:
 					self.tag_list.append(row)
@@ -468,20 +500,31 @@ class ToolboxHome(Frame):
 				for tag in self.sorted_list:
 					
 					if tag['instanceuid'] in self.active_uids:
-						if not tag['path']==self.open_file:
-							self.open_ds = dicom.read_file(tag['path'])
-							self.open_file = tag['path']
-							gc.collect()
-						if not tag['enhanced']:
-#							print tag['path']
-#							print type(tag['path'])
-							self.datasets_to_pass.append(self.open_ds)
+						# First, check if dataset is already in temp files
+						temppath = os.path.join(self.tempdir,tag['instanceuid']+'.mds')
+						if os.path.exists(temppath):
+							print "TEMP FILE FOUND",tag['instanceuid']
+							with open(temppath,'rb') as tempfile:
+								self.datasets_to_pass.append(pickle.load(tempfile))
+								tempfile.close()
+							continue
 						else:
-#							ds = dicom.read_file(tag['path'])
-#							print tag['path']
-#							print type(tag['path'])
-							# Check if image already exists in temp files
-							self.datasets_to_pass.append(get_frame_ds(self.open_ds,tag['instance']))
+							if not tag['path']==self.open_file:
+								self.open_ds = dicom.read_file(tag['path'])
+								self.open_file = tag['path']
+								gc.collect()
+							if not tag['enhanced']:
+	#							print tag['path']
+	#							print type(tag['path'])
+								self.datasets_to_pass.append(self.open_ds)
+							else:
+	#							ds = dicom.read_file(tag['path'])
+	#							print tag['path']
+	#							print type(tag['path'])
+								# Check if image already exists in temp files
+								split_ds = get_frame_ds(self.open_ds,tag['instance'])
+								self.datasets_to_pass.append(split_ds)
+								save_temp_ds(split_ds,self.tempdir,tag['instanceuid']+'.mds')
 			#~ elif preload_dicom=='minimal':
 				#~ self.datasets_to_pass = []
 				#~ for tag in self.sorted_list:
@@ -500,6 +543,10 @@ class ToolboxHome(Frame):
 			print "Did you select a module?"
 			print "Bet you didn't."
 		return
+	
+	def clear_temp_dir(self):
+		if os.path.exists(self.tempdir):
+			shutil.rmtree(self.tempdir)
 
 #########################################################
 """

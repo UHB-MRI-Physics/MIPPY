@@ -134,12 +134,12 @@ def px_bytes_to_array(byte_array,rows,cols,bitdepth=16,mode='littleendian',rs=1,
 	elif bitdepth==8:
 		this_dtype = np.dytpe('u1')
 	abytes = np.frombuffer(byte_array, dtype=this_dtype)
-	print np.mean(abytes)
-	print np.shape(abytes)
-	print abytes
+#	print np.mean(abytes)
+#	print np.shape(abytes)
+#	print abytes
 	abytes = abytes.reshape((cols,rows))
 	px_float = generate_px_float(abytes,rs,ri,ss)
-	print np.mean(px_float)
+#	print np.mean(px_float)
 	return px_float
 	
 def generate_px_float(pixels,rs,ri,ss=None):
