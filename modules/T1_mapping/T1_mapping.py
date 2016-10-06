@@ -43,7 +43,8 @@ def T1_mapping(Im4D,TI,images,rev=False):
     T1 = float(500)
     #tolerance = 0.1
 								
-    threshold = 0.1*np.mean(np.fabs(Im4D))
+    threshold = 0.5*np.median(np.fabs(Im4D))
+
 #    threshold = 0
     # print threshold
 

@@ -320,36 +320,36 @@ def sort_TIs(win,images):
                 win.TA_in.set(abs(int(TAav)))
                 txt=("Estimated TA is %s [ms]\n" %(win.TA_in.get()))
                 status(win,txt)
-        if (win.TA_in.get()>0 and win.rb_TAvar.get()==1):
-                if win.rb_TIvar.get()==1:
-                        for d in range(win.dyns):
-                                for s in range(win.slcs):
-                                        TIs[win.slcs*d+s]=int(win.TI_in.get())+d*int(win.TIinc_in.get())+s*int(win.TA_in.get())
+                if (TAav>0 and win.rb_TAvar.get()==1):
+                        if win.rb_TIvar.get()==1:
+                                for d in range(win.dyns):
+                                        for s in range(win.slcs):
+                                                TIs[win.slcs*d+s]=int(win.TI_in.get())+d*int(win.TIinc_in.get())+s*int(win.TA_in.get())
                                         
-                elif win.rb_TIvar.get()==2:
-                        TI=np.genfromtxt([win.TIs_in.get()],delimiter=",")
-                        if np.size(TI,0)!=win.dyns:
-                                status(win,"Provided number of TIs does not match number of dynamics...\n"
-                                       +"number of dynamics = "+str(win.dyns))
-                                return None
-                        
-                        for d in range(win.dyns):
-                                for s in range(win.slcs):
-                                        TIs[win.slcs*d+s]=TI[d]+s*int(win.TA_in.get())
-        elif (win.TA_in.get()<0 and win.rb_TAvar.get()==1):
-                if win.rb_TIvar.get()==1:
-                        for d in range(win.dyns):
-                                for s in range(win.slcs):
-                                        TIs[win.slcs*d+s]=int(win.TI_in.get())+d*int(win.TIinc_in.get())+(win.slcs-s-1)*int(win.TA_in.get())
-                elif win.rb_TIvar.get()==2:
-                        TI=np.genfromtxt([win.TIs_in.get()],delimiter=",")
-                        if np.size(TI,0)!=win.dyns:
-                                status(win,"Provided number of TIs does not match number of dynamics...\n")
-                                return None
-                        
-                        for d in range(win.dyns):
-                                for s in range(win.slcs):
-                                        TIs[int(win.slcs)*d+s]=TI[d]+(win.slcs-s-1)*int(win.TA_in.get())
+                        elif win.rb_TIvar.get()==2:
+                                TI=np.genfromtxt([win.TIs_in.get()],delimiter=",")
+                                if np.size(TI,0)!=win.dyns:
+                                        status(win,"Provided number of TIs does not match number of dynamics...\n"
+                                               +"number of dynamics = "+str(win.dyns))
+                                        return None
+                                
+                                for d in range(win.dyns):
+                                        for s in range(win.slcs):
+                                                TIs[win.slcs*d+s]=TI[d]+s*int(win.TA_in.get())
+                elif (TAav<0 and win.rb_TAvar.get()==1):
+                        if win.rb_TIvar.get()==1:
+                                for d in range(win.dyns):
+                                        for s in range(win.slcs):
+                                                TIs[win.slcs*d+s]=int(win.TI_in.get())+d*int(win.TIinc_in.get())+(win.slcs-s-1)*int(win.TA_in.get())
+                        elif win.rb_TIvar.get()==2:
+                                TI=np.genfromtxt([win.TIs_in.get()],delimiter=",")
+                                if np.size(TI,0)!=win.dyns:
+                                        status(win,"Provided number of TIs does not match number of dynamics...\n")
+                                        return None
+                                
+                                for d in range(win.dyns):
+                                        for s in range(win.slcs):
+                                                TIs[int(win.slcs)*d+s]=TI[d]+(win.slcs-s-1)*int(win.TA_in.get())
 
         elif (win.c_rev_in.get()==1 and win.rb_TAvar.get()==2):
                 if win.rb_TIvar.get()==1:
@@ -417,7 +417,13 @@ def save(win,dicomdir,images):
                 images_T1.SOPInstanceUID = ''.join([images_T1.SOPInstanceUID,".1"])
                 images_T1.RescaleSlope = 1
                 images_T1.RescaleIntercept = np.min(T1_map)
-        ##        images_T1.SeriesDescription = "T1 result"
+
+                try:
+                        images_T1[0x2005,0x100E].value = 1
+                except:
+                        pass
+                images_T1.SeriesDescription = images[0].SeriesDescription+"_T1map"
+                images_T1.SeriesInstanceUID = images[0].SeriesInstanceUID+".1"
                 
                 file_out=os.path.join(dicomdir,"_Series_"+str(images_T1.SeriesNumber).zfill(3)+"_maps","T1_map_"+str(s+1).zfill(3)+".dcm")
                 print file_out
@@ -449,6 +455,13 @@ def save(win,dicomdir,images):
                 images_T1_R2.RescaleIntercept = 0
         ##        images_T1_R2.SeriesDescription = "Fit R2 value"
 
+                try:
+                        images_T1_R2[0x2005,0x100E].value = 1
+                except:
+                        pass
+                images_T1_R2.SeriesDescription = images[0].SeriesDescription+"_T1GoF"
+                images_T1_R2.SeriesInstanceUID = images[0].SeriesInstanceUID+".2"
+
                 file_out=os.path.join(dicomdir,"_Series_"+str(images_T1_R2.SeriesNumber).zfill(3)+"_maps","T1_GoF_map_"+str(s+1).zfill(3)+".dcm")
                 images_T1_R2.save_as(file_out)
                     
@@ -471,6 +484,13 @@ def save(win,dicomdir,images):
                 images_T1_Var.RescaleSlope = 1./10
                 images_T1_Var.RescaleIntercept = np.min(10*T1_var)
         ##        images_T1_Var.SeriesDescription = "T1 variance"
+
+                try:
+                        images_T1_Var[0x2005,0x100E].value = 1
+                except:
+                        pass
+                images_T1_Var.SeriesDescription = images[0].SeriesDescription+"_T1var"
+                images_T1_Var.SeriesInstanceUID = images[0].SeriesInstanceUID+".3"
 
                 file_out=os.path.join(dicomdir,"_Series_"+str(images_T1_Var.SeriesNumber).zfill(3)+"_maps","T1_Var_map_"+str(s+1).zfill(3)+".dcm")
                 images_T1_Var.save_as(file_out)
@@ -496,6 +516,13 @@ def save(win,dicomdir,images):
                 images_M0.RescaleIntercept = 0
         ##        images_M0.SeriesDescription = "M0 map"
 
+                try:
+                        images_M0[0x2005,0x100E].value = 1
+                except:
+                        pass
+                images_M0.SeriesDescription = images[0].SeriesDescription+"_M0map"
+                images_M0.SeriesInstanceUID = images[0].SeriesInstanceUID+".4"
+
                 file_out=os.path.join(dicomdir,"_Series_"+str(images_M0.SeriesNumber).zfill(3)+"_maps","M0_map_"+str(s+1).zfill(3)+".dcm")
                 images_M0.save_as(file_out)
                     
@@ -519,6 +546,13 @@ def save(win,dicomdir,images):
 ##                images_M0_Var.RescaleIntercept = np.min(10.*M0_var)
                 images_M0_Var.RescaleIntercept = 0
         ##        images_M0_Var.SeriesDescription = "M0 variance"
+
+                try:
+                        images_M0_Var[0x2005,0x100E].value = 1
+                except:
+                        pass
+                images_M0_Var.SeriesDescription = images[0].SeriesDescription+"_M0var"
+                images_M0_Var.SeriesInstanceUID = images[0].SeriesInstanceUID+".5"
                 
                 file_out=os.path.join(dicomdir,"_Series_"+str(images_M0_Var.SeriesNumber).zfill(3)+"_maps","M0_Var_map_"+str(s+1).zfill(3)+".dcm")
                 images_M0_Var.save_as(file_out)
