@@ -68,11 +68,11 @@ def execute(master_window,dicomdir,images):
 					wraplength=200,justify=LEFT)
 	
 	win.toolbar.grid(row=0,column=2,sticky='nsew')
-	win.roi_button.grid(row=0,column=0,sticky='ew')
-	win.subtract_button.grid(row=1,column=0,sticky='ew')
-	win.calc_button.grid(row=2,column=0,sticky='ew')
-	win.phantom_label.grid(row=3,column=0,sticky='w')
-	win.phantom_choice.grid(row=4,column=0,sticky='ew')
+	win.roi_button.grid(row=2,column=0,sticky='ew')
+	win.subtract_button.grid(row=3,column=0,sticky='ew')
+	win.calc_button.grid(row=4,column=0,sticky='ew')
+	win.phantom_label.grid(row=0,column=0,sticky='w')
+	win.phantom_choice.grid(row=1,column=0,sticky='ew')
 	win.advanced_checkbox.grid(row=5,column=0,sticky='w')
 	win.mode_label.grid(row=6,column=0,sticky='w')
 	
