@@ -8,11 +8,13 @@ Created on Sun Oct  9 15:51:02 2016
 from __future__ import with_statement   # <-- Python 2.5 ONLY
 import Tix
 import time
+from PIL import Image, ImageTk
 
 class SplashScreen( object ):
    def __init__( self, tkRoot, imageFilename, minSplashTime=0 ):
       self._root              = tkRoot
-      self._image             = Tix.PhotoImage( file=imageFilename )
+      self._imopen            = Image.open(imageFilename)
+      self._image             = ImageTk.PhotoImage( self._imopen )
       self._splash            = None
       self._minSplashTime     = time.time() + minSplashTime
       

@@ -43,7 +43,7 @@ if "nt" == os.name:
 else:
 	root_window.wm_iconbitmap('@'+os.path.join(root_path,'source','images','brain_bw.xbm'))
 				
-with splash.SplashScreen(root_window,'source/images/brain_orange.png', 3.0):
+with splash.SplashScreen(root_window,'source/images/splash.jpg', 3.0):
 	from source.main import *
 
 root_app = ToolboxHome(master = root_window)
