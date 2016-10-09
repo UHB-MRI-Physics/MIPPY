@@ -34,22 +34,37 @@ def execute(master_window,dicomdir,images):
 
 	win.im1 = MIPPYCanvas(win,width=300,height=300,drawing_enabled=True)
 	win.im1.img_scrollbar = Scrollbar(win,orient='horizontal')
-	win.configure_scrollbar()
-	win.im1.grid(row=0,column=0,sticky='nsew')
-	win.im1.img_scrollbar.grid(row=1,column=0,sticky='ew')
-
+	win.im1.configure_scrollbar()
 	win.toolbar = Frame(win)
-	win.roi_button = Button(win.toolbar,text='Create/reset ROIs', command=lambda:roi_reset(win),width=30)
-	win.profile_button = Button(win.toolbar,text='View Profiles',command=lambda:show_profiles(win),width=30)
-	win.histogram_button = Button(win.toolbar,text='View Histogram',command=lambda:show_histogram(win),width=30)
-	win.measure_button = Button(win.toolbar, text='Measure Uniformity', command=lambda:measure_uniformity(win),width=30)
-	win.method_label = Label(win.toolbar,text='\nPhantom selection:')
-	win.method = StringVar(win)
-	win.method.set('ACR (TRA)')		# default value	
-	win.method_choice = OptionMenu(win.toolbar,win.method,'ACR','MagNET')
+	win.roibutton = Button(win.toolbar,text='Create/Reset ROIs',command=lambda:self.reset_roi())
+	win.measurebutton = Button(win.toolbar,text='Measure Uniformity',command=lambda:self.measure_uni())
+	win.outputbox = Text(win,state='disabled',height=10,width=80)
+	
+	win.roibutton.grid(row=0,column=0,sticky='ew')
+	win.measurebutton.grid(row=1,column=0,sticky='ew')
+	
+	win.im1.grid(row=0,column=0,sticky='nw')
+	win.toolbar.grid(row=0,column=1,sticky='new')
+	win.outputbox.grid(row=1,column=0,columnspan=2,sticky='nsew')
+	
+	win.rowconfigure(0,weight=0)
+	win.rowconfigure(1,weight=1)
+	win.columnconfigure(0,weight=0)
+	win.columnconfigure(1,weight=1)
+	
+	win.toolbar.columnconfigure(0,weight=1)
+	
 	return
 	
 def close_window(window):
 	"""Closes the window passed as an argument"""
 	active_frame.destroy()
+	return
+
+def output(win,txt):
+	win.outputbox.config(state=NORMAL)
+	win.outputbox.insert(END,txt+'\n')
+	win.outputbox.config(state=DISABLED)
+	win.outputbox.see(END)
+	win.update()
 	return

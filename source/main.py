@@ -555,16 +555,4 @@ the GUI package), then given a title and dimensions as attributes, then used to 
 "ToolboxHome" application.  The "mainloop" function then enters the actual application.
 """
 
-root_window = Tk()
-root_window.title("MIPPY: Modular Image Processing in Python")
-root_window.minsize(650,400)
-root_path = os.getcwd()
-if "nt" == os.name:
-    root_window.wm_iconbitmap(bitmap = "source/images/brain_orange.ico")
-else:
-    root_window.wm_iconbitmap('@'+os.path.join(root_path,'source','images','brain_bw.xbm'))
-root_app = ToolboxHome(master = root_window)
 
-
-
-root_app.mainloop()
