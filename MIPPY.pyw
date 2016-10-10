@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+
+def fix_dependencies():
+    from scipy.sparse.csgraph import _validation
+
 import sys
 from datetime import datetime
 import os

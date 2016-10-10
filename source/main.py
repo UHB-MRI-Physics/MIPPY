@@ -2,6 +2,7 @@
 Icon attribution:
 Icon made by Freepik from www.flaticon.com
 """
+
 print "Importing packages..."
 print "    Pickle/cPickle"
 import cPickle as pickle
@@ -444,8 +445,8 @@ class ToolboxHome(Frame):
 			if not os.path.isdir(os.path.join(self.root_dir,'modules',folder)):
 				continue
 			file_list = os.listdir(os.path.join(self.root_dir,'modules',folder))
-			if ('__init__.py' in file_list
-				and 'module_main.py' in file_list
+			if (('__init__.py' in file_list or '__init__.pyc' in file_list)
+				and ('module_main.py' in file_list or 'module_main.pyc' in file_list)
 				and 'config' in file_list):
 				cfg_file = os.path.join(self.root_dir,'modules',folder,'config')
 				with open(cfg_file,'r') as file_object:
