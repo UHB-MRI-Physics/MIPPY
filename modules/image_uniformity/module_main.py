@@ -1,9 +1,11 @@
 from Tkinter import *
-#from ttk import *
+from ttk import *
 from source.functions.viewer_functions import *
 import source.functions.image_processing as imp
+import source.functions.misc_functions as mpy
 import os
 from PIL import Image,ImageTk
+import gc
 
 def preload_dicom():
 	"""
@@ -31,6 +33,7 @@ def execute(master_window,dicomdir,images):
 	"""
 
 	win = Toplevel(master_window)
+	gc.collect()
 
 	win.im1 = MIPPYCanvas(win,width=300,height=300,drawing_enabled=True)
 	win.im1.img_scrollbar = Scrollbar(win,orient='horizontal')
@@ -41,7 +44,6 @@ def execute(master_window,dicomdir,images):
 	win.outputbox = Text(win,state='disabled',height=10,width=80)
 
 	win.phantom_options = [
-		'',
 		'ACR (TRA)',
 		'MagNET Flood (TRA)',
 		'MagNET Flood (SAG)',
@@ -50,11 +52,13 @@ def execute(master_window,dicomdir,images):
 	win.phantom_label = Label(win.toolbar,text='\nPhantom selection:')
 	win.phantom_v = StringVar(win)
 
-	print win.phantom_v.get()
-	win.phantom_v.set(win.phantom_options[1])
-	win.phantom_choice = apply(OptionMenu,(win.toolbar,win.phantom_v)+tuple(win.phantom_options))
+#	print win.phantom_v.get()
+#	win.phantom_v.set(win.phantom_options[1])
+#	win.phantom_choice = apply(OptionMenu,(win.toolbar,win.phantom_v)+tuple(win.phantom_options))
+	win.phantom_choice = OptionMenu(win.toolbar,win.phantom_v,win.phantom_options[0],*win.phantom_options)
+	mpy.optionmenu_patch(win.phantom_choice,win.phantom_v)
 		# default value
-	print win.phantom_v.get()
+#	print win.phantom_v.get()
 	win.mode=StringVar()
 	win.mode.set('valid')
 	win.advanced_checkbox = Checkbutton(win.toolbar,text='Use advanced ROI positioning?',var=win.mode,

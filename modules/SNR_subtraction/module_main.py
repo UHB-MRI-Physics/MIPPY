@@ -3,6 +3,7 @@ from ttk import *
 from source.functions.viewer_functions import *
 import source.functions.image_processing as imp
 from source.functions.file_functions import *
+import source.functions.misc_functions as mpy
 import tkMessageBox
 import os
 from PIL import Image,ImageTk
@@ -56,7 +57,6 @@ def execute(master_window,dicomdir,images):
 	win.calc_button = Button(win.toolbar,text="Calculate SNR",command=lambda:snr_calc(win))
 	win.phantom_label = Label(win.toolbar,text='\nPhantom selection:')
 	win.phantom_options = [
-		'',
 		'ACR (TRA)',
 		'ACR (SAG)',
 		'ACR (COR)',
@@ -66,8 +66,9 @@ def execute(master_window,dicomdir,images):
 
 	win.phantom_label = Label(win.toolbar,text='\nPhantom selection:')
 	win.phantom = StringVar(win)
-	win.phantom_choice = apply(OptionMenu,(win.toolbar,win.phantom)+tuple(win.phantom_options))
-	win.phantom.set(win.phantom_options[1])		# default value
+	win.phantom_choice = OptionMenu(win.toolbar,win.phantom,win.phantom_options[0],*win.phantom_options)
+	mpy.optionmenu_patch(win.phantom_choice,win.phantom)
+#	win.phantom.set(win.phantom_options[1])		# default value
 	win.mode=StringVar()
 	win.mode.set('valid')
 	win.advanced_checkbox = Checkbutton(win.toolbar,text='Use advanced ROI positioning?',var=win.mode,
