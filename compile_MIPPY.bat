@@ -12,6 +12,7 @@ M:\Software_Programs\Python27\Scripts\pyinstaller ^
 	--hidden-import=modules ^
 	--win-no-prefer-redirects ^
 	--win-private-assemblies ^
+	--hidden-import=easygui ^
 	.\MIPPY\MIPPY.pyw
 
 mkdir .\dist\MIPPY\logs

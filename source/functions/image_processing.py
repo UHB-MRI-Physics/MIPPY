@@ -18,11 +18,11 @@ def find_phantom_center(image,phantom='ACR',subpixel=True,mode='valid'):
 	"""
 	Assumes circular/ellipsoid phantom.  For anything else, you'll
 	need a different method.
-	
+
 	IMPORTANT - returns (x,y) as tuple, but arrays work in [row,col]
-	i.e. [y,x] when indexing values    
+	i.e. [y,x] when indexing values
 	"""
-	
+
 	# Calculate phantom radius in pixels
 	if phantom=='ACR (TRA)':
 		radius_x = 95./image.xscale
@@ -63,19 +63,19 @@ def find_phantom_center(image,phantom='ACR',subpixel=True,mode='valid'):
 #	plt.imshow(mask)
 #	plt.show()
 #	sleep(1)
-	
+
 	# Create binary image
 	px = deepcopy(image.px_float)
 	threshold = np.mean(px)/5
 	px[px<threshold]=0
 	px[px>=threshold]=1
-	
+
 	print "made binary"
 #	plt.imshow(px)
 #	plt.show()
 	print "continuing"
 	print mode
-	
+
 	if mode=='valid':
 		mega_smooth=convolve2d(px,mask,mode='valid')
 		mask_offset_y = (mask_size[0]+1)/2
@@ -88,7 +88,7 @@ def find_phantom_center(image,phantom='ACR',subpixel=True,mode='valid'):
 #	plt.imshow(mega_smooth)
 #	plt.show()
 #	sleep(1)
-	
+
 	max_indices = np.where(mega_smooth==mega_smooth.max())
 	x_y_coords = zip(max_indices[0],max_indices[1])
 	print x_y_coords
@@ -111,3 +111,36 @@ def get_inverse_sum(c,arr,size=3):
 	# c is center in [x,y] format
 	return abs(1/np.sum(arr[c[1]-size:c[1]+size,c[0]-size:c[0]+size]))
 
+class MR_Phantom(object):
+	def __init__(self,shape,radius=None,length=None,width=None,height=None):
+		if shape=='cylinder' and radius and length:
+			self._r = float(radius)
+			self._l = float(length)
+			self._w = None
+			self._h = None
+		elif shape=='sphere' and radius:
+			self._r = float(radius)
+			self._l = None
+			self._w = None
+			self._h = None
+		elif shape=='cuboid' and length and width and height:
+			self._r = None
+			self._l = float(length)
+			self._w = float(width)
+			self._h = float(height)
+		else:
+			print "Failed to initialise phantom"
+			raise ShapeError('Phantom shape/measurements not understood.')
+		return
+
+class ShapeError(Exception):
+	def __init__(self,value):
+		self.value = value
+	def __str__(self):
+		return repr(self.value)
+
+def make_ACR():
+	return MR_Phantom('cylinder',radius=95,length=160)
+
+def make_MagNET_flood():
+	return MR_Phantom('cylinder',radius=100,length=200)

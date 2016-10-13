@@ -36,9 +36,9 @@ def execute(master_window,dicomdir,images):
 		tkMessageBox.showwarning("ERROR","Images from two separate series are required.\n\n"
 								+"Please check your selection and reload the module.")
 		return
-	
+
 	win = Toplevel(master_window)
-	
+
 	win.im1 = MIPPYCanvas(win,width=300,height=300,drawing_enabled=True)
 	win.im2 = MIPPYCanvas(win,width=300,height=300,drawing_enabled=True)
 	win.im1.img_scrollbar = Scrollbar(win,orient='horizontal')
@@ -49,24 +49,32 @@ def execute(master_window,dicomdir,images):
 	win.im2.grid(row=0,column=1,sticky='nsew')
 	win.im1.img_scrollbar.grid(row=1,column=0,sticky='ew')
 	win.im2.img_scrollbar.grid(row=1,column=1,sticky='ew')
-	
+
 	win.toolbar = Frame(win)
 	win.roi_button = Button(win.toolbar,text="Create/reset ROIs",command=lambda:roi_reset(win),width=30)
 	win.subtract_button = Button(win.toolbar,text="View subtraction image",command=lambda:view_subtraction(win))
 	win.calc_button = Button(win.toolbar,text="Calculate SNR",command=lambda:snr_calc(win))
 	win.phantom_label = Label(win.toolbar,text='\nPhantom selection:')
+	win.phantom_options = [
+		'',
+		'ACR (TRA)',
+		'ACR (SAG)',
+		'ACR (COR)',
+		'MagNET Flood (TRA)',
+		'MagNET Flood (SAG)',
+		'MagNET Flood (COR)']
+
+	win.phantom_label = Label(win.toolbar,text='\nPhantom selection:')
 	win.phantom = StringVar(win)
-	win.phantom.set('ACR (TRA)')		# default value	
-	win.phantom_choice = OptionMenu(win.toolbar,win.phantom,
-							'ACR (TRA)','ACR (SAG)','ACR (COR)','MagNET Flood (TRA)',
-							'MagNET Flood (SAG)', 'MagNET Flood (COR)')
+	win.phantom_choice = apply(OptionMenu,(win.toolbar,win.phantom)+tuple(win.phantom_options))
+	win.phantom.set(win.phantom_options[1])		# default value
 	win.mode=StringVar()
 	win.mode.set('valid')
 	win.advanced_checkbox = Checkbutton(win.toolbar,text='Use advanced ROI positioning?',var=win.mode,
 								onvalue='same',offvalue='valid')
 	win.mode_label = Label(win.toolbar,text='N.B. Advanced positioning is much slower, but accounts for the phantom not being fully contained in the image.',
 					wraplength=200,justify=LEFT)
-	
+
 	win.toolbar.grid(row=0,column=2,sticky='nsew')
 	win.roi_button.grid(row=2,column=0,sticky='ew')
 	win.subtract_button.grid(row=3,column=0,sticky='ew')
@@ -75,7 +83,7 @@ def execute(master_window,dicomdir,images):
 	win.phantom_choice.grid(row=1,column=0,sticky='ew')
 	win.advanced_checkbox.grid(row=5,column=0,sticky='w')
 	win.mode_label.grid(row=6,column=0,sticky='w')
-	
+
 	win.rowconfigure(0,weight=1)
 	win.rowconfigure(1,weight=0)
 	win.columnconfigure(0,weight=1)
@@ -89,7 +97,7 @@ def execute(master_window,dicomdir,images):
 	win.toolbar.rowconfigure(5,weight=0)
 	win.toolbar.rowconfigure(6,weight=0)
 	win.toolbar.columnconfigure(0,weight=0)
-	
+
 	win.images_split = [[]]
 	for image in images:
 		matched=False
@@ -107,10 +115,10 @@ def execute(master_window,dicomdir,images):
 			win.images_split.append([image])
 	win.im1.load_images(win.images_split[0])
 	win.im2.load_images(win.images_split[1])
-				
-	
+
+
 	return
-	
+
 def close_window(window):
 	"""Closes the window passed as an argument"""
 	active_frame.destroy()
@@ -132,7 +140,7 @@ def roi_reset(win):
 	win.im1.roi_rectangle(xc-5*dim,yc-dim,dim*2,dim*2,tags=['left'],system='image')
 	win.im1.roi_rectangle(xc-dim,yc-dim,dim*2,dim*2,tags=['center'],system='image')
 	return
-	
+
 def snr_calc(win):
 	print "SNR calc"
 	rois = win.im1.find_withtag('roi')
@@ -151,7 +159,7 @@ def snr_calc(win):
 		snr_list.append(signal['mean'][i]/noise['std'][i]*np.sqrt(2))
 	print snr_list
 	print np.mean(snr_list)
-	
+
 	results = {
 		#~ 'Signal': signal['mean'],
 		#~ 'Noise': noise['std'],
@@ -169,13 +177,13 @@ def snr_calc(win):
 		'Stdev (SNR)': np.std(snr_list)
 		}
 	print results
-	
+
 	save_results(results)
 #	display_results(results,win)
-	
+
 	win.im2.load_images(win.images_split[1])
 	win.im2.show_image(imnum)
-	
+
 	return
 
 def view_subtraction(win):
