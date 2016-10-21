@@ -452,15 +452,26 @@ class MIPPYCanvas(Canvas):
 		print stats
 		return stats
 	
-	def get_profile(self,resolution=1,width=1,interpolate=False,direction='horizontal'):
+	def get_profile(self,resolution=1,width=1,interpolate=False,direction='horizontal',index=0):
 		"""Returns a line profile from the image"""
 		
-#		if not len(self.roi_list)==1:
+#		if len(tags)==0:
+#			if not len(self.roi_list)==1:
+#				return None
+#			rois = self.roi_list
+#		
+#		else:
+#			rois = []
+#			for roi in self.roi_list:
+#				if all(tags) in roi.tags:
+#					rois.append(roi)
+#		if len(rois)>1:
+#			print "Too many ROI's found."
 #			return None
-#		if not len(self.roi_list[0].coords)==2:
-#			return None
-		print self.roi_list[0].roi_type
-		if not (self.roi_list[0].roi_type=='line' or self.roi_list[0].roi_type=='rectangle'):
+		
+		
+		print self.roi_list[index].roi_type
+		if not (self.roi_list[index].roi_type=='line' or self.roi_list[index].roi_type=='rectangle'):
 			print "Not a valid ROI type for profile.  Line or rectangle required."
 			return None
 #		if self.shift:
@@ -468,7 +479,7 @@ class MIPPYCanvas(Canvas):
 #		else:
 #			direction='horizontal'
 		
-		roi = self.roi_list[0]
+		roi = self.roi_list[index]
 		coords = roi.coords/self.zoom_factor
 		
 		if roi.roi_type=='line':
@@ -773,6 +784,18 @@ class MIPPYCanvas(Canvas):
 	def draw_line_roi(self):
 		self.drawing_enabled=True
 		self.roi_mode='line'
+		
+	def canvas_coords(self,image_coords):
+		new_coords = []
+		for thing in image_coords:
+			new_coords.append((thing[0]*self.zoom_factor,thing[1]*self.zoom_factor))
+		return new_coords
+	
+	def image_coords(self,canvas_coords):
+		new_coords = []
+		for thing in canvas_coords:
+			new_coords.append((thing[0]/self.zoom_factor,thing[1]/self.zoom_factor))
+		return new_coords
 	
 
 		
