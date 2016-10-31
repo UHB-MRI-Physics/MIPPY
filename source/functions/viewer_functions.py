@@ -525,7 +525,12 @@ class MIPPYCanvas(Canvas):
 		
 		return profile, np.array(range(length_int))
 
-	def new_roi(self,coords,tags=[]):
+	def new_roi(self,coords,tags=[],system='canvas'):
+		if system=='image':
+			coords=self.canvas_coords(coords)
+		elif not system=='canvas':
+			print "Invalid coordinate system specified"
+			return
 		for i in range(len(coords)):
 			j = i+1
 			if j==len(coords):
@@ -533,7 +538,7 @@ class MIPPYCanvas(Canvas):
 			tags.append('roi')
 			self.create_line((coords[i][0],coords[i][1],coords[j][0],coords[j][1]),fill='yellow',width=1,tags=tags)
 		self.add_roi(coords)
-		print "ROI should be on image now..."
+#		print "ROI should be on image now..."
 		return
 	
 	def roi_rectangle(self,x_start,y_start,width,height,tags=[],system='canvas'):

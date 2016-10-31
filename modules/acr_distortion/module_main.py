@@ -1,5 +1,5 @@
 """
-ACR uniformity assessment.
+ACR distortion assessment.
 Rob Flintham. Nov 2016
 """
 
@@ -47,14 +47,12 @@ def execute(master_window,dicomdir,images):
 	win.im1.configure_scrollbar()
 	win.toolbar = Frame(win)
 	win.roibutton = Button(win.toolbar,text='Create/Reset ROIs',command=lambda:reset_roi(win))
-	win.measurebutton = Button(win.toolbar,text='Measure Uniformity',command=lambda:measure_uni(win))
+	win.measurebutton = Button(win.toolbar,text='Measure Uniformity',command=lambda:measure_distortion(win))
 	win.outputbox = Text(win,state='disabled',height=10,width=80)
 
 	win.phantom_options = [
 		'ACR (TRA)',
-		'MagNET Flood (TRA)',
-		'MagNET Flood (SAG)',
-		'MagNET Flood (COR)']
+		'MagNET Flood (TRA)']
 
 	win.phantom_label = Label(win.toolbar,text='\nPhantom selection:')
 	win.phantom_v = StringVar(win)
@@ -163,85 +161,29 @@ def reset_roi(win):
 		radius_y = 105./image.yscale
 		# Add other phantom dimensions here...
 
-	xdim = radius_x*0.75
-	ydim = radius_y*0.75
+	xdim = radius_x * 1.1	      # 10% more than anticipated diameter
+	ydim = radius_y * 1.1       # 10% more than anticipated diameter
 
-	if xdim<ydim:
+	if xdim>ydim:
 		ydim=xdim
-	elif ydim<xdim:
+	elif ydim>xdim:
 		xdim=ydim
 
 	win.xdim = xdim
 	win.ydim = ydim
 
-	roi_ellipse_coords = win.im1.canvas_coords(get_ellipse_coords(center,xdim,ydim))
+	roi_ellipse_coords = win.im1.canvas_coords(get_ellipse_coords(center,xdim,ydim,n=8))
 #	print roi_ellipse_coords
-	win.im1.new_roi(roi_ellipse_coords,tags=['e'])
+#	win.im1.new_roi(roi_ellipse_coords,tags=['e'])
 
-	win.im1.roi_rectangle(xc-xdim,yc-5,xdim*2,10,tags=['h'],system='image')
-	win.im1.roi_rectangle(xc-5,yc-ydim,10,ydim*2,tags=['v'],system='image')
+#	win.im1.roi_rectangle(xc-xdim,yc-5,xdim*2,10,tags=['h'],system='image')
+#	win.im1.roi_rectangle(xc-5,yc-ydim,10,ydim*2,tags=['v'],system='image')
+	for a in range(len(roi_ellipse_coords)/2):
+		win.im1.new_roi([roi_ellipse_coords[a],roi_ellipse_coords[a+len(roi_ellipse_coords)/2]],system='canvas')
 
 def measure_uni(win):
 	profile_h, x = win.im1.get_profile(direction='horizontal',index=1)
 	profile_v, y = win.im1.get_profile(direction='vertical',index=2)
-	profile_h = np.array(profile_h)
-	profile_v = np.array(profile_v)
-	print profile_h
-	print profile_v
-	xc = win.xc
-	yc = win.yc
-	xdim = win.xdim
-	ydim = win.ydim
-
-	cross_x1 = win.im1.roi_list[2].coords[0][0]/win.im1.zoom_factor
-	cross_y1 = win.im1.roi_list[1].coords[0][1]/win.im1.zoom_factor
-	cross_x2 = win.im1.roi_list[2].coords[1][0]/win.im1.zoom_factor
-	cross_y2 = win.im1.roi_list[1].coords[2][1]/win.im1.zoom_factor
-
-	# FRACTIONAL UNIFORMITY
-#	center_value = np.mean(win.im1.get_active_image().px_float[yc-5:yc+5,xc-5:xc+5])
-	center_value = np.mean(win.im1.get_active_image().px_float[cross_y1:cross_y2,cross_x1:cross_x2])
-	print center_value
-
-	x_len = np.round(2.*xdim,0)
-	y_len = np.round(2.*ydim,0)
-
-	h_clipped = np.clip(profile_h,0.9*center_value,1.1*center_value)
-	v_clipped = np.clip(profile_v,0.9*center_value,1.1*center_value)
-	print "where",np.where(0.9*center_value<profile_h)
-#	h_valid = float(len(np.where(np.where(0.9*center_value<profile_h)<1.1*center_value)))
-#	v_valid = float(len(np.where(np.where(0.9*center_value<profile_v)<1.1*center_value)))
-	h_valid = float(len(profile_h)-len(np.where(profile_h<0.9*center_value)[0])-len(np.where(profile_h>1.1*center_value)[0]))
-	v_valid = float(len(profile_v)-len(np.where(profile_v<0.9*center_value)[0])-len(np.where(profile_v>1.1*center_value)[0]))
-	print h_valid
-	print v_valid
-
-	h_uni = h_valid/x_len
-	v_uni = v_valid/y_len
-
-	xscale = win.im1.get_active_image().xscale
-	yscale = win.im1.get_active_image().yscale
-
-	# INTEGRAL UNIFORMITY
-	convolve_radius = np.floor(np.sqrt(100/np.pi))	# Gives 100px circular area
-	mask = np.zeros((int(convolve_radius),int(convolve_radius)))
-	for j in range(np.shape(mask)[0]):
-		for i in range(np.shape(mask)[1]):
-			if i**2+j**2 < convolve_radius**2:
-				mask[j][i] = 1
-
-	px = np.copy(win.im1.get_active_image().px_float)
-	px_smooth = convolve2d(px,mask,mode='same',boundary='fill',fillvalue=0)
-
-	win.hiddencanvas = MIPPYCanvas(win,height=win.im1.height,width=win.im1.width)
-	win.hiddencanvas.img_scrollbar = Scrollbar(win,orient='horizontal')
-	win.hiddencanvas.configure_scrollbar()
-	win.hiddencanvas.load_images([px_smooth])
-#	win.hiddencanvas.grid(row=0,column=0,sticky='nw')
-#	win.update()
-	win.hiddencanvas.roi_list = [win.im1.roi_list[0]]
-	stats = win.hiddencanvas.get_roi_statistics()
-	int_uniformity = 1. - (stats['max'][0]-stats['min'][0])/(stats['max'][0]+stats['min'][0])
 
 
 
