@@ -1,3 +1,9 @@
+"""
+ACR uniformity assessment.
+Rob Flintham. Nov 2016
+"""
+
+
 from Tkinter import *
 from ttk import *
 from source.functions.viewer_functions import *
