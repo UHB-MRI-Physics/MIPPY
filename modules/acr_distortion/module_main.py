@@ -12,7 +12,7 @@ import source.functions.misc_functions as mpy
 import os
 from PIL import Image,ImageTk
 import gc
-from scipy.signal import convolve2d
+from scipy.signal import convolve
 
 def preload_dicom():
 	"""
@@ -38,9 +38,19 @@ def execute(master_window,dicomdir,images):
 	set the "preload_dicom" message above to "return True", these will be dicom
 	datasets.  If you set "return False", these will just be paths to the image files.
 	"""
-
+	
+	"""
+	This section creates you blank GUI and sets your window title and icon.
+	"""
 	win = Toplevel(master_window)
+	win.title("ACR Distortion Assessment")
+	if "nt" == os.name:
+		win.wm_iconbitmap(bitmap = "source/images/brain_orange.ico")
+	else:
+		win.wm_iconbitmap('@'+os.path.join(root_path,'source','images','brain_bw.xbm'))
 	gc.collect()
+	"""
+	"""	
 
 	win.im1 = MIPPYCanvas(win,width=400,height=400,drawing_enabled=True)
 	win.im1.img_scrollbar = Scrollbar(win,orient='horizontal')
@@ -124,6 +134,7 @@ def reset_roi(win):
 	yc = center[1]
 	win.xc = xc
 	win.yc = yc
+	print "Center",center
 
 #	if (win.phantom_v.get()=='ACR (TRA)'
 #		or win.phantom_v.get()=='ACR (SAG)'
@@ -161,8 +172,8 @@ def reset_roi(win):
 		radius_y = 105./image.yscale
 		# Add other phantom dimensions here...
 
-	xdim = radius_x * 1.1	      # 10% more than anticipated diameter
-	ydim = radius_y * 1.1       # 10% more than anticipated diameter
+	xdim = radius_x * 1.2	      # 10% more than anticipated diameter
+	ydim = radius_y * 1.2       # 10% more than anticipated diameter
 
 	if xdim>ydim:
 		ydim=xdim
@@ -171,36 +182,94 @@ def reset_roi(win):
 
 	win.xdim = xdim
 	win.ydim = ydim
+	
+	win.n_profiles = 8
 
-	roi_ellipse_coords = win.im1.canvas_coords(get_ellipse_coords(center,xdim,ydim,n=8))
-#	print roi_ellipse_coords
+	roi_ellipse_coords = get_ellipse_coords(center,xdim,ydim,win.n_profiles)
+	print roi_ellipse_coords
 #	win.im1.new_roi(roi_ellipse_coords,tags=['e'])
 
 #	win.im1.roi_rectangle(xc-xdim,yc-5,xdim*2,10,tags=['h'],system='image')
 #	win.im1.roi_rectangle(xc-5,yc-ydim,10,ydim*2,tags=['v'],system='image')
 	for a in range(len(roi_ellipse_coords)/2):
-		win.im1.new_roi([roi_ellipse_coords[a],roi_ellipse_coords[a+len(roi_ellipse_coords)/2]],system='canvas')
+		win.im1.new_roi([roi_ellipse_coords[a],roi_ellipse_coords[a+len(roi_ellipse_coords)/2]],system='image')
 
-def measure_uni(win):
-	profile_h, x = win.im1.get_profile(direction='horizontal',index=1)
-	profile_v, y = win.im1.get_profile(direction='vertical',index=2)
+def measure_distortion(win):
+	profiles = []
+	px = []
+	res = 0.1
+	smoothing = 0.3
+	for i in range(len(win.im1.roi_list)):
+		this_prof, this_px = win.im1.get_profile(index=i,resolution=res,interpolate=True)
+		profiles.append(convolve(np.array(this_prof),np.ones(smoothing/res),mode='same'))
+		px.append(this_px)
+	
+	lows = []
+	highs = []
+	
+	flat_px = win.im1.get_active_image().px_float.flatten()
+	
+	noise_threshold = 0.1*np.mean(flat_px)
+	im_mean = np.mean(flat_px[np.where(flat_px>=noise_threshold)])
+	im_max = np.max(flat_px)
+	half_value = im_mean/2
+	print noise_threshold,im_max,im_mean,half_value
+	
+	
+	for profile in profiles:
+		this_low = None
+		this_high = None
+		for i in range(len(profile)/2):
+#			print i
+			if (profile[i]>=half_value and
+				profile[i-1]<half_value and
+				profile[i+1]>=half_value and
+				not this_low):
+				this_low = px[0][i]
+			if (profile[-i]>=half_value and
+				profile[-i+1]<half_value and
+				profile[-i-1]>=half_value and
+				not this_high):
+				this_high = px[0][-i]
+			if this_low and this_high:
+				break
+		lows.append(this_low)
+		highs.append(this_high)
+	
+	print lows
+	print highs
+	
+	lengths = np.zeros(len(lows))
+	for a in range(len(lows)):
+		lengths[a] = (highs[a]-lows[a])*res
+	
+	xscale = win.im1.get_active_image().xscale
+	yscale = win.im1.get_active_image().yscale
+	linearity = (np.mean(lengths[1:])*np.mean([xscale,yscale]) - 190.)/190.
+	distortion = np.std(lengths[1:])/np.mean(lengths[1:])
+	print "Linearity", np.round(linearity*100,2), "%"
+	print "Linearity (absolute)", np.round(linearity * 190.+190,2), "mm"
+	print "Distortion", np.round(distortion*100,2), "%"
 
 
 
 
 
 	clear_output(win)
-	output(win,'Measured across central 75% of phantom\n')
-
-	output(win,"Integral uniformity (ACR) = "+str(np.round(int_uniformity*100,1))+" %\n")
-
-	output(win,"Fractional uniformity (Horizontal) = "+str(np.round(h_uni*100,1))+" %")
-	output(win,"Fractional uniformity (Vertical) = "+str(np.round(v_uni*100,1))+" %")
-
-	output(win,'\nThe following can be copied and pasted directly into MS Excel or similar')
-	output(win,'\nX (mm)\tHorizontal\tY (mm)\tVertical')
-	for row in range(len(profile_h)):
-		output(win,str(x[row]*xscale)+'\t'+str(profile_h[row])+'\t'+str(y[row]*yscale)+'\t'+str(profile_v[row]))
-#	win.im1.grid(row=0,column=0,sticky='nw')
-	win.outputbox.see('1.0')
+#	output(win,'Measured across central 75% of phantom\n')
+#
+#	output(win,"Integral uniformity (ACR) = "+str(np.round(int_uniformity*100,1))+" %\n")
+	output(win,"Linearity: "+str(np.round(linearity*100,2))+" %")
+	output(win,"Linearity (Absolute): "+str(np.round(linearity * 190.+190,2))+" mm")
+	output(win,"Distortion: "+str(np.round(distortion*100,2))+" %")
+#
+#	output(win,"Fractional uniformity (Horizontal) = "+str(np.round(h_uni*100,1))+" %")
+#	output(win,"Fractional uniformity (Vertical) = "+str(np.round(v_uni*100,1))+" %")
+#
+#	output(win,'\nThe following can be copied and pasted directly into MS Excel or similar')
+#	output(win,'\nX (mm)\tHorizontal\tY (mm)\tVertical')
+#	for row in range(len(profile_h)):
+#		output(win,str(x[row]*xscale)+'\t'+str(profile_h[row])+'\t'+str(y[row]*yscale)+'\t'+str(profile_v[row]))
+##	win.im1.grid(row=0,column=0,sticky='nw')
+#	win.outputbox.see('1.0')
 #	win.update()

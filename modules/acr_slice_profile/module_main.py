@@ -40,6 +40,11 @@ def execute(master_window,dicomdir,images):
 	"""
 
 	win = Toplevel(master_window)
+	win.title("ACR Slice Profile Assessment")
+	if "nt" == os.name:
+		win.wm_iconbitmap(bitmap = "source/images/brain_orange.ico")
+	else:
+		win.wm_iconbitmap('@'+os.path.join(root_path,'source','images','brain_bw.xbm'))
 	gc.collect()
 
 	win.im1 = MIPPYCanvas(win,width=400,height=400,drawing_enabled=True)

@@ -174,9 +174,9 @@ def reset_roi(win):
 	win.xdim = xdim
 	win.ydim = ydim
 
-	roi_ellipse_coords = win.im1.canvas_coords(get_ellipse_coords(center,xdim,ydim))
+	roi_ellipse_coords = get_ellipse_coords(center,xdim,ydim)
 #	print roi_ellipse_coords
-	win.im1.new_roi(roi_ellipse_coords,tags=['e'])
+	win.im1.new_roi(roi_ellipse_coords,tags=['e'],system='image')
 
 	win.im1.roi_rectangle(xc-xdim,yc-5,xdim*2,10,tags=['h'],system='image')
 	win.im1.roi_rectangle(xc-5,yc-ydim,10,ydim*2,tags=['v'],system='image')
