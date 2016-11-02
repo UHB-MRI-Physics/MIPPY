@@ -17,7 +17,7 @@ GENERIC FUNCTIONS NOT ATTACHED TO CLASSES
 def display_results(results,master_window):
 	"""
 	Method for displaying results table in a pop-up window.
-	
+
 	Results are expected in the format of a dictionary, e.g.
 		results = {
 			'SNR Tra': snr_tra,
@@ -26,17 +26,17 @@ def display_results(results,master_window):
 			'SNR Mean': snr_mean,
 			'SNR Std': snr_std,
 			'SNR CoV': snr_cov}
-	
+
 	Master needs to be the variable pointing to the parent window.
-	
+
 	"""
 	timestamp = str(datetime.now()).replace(" ","_").replace(":","")
-	
+
 #	if not name:
 #		fname = "RESULTS_"+timestamp+".csv"
 #	else:
 #		fname = "RESULTS_"+timestamp+"_"+name+".csv"
-	
+
 	result_header = []
 	result_values = []
 	for key,value in results.items():
@@ -63,9 +63,9 @@ def display_results(results,master_window):
 #		csvwriter.writerow(result_header)
 #		for row in result_array:
 #			csvwriter.writerow(row)
-#	
+#
 #	tkMessageBox.showinfo("INFO","Results saved to:\n"+outpath)
-	
+
 	popup = Toplevel(master_window)
 	popup.title = 'Results'
 	popup.holder = Frame(popup)
@@ -85,10 +85,10 @@ def display_results(results,master_window):
 	popup.scrollbarx.grid(row=1,column=0)
 	popup.scrollbary.grid(row=0,column=1)
 	popup.holder.pack()
-	
 
-	
-	
+
+
+
 	return
 
 
@@ -109,7 +109,7 @@ def quick_display(im_array,master_window):
 	win.rowconfigure(0,weight=1)
 	win.rowconfigure(1,weight=0)
 	win.columnconfigure(0,weight=1)
-	
+
 	win.imcanvas.load_images(im_array)
 	return
 
@@ -119,10 +119,10 @@ def quick_display(im_array,master_window):
 def bits_to_ndarray(bits, shape):
     abytes = np.frombuffer(bits, dtype=np.uint8)
     abits = np.zeros(8*len(abytes), np.uint8)
-    
+
     for n in range(8):
         abits[n::8] = (abytes & (2 ** n)) !=0
-    
+
     return abits.reshape(shape)
 
 def px_bytes_to_array(byte_array,rows,cols,bitdepth=16,mode='littleendian',rs=1,ri=0,ss=None):
@@ -141,13 +141,13 @@ def px_bytes_to_array(byte_array,rows,cols,bitdepth=16,mode='littleendian',rs=1,
 	px_float = generate_px_float(abytes,rs,ri,ss)
 #	print np.mean(px_float)
 	return px_float
-	
+
 def generate_px_float(pixels,rs,ri,ss=None):
 	if ss:
 		return (pixels*rs+ri)/(rs*ss)
 	else:
 		return (pixels*rs+ri)
-	
+
 def get_global_min_and_max(image_list):
 	"""
 	Will only work with MIPPY_8bitviewer type objects
@@ -160,7 +160,7 @@ def get_global_min_and_max(image_list):
 		if np.amax(image.px_float) > max:
 			max = np.amax(image.px_float)
 	return min,max
-	
+
 def bits_to_ndarray(bits, shape):
 	abytes = np.frombuffer(bits, dtype=np.uint8)
 	abits = np.zeros(8*len(abytes), np.uint8)
@@ -231,16 +231,16 @@ def get_ellipse_coords(center,a,b,n=128):
 	of rays with perimeter of ellipse.
 	Coordinates are tuples, returns coordinates as a list going clockwise from top
 	center.
-	
+
 	Based on http://mathworld.wolfram.com/Ellipse-LineIntersection.html
-	
+
 	a = semiaxis in x direction
 	b = semiaxis in y direction
 	DO NOT CONFUSE THE TWO!
 	"""
 	coords_pos = []
 	coords_neg = []
-	
+
 	for i in range(n):
 		"""
 		Find point on line (x0,y0), then intersection with of ellipse with line
@@ -257,7 +257,7 @@ def get_ellipse_coords(center,a,b,n=128):
 		coords_pos.append((xpos+center[0],ypos+center[1]))
 		coords_neg.append((xneg+center[0],yneg+center[1]))
 	return coords_pos+coords_neg
-	
+
 
 
 ########################################
@@ -291,7 +291,7 @@ class ROI():
 			self.roi_type = roi_type
 		arr_co=np.array(self.coords)
 		self.bbox=(np.amin(arr_co[:,0]),np.amin(arr_co[:,1]),np.amax(arr_co[:,0]),np.amax(arr_co[:,1]))
-	
+
 	def contains(self,point):
 		# This bounding box thing is a problem
 		if (not self.bbox[0]<=point[0]<=self.bbox[2]
@@ -304,17 +304,17 @@ class ROI():
 		else:
 			#~ print "INSIDE: ",wn
 			return True
-	
+
 	def update(self,xmove,ymove):
 		for i in range(len(self.coords)):
 			self.coords[i]=(self.coords[i][0]+xmove,self.coords[i][1]+ymove)
 		self.bbox=(self.bbox[0]+xmove,self.bbox[1]+ymove,self.bbox[2]+xmove,self.bbox[3]+ymove)
 		#~ self.generate_mask()
 		return
-		
+
 	#~ def generate_mask(self):
 		#~ pass
-	
+
 
 
 
@@ -354,15 +354,15 @@ class MIPPYCanvas(Canvas):
 		#~ self.zoom_factor=None
 		self.pixel_array=None
 		self.img_scrollbar=None
-	
+
 #	def shift_down(self,event):
 #		self.shift = True
 #		print "SHIFT DOWN"
-#	
+#
 #	def shift_up(self,event):
 #		self.shift = False
 #		print "SHIFT UP"
-	
+
 	def configure_scrollbar(self):
 		if self.img_scrollbar:
 			self.img_scrollbar.config(command=self.scroll_images)
@@ -372,7 +372,7 @@ class MIPPYCanvas(Canvas):
 				self.img_scrollbar.set(self.active-1/(len(self.images)-1),self.active/(len(self.images)-1))
 			else:
 				self.img_scrollbar.set(0,1)
-	
+
 	def scroll_images(self,command,value,mode='unit'):
 		if command=='scroll':
 			self.show_image(self.active+int(value))
@@ -380,19 +380,19 @@ class MIPPYCanvas(Canvas):
 			selected_img = int(np.round((float(value)*float((len(self.images)))),0))+1
 			if not selected_img==self.active:
 				self.show_image(selected_img)
-	
+
 	def update_scrollbar(self,value):
 		current_img = float(self.active)
 		total_img = float(len(self.images))
 		lo = (self.active-1)/total_img
 		hi = self.active/total_img
 		self.img_scrollbar.set(lo,hi)
-	
+
 	def reset(self):
 		self.images = []
 		self.delete('all')
 		self.active=None
-	
+
 	def show_image(self,num=None):
 		"""
 		Takes slice number (which starts from 1, not zero).  Doesn't do anything
@@ -406,7 +406,7 @@ class MIPPYCanvas(Canvas):
 		self.delete('image')
 		self.create_image((0,0),image=self.images[self.active-1].photoimage,anchor='nw')
 
-	
+
 	def get_roi_pixels(self,rois=[]):
 		"""
 		Returns a LIST of pixel values from an ROI.
@@ -423,10 +423,10 @@ class MIPPYCanvas(Canvas):
 						px.append([])
 					if self.roi_list[i].contains((x*self.zoom_factor,y*self.zoom_factor)):
 						px[i].append(im.px_float[y][x])
-		
+
 		print "GOT PIXELS"
 		return px
-	
+
 	def get_roi_statistics(self,rois=[]):
 		if len(self.roi_list)<1:
 			return None
@@ -451,15 +451,15 @@ class MIPPYCanvas(Canvas):
 
 		print stats
 		return stats
-	
+
 	def get_profile(self,resolution=1,width=1,interpolate=False,direction='horizontal',index=0):
 		"""Returns a line profile from the image"""
-		
+
 #		if len(tags)==0:
 #			if not len(self.roi_list)==1:
 #				return None
 #			rois = self.roi_list
-#		
+#
 #		else:
 #			rois = []
 #			for roi in self.roi_list:
@@ -468,8 +468,8 @@ class MIPPYCanvas(Canvas):
 #		if len(rois)>1:
 #			print "Too many ROI's found."
 #			return None
-		
-		
+
+
 		print self.roi_list[index].roi_type
 		if not (self.roi_list[index].roi_type=='line' or self.roi_list[index].roi_type=='rectangle'):
 			print "Not a valid ROI type for profile.  Line or rectangle required."
@@ -478,10 +478,10 @@ class MIPPYCanvas(Canvas):
 #			direction='vertical'
 #		else:
 #			direction='horizontal'
-		
+
 		roi = self.roi_list[index]
 		coords = roi.coords/self.zoom_factor
-		
+
 		if roi.roi_type=='line':
 			profile_length = np.sqrt( (coords[1][0]-coords[0][0])**2 + (coords[1][1]-coords[0][1])**2 )
 		elif direction=='horizontal':
@@ -497,15 +497,15 @@ class MIPPYCanvas(Canvas):
 			intorder=1
 		else:
 			intorder=0
-			
+
 		profile = None
-		
+
 		if roi.roi_type=='line':
 			x_arr = np.linspace(coords[0][0],coords[1][0],length_int)
 			y_arr = np.linspace(coords[0][1],coords[1][1],length_int)
-				
+
 			profile = spim.map_coordinates(self.get_active_image().px_float,np.vstack((y_arr,x_arr)),order=intorder,prefilter=False)
-		
+
 		elif direction=='horizontal':
 			y_len = int(np.round(coords[3][1]-coords[0][1],0))
 			x_arr = np.linspace(coords[0][0],coords[1][0],length_int)
@@ -522,7 +522,7 @@ class MIPPYCanvas(Canvas):
 				x_arr = np.zeros(np.shape(y_arr))+coords[0][0]+i
 				profiles[i] = spim.map_coordinates(self.get_active_image().px_float,np.vstack((y_arr,x_arr)),order=intorder,prefilter=False)
 			profile = np.mean(profiles,axis=0)
-		
+
 		return profile, np.array(range(length_int))
 
 	def new_roi(self,coords,tags=[],system='canvas'):
@@ -540,7 +540,7 @@ class MIPPYCanvas(Canvas):
 		self.add_roi(coords)
 #		print "ROI should be on image now..."
 		return
-	
+
 	def roi_rectangle(self,x_start,y_start,width,height,tags=[],system='canvas'):
 		x1 = x_start
 		x2 = x_start+width
@@ -558,7 +558,7 @@ class MIPPYCanvas(Canvas):
 		self.new_roi([(x1,y1),(x2,y1),(x2,y2),(x1,y2)],tags=tags)
 		return
 
-		
+
 	def load_images(self,image_list):
 		self.images = []
 		self.delete('all')
@@ -566,15 +566,15 @@ class MIPPYCanvas(Canvas):
 #		open_ds = None
 #		current_path = None
 		for ref in image_list:
-			
+
 			self.progress(45.*n/len(image_list)+10)
 			self.images.append(MIPPYImage(ref))
 			n+=1
-		
+
 		#~ for image in self.images:
 			#~ image.resize(self.width,self.height)
 			#~ image.zoom(self.zoom_factor)
-			
+
 		self.global_min,self.global_max = get_global_min_and_max(self.images)
 		self.global_rangemin = self.images[0].rangemin
 		self.global_rangemax = self.images[0].rangemax
@@ -584,38 +584,38 @@ class MIPPYCanvas(Canvas):
 		self.level = self.default_level
 		self.window = self.default_window
 		self.zoom_factor = np.amin([float(self.width)/float(self.images[0].columns),float(self.height)/float(self.images[0].rows)])
-		
+
 		for i in range(len(self.images)):
 			self.progress(45.*i/len(self.images)+55)
 			self.images[i].zoom(self.zoom_factor)
 			self.images[i].wl_and_display(window=self.window,level=self.level)
 		self.configure_scrollbar()
 		self.show_image(1)
-		
+
 		print "canvas width,height: %s,%s" %(self.width,self.height)
 		print "image width,height: %s,%s" %(self.get_active_image().columns,self.get_active_image().rows)
 		print "zoom: %s" %(self.zoom_factor)
-		
+
 		#~ self.pixel_array = np.array(a.px_float for a in self.images)
-		
+
 		self.progress(0.)
 		return
-	
+
 	def get_active_image(self):
 		return self.images[self.active-1]
-	
+
 	def reset_window_level(self):
 		self.temp_window = self.default_window
 		self.temp_level = self.default_level
 		self.window = self.default_window
 		self.level = self.default_level
-		
+
 		for image in self.images:
 			image.wl_and_display(window = self.default_window, level = self.default_level)
 		self.show_image(self.active)
 		return
-		
-	
+
+
 	def left_click(self,event):
 		if not self.drawing_enabled:
 			return
@@ -637,7 +637,7 @@ class MIPPYCanvas(Canvas):
 			self.delete_rois()
 			self.temp = []
 			self.tempcoords.append((self.xmouse,self.ymouse))
-	
+
 	def left_drag(self,event):
 		if not self.drawing_enabled:
 			return
@@ -656,13 +656,13 @@ class MIPPYCanvas(Canvas):
 			elif self.roi_mode=='line':
 				self.delete('roi')
 				self.create_line((self.xmouse,self.ymouse,event.x,event.y),fill='yellow',width=1,tags='roi')
-			
+
 		else:
 			self.move('roi',xmove,ymove)
-		
+
 		self.tempx = event.x
 		self.tempy = event.y
-	
+
 	def left_release(self,event):
 		if not self.drawing_enabled:
 			return
@@ -705,17 +705,17 @@ class MIPPYCanvas(Canvas):
 		self.tempcoords = []
 		self.tempx = None
 		self.tempy = None
-		
+
 	def left_double(self,event):
 		pass
-	
+
 	def right_click(self,event):
 		if self.images==[]:
 			# If no active display slices, just skip this whole function
 			return
 		self.xmouse = event.x
 		self.ymouse = event.y
-		
+
 	def right_drag(self,event):
 		xmove = event.x-self.xmouse
 		ymove = event.y-self.ymouse
@@ -736,44 +736,52 @@ class MIPPYCanvas(Canvas):
 			self.temp_level=self.global_rangemin+min_window/2
 		self.images[i].wl_and_display(window=self.temp_window,level=self.temp_level)
 		self.show_image()
-	
+
 	def right_release(self,event):
 		if abs(self.xmouse-event.x)<1 and abs(self.ymouse-event.y)<1:
 			return
-		self.window = self.temp_window
-		self.level = self.temp_level
+		self.set_window_level(self.temp_window,self.temp_level)
+#		self.window = self.temp_window
+#		self.level = self.temp_level
+#		for image in self.images:
+#			image.wl_and_display(window=self.window,level=self.level)
+#		self.show_image()
+
+	def set_window_level(self,window,level):
+		self.window = window
+		self.level = level
 		for image in self.images:
 			image.wl_and_display(window=self.window,level=self.level)
 		self.show_image()
-	
+
 	def right_double(self,event):
 		if self.images == []:
 			return
-		
+
 		self.temp_window = self.default_window
 		self.temp_level = self.default_level
 		self.window = self.default_window
 		self.level = self.default_level
-		
+
 		for image in self.images:
 			image.wl_and_display(window = self.default_window, level = self.default_level)
 		self.show_image(self.active)
-	
-	
+
+
 	def add_roi(self,coords,roi_type=None):
 		self.roi_list.append(ROI(coords,roi_type))
-	
+
 	def delete_rois(self):
 		self.roi_list = []
 		self.delete('roi')
-	
+
 	def progress(self,percentage):
 		try:
 			self.master.progressbar['value']=percentage
 			self.master.progressbar.update()
 		except:
 			pass
-	
+
 	def draw_rectangle_roi(self):
 		self.drawing_enabled=True
 		self.roi_mode='rectangle'
@@ -781,7 +789,7 @@ class MIPPYCanvas(Canvas):
 	def draw_ellipse_roi(self):
 		self.drawing_enabled=True
 		self.roi_mode='ellipse'
-		
+
 	def draw_freehand_roi(self):
 		self.drawing_enabled=True
 		self.roi_mode='freehand'
@@ -789,22 +797,22 @@ class MIPPYCanvas(Canvas):
 	def draw_line_roi(self):
 		self.drawing_enabled=True
 		self.roi_mode='line'
-		
+
 	def canvas_coords(self,image_coords):
 		new_coords = []
 		for thing in image_coords:
 			new_coords.append((thing[0]*self.zoom_factor,thing[1]*self.zoom_factor))
 		return new_coords
-	
+
 	def image_coords(self,canvas_coords):
 		new_coords = []
 		for thing in canvas_coords:
 			new_coords.append((thing[0]/self.zoom_factor,thing[1]/self.zoom_factor))
 		return new_coords
-	
 
-		
-		
+
+
+
 
 class EasyViewer(Frame):
 	def __init__(self,master,im_array):
@@ -825,14 +833,14 @@ class MIPPYImage():
 	easily rescaled with whatever window and level for display purposes.  It's only 8-bit so
 	you don't have the biggest dynamic range, but I'm sure I've heard that the eye can't
 	resolve more than 256 shades of grey anyway...
-	
+
 	The actual floating point values are stored as an attribute "px_float", so that the actual
 	scaled values can also be called for any given x,y position.  This should help when
 	constructing an actual viewer.
-	
+
 	I should type "actual" some more...
 	"""
-	
+
 	def __init__(self,dicom_dataset):
 		if type(dicom_dataset) is str or type(dicom_dataset) is unicode:
 			ds = dicom.read_file(dicom_dataset)
@@ -884,7 +892,7 @@ class MIPPYImage():
 		self.photoimage = None
 		self.wl_and_display()
 		return
-		
+
 	def construct_from_array(self,pixel_array):
 		self.px_float = pixel_array
 		self.rangemax = np.amax(pixel_array)
@@ -902,7 +910,7 @@ class MIPPYImage():
 		self.columns = np.shape(pixel_array)[1]
 		self.wl_and_display()
 		return
-	
+
 	def get_pt_coords(self,image_coords):
 		"""
 		Assumes you've passed a tuple (x,y) as your image coordinates
@@ -922,12 +930,12 @@ class MIPPYImage():
 			size=self.image.size
 		else:
 			size=(np.shape(self.px_float)[1],np.shape(self.px_float)[0])
-		
+
 		if self.level-self.rangemin<self.window/2:
 			self.window=2*(self.level-self.rangemin)
 		#~ elif self.rangemax-self.level<self.window/2:
 			#~ self.window = 2*(self.rangemax-self.level)
-		
+
 		windowed_px = np.clip(self.px_float,self.level-self.window/2,self.level+self.window/2-1)
 		px_view = np.clip(((windowed_px-np.amin(windowed_px))/self.window * np.power(2,8)),0.,255.).astype(np.uint8)
 		self.image = Image.fromarray(px_view, mode='L')
@@ -936,17 +944,17 @@ class MIPPYImage():
 			self.resize(size[0],size[1])
 		self.set_display_image()
 		return
-		
+
 	def resize(self,dim1=256,dim2=256):
 		self.image = self.image.resize((dim1,dim2), Image.ANTIALIAS)
 		self.set_display_image()
 		return
-	
+
 	def zoom(self,zoom):
 		self.image = self.image.resize((int(np.round(self.columns*zoom,0)),int(np.round(self.rows*zoom,0))), Image.ANTIALIAS)
 		self.set_display_image
 		return
-		
+
 	def apply_overlay(self):
 		if self.overlay:
 			self.image.paste(self.overlay,box=(0,0),mask=self.overlay)
