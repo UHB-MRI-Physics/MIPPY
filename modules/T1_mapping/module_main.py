@@ -46,6 +46,7 @@ def execute(master_window,dicomdir,images):
         # Image Set Matrix Size
         win.rows=images[-1].Rows
         win.cols=images[-1].Columns
+        
         if 'PHILIPS' in images[0].Manufacturer.upper():
                 try:
                         win.slcs=eval(images[-1][0x0028,0x0008].value)/eval(images[-1][0x2001,0x1081].value)
@@ -231,6 +232,10 @@ def execute(master_window,dicomdir,images):
                 show_TA(win)
                 win.rb_TAauto.configure(state='disabled')
                 win.c_rev.configure(stat='normal')
+
+        print ("slices = " + str(win.slcs) + "\n")
+        print ("dynamics = " + str(win.dyns) + "\n")
+        print ("resort needed = " + str(resort_needed) + "\n")
         
 	return
 	
@@ -293,10 +298,7 @@ def T1_map(win,images):
         status(win,"Fitting T1 maps...\n")
         start_time=time.time()
         win.maps=np.zeros((5,win.slcs,win.rows,win.cols))
-        print "rows="+str(np.size(win.Im4D,2))
-        print "columns="+str(np.size(win.Im4D,3))
-        print "slices="+str(np.size(win.Im4D,1))
-        print "dynamics="+str(np.size(win.Im4D,0))
+        os.remove("Results/failed.txt")
         win.maps=T1map(win.Im4D,win.TIs,images,int(win.threshold_in.get()),int(win.GoF_in.get()))
         
         run_time = time.time()-start_time

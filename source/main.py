@@ -321,49 +321,8 @@ class ToolboxHome(Frame):
 			if tag['instanceuid'] in uid_array:
 				self.progress(10.*n/len(uid_array))
 				preview_images.append(tag['px_array'])
-#				print "-------"
-#				print tag['path']
-#				print self.open_file
-#				if not tag['path']==self.open_file:
-#					print "Loading DICOM dataset"
-#					self.open_ds=dicom.read_file(tag['path'])
-#					self.open_file = tag['path']
-#				if not tag['enhanced']:
-##					print tag['path']
-##					print type(tag['path'])
-#					preview_images.append(self.open_ds)
-#				else:
-##					ds = dicom.read_file(tag['path'])
-#					print "Splitting slice "+str(tag['instance'])
-##					preview_images.append(get_frame_ds(self.open_ds,tag['instance']))
-#					rows = int(self.open_ds.Rows)
-#					cols = int(self.open_ds.Columns)
-#					try:
-#						rs = float(self.open_ds[0x28,0x1053].value)
-#					except:
-#						rs = 1.
-#					try:
-#						ri = float(self.open_ds[0x28,0x1052].value)
-#					except:
-#						ri = 0.
-#					try:
-#						ss = float(self.open_ds[0x2005,0x100E].value)
-#					except:
-#						ss = None
-#					print "Bits stored",self.open_ds.BitsStored
-#					print "Rows",rows
-#					print "Cols",cols
-#					px_bytes = self.open_ds.PixelData[(tag['instance']-1)*(rows*cols*2):(tag['instance'])*(rows*cols*2)]
-#					print "Len extracted bytes",len(px_bytes)
-#					print "Len total px data",len(self.open_ds.PixelData)
-#					print "Len image list",len(self.sorted_list)
-#					px_float = px_bytes_to_array(px_bytes,rows,cols,rs=rs,ri=ri,ss=ss)
-#					preview_images.append(px_float)
-
 				n+=1
 		self.imcanvas.load_images(preview_images)
-
-
 		return
 
 
@@ -486,6 +445,7 @@ class ToolboxHome(Frame):
 
 	def load_selected_module(self):
 #		print "DO NOTHING!"
+		gc.collect()
 		try:
 			moduledir = self.moduleframe.moduletree.selection()[0]
 			module_name = 'modules.'+moduledir+'.module_main'

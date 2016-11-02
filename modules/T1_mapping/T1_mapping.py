@@ -76,7 +76,7 @@ def T1_mapping(Im4D,TI,images,threshold,GoF):
                     of each fit parameter.
                     """
 ##                    xdata = np.trim_zeros(TI[:,s,y,x],'b')
-                    xdata = TI[s::dyns-1]
+                    xdata = TI[s::slcs]
                     ydata = Im4D[0:len(xdata),s,y,x]
                     T1 = -xdata[np.argmin(ydata)]/np.log(0.5)
                     M0 = 1.2*np.amax(ydata)
