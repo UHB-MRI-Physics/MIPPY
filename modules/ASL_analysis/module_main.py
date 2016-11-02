@@ -44,8 +44,21 @@ def execute(master_window,dicomdir,images):
 	# Image Set Matrix Size
 	win.rows=images[-1].Rows
 	win.cols=images[-1].Columns
-	win.slcs=images[-1].InstanceNumber/images[-1].AcquisitionNumber
-	win.dyns=images[-1].AcquisitionNumber
+        if 'PHILIPS' in images[0].Manufacturer.upper():
+                try:
+                        win.slcs=eval(images[-1][0x0028,0x0008].value)/eval(images[-1][0x2001,0x1081].value)
+                except:
+                        win.slcs=int(images[-1][0x2001,0x1018].value)
+                win.dyns=2*int(images[-1][0x2001,0x1081].value)
+        else:
+                win.slcs=images[-1].InstanceNumber/images[-1].AcquisitionNumber
+                win.dyns=images[-1].AcquisitionNumber
+
+        print win.rows
+        print win.cols
+        print win.slcs
+        print win.dyns
+        print len(images)
         
 	# Create canvases
 	win.imcanvases=Frame(win)
@@ -105,7 +118,7 @@ def execute(master_window,dicomdir,images):
 	win.l_method=Label(win.buttons,text="Subtraction Method:")
 	win.method = StringVar(win)
 	win.method.set("Simple")
-	win.b_method = OptionMenu(win.buttons,win.method,
+	win.b_method = OptionMenu(win.buttons,win.method,"Simple",
                                   "Simple","Interpolated")
 
 	win.l_reject=Label(win.buttons,text="Pairs to removed from analysis")
@@ -156,6 +169,7 @@ def execute(master_window,dicomdir,images):
 
 	# Run buttons
 	win.run_buttons=Frame(win)
+	print len(win.imcanvas_orig.images)
 	win.Im4D=np.array([a.px_float for a in win.imcanvas_orig.images]).reshape((win.dyns,win.slcs,win.rows,win.cols))
 #     win.b_run = Button(win.run_buttons, text="Run", command=lambda:realign(win))
 	win.b_save = Button(win.run_buttons, text="Save", command=lambda:save(win,dicomdir,images))

@@ -152,7 +152,7 @@ def execute(master_window,dicomdir,images):
         win.rb_TA = Radiobutton(win.buttons, text="Set TA manually [ms]:", variable=win.rb_TAvar, value=2, command=lambda:show_TA(win))
         win.TA_in=StringVar(win)
         win.TA_in.set(65)
-        win.b_TA = Entry(win.buttons,textvariable=win.TA_in,width=4,state="disabled")
+        win.b_TA = Entry(win.buttons,textvariable=win.TA_in,width=6,state="disabled")
 
         win.c_rev_in=IntVar(win)
         win.c_rev_in.set(0)
@@ -198,6 +198,15 @@ def execute(master_window,dicomdir,images):
         # Run buttons
         win.run_buttons=Frame(win)
 
+        win.l_threshold = Label(win.run_buttons, text="Threshold [%]: ")
+        win.threshold_in=StringVar(win)
+        win.threshold_in.set(8)
+        win.b_threshold = Entry(win.run_buttons,textvariable=win.threshold_in,width=3)
+        win.l_GoF = Label(win.run_buttons, text="Goodness of Fit [%]: ")
+        win.GoF_in=StringVar(win)
+        win.GoF_in.set(95)
+        win.b_GoF = Entry(win.run_buttons,textvariable=win.GoF_in,width=3)
+
         try:
                 win.Im4D=np.array([a.px_float for a in win.imcanvas_orig.images]).reshape((win.dyns,win.slcs,win.rows,win.cols))
         except Exception,win.Im4D:
@@ -208,8 +217,12 @@ def execute(master_window,dicomdir,images):
         win.b_save = Button(win.run_buttons, text="Save T1 maps", command=lambda:save(win,dicomdir,images))
 
         # Window layout
-        win.b_run.grid(row=0,column=0,sticky='new')
-        win.b_save.grid(row=1,column=0,sticky='new')
+        win.l_threshold.grid(row=0,column=0,sticky='ne')
+        win.b_threshold.grid(row=0,column=1,sticky='ne')
+        win.l_GoF.grid(row=0,column=2,sticky='ne')
+        win.b_GoF.grid(row=0,column=3,sticky='ne')
+        win.b_run.grid(row=1,column=0,sticky='nw')
+        win.b_save.grid(row=2,column=0,sticky='nw')
 
         win.run_buttons.grid(row=1,column=1,sticky="new")
 
@@ -280,7 +293,11 @@ def T1_map(win,images):
         status(win,"Fitting T1 maps...\n")
         start_time=time.time()
         win.maps=np.zeros((5,win.slcs,win.rows,win.cols))
-        win.maps=T1map(win.Im4D,win.TIs,images,rev=False)
+        print "rows="+str(np.size(win.Im4D,2))
+        print "columns="+str(np.size(win.Im4D,3))
+        print "slices="+str(np.size(win.Im4D,1))
+        print "dynamics="+str(np.size(win.Im4D,0))
+        win.maps=T1map(win.Im4D,win.TIs,images,int(win.threshold_in.get()),int(win.GoF_in.get()))
         
         run_time = time.time()-start_time
 
@@ -289,9 +306,10 @@ def T1_map(win,images):
         else:
                 txt=("Fitting completed in %s seconds. \n" %(int(np.ceil(run_time))) )
         status(win,txt)        
-#        test=win.maps[0]
-#        quick_display(win,test)
+
         win.imcanvas_maps.load_images([b for b in (np.reshape(win.maps,(5*win.slcs,win.rows,win.cols)) )])
+        #status(win,("Successfully fitted "+str(sum(a>0 for a in win.maps[0:int(win.slcs),:,:]))+" pixels."))
+        
                 
         return
 def time_convert(win,t):
@@ -315,16 +333,17 @@ def sort_TIs(win,images):
                         time_b = datetime.datetime(int(dst[0:4]),int(dst[4:6]),int(dst[6:8]),int(tst_b[0:2]),int(tst_b[2:4]),int(tst_b[4:6]),int(tst_b[7:]))
  
                         TA[a] = (time_b-time_a).total_seconds()*1000
-                     
-                TAav=int(np.mean(TA,0))
-                win.TA_in.set(abs(int(TAav)))
+
+                status(win,TA)                    
+                TAav=np.round(float(np.mean(TA,0)),2)
+                win.TA_in.set(abs(float(TAav)))
                 txt=("Estimated TA is %s [ms]\n" %(win.TA_in.get()))
                 status(win,txt)
                 if (TAav>0 and win.rb_TAvar.get()==1):
                         if win.rb_TIvar.get()==1:
                                 for d in range(win.dyns):
                                         for s in range(win.slcs):
-                                                TIs[win.slcs*d+s]=int(win.TI_in.get())+d*int(win.TIinc_in.get())+s*int(win.TA_in.get())
+                                                TIs[win.slcs*d+s]=int(win.TI_in.get())+d*int(win.TIinc_in.get())+s*float(win.TA_in.get())
                                         
                         elif win.rb_TIvar.get()==2:
                                 TI=np.genfromtxt([win.TIs_in.get()],delimiter=",")
@@ -335,12 +354,12 @@ def sort_TIs(win,images):
                                 
                                 for d in range(win.dyns):
                                         for s in range(win.slcs):
-                                                TIs[win.slcs*d+s]=TI[d]+s*int(win.TA_in.get())
+                                                TIs[win.slcs*d+s]=TI[d]+s*float(win.TA_in.get())
                 elif (TAav<0 and win.rb_TAvar.get()==1):
                         if win.rb_TIvar.get()==1:
                                 for d in range(win.dyns):
                                         for s in range(win.slcs):
-                                                TIs[win.slcs*d+s]=int(win.TI_in.get())+d*int(win.TIinc_in.get())+(win.slcs-s-1)*int(win.TA_in.get())
+                                                TIs[win.slcs*d+s]=int(win.TI_in.get())+d*int(win.TIinc_in.get())+(win.slcs-s-1)*float(win.TA_in.get())
                         elif win.rb_TIvar.get()==2:
                                 TI=np.genfromtxt([win.TIs_in.get()],delimiter=",")
                                 if np.size(TI,0)!=win.dyns:
@@ -349,13 +368,13 @@ def sort_TIs(win,images):
                                 
                                 for d in range(win.dyns):
                                         for s in range(win.slcs):
-                                                TIs[int(win.slcs)*d+s]=TI[d]+(win.slcs-s-1)*int(win.TA_in.get())
+                                                TIs[int(win.slcs)*d+s]=TI[d]+(win.slcs-s-1)*float(win.TA_in.get())
 
         elif (win.c_rev_in.get()==1 and win.rb_TAvar.get()==2):
                 if win.rb_TIvar.get()==1:
                         for d in range(win.dyns):
                                 for s in range(win.slcs):
-                                        TIs[win.slcs*d+s]=int(win.TI_in.get())+d*int(win.TIinc_in.get())+(win.slcs-s-1)*int(win.TA_in.get())
+                                        TIs[win.slcs*d+s]=int(win.TI_in.get())+d*int(win.TIinc_in.get())+(win.slcs-s-1)*float(win.TA_in.get())
 #                                        status(win,str(TIs[win.slcs*d+s])+"\t s= "+str(s)+"\t d= "+str(d)+"\n")
                 elif win.rb_TIvar.get()==2:
                         TI=np.genfromtxt([win.TIs_in.get()],delimiter=",")                                       
@@ -365,13 +384,13 @@ def sort_TIs(win,images):
                         
                         for d in range(win.dyns):
                                 for s in range(win.slcs):
-                                        TIs[int(win.slcs)*d+s]=TI[d]+(win.slcs-s-1)*int(win.TA_in.get())
+                                        TIs[int(win.slcs)*d+s]=TI[d]+(win.slcs-s-1)*float(win.TA_in.get())
 
         elif win.rb_TAvar.get()==2:
                 if win.rb_TIvar.get()==1:
                         for d in range(win.dyns):
                                 for s in range(win.slcs):
-                                        TIs[win.slcs*d+s]=int(win.TI_in.get())+d*int(win.TIinc_in.get())+s*int(win.TA_in.get())
+                                        TIs[win.slcs*d+s]=int(win.TI_in.get())+d*int(win.TIinc_in.get())+s*float(win.TA_in.get())
                 elif win.rb_TIvar.get()==2:
                         TI=np.genfromtxt([win.TIs_in.get()],delimiter=",")                                       
                         if np.size(TI,0)!=win.dyns:
@@ -380,7 +399,7 @@ def sort_TIs(win,images):
                         
                         for d in range(win.dyns):
                                 for s in range(win.slcs):
-                                        TIs[int(win.slcs)*d+s]=TI[d]+s*int(win.TA_in.get())
+                                        TIs[int(win.slcs)*d+s]=TI[d]+s*float(win.TA_in.get())
                                         
                                         
         status(win,"These are the follwing times for each image:\n")
@@ -401,8 +420,8 @@ def save(win,dicomdir,images):
                 images_T1=images[len(images)-slcs+s-1]
                 images_T1.AcquisitionNumber=dyns+1
                 images_T1.InstanceNumber=dyns*slcs+s+1
-                T1_map=win.maps[0][s][:][:]
-                images_T1.PixelData = np.reshape(T1_map,(cols*rows)).astype(np.uint16)
+                T1_map=np.clip(win.maps[0][s][:][:],0,2**16).astype(np.uint16)
+                images_T1.PixelData = np.reshape(T1_map,(cols*rows))
                 try:
                         images_T1.AcquisitionTime = str(float(images_T1.AcquisitionTime) + 0.1)
                 except AttributeError:
@@ -416,7 +435,9 @@ def save(win,dicomdir,images):
                         pass
                 images_T1.SOPInstanceUID = ''.join([images_T1.SOPInstanceUID,".1"])
                 images_T1.RescaleSlope = 1
-                images_T1.RescaleIntercept = np.min(T1_map)
+                images_T1.RescaleIntercept = 0
+                images_T1.WindowCentre = 1000
+                images_T1.WindowWidth = 1000
 
                 try:
                         images_T1[0x2005,0x100E].value = 1
@@ -454,6 +475,8 @@ def save(win,dicomdir,images):
 ##                images_T1_R2.RescaleIntercept = np.min(T1_R2)
                 images_T1_R2.RescaleIntercept = 0
         ##        images_T1_R2.SeriesDescription = "Fit R2 value"
+                images_T1_R2.WindowCentre = 100
+                images_T1_R2.WindowWidth = 30
 
                 try:
                         images_T1_R2[0x2005,0x100E].value = 1

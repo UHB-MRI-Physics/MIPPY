@@ -26,7 +26,7 @@ def inv_recovery(TI,M0,T1):
 # MAIN BODY OF PROGRAM
 ###################################################
 
-def T1_mapping(Im4D,TI,images,rev=False):
+def T1_mapping(Im4D,TI,images,threshold,GoF):
     outputdir = "maps"
 
     rows=np.size(Im4D,2)
@@ -42,9 +42,11 @@ def T1_mapping(Im4D,TI,images,rev=False):
 
     T1 = float(500)
     #tolerance = 0.1
-								
-    threshold = 0.5*np.median(np.fabs(Im4D))
-
+#    print "threshold % = "+str(threshold)
+#    print "max value = "+str(np.amax(np.fabs(Im4D)))
+    threshold = float(threshold*np.amax(np.fabs(Im4D))/100)
+#    print "threshold value = "+str(threshold)
+    
 #    threshold = 0
     # print threshold
 
@@ -108,13 +110,17 @@ def T1_mapping(Im4D,TI,images,rev=False):
                         M0_var[s,y,x] = 0
                         print "Fit failed, no optimised parameters"
                         
-                    if T1_R2[s,y,x]<70:
+                    if T1_R2[s,y,x]<GoF:
+                        strings=[str(xdata),str(ydata)]
+                        with open("Results/failed.txt",'a+') as f_out:
+                            for a in strings:
+                                f_out.write(a + "\n")
                         T1_map[s,y,x] = 0
                         T1_var[s,y,x] = 0
                         T1_R2[s,y,x] = 0                                                                                                   # If calculated variance on result is larger than the result, also ignore and set to zero
                         M0_map[s,y,x] = 0
                         M0_var[s,y,x] = 0
-                        print "goodness of fit < 70%"
+                        print "goodness of fit < "+str(GoF)+"%"
 ##                        x_fit=np.array(range(0,int(np.round(np.amax(xdata),0))+10))
 ##                        plt.errorbar(xdata,ydata,marker='o',linestyle='None',color='blue')
 ##                        plt.errorbar(x_fit,inv_recovery(x_fit,popt[0],popt[1]),marker='None',linestyle='-',color='blue')
