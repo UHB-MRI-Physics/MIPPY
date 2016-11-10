@@ -47,15 +47,25 @@ def execute(master_window,dicomdir,images):
         win.rows=images[-1].Rows
         win.cols=images[-1].Columns
         
-        if 'PHILIPS' in images[0].Manufacturer.upper():
-                try:
-                        win.slcs=eval(images[-1][0x0028,0x0008].value)/eval(images[-1][0x2001,0x1081].value)
-                except:
-                        win.slcs=int(images[-1][0x2001,0x1018].value)
-                win.dyns=int(images[-1][0x2001,0x1081].value)
-        else:
-                win.slcs=images[-1].InstanceNumber/images[-1].AcquisitionNumber
-                win.dyns=images[-1].AcquisitionNumber
+        slicepositions = []
+        try:
+            for im in images:
+                        slicepositions.append(str(im.PlanePositionSequence))
+        except:
+            for im in images:
+                        slicepositions.append(str(im.ImagePositionPatient))
+        slicepositions = np.array(slicepositions)
+        win.slcs = np.shape(np.unique(slicepositions))[0]
+        win.dyns = len(images)/win.slcs
+##        if 'PHILIPS' in images[0].Manufacturer.upper():
+##                try:
+##                        win.slcs=eval(images[-1][0x0028,0x0008].value)/eval(images[-1][0x2001,0x1081].value)
+##                except:
+##                        win.slcs=int(images[-1][0x2001,0x1018].value)
+##                win.dyns=int(images[-1][0x2001,0x1081].value)
+##        else:
+##                win.slcs=images[-1].InstanceNumber/images[-1].AcquisitionNumber
+##                win.dyns=images[-1].AcquisitionNumber
 
         try:
                 if (images[0].ImagePositionPatient==images[1].ImagePositionPatient):
@@ -77,8 +87,11 @@ def execute(master_window,dicomdir,images):
         
         # Create canvases
 	win.imcanvases=Frame(win)
-	win.imcanvas_orig = MIPPYCanvas(win.imcanvases,bd=0 ,width=384,height=384,drawing_enabled=False)
-	win.imcanvas_maps = MIPPYCanvas(win.imcanvases,bd=0 ,width=384,height=384,drawing_enabled=False)
+	win.imcanvas_orig = MIPPYCanvas(win.imcanvases,bd=0 ,width=384,height=384,drawing_enabled=True)
+	win.imcanvas_maps = MIPPYCanvas(win.imcanvases,bd=0 ,width=384,height=384,drawing_enabled=True)
+
+	win.imcanvas_orig.roi_mode='ellipse'
+	win.imcanvas_maps.roi_mode='ellipse'
 
 	# Create scroll bars
 	csl_orig=StringVar()
@@ -158,6 +171,8 @@ def execute(master_window,dicomdir,images):
         win.c_rev_in=IntVar(win)
         win.c_rev_in.set(0)
         win.c_rev=Checkbutton(win.buttons,text="Use Reversed Slice Aquisition",variable=win.c_rev_in,state="disabled")
+
+        win.b_ROI = Button(win.buttons, text="Analyse ROI", command=lambda:ROI_stats(win))
         
         # Window layout
         win.rb_TI.grid(row=0,column=0,sticky='nw',columnspan=4)
@@ -173,6 +188,8 @@ def execute(master_window,dicomdir,images):
         win.b_TA.grid(row=6,column=2,sticky='nw')
 
         win.c_rev.grid(row=8,column=0,sticky='nw',columnspan=4)
+
+        win.b_ROI.grid(row=10,column=0,sticky='nw')
                             
         win.buttons.grid(row=0,column=1,sticky='new')
 
@@ -201,7 +218,7 @@ def execute(master_window,dicomdir,images):
 
         win.l_threshold = Label(win.run_buttons, text="Threshold [%]: ")
         win.threshold_in=StringVar(win)
-        win.threshold_in.set(8)
+        win.threshold_in.set(15)
         win.b_threshold = Entry(win.run_buttons,textvariable=win.threshold_in,width=3)
         win.l_GoF = Label(win.run_buttons, text="Goodness of Fit [%]: ")
         win.GoF_in=StringVar(win)
@@ -238,15 +255,30 @@ def execute(master_window,dicomdir,images):
         print ("resort needed = " + str(resort_needed) + "\n")
         
 	return
+
+def ROI_stats(win):
+        stats=win.imcanvas_maps.get_roi_statistics()
+        if stats==None:
+                stats=win.imcanvas_orig.get_roi_statistics()
+                status(win,'mean=',np.round(stats['mean'][0],1),' std=',np.round(stats['std'][0]+0.05,1),
+                       ' min=',np.round(stats['min'][0],1),' max=',np.round(stats['max'][0],1),' area=',stats['area_px'][0],'px\n')
+        else:
+                status(win,'mean=',np.round(stats['mean'][0],1),' std=',np.round(stats['std'][0]+0.05,1),
+                       ' min=',np.round(stats['min'][0],1),' max=',np.round(stats['max'][0],1),' area=',stats['area_px'][0],'px\n')
+
+        return
 	
 def close_window(win):
 	"""Closes the window passed as an argument"""
 	active_frame.destroy()
 	return
 
-def status(win,txt):
+def status(win,*txt):
+        print_str = ''
+        for arg in txt:
+                print_str = print_str+str(arg)
         win.b_message.config(state=NORMAL)
-        win.b_message.insert(END,txt)
+        win.b_message.insert(END,print_str)
         win.b_message.config(state=DISABLED)
         win.b_message.see(END)
         win.update()
@@ -298,7 +330,8 @@ def T1_map(win,images):
         status(win,"Fitting T1 maps...\n")
         start_time=time.time()
         win.maps=np.zeros((5,win.slcs,win.rows,win.cols))
-        os.remove("Results/failed.txt")
+        if os.path.exists("Results/failed.txt"):
+                os.remove("Results/failed.txt")
         win.maps=T1map(win.Im4D,win.TIs,images,int(win.threshold_in.get()),int(win.GoF_in.get()))
         
         run_time = time.time()-start_time
@@ -309,7 +342,10 @@ def T1_map(win,images):
                 txt=("Fitting completed in %s seconds. \n" %(int(np.ceil(run_time))) )
         status(win,txt)        
 
+        win_level=np.mean(win.maps[0].flatten()[np.where(win.maps[0].flatten()>0)])
+        win_range=2*win_level
         win.imcanvas_maps.load_images([b for b in (np.reshape(win.maps,(5*win.slcs,win.rows,win.cols)) )])
+        win.imcanvas_maps.set_window_level(window=win_range,level=win_level)
         #status(win,("Successfully fitted "+str(sum(a>0 for a in win.maps[0:int(win.slcs),:,:]))+" pixels."))
         
                 
@@ -336,7 +372,7 @@ def sort_TIs(win,images):
  
                         TA[a] = (time_b-time_a).total_seconds()*1000
 
-                status(win,TA)                    
+                #status(win,TA)                    
                 TAav=np.round(float(np.mean(TA,0)),2)
                 win.TA_in.set(abs(float(TAav)))
                 txt=("Estimated TA is %s [ms]\n" %(win.TA_in.get()))

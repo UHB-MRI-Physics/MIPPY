@@ -112,6 +112,8 @@ def T1_mapping(Im4D,TI,images,threshold,GoF):
                         
                     if T1_R2[s,y,x]<GoF:
                         strings=[str(xdata),str(ydata)]
+                        if not os.path.exists("Results"):
+                            os.mkdir("Results")
                         with open("Results/failed.txt",'a+') as f_out:
                             for a in strings:
                                 f_out.write(a + "\n")
@@ -121,14 +123,16 @@ def T1_mapping(Im4D,TI,images,threshold,GoF):
                         M0_map[s,y,x] = 0
                         M0_var[s,y,x] = 0
                         print "goodness of fit < "+str(GoF)+"%"
-##                        x_fit=np.array(range(0,int(np.round(np.amax(xdata),0))+10))
-##                        plt.errorbar(xdata,ydata,marker='o',linestyle='None',color='blue')
-##                        plt.errorbar(x_fit,inv_recovery(x_fit,popt[0],popt[1]),marker='None',linestyle='-',color='blue')
-##                        plt.show()
-                        
-                    # SSres = sum of square distances from fit
-                    # SStot = sum of square distances from mean
-                    # R2 = 1 - (SSres/SStot)
+
+                    if T1_map[s,y,x]>10000:
+                        T1_map[s,y,x] = 0
+                        T1_var[s,y,x] = 0
+                        T1_R2[s,y,x] = 0                                                                                                   # If calculated variance on result is larger than the result, also ignore and set to zero
+                        M0_map[s,y,x] = 0
+                        M0_var[s,y,x] = 0
+                        print "T1 value exceeded 10000 [ms]"
+
+
                     
                 except Exception, e:
                 
