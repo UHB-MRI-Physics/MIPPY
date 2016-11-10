@@ -603,6 +603,16 @@ class MIPPYCanvas(Canvas):
 
 	def get_active_image(self):
 		return self.images[self.active-1]
+	
+	def get_3d_array(self):
+		"""
+		Only works if all images are same dimensions
+		"""
+		px_array = []
+		for image in self.images:
+			px_array.append(self.get_active_image().px_float)
+		px_array = np.array(px_array)
+		return px_array
 
 	def reset_window_level(self):
 		self.temp_window = self.default_window
