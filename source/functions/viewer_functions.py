@@ -610,7 +610,7 @@ class MIPPYCanvas(Canvas):
 		"""
 		px_array = []
 		for image in self.images:
-			px_array.append(self.get_active_image().px_float)
+			px_array.append(image.px_float)
 		px_array = np.array(px_array)
 		return px_array
 
