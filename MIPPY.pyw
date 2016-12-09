@@ -53,5 +53,6 @@ try:
 	
 	root_app = ToolboxHome(master = root_window)
 	root_app.mainloop()
-except:
+except Exception as e:
+	print e
 	tkMessageBox.showerror('ERROR','Error occurred. Please consult log files.')
