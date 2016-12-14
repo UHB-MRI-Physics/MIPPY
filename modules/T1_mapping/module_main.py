@@ -218,11 +218,11 @@ def execute(master_window,dicomdir,images):
 
         win.l_threshold = Label(win.run_buttons, text="Threshold [%]: ")
         win.threshold_in=StringVar(win)
-        win.threshold_in.set(15)
+        win.threshold_in.set(3)
         win.b_threshold = Entry(win.run_buttons,textvariable=win.threshold_in,width=3)
         win.l_GoF = Label(win.run_buttons, text="Goodness of Fit [%]: ")
         win.GoF_in=StringVar(win)
-        win.GoF_in.set(95)
+        win.GoF_in.set(50)
         win.b_GoF = Entry(win.run_buttons,textvariable=win.GoF_in,width=3)
 
         try:
