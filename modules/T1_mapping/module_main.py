@@ -49,23 +49,14 @@ def execute(master_window,dicomdir,images):
         
         slicepositions = []
         try:
-            for im in images:
+                for im in images:
                         slicepositions.append(str(im.PlanePositionSequence))
         except:
-            for im in images:
+                for im in images:
                         slicepositions.append(str(im.ImagePositionPatient))
         slicepositions = np.array(slicepositions)
         win.slcs = np.shape(np.unique(slicepositions))[0]
         win.dyns = len(images)/win.slcs
-##        if 'PHILIPS' in images[0].Manufacturer.upper():
-##                try:
-##                        win.slcs=eval(images[-1][0x0028,0x0008].value)/eval(images[-1][0x2001,0x1081].value)
-##                except:
-##                        win.slcs=int(images[-1][0x2001,0x1018].value)
-##                win.dyns=int(images[-1][0x2001,0x1081].value)
-##        else:
-##                win.slcs=images[-1].InstanceNumber/images[-1].AcquisitionNumber
-##                win.dyns=images[-1].AcquisitionNumber
 
         try:
                 if (images[0].ImagePositionPatient==images[1].ImagePositionPatient):
@@ -170,7 +161,15 @@ def execute(master_window,dicomdir,images):
 
         win.c_rev_in=IntVar(win)
         win.c_rev_in.set(0)
-        win.c_rev=Checkbutton(win.buttons,text="Use Reversed Slice Aquisition",variable=win.c_rev_in,state="disabled")
+        win.c_rev=Checkbutton(win.buttons,text="Reversed Slice Acquisition",variable=win.c_rev_in)
+        win.c_both_in=IntVar(win)
+        win.c_both_in.set(0)
+        win.c_both=Checkbutton(win.buttons,text="Use Ascending & Descending Slice Acquisition",variable=win.c_both_in)
+        
+        if win.c_both_in.get()==1:
+            win.c_rev_in.set(0)
+        elif win.c_rev_in.get()==1:
+            win.c_both_in.set(0)
 
         win.b_ROI = Button(win.buttons, text="Analyse ROI", command=lambda:ROI_stats(win))
         
@@ -188,10 +187,11 @@ def execute(master_window,dicomdir,images):
         win.b_TA.grid(row=6,column=2,sticky='nw')
 
         win.c_rev.grid(row=8,column=0,sticky='nw',columnspan=4)
+        win.c_both.grid(row=9,column=0,sticky='nw',columnspan=4)
 
         win.b_ROI.grid(row=10,column=0,sticky='nw')
                             
-        win.buttons.grid(row=0,column=1,sticky='new')
+        win.buttons.grid(row=0,column=1,sticky='news')
 
         # Resizing options
         win.buttons.rowconfigure(0,weight=0)
@@ -207,7 +207,7 @@ def execute(master_window,dicomdir,images):
         # Window layout
         win.b_message.grid(row=0,column=0,sticky='news')
 
-        win.message_box.grid(row=1,column=0,sticky='wes')
+        win.message_box.grid(row=1,column=0,sticky='news')
 
         # Resizing option
         win.message_box.rowconfigure(0,weight=1)
@@ -228,7 +228,7 @@ def execute(master_window,dicomdir,images):
         try:
                 win.Im4D=np.array([a.px_float for a in win.imcanvas_orig.images]).reshape((win.dyns,win.slcs,win.rows,win.cols))
         except Exception,win.Im4D:
-                status(win,"Multiple Series Detected...\nRecommended Reversed Acquisition\n")
+                status(win,"Multiple Series Detected...\nRecommended Reversed Acquisition")
                 win.c_rev_in.set(1)
                 win.Im4D=np.array([a.px_float for a in win.imcanvas_orig.images]).reshape((np.size(images,0)/win.slcs,win.slcs,win.rows,win.cols))
         win.b_run = Button(win.run_buttons, text="Create T1 maps", command=lambda:T1_map(win,images))
@@ -242,7 +242,7 @@ def execute(master_window,dicomdir,images):
         win.b_run.grid(row=1,column=0,sticky='nw')
         win.b_save.grid(row=2,column=0,sticky='nw')
 
-        win.run_buttons.grid(row=1,column=1,sticky="new")
+        win.run_buttons.grid(row=1,column=1,sticky="news")
 
         if not 'AcquisitionTime' in images[0]:
                 win.rb_TAvar.set(2)
@@ -261,10 +261,10 @@ def ROI_stats(win):
         if stats==None:
                 stats=win.imcanvas_orig.get_roi_statistics()
                 status(win,'mean=',np.round(stats['mean'][0],1),' std=',np.round(stats['std'][0]+0.05,1),
-                       ' min=',np.round(stats['min'][0],1),' max=',np.round(stats['max'][0],1),' area=',stats['area_px'][0],'px\n')
+                       ' min=',np.round(stats['min'][0],1),' max=',np.round(stats['max'][0],1),' area=',stats['area_px'][0],'px')
         else:
                 status(win,'mean=',np.round(stats['mean'][0],1),' std=',np.round(stats['std'][0]+0.05,1),
-                       ' min=',np.round(stats['min'][0],1),' max=',np.round(stats['max'][0],1),' area=',stats['area_px'][0],'px\n')
+                       ' min=',np.round(stats['min'][0],1),' max=',np.round(stats['max'][0],1),' area=',stats['area_px'][0],'px')
 
         return
 	
@@ -278,8 +278,9 @@ def status(win,*txt):
         for arg in txt:
                 print_str = print_str+str(arg)
         win.b_message.config(state=NORMAL)
-        win.b_message.insert(END,print_str)
+        win.b_message.insert(END,print_str+'\n')
         win.b_message.config(state=DISABLED)
+        win.b_message.bind('<1>', lambda event: win.b_message.focus_set())
         win.b_message.see(END)
         win.update()
 
@@ -327,7 +328,7 @@ def T1_map(win,images):
         
         if win.TIs==None:
                 return
-        status(win,"Fitting T1 maps...\n")
+        status(win,"Fitting T1 maps...")
         start_time=time.time()
         win.maps=np.zeros((5,win.slcs,win.rows,win.cols))
         if os.path.exists("Results/failed.txt"):
@@ -337,9 +338,9 @@ def T1_map(win,images):
         run_time = time.time()-start_time
 
         if run_time>=60:
-                txt=("Fitting completed in %s minutes and %s seconds. \n" %(int(run_time/60),int(run_time-int(run_time/60)*60)) )
+                txt=("Fitting completed in %s minutes and %s seconds." %(int(run_time/60),int(run_time-int(run_time/60)*60)) )
         else:
-                txt=("Fitting completed in %s seconds. \n" %(int(np.ceil(run_time))) )
+                txt=("Fitting completed in %s seconds." %(int(np.ceil(run_time))) )
         status(win,txt)        
 
         win_level=np.mean(win.maps[0].flatten()[np.where(win.maps[0].flatten()>0)])
@@ -358,100 +359,71 @@ def time_convert(win,t):
 
 def sort_TIs(win,images):
         """Sorting TIs for each individual image"""
-        status(win,"Sorting TIs for each individual image... \n")
+        status(win,"Sorting TIs for each individual image...")
+        # First - get the TA
         TA=np.zeros(win.slcs-1)
-        TIs=np.zeros(win.dyns*win.slcs)
         if win.rb_TAvar.get()==1:
                 for a in range(win.slcs-1):
                         tst_a = str(images[a].AcquisitionTime)
                         tst_b = str(images[a+1].AcquisitionTime)
                         dst = str(images[a].StudyDate)
- 
+                        
                         time_a = datetime.datetime(int(dst[0:4]),int(dst[4:6]),int(dst[6:8]),int(tst_a[0:2]),int(tst_a[2:4]),int(tst_a[4:6]),int(tst_a[7:]))
                         time_b = datetime.datetime(int(dst[0:4]),int(dst[4:6]),int(dst[6:8]),int(tst_b[0:2]),int(tst_b[2:4]),int(tst_b[4:6]),int(tst_b[7:]))
- 
+                        
                         TA[a] = (time_b-time_a).total_seconds()*1000
-
-                #status(win,TA)                    
+            
+                #status(win,TA)
                 TAav=np.round(float(np.mean(TA,0)),2)
                 win.TA_in.set(abs(float(TAav)))
-                txt=("Estimated TA is %s [ms]\n" %(win.TA_in.get()))
+                txt=("Estimated TA is %s [ms]" %(win.TA_in.get()))
                 status(win,txt)
-                if (TAav>0 and win.rb_TAvar.get()==1):
-                        if win.rb_TIvar.get()==1:
-                                for d in range(win.dyns):
-                                        for s in range(win.slcs):
-                                                TIs[win.slcs*d+s]=int(win.TI_in.get())+d*int(win.TIinc_in.get())+s*float(win.TA_in.get())
-                                        
-                        elif win.rb_TIvar.get()==2:
-                                TI=np.genfromtxt([win.TIs_in.get()],delimiter=",")
-                                if np.size(TI,0)!=win.dyns:
-                                        status(win,"Provided number of TIs does not match number of dynamics...\n"
+                if TAav<0:
+                        win.c_rev_in.set(1)
+
+        # second - main TI values
+        TI=np.zeros(win.dyns)
+        if win.rb_TIvar.get()==1:
+                for d in range(win.dyns):
+                        TI[d]=int(win.TI_in.get())+d*int(win.TIinc_in.get())
+        if win.rb_TIvar.get()==2:
+                TI=np.genfromtxt([win.TIs_in.get()],delimiter=",")
+                if np.size(TI,0)!=win.dyns:
+                        status(win,"Provided number of TIs does not match number of dynamics..."
                                                +"number of dynamics = "+str(win.dyns))
-                                        return None
-                                
-                                for d in range(win.dyns):
-                                        for s in range(win.slcs):
-                                                TIs[win.slcs*d+s]=TI[d]+s*float(win.TA_in.get())
-                elif (TAav<0 and win.rb_TAvar.get()==1):
-                        if win.rb_TIvar.get()==1:
-                                for d in range(win.dyns):
-                                        for s in range(win.slcs):
-                                                TIs[win.slcs*d+s]=int(win.TI_in.get())+d*int(win.TIinc_in.get())+(win.slcs-s-1)*float(win.TA_in.get())
-                        elif win.rb_TIvar.get()==2:
-                                TI=np.genfromtxt([win.TIs_in.get()],delimiter=",")
-                                if np.size(TI,0)!=win.dyns:
-                                        status(win,"Provided number of TIs does not match number of dynamics...\n")
-                                        return None
-                                
-                                for d in range(win.dyns):
-                                        for s in range(win.slcs):
+                        return None
+                
+        if win.c_both_in.get()==1:
+                TI=np.squeeze(numpy.matlib.repmat(TI[range(np.size(TI)/2)],1,2))
+
+        # third - all TI values
+        TIs=np.zeros(win.dyns*win.slcs)
+        for d in range(np.size(TI)):
+                for s in range(win.slcs):
+                        if win.c_rev_in.get()==0:
+                                TIs[int(win.slcs)*d+s]=TI[d]+s*float(win.TA_in.get())
+                                if win.c_both_in.get()==1:
+                                        if d>=np.size(TI)/2:
                                                 TIs[int(win.slcs)*d+s]=TI[d]+(win.slcs-s-1)*float(win.TA_in.get())
-
-        elif (win.c_rev_in.get()==1 and win.rb_TAvar.get()==2):
-                if win.rb_TIvar.get()==1:
-                        for d in range(win.dyns):
-                                for s in range(win.slcs):
-                                        TIs[win.slcs*d+s]=int(win.TI_in.get())+d*int(win.TIinc_in.get())+(win.slcs-s-1)*float(win.TA_in.get())
-#                                        status(win,str(TIs[win.slcs*d+s])+"\t s= "+str(s)+"\t d= "+str(d)+"\n")
-                elif win.rb_TIvar.get()==2:
-                        TI=np.genfromtxt([win.TIs_in.get()],delimiter=",")                                       
-                        if np.size(TI,0)!=win.dyns:
-                                status(win,"Provided number of TIs does not match number of dynamics...\n")
-                                return None
-                        
-                        for d in range(win.dyns):
-                                for s in range(win.slcs):
-                                        TIs[int(win.slcs)*d+s]=TI[d]+(win.slcs-s-1)*float(win.TA_in.get())
-
-        elif win.rb_TAvar.get()==2:
-                if win.rb_TIvar.get()==1:
-                        for d in range(win.dyns):
-                                for s in range(win.slcs):
-                                        TIs[win.slcs*d+s]=int(win.TI_in.get())+d*int(win.TIinc_in.get())+s*float(win.TA_in.get())
-                elif win.rb_TIvar.get()==2:
-                        TI=np.genfromtxt([win.TIs_in.get()],delimiter=",")                                       
-                        if np.size(TI,0)!=win.dyns:
-                                status(win,"Provided number of TIs does not match number of dynamics...\n")
-                                return None
-                        
-                        for d in range(win.dyns):
-                                for s in range(win.slcs):
-                                        TIs[int(win.slcs)*d+s]=TI[d]+s*float(win.TA_in.get())
-                                        
-                                        
-        status(win,"These are the follwing times for each image:\n")
-        status(win,str(TIs)+"\n")
+                        elif win.c_rev_in.get()==1:
+                                TIs[int(win.slcs)*d+s]=TI[d]+(win.slcs-s-1)*float(win.TA_in.get())
+                                if win.c_both_in.get()==1:
+                                        if d>=np.size(TI)/2:
+                                                TIs[int(win.slcs)*d+s]=TI[d]+s*float(win.TA_in.get())
+                    
+                                               
+        status(win,"These are the follwing times for each image:")
+        status(win,TIs)
         return TIs
 
 def save(win,dicomdir,images):
-        status(win,"Saving maps in DICOM format... \n")
+        status(win,"Saving maps in DICOM format...")
         rows=win.rows
         cols=win.cols
         slcs=win.slcs
         dyns=win.dyns
         for s in range(slcs):
-                txt=("Saving slice %s \n" %(s+1))
+                txt=("Saving slice %s" %(s+1))
                 status(win,txt)
                 #   saving DICOMs
                 # T1 map
@@ -470,8 +442,8 @@ def save(win,dicomdir,images):
                         images_T1.LargestImagePixelValue = max(images_T1.PixelData)
                         images_T1[0x0028,0x0107].VR='US'
                 except:
-                        pass
-                images_T1.SOPInstanceUID = ''.join([images_T1.SOPInstanceUID,".1"])
+                        pass                      
+                        
                 images_T1.RescaleSlope = 1
                 images_T1.RescaleIntercept = 0
                 images_T1.WindowCentre = 1000
@@ -481,10 +453,18 @@ def save(win,dicomdir,images):
                         images_T1[0x2005,0x100E].value = 1
                 except:
                         pass
-                images_T1.SeriesDescription = images[0].SeriesDescription+"_T1map"
-                images_T1.SeriesInstanceUID = images[0].SeriesInstanceUID+".1"
                 
-                file_out=os.path.join(dicomdir,"_Series_"+str(images_T1.SeriesNumber).zfill(3)+"_maps","T1_map_"+str(s+1).zfill(3)+".dcm")
+                if win.c_both_in.get()==1:
+                        images_T1.SOPInstanceUID = ''.join([images_T1.SOPInstanceUID,".1.1"])
+                        images_T1.SeriesDescription = images[0].SeriesDescription+"_T1map_A-D"
+                        images_T1.SeriesInstanceUID = images[0].SeriesInstanceUID+".1.1"
+                        file_out=os.path.join(dicomdir,"_Series_"+str(images_T1.SeriesNumber).zfill(3)+"_maps","T1_map_ad_"+str(s+1).zfill(3)+".dcm")
+                else:
+                        images_T1.SOPInstanceUID = ''.join([images_T1.SOPInstanceUID,".1"])
+                        images_T1.SeriesDescription = images[0].SeriesDescription+"_T1map"
+                        images_T1.SeriesInstanceUID = images[0].SeriesInstanceUID+".1"
+                        file_out=os.path.join(dicomdir,"_Series_"+str(images_T1.SeriesNumber).zfill(3)+"_maps","T1_map_"+str(s+1).zfill(3)+".dcm")
+
                 print file_out
                 try:
                         os.makedirs(os.path.split(file_out)[0])
@@ -508,11 +488,9 @@ def save(win,dicomdir,images):
                         images_T1_R2.LargestImagePixelValue = max(images_T1_R2.PixelData)
                 except ValueError:
                         pass
-                images_T1_R2.SOPInstanceUID = ''.join([images_T1_R2.SOPInstanceUID,".2"])
-                images_T1_R2.RescaleSlope = 1                                   # This should give you 100*R1, i.e. 99.55% => 99.55
-##                images_T1_R2.RescaleIntercept = np.min(T1_R2)
+                        
+                images_T1_R2.RescaleSlope = 1
                 images_T1_R2.RescaleIntercept = 0
-        ##        images_T1_R2.SeriesDescription = "Fit R2 value"
                 images_T1_R2.WindowCentre = 100
                 images_T1_R2.WindowWidth = 30
 
@@ -520,10 +498,18 @@ def save(win,dicomdir,images):
                         images_T1_R2[0x2005,0x100E].value = 1
                 except:
                         pass
-                images_T1_R2.SeriesDescription = images[0].SeriesDescription+"_T1GoF"
-                images_T1_R2.SeriesInstanceUID = images[0].SeriesInstanceUID+".2"
+                
+                if win.c_both_in.get()==1:
+                        images_T1_R2.SOPInstanceUID = ''.join([images_T1_R2.SOPInstanceUID,".2.1"])
+                        images_T1_R2.SeriesDescription = images[0].SeriesDescription+"_T1GoF_A-D"
+                        images_T1_R2.SeriesInstanceUID = images[0].SeriesInstanceUID+".2.1"
+                        file_out=os.path.join(dicomdir,"_Series_"+str(images_T1_R2.SeriesNumber).zfill(3)+"_maps","T1_GoF_map_ad_"+str(s+1).zfill(3)+".dcm")
+                else:
+                        images_T1_R2.SOPInstanceUID = ''.join([images_T1_R2.SOPInstanceUID,".2"])
+                        images_T1_R2.SeriesDescription = images[0].SeriesDescription+"_T1GoF"
+                        images_T1_R2.SeriesInstanceUID = images[0].SeriesInstanceUID+".2"
+                        file_out=os.path.join(dicomdir,"_Series_"+str(images_T1_R2.SeriesNumber).zfill(3)+"_maps","T1_GoF_map_"+str(s+1).zfill(3)+".dcm")
 
-                file_out=os.path.join(dicomdir,"_Series_"+str(images_T1_R2.SeriesNumber).zfill(3)+"_maps","T1_GoF_map_"+str(s+1).zfill(3)+".dcm")
                 images_T1_R2.save_as(file_out)
                     
                 # T1_Variance
@@ -541,19 +527,26 @@ def save(win,dicomdir,images):
                         images_T1_Var.LargestImagePixelValue = max(images_T1_Var.PixelData)
                 except ValueError:
                         pass
-                images_T1_Var.SOPInstanceUID = ''.join([images_T1_Var.SOPInstanceUID,".3"])
+                      
                 images_T1_Var.RescaleSlope = 1./10
                 images_T1_Var.RescaleIntercept = np.min(10*T1_var)
-        ##        images_T1_Var.SeriesDescription = "T1 variance"
 
                 try:
                         images_T1_Var[0x2005,0x100E].value = 1
                 except:
                         pass
-                images_T1_Var.SeriesDescription = images[0].SeriesDescription+"_T1var"
-                images_T1_Var.SeriesInstanceUID = images[0].SeriesInstanceUID+".3"
-
-                file_out=os.path.join(dicomdir,"_Series_"+str(images_T1_Var.SeriesNumber).zfill(3)+"_maps","T1_Var_map_"+str(s+1).zfill(3)+".dcm")
+                
+                if win.c_both_in.get()==1:
+                        images_T1_Var.SOPInstanceUID = ''.join([images_T1_Var.SOPInstanceUID,".3.1"])
+                        images_T1_Var.SeriesDescription = images[0].SeriesDescription+"_T1var_A-D"
+                        images_T1_Var.SeriesInstanceUID = images[0].SeriesInstanceUID+".3.1"
+                        file_out=os.path.join(dicomdir,"_Series_"+str(images_T1_Var.SeriesNumber).zfill(3)+"_maps","T1_Var_map_ad_"+str(s+1).zfill(3)+".dcm")
+                else:
+                        images_T1_Var.SOPInstanceUID = ''.join([images_T1_Var.SOPInstanceUID,".3"])
+                        images_T1_Var.SeriesDescription = images[0].SeriesDescription+"_T1var"
+                        images_T1_Var.SeriesInstanceUID = images[0].SeriesInstanceUID+".3"
+                        file_out=os.path.join(dicomdir,"_Series_"+str(images_T1_Var.SeriesNumber).zfill(3)+"_maps","T1_Var_map_"+str(s+1).zfill(3)+".dcm")
+ 
                 images_T1_Var.save_as(file_out)
                         
                 # M0 map
@@ -571,20 +564,26 @@ def save(win,dicomdir,images):
                         images_M0.LargestImagePixelValue = max(images_M0.PixelData)
                 except ValueError:
                         pass
-                images_M0.SOPInstanceUID = ''.join([images_M0.SOPInstanceUID,".4"])
+                        
                 images_M0.RescaleSlope = 1
-##                images_M0.RescaleIntercept = np.min(M0_map)
                 images_M0.RescaleIntercept = 0
-        ##        images_M0.SeriesDescription = "M0 map"
 
                 try:
                         images_M0[0x2005,0x100E].value = 1
                 except:
                         pass
-                images_M0.SeriesDescription = images[0].SeriesDescription+"_M0map"
-                images_M0.SeriesInstanceUID = images[0].SeriesInstanceUID+".4"
-
-                file_out=os.path.join(dicomdir,"_Series_"+str(images_M0.SeriesNumber).zfill(3)+"_maps","M0_map_"+str(s+1).zfill(3)+".dcm")
+                
+                if win.c_both_in.get()==1:
+                        images_M0.SOPInstanceUID = ''.join([images_M0.SOPInstanceUID,".4.1"])
+                        images_M0.SeriesDescription = images[0].SeriesDescription+"_M0map_A-D"
+                        images_M0.SeriesInstanceUID = images[0].SeriesInstanceUID+".4.1"
+                        file_out=os.path.join(dicomdir,"_Series_"+str(images_M0.SeriesNumber).zfill(3)+"_maps","M0_map_ad_"+str(s+1).zfill(3)+".dcm")
+                else:
+                        images_M0.SOPInstanceUID = ''.join([images_M0.SOPInstanceUID,".4"])
+                        images_M0.SeriesDescription = images[0].SeriesDescription+"_M0map"
+                        images_M0.SeriesInstanceUID = images[0].SeriesInstanceUID+".4"
+                        file_out=os.path.join(dicomdir,"_Series_"+str(images_M0.SeriesNumber).zfill(3)+"_maps","M0_map_"+str(s+1).zfill(3)+".dcm")
+                        
                 images_M0.save_as(file_out)
                     
                 # M0-Variance
@@ -602,20 +601,26 @@ def save(win,dicomdir,images):
                         images_M0_Var.LargestImagePixelValue = max(images_M0_Var.PixelData)
                 except ValueError:
                         pass
-                images_M0_Var.SOPInstanceUID = ''.join([images_M0_Var.SOPInstanceUID,".5"])
+                        
                 images_M0_Var.RescaleSlope = 1./10
-##                images_M0_Var.RescaleIntercept = np.min(10.*M0_var)
                 images_M0_Var.RescaleIntercept = 0
-        ##        images_M0_Var.SeriesDescription = "M0 variance"
 
                 try:
                         images_M0_Var[0x2005,0x100E].value = 1
                 except:
                         pass
-                images_M0_Var.SeriesDescription = images[0].SeriesDescription+"_M0var"
-                images_M0_Var.SeriesInstanceUID = images[0].SeriesInstanceUID+".5"
                 
-                file_out=os.path.join(dicomdir,"_Series_"+str(images_M0_Var.SeriesNumber).zfill(3)+"_maps","M0_Var_map_"+str(s+1).zfill(3)+".dcm")
+                if win.c_both_in.get()==1:
+                        images_M0_Var.SOPInstanceUID = ''.join([images_M0_Var.SOPInstanceUID,".5.1"])
+                        images_M0_Var.SeriesDescription = images[0].SeriesDescription+"_M0var_A-D"
+                        images_M0_Var.SeriesInstanceUID = images[0].SeriesInstanceUID+".5.1"
+                        file_out=os.path.join(dicomdir,"_Series_"+str(images_M0_Var.SeriesNumber).zfill(3)+"_maps","M0_Var_map_ad_"+str(s+1).zfill(3)+".dcm")
+                else:
+                        images_M0_Var.SOPInstanceUID = ''.join([images_M0_Var.SOPInstanceUID,".5"])
+                        images_M0_Var.SeriesDescription = images[0].SeriesDescription+"_M0var"
+                        images_M0_Var.SeriesInstanceUID = images[0].SeriesInstanceUID+".5"
+                        file_out=os.path.join(dicomdir,"_Series_"+str(images_M0_Var.SeriesNumber).zfill(3)+"_maps","M0_Var_map_"+str(s+1).zfill(3)+".dcm")
+                        
                 images_M0_Var.save_as(file_out)
         
-        status(win,"DONE!!! \n")
+        status(win,"DONE!!!")

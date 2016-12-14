@@ -207,7 +207,7 @@ def execute(master_window,dicomdir,images):
         if win.multi==True:
                 win.c_GoF_in=IntVar(win)
                 win.c_GoF_in.set(1)
-                win.c_GoF=Checkbutton(win.buttons,text="Inglude Goodness-of-Fit maps",variable=win.c_GoF_in,state="enabled")
+                win.c_GoF=Checkbutton(win.buttons,text="Include Goodness-of-Fit maps",variable=win.c_GoF_in,state="enabled")
                 if win.c_GoF_in.get()==1:
                         win.l_GoFmin = Label(win.buttons, text="Min GoF [%]: ")
                         win.GoFmin_in=StringVar(win)
@@ -338,10 +338,11 @@ def ROI_stats(win):
         return
                                 
 def search_min(win):
+        win.pix_seg0=np.size(win.pix_seg)
         T1min_t=int(win.T1min_in.get())
         T1max_t=int(win.T1max_in.get())
         T1range=np.array([T1min_t,T1max_t])
-        results = minimize(extract_pix,T1range,args=(win),options={'maxiter':10000},method='Nelder-Mead')
+        results = minimize(extract_pix,T1range,args=(win),method='Nelder-Mead')
         #win.T1min_in.set(T1min_t)
         #win.T1max_in.set(T1max_t)
         status(win,'Optimisation results = ',results)
@@ -350,10 +351,15 @@ def search_min(win):
 def extract_pix(T1range,win):
         win.T1min_in.set(str(int(T1range[0])))
         win.T1max_in.set(str(int(T1range[1])))
+        current_slice=int(win.imcanvas_seg.active)
         segment(win)
+        win.imcanvas_seg.show_image(current_slice)
         ROI_stats(win)
-        status(win,np.round(np.std(win.pix_seg)+0.05,1)/np.sqrt(np.size(win.pix_seg)))
-        return np.round(np.std(win.pix_seg)+0.05,1)/np.sqrt(np.size(win.pix_seg))
+        eval_fun = np.std(win.pix_seg)**1/(float(np.size(win.pix_seg+1)/float(win.pix_seg0+1))**1)
+        #status(win,eval_fun)
+        if np.size(win.pix_seg)<50:
+            eval_fun = 10000
+        return eval_fun
 
 
 def status(win,*txt):
@@ -362,6 +368,7 @@ def status(win,*txt):
                 print_str = print_str+str(arg)
         win.b_message.config(state=NORMAL)
         win.b_message.insert(END,print_str+'\n')
+        win.b_message.bind('<1>', lambda event: win.b_message.focus_set())
         win.b_message.config(state=DISABLED)
         win.b_message.see(END)
         win.update()
