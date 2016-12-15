@@ -397,6 +397,10 @@ class ToolboxHome(Frame):
 		if repeats_found:
 			tkMessageBox.showwarning("WARNING",str(n_repeats)+" repeat image UID's found and ignored.")
 		self.dirframe.dicomtree.update()
+
+		# Save DICOM tree as a snapshot to be opened again at a later time
+
+
 		#~ self.master.progress = 100
 		return
 
