@@ -28,6 +28,13 @@ def preload_dicom():
 	# Note the capital letters on True and False.  These are important.
 	return True
 
+def flatten_series():
+	"""
+	By default, MIPPY will pass the image datasets as a 2D list, divided by series.
+	If you want only a single, flat list from all your series, return True.
+	"""
+	return True
+
 
 def execute(master_window,dicomdir,images):
 	"""
@@ -38,7 +45,7 @@ def execute(master_window,dicomdir,images):
 	set the "preload_dicom" message above to "return True", these will be dicom
 	datasets.  If you set "return False", these will just be paths to the image files.
 	"""
-	
+
 	"""
 	This section creates you blank GUI and sets your window title and icon.
 	"""
@@ -50,7 +57,7 @@ def execute(master_window,dicomdir,images):
 		win.wm_iconbitmap('@'+os.path.join(root_path,'source','images','brain_bw.xbm'))
 	gc.collect()
 	"""
-	"""	
+	"""
 
 	win.im1 = MIPPYCanvas(win,width=400,height=400,drawing_enabled=True)
 	win.im1.img_scrollbar = Scrollbar(win,orient='horizontal')
@@ -182,7 +189,7 @@ def reset_roi(win):
 
 	win.xdim = xdim
 	win.ydim = ydim
-	
+
 	win.n_profiles = 8
 
 	roi_ellipse_coords = get_ellipse_coords(center,xdim,ydim,win.n_profiles)
@@ -203,19 +210,19 @@ def measure_distortion(win):
 		this_prof, this_px = win.im1.get_profile(index=i,resolution=res,interpolate=True)
 		profiles.append(convolve(np.array(this_prof),np.ones(smoothing/res),mode='same'))
 		px.append(this_px)
-	
+
 	lows = []
 	highs = []
-	
+
 	flat_px = win.im1.get_active_image().px_float.flatten()
-	
+
 	noise_threshold = 0.1*np.mean(flat_px)
 	im_mean = np.mean(flat_px[np.where(flat_px>=noise_threshold)])
 	im_max = np.max(flat_px)
 	half_value = im_mean/2
 	print noise_threshold,im_max,im_mean,half_value
-	
-	
+
+
 	for profile in profiles:
 		this_low = None
 		this_high = None
@@ -235,14 +242,14 @@ def measure_distortion(win):
 				break
 		lows.append(this_low)
 		highs.append(this_high)
-	
+
 	print lows
 	print highs
-	
+
 	lengths = np.zeros(len(lows))
 	for a in range(len(lows)):
 		lengths[a] = (highs[a]-lows[a])*res
-	
+
 	xscale = win.im1.get_active_image().xscale
 	yscale = win.im1.get_active_image().yscale
 	linearity = (np.mean(lengths[1:])*np.mean([xscale,yscale]) - 190.)/190.

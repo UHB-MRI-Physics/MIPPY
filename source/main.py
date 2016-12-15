@@ -38,6 +38,8 @@ print "    MIPPY DICOM functions"
 from functions.dicom_functions import *
 print "    Garbage Collection"
 import gc
+print "    Python itertools"
+import itertools
 
 print "Initialising GUI...\n"
 
@@ -455,18 +457,45 @@ class ToolboxHome(Frame):
 				active_module = importlib.import_module(module_name)
 				reload(active_module)
 			preload_dicom = active_module.preload_dicom()
+			try:
+				flatten_list = active_module.flatten_series()
+			except:
+				message = ("\n\n======================================\n"+
+						"   !!!! MIPPY HAS BEEN UPDATED !!!!\n"+
+						"======================================\n\n"+
+						"Please add a function to your module\n"+
+						"as follows:\n\n"+
+						"def flatten_series():\n"+
+						"    return False\n\n"+
+						"or return True if you require all\n"+
+						"images in a single 1D list.\n"+
+						"======================================\n\n")
+				print message
+				flatten_list = False
 			#~ if preload_dicom=='full':
 			if preload_dicom:
 				self.datasets_to_pass = []
+				previous_tag = None
 				for tag in self.sorted_list:
 
 					if tag['instanceuid'] in self.active_uids:
+						# Check to see if new series
+						if previous_tag:
+							if tag['seriesuid']==previous_tag['seriesuid']:
+								new_series = False
+							else:
+								new_series = True
+						else:
+							new_series = True
 						# First, check if dataset is already in temp files
 						temppath = os.path.join(self.tempdir,tag['instanceuid']+'.mds')
 						if os.path.exists(temppath):
 							print "TEMP FILE FOUND",tag['instanceuid']
 							with open(temppath,'rb') as tempfile:
-								self.datasets_to_pass.append(pickle.load(tempfile))
+								if new_series:
+									self.datasets_to_pass.append([pickle.load(tempfile)])
+								else:
+									self.datasets_to_pass[-1].append(pickle.load(tempfile))
 								tempfile.close()
 							continue
 						else:
@@ -477,15 +506,22 @@ class ToolboxHome(Frame):
 							if not tag['enhanced']:
 	#							print tag['path']
 	#							print type(tag['path'])
-								self.datasets_to_pass.append(self.open_ds)
+								if new_series:
+									self.datasets_to_pass.append([self.open_ds])
+								else:
+									self.datasets_to_pass[-1].append(self.open_ds)
 							else:
 	#							ds = dicom.read_file(tag['path'])
 	#							print tag['path']
 	#							print type(tag['path'])
 								# Check if image already exists in temp files
 								split_ds = get_frame_ds(self.open_ds,tag['instance'])
-								self.datasets_to_pass.append(split_ds)
+								if new_series:
+									self.datasets_to_pass.append([split_ds])
+								else:
+									self.datasets_to_pass[-1].append(split_ds)
 								save_temp_ds(split_ds,self.tempdir,tag['instanceuid']+'.mds')
+						previous_tag = tag
 			#~ elif preload_dicom=='minimal':
 				#~ self.datasets_to_pass = []
 				#~ for tag in self.sorted_list:
@@ -493,12 +529,25 @@ class ToolboxHome(Frame):
 						#~ self.datasets_to_pass.append(tag)
 			else:
 				self.datasets_to_pass = []
-				for uid in self.active_uids:
-					for tag in self.sorted_list:
-						if tag['instanceuid'] in self.active_uids:
-							if not tag['path'] in self.datasets_to_pass:
-								self.datasets_to_pass.append(tag['path'])
+				previous_tag = None
+				for tag in self.sorted_list:
+					if previous_tag:
+						if tag['seriesuid']==previous_tag['seriesuid']:
+							new_series = False
+						else:
+							True
+					else:
+						True
+					if tag['instanceuid'] in self.active_uids:
+						if not tag['path'] in self.datasets_to_pass:
+							if new_series:
+								self.datasets_to_pass.append([tag['path']])
+							else:
+								self.datasets_to_pass[-1].append(tag['path'])
+
 			gc.collect()
+			if flatten_list:
+				self.datasets_to_pass = list(itertools.chain.from_iterable(self.datasets_to_pass))
 			active_module.execute(self.master,self.dicomdir,self.datasets_to_pass)
 		except:
 			raise
