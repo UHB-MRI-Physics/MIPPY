@@ -20,6 +20,8 @@ def preload_dicom():
 	# Note the capital letters on True and False.  These are important.
 	return True
 
+def flatten_series():
+        return True
 
 def execute(master_window,dicomdir,images):
 	"""

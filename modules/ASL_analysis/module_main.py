@@ -23,6 +23,8 @@ def preload_dicom():
 	# Note the capital letters on True and False.  These are important.
 	return True
 
+def flatten_series():
+        return False
 
 def execute(master_window,dicomdir,images):
 	"""
@@ -75,11 +77,6 @@ def execute(master_window,dicomdir,images):
                 images=sorted_images
         
 	# Create canvases
-	n_canvases = []
-	for n in images
-                n_canvases.append(str(n.SeriesInstanceUID))
-        n_canvases = set(n_canvases)
-	print n_canvases
 	
 	win.imcanvases=Frame(win)
 	win.imcanvas_orig = MIPPYCanvas(win.imcanvases,bd=0 ,width=384,height=384,drawing_enabled=False)

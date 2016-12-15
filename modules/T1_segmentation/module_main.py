@@ -25,6 +25,8 @@ def preload_dicom():
 	# Note the capital letters on True and False.  These are important.
 	return True
 
+def flatten_series():
+        return True
 
 def execute(master_window,dicomdir,images):
 	"""
@@ -207,7 +209,7 @@ def execute(master_window,dicomdir,images):
         if win.multi==True:
                 win.c_GoF_in=IntVar(win)
                 win.c_GoF_in.set(1)
-                win.c_GoF=Checkbutton(win.buttons,text="Include Goodness-of-Fit maps",variable=win.c_GoF_in,state="enabled")
+                win.c_GoF=Checkbutton(win.buttons,text="Include Goodness-of-Fit Maps",variable=win.c_GoF_in,state="enabled")
                 if win.c_GoF_in.get()==1:
                         win.l_GoFmin = Label(win.buttons, text="Min GoF [%]: ")
                         win.GoFmin_in=StringVar(win)
@@ -275,15 +277,17 @@ def execute(master_window,dicomdir,images):
 ##                status(win,"Multiple Series Detected...\n")
 ##                win.Im4D=np.array([a.px_float for a in win.imcanvas_orig.images]).reshape((np.size(images,0)/win.slcs,win.slcs,win.rows,win.cols))
                         
-        win.b_run = Button(win.run_buttons, text="Recalculate maps", command=lambda:segment(win))
-        win.b_save = Button(win.run_buttons, text="Save segmented T1 maps", command=lambda:save(win,dicomdir,images))
+        win.b_run = Button(win.run_buttons, text="Recalculate Maps", command=lambda:segment(win))
+        win.b_save = Button(win.run_buttons, text="Save Segmented T1 Maps", command=lambda:save(win,dicomdir,images))
+        win.b_save_bin = Button(win.run_buttons, text="Save Binary ROI", command=lambda:save_bin(win,dicomdir,images))
 
         # Window layout
 ##        win.l_threshold.grid(row=0,column=0,sticky='ne')
 ##        win.b_threshold.grid(row=0,column=1,sticky='ne')
 ##        win.l_GoF.grid(row=0,column=2,sticky='ne')
 ##        win.b_GoF.grid(row=0,column=3,sticky='ne')
-        win.b_run.grid(row=1,column=0,sticky='nw')
+        win.b_run.grid(row=0,column=0,sticky='nw')
+        win.b_save_bin.grid(row=1,column=0,sticky='nw')        
         win.b_save.grid(row=2,column=0,sticky='nw')
 
         win.run_buttons.grid(row=1,column=1,sticky="news")
@@ -291,6 +295,7 @@ def execute(master_window,dicomdir,images):
 	return
 
 def segment(win):
+        current_slice=int(win.imcanvas_seg.active)
         win.Im3Dseg=win.imcanvas_orig.get_3d_array()*(win.imcanvas_orig.get_3d_array()>=float(win.T1min_in.get()))*(win.imcanvas_orig.get_3d_array()<=float(win.T1max_in.get()))
         #quick_display(win.imcanvas_orig.get_3d_array(),win)
         if win.multi==True:
@@ -298,7 +303,7 @@ def segment(win):
         #quick_display(win.Im3Dseg,win)
 
         win.imcanvas_seg.load_images([b for b in (win.Im3Dseg)])
-
+        win.imcanvas_seg.show_image(current_slice)
         return
 
 def ROI_stats(win):
@@ -351,13 +356,13 @@ def search_min(win):
 def extract_pix(T1range,win):
         win.T1min_in.set(str(int(T1range[0])))
         win.T1max_in.set(str(int(T1range[1])))
-        current_slice=int(win.imcanvas_seg.active)
+##        current_slice=int(win.imcanvas_seg.active)
         segment(win)
-        win.imcanvas_seg.show_image(current_slice)
+##        win.imcanvas_seg.show_image(current_slice)
         ROI_stats(win)
         eval_fun = np.std(win.pix_seg)**1/(float(np.size(win.pix_seg+1)/float(win.pix_seg0+1))**1)
         #status(win,eval_fun)
-        if np.size(win.pix_seg)<50:
+        if np.size(win.pix_seg)<0.1*win.pix_seg0:
             eval_fun = 10000
         return eval_fun
 
@@ -427,5 +432,66 @@ def save(win,dicomdir,images):
                         pass
 
                 images_T1seg.save_as(file_out)
+        
+        status(win,"DONE!!!")
+        
+def save_bin(win,dicomdir,images):
+        status(win,"Saving binary ROI in DICOM format...")
+        rows=win.rows
+        cols=win.cols
+        slcs=win.slcs
+        dyns=win.dyns
+        win.pix_bin=win.imcanvas_seg.get_roi_mask().astype(np.float64)*win.imcanvas_seg.get_active_image().px_float
+        try:
+                win.pix_bin[np.where(win.pix_bin>0)]=1
+                win.pix_bin=win.pix_bin.astype(np.uint8)               
+        except:
+                status(win,"No segmented ROI selected for this slice!")
+                return
+
+        
+##        for s in range(slcs):
+        s=int(win.imcanvas_seg.active)
+        txt=("Saving slice %s " %(s))
+        status(win,txt)
+        #   saving DICOMs
+        # Binary ROI
+        images_ROIbin=images[len(images)-slcs+s-1]
+        images_ROIbin.AcquisitionNumber=dyns+10
+        images_ROIbin.InstanceNumber=dyns*slcs+s+10
+        images_ROIbin=np.clip(win.pix_bin[:][:],0,1).astype(np.uint8)
+        images_ROIbin.PixelData = np.reshape(pix_bin,(cols*rows))
+        try:
+                images_ROIbin.AcquisitionTime = str(float(images_ROIbin.AcquisitionTime) + 0.2)
+        except AttributeError:
+                pass
+        try:
+                images_ROIbin.SmallestImagePixelValue = min(images_ROIbin.PixelData)
+                images_ROIbin[0x0028,0x0106].VR='US'
+                images_ROIbin.LargestImagePixelValue = max(images_ROIbin.PixelData)
+                images_ROIbin[0x0028,0x0107].VR='US'
+        except:
+                pass
+        images_ROIbin.SOPInstanceUID = ''.join([images_ROIbin.SOPInstanceUID,".1.1"])
+        images_ROIbin.RescaleSlope = 1
+        images_ROIbin.RescaleIntercept = 0
+        images_ROIbin.WindowCentre = 1
+        images_ROIbin.WindowWidth = 1
+
+        try:
+                images_ROIbin[0x2005,0x100E].value = 1
+        except:
+                pass
+        images_ROIbin.SeriesDescription = images[0].SeriesDescription+"_ROIbin"
+        images_ROIbin.SeriesInstanceUID = images[0].SeriesInstanceUID+".1.1"
+        
+        file_out=os.path.join(dicomdir,"_Series_"+str(images_ROIbin.SeriesNumber).zfill(3)+"_maps","_ROIbin_"+str(s+1).zfill(3)+".dcm")
+        print file_out
+        try:
+                os.makedirs(os.path.split(file_out)[0])
+        except:
+                pass
+
+        images_ROIbin.save_as(file_out)
         
         status(win,"DONE!!!")
