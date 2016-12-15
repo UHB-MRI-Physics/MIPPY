@@ -406,6 +406,23 @@ class MIPPYCanvas(Canvas):
 		self.delete('image')
 		self.create_image((0,0),image=self.images[self.active-1].photoimage,anchor='nw')
 
+	def get_roi_mask(self):
+		"""
+		Returns a binary mask of all ROIs
+		"""
+		width = self.get_active_image().columns
+		height = self.get_active_image().rows
+
+		mask = np.zeros((height,width))
+
+		for y in range(height):
+			for x in range(width):
+				for i range(len(self.roi_list)):
+					if self.roi_list[i].contains((x*self.zoom_factor,y*self.zoom_factor)):
+						mask[y,x]=1
+
+		return mask
+
 
 	def get_roi_pixels(self,rois=[]):
 		"""
@@ -603,7 +620,7 @@ class MIPPYCanvas(Canvas):
 
 	def get_active_image(self):
 		return self.images[self.active-1]
-	
+
 	def get_3d_array(self):
 		"""
 		Only works if all images are same dimensions
