@@ -421,10 +421,10 @@ def save(win,dicomdir,images):
                         images_T1seg[0x2005,0x100E].value = 1
                 except:
                         pass
-                images_T1seg.SeriesDescription = images[0].SeriesDescription+"_T1map_seg"
+                images_T1seg.SeriesDescription = images[0].SeriesDescription+"_seg"
                 images_T1seg.SeriesInstanceUID = images[0].SeriesInstanceUID+".1"
                 
-                file_out=os.path.join(dicomdir,"_Series_"+str(images_T1seg.SeriesNumber).zfill(3)+"_maps","T1_map_seg_"+str(s+1).zfill(3)+".dcm")
+                file_out=os.path.join(dicomdir,"_Series_"+str(images_T1seg.SeriesNumber).zfill(3)+"_maps","T1map_seg_"+str(s+1).zfill(3)+".dcm")
                 print file_out
                 try:
                         os.makedirs(os.path.split(file_out)[0])
@@ -459,8 +459,8 @@ def save_bin(win,dicomdir,images):
         images_ROIbin=images[len(images)-slcs+s-1]
         images_ROIbin.AcquisitionNumber=dyns+10
         images_ROIbin.InstanceNumber=dyns*slcs+s+10
-        images_ROIbin=np.clip(win.pix_bin[:][:],0,1).astype(np.uint8)
-        images_ROIbin.PixelData = np.reshape(pix_bin,(cols*rows))
+        win.pix_bin=np.clip(win.pix_bin[:][:],0,1).astype(np.uint16)
+        images_ROIbin.PixelData = np.reshape(win.pix_bin,(cols*rows))
         try:
                 images_ROIbin.AcquisitionTime = str(float(images_ROIbin.AcquisitionTime) + 0.2)
         except AttributeError:
@@ -475,8 +475,8 @@ def save_bin(win,dicomdir,images):
         images_ROIbin.SOPInstanceUID = ''.join([images_ROIbin.SOPInstanceUID,".1.1"])
         images_ROIbin.RescaleSlope = 1
         images_ROIbin.RescaleIntercept = 0
-        images_ROIbin.WindowCentre = 1
-        images_ROIbin.WindowWidth = 1
+        images_ROIbin.WindowCentre = 0.5
+        images_ROIbin.WindowWidth = 0.5
 
         try:
                 images_ROIbin[0x2005,0x100E].value = 1
@@ -485,7 +485,7 @@ def save_bin(win,dicomdir,images):
         images_ROIbin.SeriesDescription = images[0].SeriesDescription+"_ROIbin"
         images_ROIbin.SeriesInstanceUID = images[0].SeriesInstanceUID+".1.1"
         
-        file_out=os.path.join(dicomdir,"_Series_"+str(images_ROIbin.SeriesNumber).zfill(3)+"_maps","_ROIbin_"+str(s+1).zfill(3)+".dcm")
+        file_out=os.path.join(dicomdir,"_Series_"+str(images_ROIbin.SeriesNumber).zfill(3)+"_maps","ROIbin_"+str(s).zfill(3)+".dcm")
         print file_out
         try:
                 os.makedirs(os.path.split(file_out)[0])

@@ -417,7 +417,7 @@ class MIPPYCanvas(Canvas):
 
 		for y in range(height):
 			for x in range(width):
-				for i range(len(self.roi_list)):
+				for i in range(len(self.roi_list)):
 					if self.roi_list[i].contains((x*self.zoom_factor,y*self.zoom_factor)):
 						mask[y,x]=1
 
