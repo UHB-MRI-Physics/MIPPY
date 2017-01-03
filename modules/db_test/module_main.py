@@ -37,6 +37,14 @@ def execute(master_window,dicomdir,images):
 	datasets.  If you set "return False", these will just be paths to the image files.
 	"""
 	
+	try:
+		reload(rrpps)
+	except:
+		import source.functions.rrpps_functions as rrpps
+	
+	db = rrpps.QADB()
+	db.get_sites()
+	
 	return
 	
 def close_window(window):

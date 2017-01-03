@@ -22,6 +22,9 @@ def preload_dicom():
 	# Note the capital letters on True and False.  These are important.
 	return True
 
+def flatten_series():
+	return False
+
 
 def execute(master_window,dicomdir,images):
 	"""
@@ -33,7 +36,15 @@ def execute(master_window,dicomdir,images):
 	datasets.  If you set "return False", these will just be paths to the image files.
 	"""
 	# Check you have images from two different series
-	if images[0].SeriesInstanceUID==images[-1].SeriesInstanceUID:
+#	if images[0].SeriesInstanceUID==images[-1].SeriesInstanceUID:
+#		tkMessageBox.showwarning("ERROR","Images from two separate series are required.\n\n"
+#								+"Please check your selection and reload the module.")
+#		return
+	
+	print len(images)
+	print len(images[0])
+	
+	if not len(images)==2:
 		tkMessageBox.showwarning("ERROR","Images from two separate series are required.\n\n"
 								+"Please check your selection and reload the module.")
 		return
@@ -99,23 +110,23 @@ def execute(master_window,dicomdir,images):
 	win.toolbar.rowconfigure(6,weight=0)
 	win.toolbar.columnconfigure(0,weight=0)
 
-	win.images_split = [[]]
-	for image in images:
-		matched=False
-		series = image.SeriesInstanceUID
-		for imlist in win.images_split:
-			if len(imlist)==0:
-				imlist.append(image)
-				matched=True
-				break
-			if imlist[0].SeriesInstanceUID==series:
-				imlist.append(image)
-				matched=True
-				break
-		if not matched:
-			win.images_split.append([image])
-	win.im1.load_images(win.images_split[0])
-	win.im2.load_images(win.images_split[1])
+#	win.images_split = [[]]
+#	for image in images:
+#		matched=False
+#		series = image.SeriesInstanceUID
+#		for imlist in win.images_split:
+#			if len(imlist)==0:
+#				imlist.append(image)
+#				matched=True
+#				break
+#			if imlist[0].SeriesInstanceUID==series:
+#				imlist.append(image)
+#				matched=True
+#				break
+#		if not matched:
+#			win.images_split.append([image])
+	win.im1.load_images(images[0])
+	win.im2.load_images(images[1])
 
 
 	return

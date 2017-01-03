@@ -501,7 +501,6 @@ class ToolboxHome(Frame):
 								else:
 									self.datasets_to_pass[-1].append(pickle.load(tempfile))
 								tempfile.close()
-							continue
 						else:
 							if not tag['path']==self.open_file:
 								self.open_ds = dicom.read_file(tag['path'])

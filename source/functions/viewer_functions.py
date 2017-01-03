@@ -990,3 +990,11 @@ class MIPPYImage():
 	def set_display_image(self):
 		self.photoimage = ImageTk.PhotoImage(self.image)
 		return
+
+class Slicer3D():
+	"""
+	Class for viewing and slicing 3D image datasets.
+	Uses MIPPY image objects
+	"""
+	def __init__():
+		return
