@@ -404,7 +404,7 @@ class MIPPYCanvas(Canvas):
 			return
 		if num and not num<1 and not num>len(self.images):
 			self.active = num
-			self.active_str.set(str(num))
+			self.active_str.set(str(num)+"/"+str(len(self.images)))
 			self.update_scrollbar((num-1.)/len(self.images))
 		self.delete('image')
 		self.create_image((0,0),image=self.images[self.active-1].photoimage,anchor='nw')

@@ -96,10 +96,6 @@ def execute(master_window,dicomdir,images):
 	win.imcanvas_orig.roi_mode='ellipse'
 	win.imcanvas_maps.roi_mode='ellipse'
 
-##        win.imnum_v = StringVar(win)
-        win.imnum = Label(win.imcanvases,textvariable=win.imcanvas_orig.active_str)
-##        win.imcanvas_orig.active_str.trace('w',update_imnumber(win))
-
 	# Create scroll bars
 	csl_orig=StringVar()
         csl_orig.set(win.imcanvas_orig.active)
@@ -114,23 +110,22 @@ def execute(master_window,dicomdir,images):
         #~ win.imcanvas_orig.img_scrollbar = Scrollbar(win.imcanvases,orient='horizontal')
         #~ win.imcanvas_maps.img.scrollbar = Scrollbar(win.imcanvases,orient='horizontal')
         # Create info space for current dynamic/slice
-        win.csl_orig = Label(win.imcanvases,textvariable=csl_orig,width=3)
-        win.csl_maps = Label(win.imcanvases,textvariable=csl_maps,width=3)
+        win.csl_orig = Label(win.imcanvases,textvariable=win.imcanvas_orig.active_str,width=7)
+        win.csl_maps = Label(win.imcanvases,textvariable=win.imcanvas_maps.active_str,width=7)
         win.cdyn_orig = Label(win.imcanvases,textvariable=cdyn_orig,width=3)
         win.cdyn_maps = Label(win.imcanvases,textvariable=cdyn_maps,width=3)
 
         # Window layout
         win.imcanvas_orig.grid(row=0,column=0,rowspan=2,columnspan=2,sticky='nwes')
-        win.imcanvas_orig.img_scrollbar.grid(row=0,column=2,sticky='ns')
+        win.imcanvas_orig.img_scrollbar.grid(row=0,column=2,sticky='nsw')
         win.csl_orig.grid(row=1,column=2)
         win.imcanvas_maps.grid(row=0,column=3,rowspan=2,columnspan=2,sticky='nwes')
-        win.imcanvas_maps.img_scrollbar.grid(row=0,column=5,sticky='ns')
+        win.imcanvas_maps.img_scrollbar.grid(row=0,column=5,sticky='nsw')
         win.csl_maps.grid(row=1,column=5)
         #~ win.scroll_dyn_orig.grid(row=2,column=0,sticky='we')
         #~ win.cdyn_orig.grid(row=2,column=1)
         #~ win.scroll_dyn_maps.grid(row=2,column=3,sticky='we')
         #~ win.cdyn_maps.grid(row=2,column=4)
-        win.imnum.grid(row=2,column=0,columnspan=2)
         
         win.imcanvases.grid(row=0,column=0,sticky='nwes')
 
