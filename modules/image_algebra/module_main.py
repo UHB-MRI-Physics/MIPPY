@@ -173,7 +173,7 @@ def execute(master_window,dicomdir,images):
 def update_imnumber(win):
         """ This function just reads the active image number and updates
         it on the screen. """
-        win.imnum_v = win.imcanvas_orig.active
+##        win.imnum_v = win.imcanvas_orig.active
         win.update()
         return
 	

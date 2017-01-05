@@ -382,7 +382,6 @@ class MIPPYCanvas(Canvas):
 			selected_img = int(np.round((float(value)*float((len(self.images)))),0))+1
 			if not selected_img==self.active:
 				self.show_image(selected_img)
-				self.active_str.set(str(self.active))
 
 	def update_scrollbar(self,value):
 		current_img = float(self.active)
@@ -405,6 +404,7 @@ class MIPPYCanvas(Canvas):
 			return
 		if num and not num<1 and not num>len(self.images):
 			self.active = num
+			self.active_str.set(str(num))
 			self.update_scrollbar((num-1.)/len(self.images))
 		self.delete('image')
 		self.create_image((0,0),image=self.images[self.active-1].photoimage,anchor='nw')
