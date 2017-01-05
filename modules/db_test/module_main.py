@@ -36,17 +36,17 @@ def execute(master_window,dicomdir,images):
 	set the "preload_dicom" message above to "return True", these will be dicom
 	datasets.  If you set "return False", these will just be paths to the image files.
 	"""
-	
+
 	try:
 		reload(rrpps)
 	except:
 		import source.functions.rrpps_functions as rrpps
-	
-	db = rrpps.QADB()
-	db.get_sites()
-	
+
+	db = rrpps.QADatabase()
+	db.popup_save(master_window)
+
 	return
-	
+
 def close_window(window):
 	"""Closes the window passed as an argument"""
 	active_frame.destroy()
