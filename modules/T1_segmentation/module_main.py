@@ -360,9 +360,9 @@ def extract_pix(T1range,win):
         segment(win)
 ##        win.imcanvas_seg.show_image(current_slice)
         ROI_stats(win)
-        eval_fun = np.std(win.pix_seg)**1/(float(np.size(win.pix_seg+1)/float(win.pix_seg0+1))**1)
+        eval_fun = np.std(win.pix_seg)**1/(100*float(np.size(win.pix_seg+1)/float(win.pix_seg0+1))**1)
         #status(win,eval_fun)
-        if np.size(win.pix_seg)<0.1*win.pix_seg0:
+        if np.size(win.pix_seg)<0.5*win.pix_seg0:
             eval_fun = 10000
         return eval_fun
 

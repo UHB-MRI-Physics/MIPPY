@@ -348,6 +348,8 @@ class MIPPYCanvas(Canvas):
 		self.tempcoords = []
 		self.images = []
 		self.active = 1
+		self.active_str = StringVar(self)
+		self.active_str.set(str(self.active))
 		self.drawing_enabled = drawing_enabled
 		self.width=width
 		self.height=height
@@ -380,6 +382,7 @@ class MIPPYCanvas(Canvas):
 			selected_img = int(np.round((float(value)*float((len(self.images)))),0))+1
 			if not selected_img==self.active:
 				self.show_image(selected_img)
+				self.active_str.set(str(self.active))
 
 	def update_scrollbar(self,value):
 		current_img = float(self.active)
