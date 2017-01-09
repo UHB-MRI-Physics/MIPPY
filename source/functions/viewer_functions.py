@@ -7,6 +7,7 @@ import platform
 import scipy.stats as sps
 from datetime import datetime
 import scipy.ndimage.interpolation as spim
+import gc
 
 ########################################
 ########################################
@@ -586,7 +587,6 @@ class MIPPYCanvas(Canvas):
 #		open_ds = None
 #		current_path = None
 		for ref in image_list:
-
 			self.progress(45.*n/len(image_list)+10)
 			self.images.append(MIPPYImage(ref))
 			n+=1
@@ -992,6 +992,7 @@ class MIPPYImage():
 
 	def set_display_image(self):
 		self.photoimage = ImageTk.PhotoImage(self.image)
+		gc.collect()
 		return
 
 class Slicer3D():

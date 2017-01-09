@@ -507,17 +507,11 @@ class ToolboxHome(Frame):
 								self.open_file = tag['path']
 								gc.collect()
 							if not tag['enhanced']:
-	#							print tag['path']
-	#							print type(tag['path'])
 								if new_series:
 									self.datasets_to_pass.append([self.open_ds])
 								else:
 									self.datasets_to_pass[-1].append(self.open_ds)
 							else:
-	#							ds = dicom.read_file(tag['path'])
-	#							print tag['path']
-	#							print type(tag['path'])
-								# Check if image already exists in temp files
 								split_ds = get_frame_ds(self.open_ds,tag['instance'])
 								if new_series:
 									self.datasets_to_pass.append([split_ds])
@@ -525,11 +519,7 @@ class ToolboxHome(Frame):
 									self.datasets_to_pass[-1].append(split_ds)
 								save_temp_ds(split_ds,self.tempdir,tag['instanceuid']+'.mds')
 						previous_tag = tag
-			#~ elif preload_dicom=='minimal':
-				#~ self.datasets_to_pass = []
-				#~ for tag in self.sorted_list:
-					#~ if tag['instanceuid'] in self.active_uids:
-						#~ self.datasets_to_pass.append(tag)
+					gc.collect()
 			else:
 				self.datasets_to_pass = []
 				previous_tag = None
@@ -548,6 +538,7 @@ class ToolboxHome(Frame):
 							else:
 								self.datasets_to_pass[-1].append(tag['path'])
 
+				gc.collect()
 			gc.collect()
 			if flatten_list:
 				self.datasets_to_pass = list(itertools.chain.from_iterable(self.datasets_to_pass))
