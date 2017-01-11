@@ -475,7 +475,7 @@ class ToolboxHome(Frame):
 						"images in a single 1D list.\n"+
 						"======================================\n\n")
 				print message
-				flatten_list = False
+				flatten_list = True
 			#~ if preload_dicom=='full':
 			if preload_dicom:
 				self.datasets_to_pass = []
