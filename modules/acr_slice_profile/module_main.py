@@ -52,7 +52,7 @@ def execute(master_window,dicomdir,images):
 	win.im1.configure_scrollbar()
 	win.toolbar = Frame(win)
 	win.roibutton = Button(win.toolbar,text='Create/Reset ROIs',command=lambda:reset_roi(win))
-	win.measurebutton = Button(win.toolbar,text='Measure Slice Offset',command=lambda:measure_sliceprofile(win))
+	win.measurebutton = Button(win.toolbar,text='Measure Slice Profile',command=lambda:measure_sliceprofile(win))
 	win.outputbox = Text(win,state='disabled',height=10,width=80)
 
 	win.phantom_options = [

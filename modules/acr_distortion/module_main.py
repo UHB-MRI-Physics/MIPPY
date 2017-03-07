@@ -289,6 +289,21 @@ def measure_grid_distortion(win):
 	print 'Linearity (Y): {v:=.2f} mm'.format(v=lin_y*yspc)
 	print 'CoV Distortion (X): {v:=.2f} %'.format(v=cov_x*100)
 	print 'CoV Distortion (Y): {v:=.2f} %'.format(v=cov_y*100)
+	
+	clear_output(win)
+	output(win,'Linearity (X): {v:=.2f} mm'.format(v=lin_x*xspc))
+	output(win,'Linearity (Y): {v:=.2f} mm'.format(v=lin_y*yspc))
+	output(win,'CoV Distortion (X): {v:=.2f} %'.format(v=cov_x*100))
+	output(win,'CoV Distortion (Y): {v:=.2f} %'.format(v=cov_y*100))
+	
+	output(win,'\nX distances:')
+	for value in xdistances:
+		output(win,'{v:=.2f}'.format(v=value))
+		
+	output(win,'\nY distances:')
+	for value in ydistances:
+		output(win,'{v:=.2f}'.format(v=value))
+	win.outputbox.see('1.0')
 
 
 
@@ -431,3 +446,13 @@ def measure_profile_distortion(win):
 	print "Linearity", np.round(linearity*100,2), "%"
 	print "Linearity (absolute)", np.round(linearity * 190.+190,2), "mm"
 	print "Distortion", np.round(distortion*100,2), "%"
+	
+	clear_output(win)
+	output(win,'Linearity: {v:=.2f} %'.format(v=linearity*100))
+	output(win,'Linearity (absolute): {v:=.2f} %'.format(v=np.mean(lengths[1:])*np.mean([xscale,yscale])))
+	output(win,'Distortion (CoV): {v:=.2f} %'.format(v=distortion))
+	
+	output(win,'\nProfile Lengths')
+	for value in lengths[1:]:
+		output(win,'{v:=.2f}'.format(v=value*np.mean([xscale,yscale])))
+	win.outputbox.see('1.0')
