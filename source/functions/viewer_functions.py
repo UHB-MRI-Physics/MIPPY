@@ -546,7 +546,7 @@ class MIPPYCanvas(Canvas):
 
 		return profile, np.array(range(length_int))
 
-	def new_roi(self,coords,tags=[],system='canvas'):
+	def new_roi(self,coords,tags=[],system='canvas',color='yellow'):
 		if system=='image':
 			coords=self.canvas_coords(coords)
 		elif not system=='canvas':
@@ -557,12 +557,12 @@ class MIPPYCanvas(Canvas):
 			if j==len(coords):
 				j=0
 			tags.append('roi')
-			self.create_line((coords[i][0],coords[i][1],coords[j][0],coords[j][1]),fill='yellow',width=1,tags=tags)
+			self.create_line((coords[i][0],coords[i][1],coords[j][0],coords[j][1]),fill=color,width=1,tags=tags)
 		self.add_roi(coords)
 #		print "ROI should be on image now..."
 		return
 
-	def roi_rectangle(self,x_start,y_start,width,height,tags=[],system='canvas'):
+	def roi_rectangle(self,x_start,y_start,width,height,tags=[],system='canvas',color='yellow'):
 		x1 = x_start
 		x2 = x_start+width
 		y1 = y_start
@@ -576,7 +576,18 @@ class MIPPYCanvas(Canvas):
 			print "Invalid coordinate system specified"
 			return
 		print x1,y1,x2,y2
-		self.new_roi([(x1,y1),(x2,y1),(x2,y2),(x1,y2)],tags=tags)
+		self.new_roi([(x1,y1),(x2,y1),(x2,y2),(x1,y2)],tags=tags,color=color)
+		return
+	
+	def roi_circle(self,center,radius,tags=[],system='canvas',resolution=12,color='yellow'):
+		coords = get_ellipse_coords(center,radius,radius,resolution)
+		if system=='image':
+			for i in range(len(coords)):
+				coords[i] = tuple(x*self.zoom_factor for x in coords[i])
+		elif not system=='canvas':
+			print "Invalid coordinate system specified"
+			return
+		self.new_roi(coords,tags=tags,color=color)
 		return
 
 

@@ -12,7 +12,9 @@ import source.functions.misc_functions as mpy
 import os
 from PIL import Image,ImageTk
 import gc
-from scipy.signal import convolve
+from scipy.signal import convolve,convolve2d
+from scipy.ndimage.measurements import center_of_mass
+from scipy.optimize import curve_fit
 
 def preload_dicom():
 	"""
@@ -34,6 +36,9 @@ def flatten_series():
 	If you want only a single, flat list from all your series, return True.
 	"""
 	return True
+
+def polynomial(x,A=0,B=0,C=0,Coff=0,D=0,Doff=0,E=0,Eoff=0,F=0,Foff=0):
+	return A + B*(x) + C*((x+Coff)**2) + D*((x+Doff)**3) + E*((x+Eoff)**4) + F*((x+Foff)**5)
 
 
 def execute(master_window,dicomdir,images):
@@ -63,8 +68,11 @@ def execute(master_window,dicomdir,images):
 	win.im1.img_scrollbar = Scrollbar(win,orient='horizontal')
 	win.im1.configure_scrollbar()
 	win.toolbar = Frame(win)
-	win.roibutton = Button(win.toolbar,text='Create/Reset ROIs',command=lambda:reset_roi(win))
-	win.measurebutton = Button(win.toolbar,text='Measure Uniformity',command=lambda:measure_distortion(win))
+	win.roibutton = Button(win.toolbar,text='Initialise Grid',command=lambda:reset_grid(win))
+	win.measurebutton = Button(win.toolbar,text='Measure Grid Distortion',command=lambda:measure_grid_distortion(win))
+	win.profilebutton = Button(win.toolbar,text='Initialise Profiles',command=lambda:reset_profiles(win))
+	win.measureprofbutton = Button(win.toolbar,text='Measure Profile Distortion',command=lambda:measure_profile_distortion(win))
+	
 	win.outputbox = Text(win,state='disabled',height=10,width=80)
 
 	win.phantom_options = [
@@ -95,6 +103,8 @@ def execute(master_window,dicomdir,images):
 
 	win.roibutton.grid(row=4,column=0,sticky='ew')
 	win.measurebutton.grid(row=5,column=0,sticky='ew')
+	win.profilebutton.grid(row=6,column=0,sticky='ew')
+	win.measureprofbutton.grid(row=7,column=0,sticky='ew')
 
 	win.im1.grid(row=0,column=0,sticky='nw')
 	win.im1.img_scrollbar.grid(row=1,column=0,sticky='ew')
@@ -110,6 +120,7 @@ def execute(master_window,dicomdir,images):
 	win.toolbar.columnconfigure(0,weight=1)
 
 	win.im1.load_images(images)
+	win.im1.show_image(5)
 
 	return
 
@@ -132,7 +143,7 @@ def clear_output(win):
 	win.outputbox.config(state=DISABLED)
 	win.update()
 
-def reset_roi(win):
+def reset_grid(win):
 	win.im1.delete_rois()
 	phantom=win.phantom_v.get()
 	center = imp.find_phantom_center(win.im1.get_active_image(),phantom,
@@ -142,6 +153,23 @@ def reset_roi(win):
 	win.xc = xc
 	win.yc = yc
 	print "Center",center
+	
+	exp_gridsize = 15
+	
+	win.expected_positions = []
+	grid_size_x = exp_gridsize/win.im1.get_active_image().xscale
+	grid_size_y = exp_gridsize/win.im1.get_active_image().yscale
+	
+	for j in range(9):
+		for i in range(9):
+			if not ((i==0 and j==0) or (i==0 and j==8) or (i==8 and j==0) or (i==8 and j==8)):
+				x_exp = (i-4)*grid_size_x+xc
+				y_exp = (j-4)*grid_size_y+yc
+				win.expected_positions.append((x_exp,y_exp))
+	print "Finished calculating positions"
+	
+	for roi_pos in win.expected_positions:
+		win.im1.roi_circle(roi_pos,2,resolution=3,system='image')
 
 #	if (win.phantom_v.get()=='ACR (TRA)'
 #		or win.phantom_v.get()=='ACR (SAG)'
@@ -158,6 +186,145 @@ def reset_roi(win):
 #		roi_r_px_y = roi_r * win.im1.get_active_image().yscale
 
 	# Calculate phantom radius in pixels
+	
+
+def measure_grid_distortion(win):
+	actual_positions = list(win.expected_positions) # Use list() to create a new list rather than reference the existing one
+	
+	search = 5
+	threshold = 0.05
+	diff = threshold
+	max_iter = 50
+	n = 0
+	
+	kernel = np.array(((1,1,1),(1,1,1),(1,1,1))).astype(np.float64)/9
+	px = convolve2d(np.array(win.im1.get_active_image().px_float),kernel,mode='same',boundary='fill',fillvalue=0)
+	
+	while diff>=threshold and n<max_iter:
+		n = n+1
+		current_positions = list(actual_positions)
+		actual_positions = []
+		
+		for p in current_positions:
+			CoM = center_of_mass(1/(px[p[1]-search:p[1]+search+1,p[0]-search:p[0]+search+1]+1))
+			actual_positions.append((p[0]+CoM[1]-search,p[1]+CoM[0]-search))
+		pos_old = np.array(current_positions)
+		pos_new = np.array(actual_positions)
+		diff = np.sum(abs(pos_new-pos_old))/len(actual_positions)
+	print 'Iterations = '+str(n)
+	
+	for p in actual_positions:
+		win.im1.roi_circle(p,2,resolution=3,system='image',color='magenta')
+	
+	# Convert initial and final positions to arrays
+	actual_positions = np.array(actual_positions)
+	initial_positions = np.array(win.expected_positions)
+	
+	# Find x and y differences in grid positions
+	xdiff = actual_positions[:,0]-initial_positions[:,0]
+	ydiff = actual_positions[:,1]-initial_positions[:,1]
+	
+	xco0=0
+	xco1=0
+	xco2=0
+	xoff2=0
+	yco0=0
+	yco1=0
+	yco2=0
+	yoff2=0
+	
+	xspc = win.im1.get_active_image().xscale
+	yspc = win.im1.get_active_image().yscale
+	
+	xdist_opt,xdist_cov = curve_fit(polynomial,initial_positions[:,0]-win.xc,xdiff,p0=[xco0,xco1,xco2,xoff2])
+	ydist_opt,ydist_cov = curve_fit(polynomial,initial_positions[:,1]-win.yc,ydiff,p0=[yco0,yco1,yco2,yoff2])
+	
+	# Convert image coordinates to mm distances
+	xdist_opt = xdist_opt*xspc
+	ydist_opt = xdist_opt*yspc
+	
+	# First and second order (linear and non-linear) distortion in X and Y
+	xdist_1st = xdist_opt[1]
+	xdist_2nd = xdist_opt[2]
+	ydist_1st = ydist_opt[1]
+	ydist_2nd = ydist_opt[2]
+	
+	print 'X distortion (linear): {v:=.3f} mm/mm'.format(v=xdist_1st)
+	print 'X distortion (non-linear): {v:=.3f} mm/mm2'.format(v=xdist_2nd)
+	print 'Y distortion (linear): {v:=.3f} mm/mm'.format(v=ydist_1st)
+	print 'Y distortion (non-linear): {v:=.3f} mm/mm2'.format(v=ydist_2nd)
+	
+	# Get linear distances from grid
+	xdistances = []
+	ydistances = []
+	
+	for i in range(7):
+		x_x1 = actual_positions[i*9+7,0]
+		x_x2 = actual_positions[i*9+15,0]
+		x_y1 = actual_positions[i*9+7,1]
+		x_y2 = actual_positions[i*9+15,1]
+		x_r = np.sqrt((x_x2-x_x1)**2+(x_y2-x_y1)**2)
+		
+		y_x1 = actual_positions[i,0]
+		y_x2 = actual_positions[i-7,0]
+		y_y1 = actual_positions[i,1]
+		y_y2 = actual_positions[i-7,1]
+		y_r = np.sqrt((y_x2-y_x1)**2+(y_y2-y_y1)**2)
+		
+		#~ self.tabs.dist.im1.create_line(x_x1,x_y1,x_x2,x_y2,fill='green',tags='line')
+		#~ self.tabs.dist.im1.create_line(y_x1,y_y1,y_x2,y_y2,fill='red',tags='line')
+		
+		xdistances.append(x_r)
+		ydistances.append(y_r)
+	
+	xdistances = np.array(xdistances)
+	ydistances = np.array(ydistances)
+	
+	lin_x = np.mean(xdistances)
+	lin_y = np.mean(ydistances)
+	cov_x = np.std(xdistances)/lin_x
+	cov_y = np.std(ydistances)/lin_y
+	
+	print 'Linearity (X): {v:=.2f} mm'.format(v=lin_x*xspc)
+	print 'Linearity (Y): {v:=.2f} mm'.format(v=lin_y*yspc)
+	print 'CoV Distortion (X): {v:=.2f} %'.format(v=cov_x*100)
+	print 'CoV Distortion (Y): {v:=.2f} %'.format(v=cov_y*100)
+
+
+
+
+
+	#~ clear_output(win)
+#~ #	output(win,'Measured across central 75% of phantom\n')
+#~ #
+#~ #	output(win,"Integral uniformity (ACR) = "+str(np.round(int_uniformity*100,1))+" %\n")
+	#~ output(win,"Linearity: "+str(np.round(linearity*100,2))+" %")
+	#~ output(win,"Linearity (Absolute): "+str(np.round(linearity * 190.+190,2))+" mm")
+	#~ output(win,"Distortion: "+str(np.round(distortion*100,2))+" %")
+#~ #
+#~ #	output(win,"Fractional uniformity (Horizontal) = "+str(np.round(h_uni*100,1))+" %")
+#~ #	output(win,"Fractional uniformity (Vertical) = "+str(np.round(v_uni*100,1))+" %")
+#~ #
+#~ #	output(win,'\nThe following can be copied and pasted directly into MS Excel or similar')
+#~ #	output(win,'\nX (mm)\tHorizontal\tY (mm)\tVertical')
+#~ #	for row in range(len(profile_h)):
+#~ #		output(win,str(x[row]*xscale)+'\t'+str(profile_h[row])+'\t'+str(y[row]*yscale)+'\t'+str(profile_v[row]))
+#~ ##	win.im1.grid(row=0,column=0,sticky='nw')
+#~ #	win.outputbox.see('1.0')
+#~ #	win.update()
+
+
+def reset_profiles(win):
+	win.im1.delete_rois()
+	phantom=win.phantom_v.get()
+	center = imp.find_phantom_center(win.im1.get_active_image(),phantom,
+							subpixel=False,mode=win.mode.get())
+	xc = center[0]
+	yc = center[1]
+	win.xc = xc
+	win.yc = yc
+	print "Center",center
+	
 	image = win.im1.get_active_image()
 	if phantom=='ACR (TRA)':
 		radius_x = 95./image.xscale
@@ -200,13 +367,15 @@ def reset_roi(win):
 #	win.im1.roi_rectangle(xc-5,yc-ydim,10,ydim*2,tags=['v'],system='image')
 	for a in range(len(roi_ellipse_coords)/2):
 		win.im1.new_roi([roi_ellipse_coords[a],roi_ellipse_coords[a+len(roi_ellipse_coords)/2]],system='image')
-
-def measure_distortion(win):
+	
+	
+def measure_profile_distortion(win):
 	profiles = []
 	px = []
 	res = 0.1
 	smoothing = 0.3
 	for i in range(len(win.im1.roi_list)):
+		# Temporary fix for now, skip circular ROIs
 		this_prof, this_px = win.im1.get_profile(index=i,resolution=res,interpolate=True)
 		profiles.append(convolve(np.array(this_prof),np.ones(smoothing/res),mode='same'))
 		px.append(this_px)
@@ -249,34 +418,16 @@ def measure_distortion(win):
 	lengths = np.zeros(len(lows))
 	for a in range(len(lows)):
 		lengths[a] = (highs[a]-lows[a])*res
-
+	
+	
+	# THIS NEEDS FIXING. Calculate coordinates of each end and scale properly, in case of non-square pixels
 	xscale = win.im1.get_active_image().xscale
 	yscale = win.im1.get_active_image().yscale
+	print 'PROFILE LENGTHS:'
+	print lengths[1:]*np.mean([xscale,yscale])
+	print ''
 	linearity = (np.mean(lengths[1:])*np.mean([xscale,yscale]) - 190.)/190.
 	distortion = np.std(lengths[1:])/np.mean(lengths[1:])
 	print "Linearity", np.round(linearity*100,2), "%"
 	print "Linearity (absolute)", np.round(linearity * 190.+190,2), "mm"
 	print "Distortion", np.round(distortion*100,2), "%"
-
-
-
-
-
-	clear_output(win)
-#	output(win,'Measured across central 75% of phantom\n')
-#
-#	output(win,"Integral uniformity (ACR) = "+str(np.round(int_uniformity*100,1))+" %\n")
-	output(win,"Linearity: "+str(np.round(linearity*100,2))+" %")
-	output(win,"Linearity (Absolute): "+str(np.round(linearity * 190.+190,2))+" mm")
-	output(win,"Distortion: "+str(np.round(distortion*100,2))+" %")
-#
-#	output(win,"Fractional uniformity (Horizontal) = "+str(np.round(h_uni*100,1))+" %")
-#	output(win,"Fractional uniformity (Vertical) = "+str(np.round(v_uni*100,1))+" %")
-#
-#	output(win,'\nThe following can be copied and pasted directly into MS Excel or similar')
-#	output(win,'\nX (mm)\tHorizontal\tY (mm)\tVertical')
-#	for row in range(len(profile_h)):
-#		output(win,str(x[row]*xscale)+'\t'+str(profile_h[row])+'\t'+str(y[row]*yscale)+'\t'+str(profile_v[row]))
-##	win.im1.grid(row=0,column=0,sticky='nw')
-#	win.outputbox.see('1.0')
-#	win.update()

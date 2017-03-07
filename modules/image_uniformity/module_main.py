@@ -224,11 +224,12 @@ def measure_uni(win):
 
 	# INTEGRAL UNIFORMITY
 	convolve_radius = np.floor(np.sqrt(100/np.pi))	# Gives 100px circular area
-	mask = np.zeros((int(convolve_radius),int(convolve_radius)))
+	mask = np.zeros((int(convolve_radius),int(convolve_radius))).astype(np.float64)
 	for j in range(np.shape(mask)[0]):
 		for i in range(np.shape(mask)[1]):
 			if i**2+j**2 < convolve_radius**2:
-				mask[j][i] = 1
+				mask[j][i] = 1.
+	mask = mask/np.sum(mask)
 
 	px = np.copy(win.im1.get_active_image().px_float)
 	px_smooth = convolve2d(px,mask,mode='same',boundary='fill',fillvalue=0)
