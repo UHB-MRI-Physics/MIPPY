@@ -224,11 +224,11 @@ def measure_uni(win):
 	yscale = win.im1.get_active_image().yscale
 
 	# INTEGRAL UNIFORMITY
-	convolve_radius = np.floor(np.sqrt(100/np.pi))	# Gives 100px circular area
-	mask = np.zeros((int(convolve_radius),int(convolve_radius))).astype(np.float64)
+	convolve_radius = np.round(np.sqrt(100/np.pi),0)	# Gives 100px circular area
+	mask = np.zeros((int(convolve_radius*2+1),int(convolve_radius*2+1))).astype(np.float64)
 	for j in range(np.shape(mask)[0]):
 		for i in range(np.shape(mask)[1]):
-			if i**2+j**2 < convolve_radius**2:
+			if (i-convolve_radius-1)**2+(j-convolve_radius-1)**2 < convolve_radius**2:
 				mask[j][i] = 1.
 	area = np.sum(mask)
 	mask = mask/area
@@ -257,6 +257,7 @@ def measure_uni(win):
 	output(win,"Integral uniformity (ACR) = "+str(np.round(int_uniformity*100,1))+" %\n")
 	
 	output(win,'MS Excel Table:')
+	output(win,'Region\tArea\tMean')
 	output(win,'Low\t'+area_str+'\t{v:=.2f}'.format(v=stats['min'][0]))
 	output(win,'High\t'+area_str+'\t{v:=.2f}'.format(v=stats['max'][0]))
 
