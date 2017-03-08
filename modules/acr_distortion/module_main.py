@@ -277,32 +277,30 @@ def measure_grid_distortion(win):
 		xdistances.append(x_r)
 		ydistances.append(y_r)
 	
-	xdistances = np.array(xdistances)
-	ydistances = np.array(ydistances)
+	xdistances = np.array(xdistances)*xspc
+	ydistances = np.array(ydistances)*yspc
 	
 	lin_x = np.mean(xdistances)
 	lin_y = np.mean(ydistances)
 	cov_x = np.std(xdistances)/lin_x
 	cov_y = np.std(ydistances)/lin_y
 	
-	print 'Linearity (X): {v:=.2f} mm'.format(v=lin_x*xspc)
-	print 'Linearity (Y): {v:=.2f} mm'.format(v=lin_y*yspc)
+	print 'Linearity (X): {v:=.2f} mm'.format(v=lin_x)
+	print 'Linearity (Y): {v:=.2f} mm'.format(v=lin_y)
 	print 'CoV Distortion (X): {v:=.2f} %'.format(v=cov_x*100)
 	print 'CoV Distortion (Y): {v:=.2f} %'.format(v=cov_y*100)
 	
 	clear_output(win)
-	output(win,'Linearity (X): {v:=.2f} mm'.format(v=lin_x*xspc))
-	output(win,'Linearity (Y): {v:=.2f} mm'.format(v=lin_y*yspc))
+	output(win,'Linearity (X): {v:=.2f} mm'.format(v=lin_x))
+	output(win,'Linearity (Y): {v:=.2f} mm'.format(v=lin_y))
 	output(win,'CoV Distortion (X): {v:=.2f} %'.format(v=cov_x*100))
 	output(win,'CoV Distortion (Y): {v:=.2f} %'.format(v=cov_y*100))
-	
-	output(win,'\nX distances:')
-	for value in xdistances:
-		output(win,'{v:=.2f}'.format(v=value))
-		
-	output(win,'\nY distances:')
-	for value in ydistances:
-		output(win,'{v:=.2f}'.format(v=value))
+
+	output(win,'\nMS Excel Results Table:')
+	output(win,'X distances (mm)\tY distances (mm)')
+	for i in range(len(xdistances)):
+		output(win,'{x:=.2f}\t{y:=.2f}'.format(x=xdistances[i],y=ydistances[i]))
+
 	win.outputbox.see('1.0')
 
 
@@ -449,8 +447,8 @@ def measure_profile_distortion(win):
 	
 	clear_output(win)
 	output(win,'Linearity: {v:=.2f} %'.format(v=linearity*100))
-	output(win,'Linearity (absolute): {v:=.2f} %'.format(v=np.mean(lengths[1:])*np.mean([xscale,yscale])))
-	output(win,'Distortion (CoV): {v:=.2f} %'.format(v=distortion))
+	output(win,'Linearity (absolute): {v:=.2f} mm'.format(v=np.mean(lengths[1:])*np.mean([xscale,yscale])))
+	output(win,'Distortion (CoV): {v:=.2f} %'.format(v=distortion*100))
 	
 	output(win,'\nProfile Lengths')
 	for value in lengths[1:]:

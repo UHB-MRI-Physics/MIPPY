@@ -439,13 +439,15 @@ class MIPPYCanvas(Canvas):
 			rois = range(len(self.roi_list))
 		for y in range(im.rows):
 			for x in range(im.columns):
+				j=0
 				for i in rois:
-					if i==len(px):
+					if j==len(px):
 						px.append([])
 					if self.roi_list[i].contains((x*self.zoom_factor,y*self.zoom_factor)):
-						px[i].append(im.px_float[y][x])
+						px[j].append(im.px_float[y][x])
+					j+=1
 
-		print "GOT PIXELS"
+
 		return px
 
 	def get_roi_statistics(self,rois=[]):
@@ -455,12 +457,16 @@ class MIPPYCanvas(Canvas):
 #			stats = []
 		if self.roi_list[0].roi_type=='line':
 			return None
-		px_list = self.get_roi_pixels()
+		px_list = self.get_roi_pixels(rois=rois)
+		for i in range(len(px_list)):
+			print len(px_list[i])
+			if len(px_list[i])==0:
+				px_list[i]=[0.,0.,0.]
 		stats = {
 				'mean':		map(np.mean,px_list),
 				'std':		map(np.std,px_list),
-				'min':		map(np.amin,px_list),
-				'max':		map(np.amax,px_list),
+				'min':		map(np.min,px_list),
+				'max':		map(np.max,px_list),
 				'mode':		map(sps.mode,px_list),
 				'skewness':		map(sps.skew,px_list),
 				'kurtosis':		map(sps.kurtosis,px_list),
@@ -469,8 +475,6 @@ class MIPPYCanvas(Canvas):
 				'sum':		map(np.sum,px_list),
 				'area_px':		map(len,px_list)
 				}
-
-		print stats
 		return stats
 
 	def get_profile(self,resolution=1,width=1,interpolate=False,direction='horizontal',index=0):
@@ -579,8 +583,19 @@ class MIPPYCanvas(Canvas):
 		self.new_roi([(x1,y1),(x2,y1),(x2,y2),(x1,y2)],tags=tags,color=color)
 		return
 	
-	def roi_circle(self,center,radius,tags=[],system='canvas',resolution=12,color='yellow'):
+	def roi_circle(self,center,radius,tags=[],system='canvas',resolution=128,color='yellow'):
 		coords = get_ellipse_coords(center,radius,radius,resolution)
+		if system=='image':
+			for i in range(len(coords)):
+				coords[i] = tuple(x*self.zoom_factor for x in coords[i])
+		elif not system=='canvas':
+			print "Invalid coordinate system specified"
+			return
+		self.new_roi(coords,tags=tags,color=color)
+		return
+	
+	def roi_ellipse(self,center,radius_x,radius_y,tags=[],system='canvas',resolution=128,color='yellow'):
+		coords = get_ellipse_coords(center,radius_x,radius_y,resolution)
 		if system=='image':
 			for i in range(len(coords)):
 				coords[i] = tuple(x*self.zoom_factor for x in coords[i])
@@ -782,11 +797,6 @@ class MIPPYCanvas(Canvas):
 		if abs(self.xmouse-event.x)<1 and abs(self.ymouse-event.y)<1:
 			return
 		self.set_window_level(self.temp_window,self.temp_level)
-#		self.window = self.temp_window
-#		self.level = self.temp_level
-#		for image in self.images:
-#			image.wl_and_display(window=self.window,level=self.level)
-#		self.show_image()
 
 	def set_window_level(self,window,level):
 		self.window = window
