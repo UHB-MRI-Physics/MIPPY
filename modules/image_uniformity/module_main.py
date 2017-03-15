@@ -95,6 +95,7 @@ def execute(master_window,dicomdir,images):
 	win.toolbar.columnconfigure(0,weight=1)
 
 	win.im1.load_images(images)
+	win.im1.show_image(7)
 
 	return
 
@@ -223,12 +224,15 @@ def measure_uni(win):
 	yscale = win.im1.get_active_image().yscale
 
 	# INTEGRAL UNIFORMITY
-	convolve_radius = np.floor(np.sqrt(100/np.pi))	# Gives 100px circular area
-	mask = np.zeros((int(convolve_radius),int(convolve_radius)))
+	convolve_radius = np.round(np.sqrt(100/np.pi),0)	# Gives 100px circular area
+	mask = np.zeros((int(convolve_radius*2+1),int(convolve_radius*2+1))).astype(np.float64)
 	for j in range(np.shape(mask)[0]):
 		for i in range(np.shape(mask)[1]):
-			if i**2+j**2 < convolve_radius**2:
-				mask[j][i] = 1
+			if (i-convolve_radius-1)**2+(j-convolve_radius-1)**2 < convolve_radius**2:
+				mask[j][i] = 1.
+	area = np.sum(mask)
+	mask = mask/area
+	area_str = str(np.round(area,1))
 
 	px = np.copy(win.im1.get_active_image().px_float)
 	px_smooth = convolve2d(px,mask,mode='same',boundary='fill',fillvalue=0)
@@ -251,8 +255,13 @@ def measure_uni(win):
 	output(win,'Measured across central 75% of phantom\n')
 
 	output(win,"Integral uniformity (ACR) = "+str(np.round(int_uniformity*100,1))+" %\n")
+	
+	output(win,'MS Excel Table:')
+	output(win,'Region\tArea\tMean')
+	output(win,'Low\t'+area_str+'\t{v:=.2f}'.format(v=stats['min'][0]))
+	output(win,'High\t'+area_str+'\t{v:=.2f}'.format(v=stats['max'][0]))
 
-	output(win,"Fractional uniformity (Horizontal) = "+str(np.round(h_uni*100,1))+" %")
+	output(win,"\nFractional uniformity (Horizontal) = "+str(np.round(h_uni*100,1))+" %")
 	output(win,"Fractional uniformity (Vertical) = "+str(np.round(v_uni*100,1))+" %")
 
 	output(win,'\nThe following can be copied and pasted directly into MS Excel or similar')

@@ -1,5 +1,5 @@
 """
-ACR slice profile assessment.
+ACR uniformity assessment.
 Rob Flintham. Nov 2016
 """
 
@@ -12,7 +12,7 @@ import source.functions.misc_functions as mpy
 import os
 from PIL import Image,ImageTk
 import gc
-from scipy.signal import convolve
+from scipy.signal import convolve2d
 
 def preload_dicom():
 	"""
@@ -40,11 +40,6 @@ def execute(master_window,dicomdir,images):
 	"""
 
 	win = Toplevel(master_window)
-	win.title("ACR Slice Profile Assessment")
-	if "nt" == os.name:
-		win.wm_iconbitmap(bitmap = "source/images/brain_orange.ico")
-	else:
-		win.wm_iconbitmap('@'+os.path.join(root_path,'source','images','brain_bw.xbm'))
 	gc.collect()
 
 	win.im1 = MIPPYCanvas(win,width=400,height=400,drawing_enabled=True)
@@ -52,7 +47,7 @@ def execute(master_window,dicomdir,images):
 	win.im1.configure_scrollbar()
 	win.toolbar = Frame(win)
 	win.roibutton = Button(win.toolbar,text='Create/Reset ROIs',command=lambda:reset_roi(win))
-	win.measurebutton = Button(win.toolbar,text='Measure Slice Profile',command=lambda:measure_sliceprofile(win))
+	win.measurebutton = Button(win.toolbar,text='Measure Ghosting',command=lambda:measure_ghosting(win))
 	win.outputbox = Text(win,state='disabled',height=10,width=80)
 
 	win.phantom_options = [
@@ -97,6 +92,8 @@ def execute(master_window,dicomdir,images):
 	win.toolbar.columnconfigure(0,weight=1)
 
 	win.im1.load_images(images)
+	win.im1.show_image(7)
+	win.im1.set_window_level(20,10)
 
 	return
 
@@ -165,105 +162,51 @@ def reset_roi(win):
 		radius_y = 105./image.yscale
 		# Add other phantom dimensions here...
 
-#	xdim = radius_x*0.75
-#	ydim = radius_y*0.75
-#
-#	if xdim<ydim:
-#		ydim=xdim
-#	elif ydim<xdim:
-#		xdim=ydim
-#
-#	win.xdim = xdim
-#	win.ydim = ydim
-#
-#	roi_ellipse_coords = win.im1.canvas_coords(get_ellipse_coords(center,xdim,ydim))
-##	print roi_ellipse_coords
-#	win.im1.new_roi(roi_ellipse_coords,tags=['e'])
-#
-#	win.im1.roi_rectangle(xc-xdim,yc-5,xdim*2,10,tags=['h'],system='image')
-#	win.im1.roi_rectangle(xc-5,yc-ydim,10,ydim*2,tags=['v'],system='image')
+	roi_top_c = (xc,yc-radius_y-17)
+	roi_top_w = 45
+	roi_top_h = 8
+	
+	roi_rt_c = (xc+radius_x+17,yc)
+	roi_rt_w = 8
+	roi_rt_h = 45
+	
+	roi_bot_c = (xc,yc+radius_y+17)
+	roi_bot_w = 45
+	roi_bot_h = 8
+	
+	roi_lt_c = (xc-radius_y-17,yc)
+	roi_lt_w = 8
+	roi_lt_h = 45
 
-	xdim=140.
-	ydim=2.
-	
-	win.im1.roi_rectangle(xc-(xdim/2),yc-5,xdim,ydim,tags=['roi'],system='image')
-	win.im1.roi_rectangle(xc-(xdim/2),yc+1,xdim,ydim,tags=['roi'],system='image')
+	win.im1.roi_ellipse(roi_top_c,roi_top_w,roi_top_h,tags=['top'],system='image')
+	win.im1.roi_ellipse(roi_rt_c,roi_rt_w,roi_rt_h,tags=['rt'],system='image')
+	win.im1.roi_ellipse(roi_bot_c,roi_bot_w,roi_bot_h,tags=['bot'],system='image')
+	win.im1.roi_ellipse(roi_lt_c,roi_lt_w,roi_lt_h,tags=['lt'],system='image')
+	win.im1.roi_circle((xc,yc),65,tags=['center'],system='image')
 
-def measure_sliceprofile(win):
-	res = 0.1
-	smoothing = 1
-	profile_a, x_a = win.im1.get_profile(direction='horizontal',index=0,resolution=res,interpolate=True)
-	profile_b, x_b = win.im1.get_profile(direction='horizontal',index=1,resolution=res,interpolate=True)
-	profile_a = convolve(np.array(profile_a),np.ones(smoothing/res),mode='same')
-	profile_b = convolve(np.array(profile_b),np.ones(smoothing/res),mode='same')
+def measure_ghosting(win):
+	means = []
+	stds = []
+	for i in range(4):
+		stats = win.im1.get_roi_statistics(rois=[i])
+		means.append(stats['mean'][0])
+		stds.append(stats['std'][0])
+	central = win.im1.get_roi_statistics(rois=[4])
 	
-	print len(profile_a)
-	print len(profile_b)
+	# ROIs created in order top,right,bottom,left
 	
-	high_a = np.max(profile_a)
-	high_b = np.max(profile_b)
-	low_a = np.min(profile_a)
-	low_b = np.min(profile_b)
-	threshold_a = low_a+0.5*(high_a-low_a)
-	threshold_b = low_b+0.5*(high_b-low_b)
+	ghost = abs( ((means[0]+means[2])-(means[1]+means[3]))/(2*central['mean'][0]) )
 	
-	print low_a,threshold_a,high_a
-	print low_b,threshold_b,high_b
-	
-	point_a1 = None
-	point_a2 = None
-	point_b1 = None
-	point_b2 = None
-	
-	for a in range(np.shape(profile_a)[0]):
-#		print a
-		if (profile_a[a] >= threshold_a and
-			profile_a[a+1] >= threshold_a and
-			profile_a[a-1] < threshold_a):
-			point_a1 = x_a[a]
-		if (profile_a[a] <= threshold_a and
-			profile_a[a+1] <= threshold_a and
-			profile_a[a-1] > threshold_a):
-			point_a2 = x_a[a]
-		if point_a1 and point_a2:
-			break
-	for b in range(np.shape(profile_b)[0]):
-#		print b
-		if (profile_b[b] >= threshold_b and
-			profile_b[b+1] >= threshold_b and
-			profile_b[b-1] < threshold_b):
-			point_b1 = x_b[b]
-		if (profile_b[b] <= threshold_b and
-			profile_b[b+1] <= threshold_b and
-			profile_b[b-1] > threshold_b):
-			point_b2 = x_b[b]
-		if point_b1 and point_b2:
-			break
-			
-	
-	diff_a = (point_a2-point_a1)*res
-	diff_b = (point_b2-point_b1)*res
-	xscale = win.im1.get_active_image().xscale
-	yscale = win.im1.get_active_image().yscale
-	
-	slice_thickness = 0.2*(diff_a * diff_b)/(diff_a-diff_b)*xscale
-	
-	slthk_rob = np.mean([0.1*diff_a,0.1*diff_b])*xscale
-	
-
-
-
-
-
 	clear_output(win)
 
-	output(win,"Slice width = "+str(np.round(slice_thickness,2))+" mm\n")
-	output(win,"Slice width (Rob) = "+str(np.round(slthk_rob,2))+" mm\n")
+	output(win,"Percentage Ghost Intensity (ACR) = {v:=.2f} %".format(v=ghost*100))
+	
+	output(win,'\nMS Excel Table:')
+	output(win,'Region\tMean\tStdDev')
+	output(win,'Top\t{m:=.2f}\t{s:=.2f}'.format(m=means[0],s=stds[0]))
+	output(win,'Bottom\t{m:=.2f}\t{s:=.2f}'.format(m=means[2],s=stds[2]))
+	output(win,'Left\t{m:=.2f}\t{s:=.2f}'.format(m=means[1],s=stds[1]))
+	output(win,'Right\t{m:=.2f}\t{s:=.2f}'.format(m=means[3],s=stds[3]))
+	output(win,'Central\t{m:=.2f}\t{s:=.2f}'.format(m=central['mean'][0],s=central['std'][0]))
 
-	output(win,'\nThe following can be copied and pasted directly into MS Excel or similar')
-	output(win,'\nX1 (mm)\tValue\tX2 (mm)\tValue')
-	for row in range(0,len(profile_a),10):
-		output(win,str(x_a[row]*res*xscale)+'\t'+str(profile_a[row])+'\t'+str(x_b[row]*res*yscale)+'\t'+str(profile_b[row]))
-#	win.im1.grid(row=0,column=0,sticky='nw')
 	win.outputbox.see('1.0')
-#	win.update()
