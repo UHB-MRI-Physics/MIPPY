@@ -417,7 +417,7 @@ class ToolboxHome(Frame):
 				with open(cfg_file,'r') as file_object:
 					module_info = pickle.load(file_object)
 				self.module_list.append(module_info)
-		self.module_list = sorted(self.module_list)
+		self.module_list = sorted(self.module_list,key=lambda item: item['name'])
 		try:
 			for item in self.moduleframe.moduletree.get_children():
 				self.moduleframe.moduletree.delete(item)

@@ -195,6 +195,12 @@ def measure_ghosting(win):
 	
 	# ROIs created in order top,right,bottom,left
 	
+	# This is a fix for poor phantom positioning, when one or more of the regions is totally outside
+	# the image.
+	
+	for roi in win.im1.roi_list:
+		pass
+	
 	ghost = abs( ((means[0]+means[2])-(means[1]+means[3]))/(2*central['mean'][0]) )
 	
 	clear_output(win)
