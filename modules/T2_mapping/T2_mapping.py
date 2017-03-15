@@ -26,7 +26,7 @@ def inv_recovery(TI,M0,T1):
 # MAIN BODY OF PROGRAM
 ###################################################
 
-def T1_mapping(Im4D,TI,images,rev=False):
+def T2_mapping(Im4D,TI,images,rev=False):
     outputdir = "maps"
 
     rows=np.size(Im4D,2)

@@ -24,6 +24,8 @@ def preload_dicom():
 	# Note the capital letters on True and False.  These are important.
 	return True
 
+def flatten_series():
+        return True
 
 def execute(master_window,dicomdir,images):
 	"""
@@ -45,16 +47,43 @@ def execute(master_window,dicomdir,images):
         # Image Set Matrix Size
         win.rows=images[-1].Rows
         win.cols=images[-1].Columns
-        if 'PHILIPS' in images[0].Manufacturer.upper():
-                win.slcs=images[-1].TemporalPositionIdentifier
-        else:
-                win.slcs=images[-1].InstanceNumber/images[-1].AcquisitionNumber
-        win.dyns=images[-1].AcquisitionNumber
+        
+        slicepositions = []
+        try:
+                for im in images:
+                        slicepositions.append(str(im.PlanePositionSequence))
+        except:
+                for im in images:
+                        slicepositions.append(str(im.ImagePositionPatient))
+        slicepositions = np.array(slicepositions)
+        win.slcs = np.shape(np.unique(slicepositions))[0]
+        win.dyns = len(images)/win.slcs
+
+        try:
+                if (images[0].ImagePositionPatient==images[1].ImagePositionPatient):
+                        resort_needed = True
+                else:
+                        resort_needed = False
+        except AttributeError:
+                if (images[0].PlanePositionSequence==images[1].PlanePositionSequence):
+                        resort_needed = True
+                else:
+                        resort_needed = False
+
+        if resort_needed:
+                sorted_images = []
+                for d in range(win.dyns):
+                        for s in range(win.slcs):
+                                sorted_images.append(images[s*win.dyns+d])
+                images=sorted_images
         
         # Create canvases
 	win.imcanvases=Frame(win)
-	win.imcanvas_orig = MIPPYCanvas(win.imcanvases,bd=0 ,width=384,height=384,drawing_enabled=False)
-	win.imcanvas_maps = MIPPYCanvas(win.imcanvases,bd=0 ,width=384,height=384,drawing_enabled=False)
+	win.imcanvas_orig = MIPPYCanvas(win.imcanvases,bd=0 ,width=384,height=384,drawing_enabled=True)
+	win.imcanvas_maps = MIPPYCanvas(win.imcanvases,bd=0 ,width=384,height=384,drawing_enabled=True)
+
+	win.imcanvas_orig.roi_mode='ellipse'
+	win.imcanvas_maps.roi_mode='ellipse'
 
 	# Create scroll bars
 	csl_orig=StringVar()
@@ -105,52 +134,22 @@ def execute(master_window,dicomdir,images):
 
         # Create buttons
         win.buttons=Frame(win)
-
-        win.rb_TIvar = IntVar()
-        win.rb_TIvar.set(1)
-        win.rb_TI = Radiobutton(win.buttons, text="Set Initial TI and Increment", variable=win.rb_TIvar, value=1, command=lambda:hide_TIs(win))
-        win.l_TI = Label(win.buttons, text="Initial TI [ms]: ")
-        win.TI_in=StringVar(win)
-        win.TI_in.set(100)
-        win.b_TI = Entry(win.buttons,textvariable=win.TI_in,width=4)
-        win.l_TIinc = Label(win.buttons, text="TI Increment [ms]: ")
-        win.TIinc_in=StringVar(win)
-        win.TIinc_in.set(100)
-        win.b_TIinc = Entry(win.buttons,textvariable=win.TIinc_in,width=4)
         
-        win.rb_TIs = Radiobutton(win.buttons, text="Set Individual TIs (comma-separated) [ms]:", variable=win.rb_TIvar, value=2, command=lambda:hide_TI(win))
-        win.TIs_in=StringVar(win)
-        win.b_TIs = Entry(win.buttons,textvariable=win.TIs_in,width=30,state="disabled")
-        
-        win.rb_TAvar = IntVar()
-        win.rb_TAvar.set(1)
-        win.rb_TAauto = Radiobutton(win.buttons, text="Set TA automatically from the DICOM header", variable=win.rb_TAvar, value=1, command=lambda:hide_TA(win))
+        win.rb_TEvar = IntVar()
+        win.rb_TEvar.set(1)
+        win.rb_TEauto = Radiobutton(win.buttons, text="Set TEs automatically from the DICOM header", variable=win.rb_TEvar, value=1, command=lambda:hide_TE(win))
 
-        win.rb_TA = Radiobutton(win.buttons, text="Set TA manually [ms]:", variable=win.rb_TAvar, value=2, command=lambda:show_TA(win))
-        win.TA_in=StringVar(win)
-        win.TA_in.set(65)
-        win.b_TA = Entry(win.buttons,textvariable=win.TA_in,width=4,state="disabled")
-
-        win.c_rev_in=IntVar(win)
-        win.c_rev_in.set(0)
-        win.c_rev=Checkbutton(win.buttons,text="Use Reversed Aquisition",variable=win.c_rev_in)
+        win.rb_TE = Radiobutton(win.buttons, text="Set Individual TEs (comma-separated) [ms]:", variable=win.rb_TEvar, value=2, command=lambda:show_TE(win))
+        win.TE_in=StringVar(win)
+        win.b_TE = Entry(win.buttons,textvariable=win.TE_in,width=30,state="disabled")
         
         # Window layout
-        win.rb_TI.grid(row=0,column=0,sticky='nw',columnspan=4)
-        win.l_TI.grid(row=1,column=0,sticky='nw')
-        win.b_TI.grid(row=1,column=1,sticky='nw')
-        win.l_TIinc.grid(row=1,column=2,sticky='nw')
-        win.b_TIinc.grid(row=1,column=3,sticky='nw')
-        win.rb_TIs.grid(row=2,column=0,sticky='nw',columnspan=4)
-        win.b_TIs.grid(row=3,column=0,sticky='nw',columnspan=3)
         
-        win.rb_TAauto.grid(row=4,column=0,sticky='sw',rowspan=2,columnspan=4)
-        win.rb_TA.grid(row=6,column=0,sticky='nw',columnspan=2)
-        win.b_TA.grid(row=6,column=2,sticky='nw')
-
-        win.c_rev.grid(row=8,column=0,sticky='nw',columnspan=4)
+        win.rb_TEauto.grid(row=0,column=0,sticky='sw',rowspan=2,columnspan=4)
+        win.rb_TE.grid(row=2,column=0,sticky='nw',columnspan=2)
+        win.b_TE.grid(row=3,column=0,sticky='nw')
                             
-        win.buttons.grid(row=0,column=1,sticky='new')
+        win.buttons.grid(row=0,column=1,sticky='news')
 
         # Resizing options
         win.buttons.rowconfigure(0,weight=0)
@@ -175,21 +174,6 @@ def execute(master_window,dicomdir,images):
         # Run buttons
         win.run_buttons=Frame(win)
 
-##        test_time_s=time.time()
-##        test=numpy.matlib.repmat(images[0],win.dyns*win.slcs,1).astype(Dataset)
-##        test_time_e=time.time()-test_time_s
-##        print type(test[0])
-##        test[10].TemporalPositionIdentifier=1000
-##        print test[:,10].TemporalPositionIdentifier
-##        print test[:,0].TemporalPositionIdentifier
-##
-##        print("repmat in %s [s]\n" %(test_time_e))
-##
-##        test_time_s=time.time()
-##        test=deepcopy(images[0])
-##        test_time_e=time.time()-test_time_s
-##
-##        print("deepcopy in %s [s]\n" %(test_time_e))
         try:
                 win.Im4D=np.array([a.px_float for a in win.imcanvas_orig.images]).reshape((win.dyns,win.slcs,win.rows,win.cols))
         except Exception,win.Im4D:
@@ -203,7 +187,7 @@ def execute(master_window,dicomdir,images):
         win.b_run.grid(row=0,column=0,sticky='new')
         win.b_save.grid(row=1,column=0,sticky='new')
 
-        win.run_buttons.grid(row=1,column=1,sticky="new")
+        win.run_buttons.grid(row=1,column=1,sticky="news")
         
 	return
 	
@@ -225,36 +209,18 @@ def status_clear(win):
         win.b_message.config(state=DISABLED)
         win.update()
 
-def hide_TIs(win):
-        """Greys out Initial TIs window"""
-        if win.rb_TIvar.get()==1:
-                win.b_TI.configure(state="normal")
-                win.b_TIinc.configure(state="normal")
-                win.b_TIs.configure(state="disabled")
-                win.b_TI.focus()
-        return
-
-def hide_TI(win):
-        """Greys out Initial TI and ITinc windows"""
-        if win.rb_TIvar.get()==2:
-                win.b_TI.configure(state="disabled")
-                win.b_TIinc.configure(state="disabled")
-                win.b_TIs.configure(state="normal")
-                win.b_TIs.focus()
-        return
-
-def hide_TA(win):
+def hide_TE(win):
         """Greys out Initial TA window"""
-        if win.rb_TAvar.get()==1:
-                win.b_TA.configure(state="disabled")
-                win.rb_TA.focus()
+        if win.rb_TEvar.get()==1:
+                win.b_TE.configure(state="disabled")
+                win.rb_TE.focus()
         return
 
-def show_TA(win):
+def show_TE(win):
         """Activates the TA windows"""
-        if win.rb_TAvar.get()==2:
-                win.b_TA.configure(state="normal")
-                win.b_TA.focus()
+        if win.rb_TEvar.get()==2:
+                win.b_TE.configure(state="normal")
+                win.b_TE.focus()
         return
 def T2_map(win,images):
         """Creating maps - T1_mapping.py script"""

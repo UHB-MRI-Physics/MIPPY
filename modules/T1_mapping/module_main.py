@@ -458,12 +458,18 @@ def save(win,dicomdir,images):
                 
                 if win.c_both_in.get()==1:
                         images_T1.SOPInstanceUID = ''.join([images_T1.SOPInstanceUID,".1.1"])
-                        images_T1.SeriesDescription = images[0].SeriesDescription+"_T1map_A-D"
+                        try:
+                                images_T1.SeriesDescription = images[0].SeriesDescription+"_T1map_A-D"
+                        except:
+                                images_T1.SeriesDescription = str(images[0].SeriesNumber)+"_T1map_A-D"
                         images_T1.SeriesInstanceUID = images[0].SeriesInstanceUID+".1.1"
                         file_out=os.path.join(dicomdir,"_Series_"+str(images_T1.SeriesNumber).zfill(3)+"_maps","T1_map_ad_"+str(s+1).zfill(3)+".dcm")
                 else:
                         images_T1.SOPInstanceUID = ''.join([images_T1.SOPInstanceUID,".1"])
-                        images_T1.SeriesDescription = images[0].SeriesDescription+"_T1map"
+                        try:
+                                images_T1.SeriesDescription = images[0].SeriesDescription+"_T1map"
+                        except:
+                                images_T1.SeriesDescription = str(images[0].SeriesNumber)+"_T1map"
                         images_T1.SeriesInstanceUID = images[0].SeriesInstanceUID+".1"
                         file_out=os.path.join(dicomdir,"_Series_"+str(images_T1.SeriesNumber).zfill(3)+"_maps","T1_map_"+str(s+1).zfill(3)+".dcm")
 
@@ -503,12 +509,18 @@ def save(win,dicomdir,images):
                 
                 if win.c_both_in.get()==1:
                         images_T1_R2.SOPInstanceUID = ''.join([images_T1_R2.SOPInstanceUID,".2.1"])
-                        images_T1_R2.SeriesDescription = images[0].SeriesDescription+"_T1GoF_A-D"
+                        try:
+                                images_T1_R2.SeriesDescription = images[0].SeriesDescription+"_T1GoF_A-D"
+                        except:
+                                images_T1_R2.SeriesDescription = str(images[0].SeriesNumber)+"_T1GoF_A-D"
                         images_T1_R2.SeriesInstanceUID = images[0].SeriesInstanceUID+".2.1"
                         file_out=os.path.join(dicomdir,"_Series_"+str(images_T1_R2.SeriesNumber).zfill(3)+"_maps","T1_GoF_map_ad_"+str(s+1).zfill(3)+".dcm")
                 else:
                         images_T1_R2.SOPInstanceUID = ''.join([images_T1_R2.SOPInstanceUID,".2"])
-                        images_T1_R2.SeriesDescription = images[0].SeriesDescription+"_T1GoF"
+                        try:
+                                images_T1_R2.SeriesDescription = images[0].SeriesDescription+"_T1GoF"
+                        except:
+                                images_T1_R2.SeriesDescription = str(images[0].SeriesNumber)+"_T1GoF"
                         images_T1_R2.SeriesInstanceUID = images[0].SeriesInstanceUID+".2"
                         file_out=os.path.join(dicomdir,"_Series_"+str(images_T1_R2.SeriesNumber).zfill(3)+"_maps","T1_GoF_map_"+str(s+1).zfill(3)+".dcm")
 
@@ -540,12 +552,18 @@ def save(win,dicomdir,images):
                 
                 if win.c_both_in.get()==1:
                         images_T1_Var.SOPInstanceUID = ''.join([images_T1_Var.SOPInstanceUID,".3.1"])
-                        images_T1_Var.SeriesDescription = images[0].SeriesDescription+"_T1var_A-D"
+                        try:
+                                images_T1_Var.SeriesDescription = images[0].SeriesDescription+"_T1var_A-D"
+                        except:
+                                images_T1_Var.SeriesDescription = str(images[0].SeriesNumber)+"_T1var_A-D"
                         images_T1_Var.SeriesInstanceUID = images[0].SeriesInstanceUID+".3.1"
                         file_out=os.path.join(dicomdir,"_Series_"+str(images_T1_Var.SeriesNumber).zfill(3)+"_maps","T1_Var_map_ad_"+str(s+1).zfill(3)+".dcm")
                 else:
                         images_T1_Var.SOPInstanceUID = ''.join([images_T1_Var.SOPInstanceUID,".3"])
-                        images_T1_Var.SeriesDescription = images[0].SeriesDescription+"_T1var"
+                        try:
+                                images_T1_Var.SeriesDescription = images[0].SeriesDescription+"_T1var"
+                        except:
+                                images_T1_Var.SeriesDescription = str(images[0].SeriesNumber)+"_T1var"
                         images_T1_Var.SeriesInstanceUID = images[0].SeriesInstanceUID+".3"
                         file_out=os.path.join(dicomdir,"_Series_"+str(images_T1_Var.SeriesNumber).zfill(3)+"_maps","T1_Var_map_"+str(s+1).zfill(3)+".dcm")
  
@@ -577,12 +595,18 @@ def save(win,dicomdir,images):
                 
                 if win.c_both_in.get()==1:
                         images_M0.SOPInstanceUID = ''.join([images_M0.SOPInstanceUID,".4.1"])
-                        images_M0.SeriesDescription = images[0].SeriesDescription+"_M0map_A-D"
+                        try:
+                                images_M0.SeriesDescription = images[0].SeriesDescription+"_M0map_A-D"
+                        except:
+                                images_M0.SeriesDescription = str(images[0].SeriesNumber)+"_M0map_A-D"
                         images_M0.SeriesInstanceUID = images[0].SeriesInstanceUID+".4.1"
                         file_out=os.path.join(dicomdir,"_Series_"+str(images_M0.SeriesNumber).zfill(3)+"_maps","M0_map_ad_"+str(s+1).zfill(3)+".dcm")
                 else:
                         images_M0.SOPInstanceUID = ''.join([images_M0.SOPInstanceUID,".4"])
-                        images_M0.SeriesDescription = images[0].SeriesDescription+"_M0map"
+                        try:
+                                images_M0.SeriesDescription = images[0].SeriesDescription+"_M0map"
+                        except:
+                                images_M0.SeriesDescription = str(images[0].SeriesNumber)+"_M0map"
                         images_M0.SeriesInstanceUID = images[0].SeriesInstanceUID+".4"
                         file_out=os.path.join(dicomdir,"_Series_"+str(images_M0.SeriesNumber).zfill(3)+"_maps","M0_map_"+str(s+1).zfill(3)+".dcm")
                         
@@ -614,12 +638,18 @@ def save(win,dicomdir,images):
                 
                 if win.c_both_in.get()==1:
                         images_M0_Var.SOPInstanceUID = ''.join([images_M0_Var.SOPInstanceUID,".5.1"])
-                        images_M0_Var.SeriesDescription = images[0].SeriesDescription+"_M0var_A-D"
+                        try:
+                                images_M0_Var.SeriesDescription = images[0].SeriesDescription+"_M0var_A-D"
+                        except:
+                                images_M0_Var.SeriesDescription = str(images[0].SeriesNumber)+"_M0var_A-D"
                         images_M0_Var.SeriesInstanceUID = images[0].SeriesInstanceUID+".5.1"
                         file_out=os.path.join(dicomdir,"_Series_"+str(images_M0_Var.SeriesNumber).zfill(3)+"_maps","M0_Var_map_ad_"+str(s+1).zfill(3)+".dcm")
                 else:
                         images_M0_Var.SOPInstanceUID = ''.join([images_M0_Var.SOPInstanceUID,".5"])
-                        images_M0_Var.SeriesDescription = images[0].SeriesDescription+"_M0var"
+                        try:
+                                images_M0_Var.SeriesDescription = images[0].SeriesDescription+"_M0var"
+                        except:
+                                images_M0_Var.SeriesDescription = str(images[0].SeriesNumber)+"_M0var"
                         images_M0_Var.SeriesInstanceUID = images[0].SeriesInstanceUID+".5"
                         file_out=os.path.join(dicomdir,"_Series_"+str(images_M0_Var.SeriesNumber).zfill(3)+"_maps","M0_Var_map_"+str(s+1).zfill(3)+".dcm")
                         

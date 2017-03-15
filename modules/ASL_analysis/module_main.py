@@ -1,13 +1,22 @@
 from Tkinter import *
+import tkMessageBox
 from ttk import *
 from source.functions.viewer_functions import *
 import os
-from PIL import Image,ImageTk       
+from PIL import Image,ImageTk
 import time
+import datetime
+import numpy as np
+import numpy.matlib
+from copy import deepcopy
+from dicom.tag import Tag
+from scipy.optimize import minimize
+from scipy.optimize import fsolve
+import matplotlib.mlab as mlab
+import matplotlib.pyplot as plt
 import scipy
-import scipy.ndimage
-import copy as cp
-
+##from sympy.solvers import solveset
+from sympy import Symbol
 
 def preload_dicom():
 	"""
@@ -39,95 +48,131 @@ def execute(master_window,dicomdir,images):
 	print "Received "+str(len(images))+" images."
 	print os.getcwd()
 	print dicomdir
-
+        
 	# Create all GUI elements
 	win = Toplevel(master = master_window)
 	
 	# Image Set Matrix Size
-        win.rows=images[-1].Rows
-        win.cols=images[-1].Columns
-            
+        win.rows=[]
+        win.cols=[]
+        win.slcs=[]
+        win.dyns=[]
+    
         slicepositions = []
-        try:
-                for im in images:
-                        slicepositions.append(str(im.PlanePositionSequence))
-        except:
-                for im in images:
-                    slicepositions.append(str(im.ImagePositionPatient))
-        slicepositions = np.array(slicepositions)
-        win.slcs = np.shape(np.unique(slicepositions))[0]
-        win.dyns = len(images)/win.slcs
+        for n in range(len(images)):
+                win.rows.append(images[n][-1].Rows)
+                win.cols.append(images[n][-1].Columns)
+                try:
+                        for im in images[n]:
+                                slicepositions.append(str(im.PlanePositionSequence))
+                except:
+                        for im in images[n]:
+                                slicepositions.append(str(im.ImagePositionPatient))
+                slicepositions = np.array(slicepositions)
+                win.slcs.append(np.shape(np.unique(slicepositions))[0])
+                win.dyns.append(len(images[n])/win.slcs[n])
 
-        try:
-                if (images[0].ImagePositionPatient==images[1].ImagePositionPatient):
-                    resort_needed = True
-                else:
-                    resort_needed = False
-        except AttributeError:
-                if (images[0].PlanePositionSequence==images[1].PlanePositionSequence):
-                    resort_needed = True
-                else:
-                    resort_needed = False
-            
-        if resort_needed:
-                sorted_images = []
-                for d in range(win.dyns):
-                        for s in range(win.slcs):
-                                sorted_images.append(images[s*win.dyns+d])
-                images=sorted_images
-        
+                try:
+                        if (images[n][0].ImagePositionPatient==images[n][1].ImagePositionPatient):
+                                resort_needed = True
+                        else:
+                                resort_needed = False
+                except AttributeError:
+                        if (images[n][0].PlanePositionSequence==images[n][1].PlanePositionSequence):
+                                resort_needed = True
+                        else:
+                                resort_needed = False
+                    
+                if resort_needed:
+                        sorted_images = []
+                        for d in range(win.dyns[n]):
+                                for s in range(win.slcs[n]):
+                                        sorted_images.append(images[s*win.dyns[n]+d])
+                        images[n]=sorted_images
+                slicepositions = []
+                
 	# Create canvases
+		
+	win.canvas_holder=Frame(win)
+	win.imframes=[]
+	win.imcanvases=[]
 	
-	win.imcanvases=Frame(win)
-	win.imcanvas_orig = MIPPYCanvas(win.imcanvases,bd=0 ,width=384,height=384,drawing_enabled=False)
-	win.imcanvas_out = MIPPYCanvas(win.imcanvases,bd=0 ,width=384,height=384,drawing_enabled=False)
+	N=len(images)+1
+
+	rlen=[0,1,2,3,2,3,3]
+
+        win.imASL=None
+	win.imT1=None
+	win.imM0=None
 	
-	# Create scroll bars
-	csl_orig=StringVar()
-	csl_orig.set(win.imcanvas_orig.active)
-	csl_out=StringVar()
-	csl_out.set(win.imcanvas_out.active)
-	cdyn_orig=StringVar()
-	cdyn_orig.set("388")
-	cdyn_out=StringVar()
-	cdyn_out.set("4")
-	win.imcanvas_orig.img_scrollbar = Scrollbar(win.imcanvases,orient='vertical')
-	win.imcanvas_out.img_scrollbar = Scrollbar(win.imcanvases,orient='vertical')
-	#~ win.imcanvas_orig.img_scrollbar = Scrollbar(win.imcanvases,orient='horizontal')
-	#~ win.imcanvas_out.img.scrollbar = Scrollbar(win.imcanvases,orient='horizontal')
-	# Create info space for current dynamic/slice
-	win.csl_orig = Label(win.imcanvases,textvariable=csl_orig,width=3)
-	win.csl_out = Label(win.imcanvases,textvariable=csl_out,width=3)
-	win.cdyn_orig = Label(win.imcanvases,textvariable=cdyn_orig,width=3)
-	win.cdyn_out = Label(win.imcanvases,textvariable=cdyn_out,width=3)
-	
-	# Window layout
-	win.imcanvas_orig.grid(row=0,column=0,rowspan=2,columnspan=2,sticky='nwes')
-	win.imcanvas_orig.img_scrollbar.grid(row=0,column=2,sticky='ns')
-	win.csl_orig.grid(row=1,column=2)
-	win.imcanvas_out.grid(row=0,column=3,rowspan=2,columnspan=2,sticky='nwes')
-	win.imcanvas_out.img_scrollbar.grid(row=0,column=5,sticky='ns')
-	win.csl_out.grid(row=1,column=5)
-	#~ win.scroll_dyn_orig.grid(row=2,column=0,sticky='we')
-	#~ win.cdyn_orig.grid(row=2,column=1)
-	#~ win.scroll_dyn_out.grid(row=2,column=3,sticky='we')
-	#~ win.cdyn_out.grid(row=2,column=4)
-	win.imcanvases.grid(row=0,column=0,sticky='nwes')
-	
-	# To resize the objects with the main window
-	win.rowconfigure(0,weight=1)
-	win.columnconfigure(0,weight=1)
-	win.imcanvases.rowconfigure(0,weight=1)
-	win.imcanvases.rowconfigure(1,weight=0)
-	win.imcanvases.rowconfigure(2,weight=0)
-	win.imcanvases.columnconfigure(0,weight=1)
-	win.imcanvases.columnconfigure(1,weight=0)
-	win.imcanvases.columnconfigure(2,weight=0)
-	win.imcanvases.columnconfigure(3,weight=1)
-	win.imcanvases.columnconfigure(4,weight=0)
-	win.imcanvases.columnconfigure(5,weight=0)
-	
-	win.imcanvas_orig.load_images(images)
+	for n in range(N):
+                win.imframes.append(Frame(win.canvas_holder))
+                
+                win.imcanvases.append(MIPPYCanvas(win.imframes[n],bd=0 ,width=384,height=384,drawing_enabled=True))
+                
+                # Drop-box buttons
+                if n<len(images):
+                        win.imframes[n].imtype = StringVar()
+                        win.imframes[n].imtype.set("Image Type")
+                        win.imframes[n].b_imtype = OptionMenu(win.imframes[n],win.imframes[n].imtype,"Image Type",
+                                                              "Image Type","ASL","T1 map", "M0 map")
+                        win.imframes[n].imtype.trace('w',lambda name, idx, mode:im_check(win))
+                else:
+                        win.imframes[n].l_results=Label(win.imframes[n],text="Results")
+                
+                # Create scroll bars
+                win.imcanvases[n].csl=StringVar()
+                win.imcanvases[n].csl.set(win.imcanvases[n].active)
+##                cdyn[n]=StringVar()
+##                cdyn[n].set("388")
+                win.imcanvases[n].img_scrollbar = Scrollbar(win.imframes[n],orient='vertical')
+#                win.imframes[n].configure_scrollbar()
+##                win.imcanvas_orig.img_scrollbar = Scrollbar(win.imcanvases,orient='horizontal')
+                
+                # Create info space for current dynamic/slice
+                win.imframes[n].csl = Label(win.imframes[n],textvariable=win.imcanvases[n].active_str,width=7)
+##                win.imcanvases[n].cdyn = Label(win.imcanvases,textvariable=cdyn_orig,width=3)
+                
+                # Window layout
+                if n<len(images):
+                        win.imframes[n].b_imtype.grid(row=0,column=1,sticky='new')
+                        win.imframes[n].b_imtype.configure(width=8)
+                else:
+                        win.imframes[n].l_results.grid(row=0,column=1,sticky='new')
+
+                win.imcanvases[n].roi_mode='freehand'
+                        
+                win.imcanvases[n].grid(row=1,column=0,rowspan=2,columnspan=3,sticky='nwes')
+                win.imcanvases[n].img_scrollbar.grid(row=1,column=3,sticky='nws')
+                win.imframes[n].csl.grid(row=2,column=3,sticky='s')
+                
+                win.imframes[n].rowconfigure(0,weight=0)
+                win.imframes[n].rowconfigure(1,weight=1)
+                win.imframes[n].rowconfigure(2,weight=0)
+##                win.imcanvases[n].rowconfigure(3,weight=0)
+                win.imframes[n].columnconfigure(0,weight=0)
+                win.imframes[n].columnconfigure(1,weight=0)
+                win.imframes[n].columnconfigure(2,weight=0)
+                win.imframes[n].columnconfigure(3,weight=0)
+
+                row_num=(n-n%rlen[N])/rlen[N]
+                col_num=n%rlen[N]
+                win.imframes[n].grid(row=row_num,column=col_num,sticky='news')
+##                win.imframes[n].rowconfigure(row_num,weight=1)
+##                win.imframes[n].columnconfigure(col_num,weight=1)
+##                win.canvas_holder.rowconfigure(row_num,weight=1)
+##                win.canvas_holder.columnconfigure(col_num,weight=1)
+
+        win.canvas_holder.grid(row=0,column=0,sticky='news')
+
+        win.images=images
+
+	for n in range(len(images)):
+                win.imcanvases[n].load_images(images[n])
+                non_zero=win.imcanvases[n].get_3d_array()
+                non_zero=non_zero[np.where(non_zero>0)]
+                win.imcanvases[n].set_window_level(np.percentile(non_zero,95.)-np.percentile(non_zero,15.),
+                                                   np.percentile(non_zero,15.)+(np.percentile(non_zero,95.)-np.percentile(non_zero,15.))/2)     
 	
 	# Create buttons
 	win.buttons=Frame(win)
@@ -152,14 +197,52 @@ def execute(master_window,dicomdir,images):
 	win.T1bl_in.set(1500)
 	win.b_T1bl_in=Entry(win.buttons,textvariable=win.T1bl_in,width=5)
 
-	win.l_T1tis=Label(win.buttons,text="T1 of Tissue [ms]:")
-	win.T1tis_in=StringVar(win)
-	win.T1tis_in.set(840)
-	win.b_T1tis_in=Entry(win.buttons,textvariable=win.T1tis_in,width=5)
+        win.l_T1tis=Label(win.buttons,text="T1 of Tissue [ms]:")
+        win.T1tis_in=StringVar(win)
+        win.T1tis_in.set(840)
+        win.b_T1tis_in=Entry(win.buttons,textvariable=win.T1tis_in,width=5)
+
+        win.l_M0tis=Label(win.buttons,text="M0 of Tissue:")
+        win.M0tis_in=StringVar(win)
+        win.M0tis_in.set(600)
+        win.b_M0tis_in=Entry(win.buttons,textvariable=win.M0tis_in,width=5)
+
+        win.l_PLD=Label(win.buttons,text="Post-Labelling Delay [ms]:")
+        win.PLD_in=IntVar(win)
+        win.PLD_in.set(1300)
+        win.b_PLD_in=Entry(win.buttons,textvariable=win.PLD_in,width=5)
+
+        win.rb_TAvar = IntVar()
+        win.rb_TAvar.set(1)
+        win.rb_TAauto = Radiobutton(win.buttons, text="Set TA automatically\nfrom the DICOM header", variable=win.rb_TAvar, value=1, command=lambda:hide_TA(win))
+        
+        win.rb_TA = Radiobutton(win.buttons, text="Set TA manually [ms]:", variable=win.rb_TAvar, value=2, command=lambda:show_TA(win))
+        win.TA_in=StringVar(win)
+        win.TA_in.set(65)
+        win.b_TA = Entry(win.buttons,textvariable='-',width=6,state="disabled")
+
+        win.c_rev_in=IntVar(win)
+        win.c_rev_in.set(0)
+        win.c_rev=Checkbutton(win.buttons,text="Reversed Slice Acquisition",variable=win.c_rev_in)
 	
 	win.b_subtract = Button(win.buttons, text="Subtract", command=lambda:subtract(win))        
 	hide_rej(win)
 	win.b_average = Button(win.buttons, text="Average", command=lambda:average(win))
+
+        win.l_win_centr = Label(win.buttons,text="Window Centre")
+        win.win_centr_in = IntVar(win)
+        win.win_centr_in.set(0)
+	win.b_win_centr = Entry(win.buttons,textvariable=win.win_centr_in,width=5)
+        win.l_win_width = Label(win.buttons,text="Window Width")
+        win.win_width_in = IntVar(win)
+        win.win_width_in.set(0)
+	win.b_win_width = Entry(win.buttons,textvariable=win.win_width_in,width=5)
+	
+        win.c_NonZero_in=IntVar(win)
+        win.c_NonZero_in.set(1)
+        win.c_NonZero=Checkbutton(win.buttons,text="Exclude zero values",variable=win.c_NonZero_in,state="enabled")
+        
+	win.b_ROI = Button(win.buttons, text="Analyse ROI", command=lambda:ROI_stats(win))
 
 	# Window layout       
 	win.l_method.grid(row=0,column=0,sticky='nw')
@@ -173,12 +256,39 @@ def execute(master_window,dicomdir,images):
 	win.b_T1bl_in.grid(row=7,column=1,sticky='sw')
 	win.l_T1tis.grid(row=8,column=0,sticky='sw')
 	win.b_T1tis_in.grid(row=8,column=1,sticky='sw')
+	win.l_M0tis.grid(row=9,column=0,sticky='sw')
+	win.b_M0tis_in.grid(row=9,column=1,sticky='sw')
+	win.l_PLD.grid(row=10,column=0,sticky='sw')
+	win.b_PLD_in.grid(row=10,column=1,sticky='sw')
+	win.rb_TAauto.grid(row=11,column=0,sticky='sw',rowspan=2,columnspan=4)
+        win.rb_TA.grid(row=13,column=0,sticky='nw',columnspan=2)
+        win.b_TA.grid(row=13,column=1,sticky='nw')
+        win.c_rev.grid(row=14,column=0,sticky='nw',columnspan=4)
+
+        win.c_NonZero.grid(row=15,column=0,columnspan=2,sticky='sw')
+        win.b_ROI.grid(row=16,column=0,sticky='sw')
 
 	win.buttons.grid(row=0,column=1,sticky='news')
 	
 	# Resizing options
 	win.buttons.rowconfigure(0,weight=0)
 	win.buttons.rowconfigure(1,weight=0)
+	win.buttons.rowconfigure(2,weight=0)
+	win.buttons.rowconfigure(3,weight=0)
+	win.buttons.rowconfigure(4,weight=0)
+	win.buttons.rowconfigure(5,weight=0)
+	win.buttons.rowconfigure(6,weight=0)
+	win.buttons.rowconfigure(7,weight=0)
+	win.buttons.rowconfigure(8,weight=0)
+	win.buttons.rowconfigure(9,weight=0)
+	win.buttons.rowconfigure(10,weight=0)
+	win.buttons.rowconfigure(11,weight=0)
+	win.buttons.rowconfigure(12,weight=0)
+	win.buttons.rowconfigure(13,weight=0)
+	win.buttons.rowconfigure(14,weight=1)
+	win.buttons.rowconfigure(15,weight=0)
+	win.buttons.rowconfigure(16,weight=0)
+
 	win.buttons.columnconfigure(0,weight=0)
 	win.buttons.columnconfigure(1,weight=0)
 
@@ -197,10 +307,8 @@ def execute(master_window,dicomdir,images):
 
 	# Run buttons
 	win.run_buttons=Frame(win)
-	print len(win.imcanvas_orig.images)
-	win.Im4D=np.array([a.px_float for a in win.imcanvas_orig.images]).reshape((win.dyns,win.slcs,win.rows,win.cols))
 
-        win.b_perf = Button(win.buttons, text="Create Perfusion Maps", command=lambda:perf(win))
+        win.b_perf = Button(win.run_buttons, text="Create Perfusion Map", command=lambda:perf(win))
 	win.b_save = Button(win.run_buttons, text="Save", command=lambda:save(win,dicomdir,images))
 
 	# Window layout
@@ -215,6 +323,24 @@ def close_window(window):
 	"""Closes the window passed as an argument"""
 	active_frame.destroy()
 	return
+
+def im_check(win):
+        win.imASL=None
+	win.imT1=None
+	win.imM0=None
+        for n in range(len(win.imframes)-1):
+                if win.imframes[n].imtype.get()=="ASL":
+                        win.imASL=n
+                elif win.imframes[n].imtype.get()=="T1 map":
+                        win.imT1=n
+                        hide_T1(win)
+                elif win.imframes[n].imtype.get()=="M0 map":
+                        win.imM0=n
+                        hide_M0(win)
+                if win.imT1==None:
+                        show_T1(win)
+                if win.imM0==None:
+                        show_M0(win)
 
 def status(win,*txt):
     print_str = ''
@@ -232,6 +358,56 @@ def status_clear(win):
 	win.b_message.delete(1.0,END)
 	win.b_message.config(state=DISABLED)
 	win.update()
+
+def ROI_stats(win):
+        for n in range(len(win.imcanvases)):
+                try:
+                        if win.c_NonZero_in.get()==0:
+                                win.pix_seg=np.array(win.imcanvases[n].get_roi_pixels())
+                        else:
+                                win.pix_seg=np.array(win.imcanvases[n].get_roi_pixels())
+                                win.pix_seg=win.pix_seg[np.where(win.pix_seg!=0)]
+                        if n==len(win.imcanvases)-1:
+                                status(win,'Results ROI stats: mean=',np.round(np.mean(win.pix_seg),1),' std=',np.round(np.std(win.pix_seg)+0.05,1),
+                                       ' min=',np.round(np.amin(win.pix_seg),1),' max=',np.round(np.amax(win.pix_seg),1),' area=',np.size(win.pix_seg),'px')
+                        else:
+                                status(win,win.imframes[n].imtype.get()+' ROI stats: mean=',np.round(np.mean(win.pix_seg),1),' std=',np.round(np.std(win.pix_seg)+0.05,1),
+                                       ' min=',np.round(np.amin(win.pix_seg),1),' max=',np.round(np.amax(win.pix_seg),1),' area=',np.size(win.pix_seg),'px')
+                except:
+                        pass
+        
+def hide_T1(win):
+        win.b_T1tis_in.config(textvariable='-',state='disabled')
+        return
+
+def show_T1(win):
+        try:
+                win.b_T1tis_in.config(textvariable=win.T1tis_in,state='normal')
+        except AttributeError:
+                return
+
+def hide_M0(win):
+        win.b_M0tis_in.config(textvariable='-',state='disabled')
+        return
+
+def show_M0(win):
+        try:
+                win.b_M0tis_in.config(textvariable=win.M0tis_in,state='normal')
+        except AttributeError:
+                return
+
+def hide_TA(win):
+        """Greys out Initial TA window"""
+        if win.rb_TAvar.get()==1:
+                win.b_TA.configure(textvariable='-',state="disabled")
+                win.rb_TA.focus()
+        return
+
+def show_TA(win):
+        """Activates the TA windows"""
+        if win.rb_TAvar.get()==2:
+                win.b_TA.configure(textvariable=win.TA_in,state="normal")
+                win.b_TA.focus()
 
 def hide_rej(win):
 	"""Greys out Pairs to remove from analysis"""
@@ -251,9 +427,28 @@ def str2num(string):
 	return sum(((list(range(*[int(j) + k for k,j in enumerate(i.split('-'))]))
 	if '-' in i else [int(i)]) for i in string.split(',')), [])
 
+def error1_popup(win):
+        txt=("ASL series must be selected to perform this action!")
+        tkMessageBox.showerror('ERROR',txt)
+        return
+
+def error2_popup(win):
+        txt=("Please subtract the ASL data first!")
+        tkMessageBox.showerror('ERROR',txt)
+        return
+
+def error3_popup(win):
+        txt=("The dimensions of T1 and M0 maps must match the ASL data!")
+        tkMessageBox.showerror('ERROR',txt)
+        return
+
 def subtract(win):
+        if win.imASL==None:
+                error1_popup(win)
+                return
 	status(win,"Subtracting... ")
-	win.Im4D=np.array([a.px_float for a in win.imcanvas_orig.images]).reshape((win.dyns,win.slcs,win.rows,win.cols))
+	win.Im4D=np.array([a.px_float for a in win.imcanvases[win.imASL].images]).reshape((win.dyns[win.imASL],
+                                                                                           win.slcs[win.imASL],win.rows[win.imASL],win.cols[win.imASL]))
 	if win.method.get()=="Simple":
 		if win.c_rev_in.get()==0:
 			Im4Ds=win.Im4D[0::2,:,:,:]
@@ -270,7 +465,7 @@ def subtract(win):
 			Im4Ds=win.Im4D[1::2,:,:,:]
 			Im4Dns=win.Im4D[0::2,:,:,:]
 			
-		Im4Ds_=np.zeros((np.shape(Im4Ds)[0]+1,win.slcs,win.rows,win.cols))
+		Im4Ds_=np.zeros((np.shape(Im4Ds)[0]+1,win.slcs[win.imASL],win.rows[win.imASL],win.cols[win.imASL]))
 		Im4Ds_[0:-1:1,:,:,:]=Im4Ds
 		Im4Ds_[-1,:,:,:]=Im4Ds[-1,:,:,:]
 		Im4Ds_=scipy.ndimage.interpolation.zoom(Im4Ds_,
@@ -278,7 +473,7 @@ def subtract(win):
 									order=1,mode="nearest",prefilter=False)
 		Im4Ds=Im4Ds_[0:-1,:,:,:]
 
-		Im4Dns_=np.zeros((np.shape(Im4Dns)[0]+1,win.slcs,win.rows,win.cols))
+		Im4Dns_=np.zeros((np.shape(Im4Dns)[0]+1,win.slcs[win.imASL],win.rows[win.imASL],win.cols[win.imASL]))
 		Im4Dns_[0,:,:,:]=Im4Dns[0,:,:,:]
 		Im4Dns_[1:,:,:,:]=Im4Dns
 		Im4Dns_=scipy.ndimage.interpolation.zoom(Im4Dns_,
@@ -294,28 +489,140 @@ def subtract(win):
 		win.images_processed=[element for n, element in enumerate(win.images_processed) if n not in rejected]
 	status(win,"DONE!!!")
 	status(win,"Number of Subtracted Pairs: %s" %np.size(win.images_processed,0))
-	win.imcanvas_out.load_images(np.reshape(win.images_processed,(np.size(win.images_processed,0)*win.slcs,win.rows,win.cols)))
+	win.imcanvases[-1].load_images(np.reshape(win.images_processed,
+                                                  (np.shape(win.images_processed)[0]*np.shape(win.images_processed)[1],
+                                                   np.shape(win.images_processed)[2],
+                                                   np.shape(win.images_processed)[3])))
 	show_rej(win)
+	reset_windowing(win.imcanvases[-1])
 	return
 
 def average(win):
+        if win.imASL==None:
+                error2_popup(win)
+                return
 	if hasattr(win,"images_processed"):
 		status(win,"Averaging Subtracted Images... ")
 		win.images_processed=np.mean(win.images_processed,0)
 	else:
 		status(win,"Averaging Original Images... ")
 		win.images_processed=np.mean(win.Im4D,0)
-	win.imcanvas_out.load_images(win.images_processed)
+	win.imcanvases[-1].load_images(win.images_processed)
 	if win.toggle.find('av_')<0:
 		win.toggle+='av_'
 	status(win,'DONE!!!')
+	sort_TIs(win)
+	reset_windowing(win.imcanvases[-1])
 	return
+
+def sort_TIs(win):
+        """Sorting TIs for each individual image"""
+        status(win,"Sorting TIs for each individual image...")
+        # First - get the TA
+        TA=np.zeros(win.slcs[win.imASL]-1)
+        if win.rb_TAvar.get()==1:
+                for a in range(win.slcs[win.imASL]-1):
+                        tst_a = str(win.images[win.imASL][a].AcquisitionTime)
+                        tst_b = str(win.images[win.imASL][a+1].AcquisitionTime)
+                        dst = str(win.images[win.imASL][a].StudyDate)
+                        
+                        time_a = datetime.datetime(int(dst[0:4]),int(dst[4:6]),int(dst[6:8]),int(tst_a[0:2]),int(tst_a[2:4]),int(tst_a[4:6]),int(tst_a[7:]))
+                        time_b = datetime.datetime(int(dst[0:4]),int(dst[4:6]),int(dst[6:8]),int(tst_b[0:2]),int(tst_b[2:4]),int(tst_b[4:6]),int(tst_b[7:]))
+                        
+                        TA[a] = (time_b-time_a).total_seconds()*1000
+            
+                #status(win,TA)
+                TAav=np.round(float(np.mean(TA,0)),2)
+                win.TA_in.set(abs(float(TAav)))
+                txt=("Estimated TA is %s [ms]" %(win.TA_in.get()))
+                status(win,txt)
+                if TAav<0:
+                        win.c_rev_in.set(1)
+
+        # second - all TI values
+        TIs=np.zeros(win.slcs[win.imASL])
+        for s in range(win.slcs[win.imASL]):
+                if win.c_rev_in.get()==0:
+                        TIs[s]=win.PLD_in.get()+s*float(win.TA_in.get())
+                elif win.c_rev_in.get()==1:
+                        TIs[s]=win.PLD_in.get()+(win.slcs-s-1)*float(win.TA_in.get())
+                        
+        status(win,"These are the follwing times for each slice:")
+        status(win,TIs)
+        win.TIs=TIs
+        return
+
+def perf(win):
+        win.Im3Dperf=np.zeros((np.shape(win.images_processed)[0],np.shape(win.images_processed)[1],np.shape(win.images_processed)[2]))
+        test=np.zeros((np.shape(win.images_processed)[0],np.shape(win.images_processed)[1],np.shape(win.images_processed)[2]))
+        if win.imASL==None:
+                error2_popup(win)
+        win.Im3D=np.array([a.px_float for a in win.imcanvases[-1].images]).reshape((np.shape(win.images_processed)[0],
+                                                                                    np.shape(win.images_processed)[1],
+                                                                                    np.shape(win.images_processed)[2]))
+        if win.imT1==None:
+                win.T1=np.tile(np.float64(win.T1tis_in.get()),[np.shape(win.images_processed)[0],
+                                                   np.shape(win.images_processed)[1],np.shape(win.images_processed)[2]])
+        else:
+                try:
+                        win.T1=np.array([a.px_float for a in win.imcanvases[win.imT1].images]).reshape((np.shape(win.images_processed)[0],
+                                                                                                        np.shape(win.images_processed)[1],
+                                                                                                        np.shape(win.images_processed)[2]))
+                except IndexError or ValueError:
+                        error3_popup(win)
+                        return
+
+        if win.imM0==None:
+                win.M0=np.float64(win.M0tis_in.get())
+                win.M0=np.tile(win.M0tis_in.get(),[np.shape(win.images_processed)[0],
+                                                   np.shape(win.images_processed)[1],np.shape(win.images_processed)[2]])
+        else:
+                try:
+                        win.M0=np.array([a.px_float for a in win.imcanvases[win.imM0].images]).reshape((np.shape(win.images_processed)[0],
+                                                                                                        np.shape(win.images_processed)[1],
+                                                                                                        np.shape(win.images_processed)[2]))
+                except IndexError or ValueError:
+                        error3_popup(win)
+                        return
+##        print np.shape(win.M0)
+##        print np.shape(win.T1)
+##        print np.shape(win.Im3D)
+        f=Symbol('f')
+        for s in range(win.slcs[win.imASL]):
+                status(win,"Calculating maps: slice ",s+1)
+                for y in range (win.rows[win.imASL]):
+                        for x in range (win.cols[win.imASL]):
+##                                print x,y
+##                                print win.M0[s,y,x], win.T1[s,y,x], win.Im3D[s,y,x]
+#                               win.Im3Dperf[s,y,x]=100.*np.divide(np.multiply(win.Im3D[s,:,:],np.subtract(1/int(win.T1bl_in.get()),1/win.T1[s,:,:])),
+#                                                   2*np.multiply(win.M0[s,:,:],np.abs(np.subtract(np.exp(np.divide(np.float64(win.TIs[s]),np.float64(win.T1[s,:,:])))),np.exp(win.TIs[s]/int(win.T1bl_in.get())))) )
+#                                2.*f*win.M0[s,y,x]*(sp.exp(win.TIs[s]*(1/win.T1[s,y,x]+f))-sp.exp(win.TIs[s]/np.float64(win.T1bl_in.get())))/(1/np.float64(win.T1bl_in.get())-1/win.T1[s,y,x]-f)-win.Im3D[s,y,x]
+                                try:
+                                        win.Im3Dperf[s,y,x] = fsolve(perf_fun,0,(win.M0[s,y,x], win.TIs[s],win.T1[s,y,x],np.float64(win.T1bl_in.get()),win.Im3D[s,y,x]))[0]
+                                        
+                                except IndexError:
+                                        win.Im3Dperf[s,y,x] = 0.
+                                if win.Im3Dperf[s,y,x]==np.inf:
+                                        win.Im3Dperf[s,y,x]=0.
+        win.imcanvases[-1].load_images(win.Im3Dperf)
+        reset_windowing(win.imcanvases[-1])
+
+def reset_windowing(canvas):
+        non_zero=canvas.get_3d_array()
+        non_zero=canvas.get_3d_array()
+        non_zero=non_zero[np.where(non_zero>0)]
+        canvas.set_window_level(np.percentile(non_zero,95.)-np.percentile(non_zero,15.),
+                                                   np.percentile(non_zero,15.)+(np.percentile(non_zero,95.)-np.percentile(non_zero,15.))/2)
+        
+def perf_fun(f,M0,TI,T1,T1bl,Im3D):
+        return 0.02*f/3600*M0*(np.exp(TI*(1./T1+f/100./60000))-np.exp(TI/np.float64(T1bl)))/(1./T1bl-1./T1-f/100./60000)-Im3D
+
         
 def save(win,dicomdir,images):
 	if hasattr(win,"images_processed"):
 		status(win,"Saving files...")
 		##        win.Im3D_align=np.reshape(win.Im4D_align,(win.dyns*win.slcs,win.rows,win.cols))
-		dicomdir_out=os.path.join(dicomdir,"_ASL")
+		dicomdir_out=os.path.join(dicomdir,"_ASLmaps")
 		if not os.path.exists(dicomdir_out):
 			os.makedirs(dicomdir_out)
 		if len(np.shape(win.images_processed))==4:
@@ -324,7 +631,7 @@ def save(win,dicomdir,images):
 			Im3D=win.images_processed
 		if len(np.shape(win.images_processed))>=3:
 			for s in range(np.shape(Im3D)[0]):
-				images_out=cp.deepcopy(images[s])
+				images_out=deepcopy(images[win.imASL][s])
 				try:
 					rs = images_out[0x28,0x1053].value
 				except:
@@ -346,7 +653,7 @@ def save(win,dicomdir,images):
 				images_out.save_as(file_out)
 		else:
 			s=0
-			images_out=cp.deepcopy(images[s])
+			images_out=deepcopy(images[win.imASL][s])
 			try:
 				rs = images_out[0x28,0x1053].value
 			except:

@@ -40,6 +40,9 @@ def flatten_series():
 def polynomial(x,A=0,B=0,C=0,Coff=0,D=0,Doff=0,E=0,Eoff=0,F=0,Foff=0):
 	return A + B*(x) + C*((x+Coff)**2) + D*((x+Doff)**3) + E*((x+Eoff)**4) + F*((x+Foff)**5)
 
+def order2_2d(xy,P0,P1,P2,R0,R1,R2,off1,off2):
+	return P0+P1*(xy[0]-off1)+P2*((xy[0]-off1)**2) + R0+R1*(xy[1]-off2)+R2*((xy[1]-off2)**2)
+
 
 def execute(master_window,dicomdir,images):
 	"""
@@ -59,7 +62,7 @@ def execute(master_window,dicomdir,images):
 	if "nt" == os.name:
 		win.wm_iconbitmap(bitmap = "source/images/brain_orange.ico")
 	else:
-		win.wm_iconbitmap('@'+os.path.join(root_path,'source','images','brain_bw.xbm'))
+		win.wm_iconbitmap('@'+os.path.join(master_window.root_dir,'source','images','brain_bw.xbm'))
 	gc.collect()
 	"""
 	"""
@@ -227,17 +230,21 @@ def measure_grid_distortion(win):
 	xco0=0
 	xco1=0
 	xco2=0
-	xoff2=0
+	xoff=xc
 	yco0=0
 	yco1=0
 	yco2=0
-	yoff2=0
+	yoff=yc
 	
 	xspc = win.im1.get_active_image().xscale
 	yspc = win.im1.get_active_image().yscale
 	
+	diff_2d = np.column_stack((xdiff,ydiff))
+	
 	xdist_opt,xdist_cov = curve_fit(polynomial,initial_positions[:,0]-win.xc,xdiff,p0=[xco0,xco1,xco2,xoff2])
 	ydist_opt,ydist_cov = curve_fit(polynomial,initial_positions[:,1]-win.yc,ydiff,p0=[yco0,yco1,yco2,yoff2])
+	
+	opt,cov = curve_fit(order2_2d,initial_positions,diff_2d,p0=[xco0,xco1,xco2,yco0,yco1,yco2,xoff,yoff])
 	
 	# Convert image coordinates to mm distances
 	xdist_opt = xdist_opt*xspc

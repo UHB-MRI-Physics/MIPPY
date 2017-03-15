@@ -184,7 +184,8 @@ def info_popup(win):
         txt=("'im[#]' - use notation 'im' and a number represanting an image\n"+
              "'+', '-', '*', '/' - normal algebra\n"+
              "'**' - square\n"+
-             "'sqrt' - square root\n")
+             "'sqrt' - square root\n"+
+             "Image Range currently not working...")
         info_win.info=Label(info_win,text=txt)
         info_win.info.grid(row=0,column=0)
         return
@@ -196,5 +197,6 @@ def eval_eq(win,images):
         for image in images:
                 im.append(MIPPYImage(image).px_float)
         win.map=eval(win.eq_in.get())
-        win.imcanvas_maps.load_images(np.reshape(win.map,(win.slcs,win.rows,win.cols)))
+        slcs=np.size(win.map)/(win.rows*win.cols)
+        win.imcanvas_maps.load_images(np.reshape(win.map,(slcs,win.rows,win.cols)))
         return

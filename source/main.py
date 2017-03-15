@@ -73,6 +73,7 @@ class ToolboxHome(Frame):
 		# Initialises the GUI as a "Frame" object and gives it the name "master"
 		Frame.__init__(self, master)
 		self.master = master
+		self.master.root_dir = os.getcwd()
 
 		# Catches any calls to close the window (e.g. clicking the X button in Windows) and pops
 		# up an "Are you sure?" dialog
