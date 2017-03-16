@@ -185,12 +185,18 @@ def reset_roi(win):
 	win.im1.roi_circle((xc,yc),65,tags=['center'],system='image')
 
 def measure_ghosting(win):
-	means = []
-	stds = []
-	for i in range(4):
-		stats = win.im1.get_roi_statistics(rois=[i])
-		means.append(stats['mean'][0])
-		stds.append(stats['std'][0])
+	#~ means = []
+	#~ stds = []
+	#~ areas = []
+	#~ for i in range(4):
+		#~ stats = win.im1.get_roi_statistics(rois=[i])
+		#~ means.append(stats['mean'][0])
+		#~ stds.append(stats['std'][0])
+		#~ areas.append(stats['area_px'][0])
+	stats = win.im1.get_roi_statistics(rois=range(4))
+	means = stats['mean']
+	stds = stats['std']
+	areas = stats['area_px']
 	central = win.im1.get_roi_statistics(rois=[4])
 	
 	# ROIs created in order top,right,bottom,left
@@ -198,14 +204,44 @@ def measure_ghosting(win):
 	# This is a fix for poor phantom positioning, when one or more of the regions is totally outside
 	# the image.
 	
-	for roi in win.im1.roi_list:
-		pass
+	H = win.im1.get_active_image().rows
+	W = win.im1.get_active_image().columns
+	
+	roi_outside = False
+	replaced = []
+	
+	for i in range(4):
+		coords = np.column_stack(win.im1.image_coords(win.im1.roi_list[i].coords))
+		#~ if ((coords[0]<0).all() or (coords[0]>=W).all() or (coords[1]<0).all() or (coords[1]>=H).all()):
+		if (areas[i]<0.3*areas[i-2]):
+			roi_outside = True
+			if i==0:
+				means[i]=means[i-2]
+				stds[i]=stds[i-2]
+				replaced.append('  - TOP replaced by BOTTOM')
+			elif i==1:
+				means[i]=means[i-2]
+				stds[i]=stds[i-2]
+				replaced.append('  - RIGHT replaced by LEFT')
+			elif i==2:
+				means[i]=means[i-2]
+				stds[i]=stds[i-2]
+				replaced.append('  - BOTTOM replaced by TOP')
+			elif i==3:
+				means[i]=means[i-2]
+				stds[i]=stds[i-2]
+				replaced.append('  - LEFT replaced by RIGHT')
 	
 	ghost = abs( ((means[0]+means[2])-(means[1]+means[3]))/(2*central['mean'][0]) )
 	
 	clear_output(win)
 
 	output(win,"Percentage Ghost Intensity (ACR) = {v:=.2f} %".format(v=ghost*100))
+	
+	if roi_outside:
+		output(win,'\nWARNING! ROIs more than 70% outside of the image have been replaced by\ntheir opposite ROI for the calculation:')
+		for string in replaced:
+			output(win,string)
 	
 	output(win,'\nMS Excel Table:')
 	output(win,'Region\tMean\tStdDev')
