@@ -265,7 +265,7 @@ def get_ellipse_coords(center,a,b,n=128):
 ########################################
 
 class ROI():
-	def __init__(self,coords,roi_type=None):
+	def __init__(self,coords,roi_type=None,tags=[]):
 		"""
 		Expecting a string of 2- or 3-tuples to define bounding coordinates.
 		Type of ROI will be inferred from number of points.
@@ -292,6 +292,9 @@ class ROI():
 			self.roi_type = roi_type
 		arr_co=np.array(self.coords)
 		self.bbox=(np.amin(arr_co[:,0]),np.amin(arr_co[:,1]),np.amax(arr_co[:,0]),np.amax(arr_co[:,1]))
+		if not 'roi' in tags:
+			tags.append('roi')
+		self.tags = tags
 
 	def contains(self,point):
 		# This bounding box thing is a problem
@@ -409,6 +412,7 @@ class MIPPYCanvas(Canvas):
 			self.update_scrollbar((num-1.)/len(self.images))
 		self.delete('image')
 		self.create_image((0,0),image=self.images[self.active-1].photoimage,anchor='nw')
+		
 
 	def get_roi_mask(self):
 		"""
@@ -428,7 +432,7 @@ class MIPPYCanvas(Canvas):
 		return mask
 
 
-	def get_roi_pixels(self,rois=[]):
+	def get_roi_pixels(self,rois=[],tags=[]):
 		"""
 		Returns a LIST of pixel values from an ROI.
 		ROIS must be a list of ROI numbers.
@@ -441,6 +445,8 @@ class MIPPYCanvas(Canvas):
 			for x in range(im.columns):
 				j=0
 				for i in rois:
+					if len(tags)>0 and not any([tag in self.roi_list[i].tags for tag in tags]):
+						continue
 					if j==len(px):
 						px.append([])
 					if self.roi_list[i].contains((x*self.zoom_factor,y*self.zoom_factor)):
@@ -450,14 +456,14 @@ class MIPPYCanvas(Canvas):
 
 		return px
 
-	def get_roi_statistics(self,rois=[]):
+	def get_roi_statistics(self,rois=[],tags=[]):
 		if len(self.roi_list)<1:
 			return None
 #		else:
 #			stats = []
 		if self.roi_list[0].roi_type=='line':
 			return None
-		px_list = self.get_roi_pixels(rois=rois)
+		px_list = self.get_roi_pixels(rois=rois,tags=tags)
 		for i in range(len(px_list)):
 			print len(px_list[i])
 			if len(px_list[i])==0:
@@ -556,14 +562,30 @@ class MIPPYCanvas(Canvas):
 		elif not system=='canvas':
 			print "Invalid coordinate system specified"
 			return
+		#~ for i in range(len(coords)):
+			#~ j = i+1
+			#~ if j==len(coords):
+				#~ j=0
+			#~ tags.append('roi')
+			#~ self.create_line((coords[i][0],coords[i][1],coords[j][0],coords[j][1]),fill=color,width=1,tags=tags)
+		self.draw_roi(coords,tags=tags,color='yellow')
+		self.add_roi(coords)
+#		print "ROI should be on image now..."
+		return
+	
+	def draw_roi(self,coords,tags,color='yellow'):
 		for i in range(len(coords)):
 			j = i+1
 			if j==len(coords):
 				j=0
 			tags.append('roi')
 			self.create_line((coords[i][0],coords[i][1],coords[j][0],coords[j][1]),fill=color,width=1,tags=tags)
-		self.add_roi(coords)
-#		print "ROI should be on image now..."
+		return
+
+	def redraw_rois(self,color='yellow'):
+		self.delete('roi')
+		for roi in self.roi_list:
+			self.draw_roi(roi.coords,roi.tags,color=color)
 		return
 
 	def roi_rectangle(self,x_start,y_start,width,height,tags=[],system='canvas',color='yellow'):
@@ -804,6 +826,7 @@ class MIPPYCanvas(Canvas):
 		for image in self.images:
 			image.wl_and_display(window=self.window,level=self.level)
 		self.show_image()
+		self.redraw_rois()
 
 	def right_double(self,event):
 		if self.images == []:

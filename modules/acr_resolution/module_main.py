@@ -28,6 +28,23 @@ def preload_dicom():
 	# Note the capital letters on True and False.  These are important.
 	return True
 
+def overlap(radius,length):
+	length = float(length)
+	halflength = length/2
+	radius=float(radius)
+	if halflength>=radius:
+		return np.pi*(radius**2)/(length**2)
+	# Or if length<radius...
+	full_circle_area = np.pi*(radius**2)
+	# From definite integral of quarter circle between 0 and "length"...
+	reduced_area = 0.25*(radius**2)*(2*np.arcsin(halflength/radius)+np.sin(2*np.arcsin(halflength/radius)))
+	diff = full_circle_area/4 - reduced_area
+	reduced_area = 4*(reduced_area-diff)
+	if reduced_area>(length**2):
+		return 1
+	else:
+		return reduced_area/(length**2)
+
 
 def execute(master_window,dicomdir,images):
 	"""
@@ -126,6 +143,7 @@ def clear_output(win):
 def reset_roi(win):
 	win.im1.delete_rois()
 	phantom=win.phantom_v.get()
+	win.phantom=phantom
 	center = imp.find_phantom_center(win.im1.get_active_image(),phantom,
 							subpixel=False,mode=win.mode.get())
 	xc = center[0]
@@ -203,9 +221,97 @@ def measure_res(win):
 	px2 = px[:,win.roi_shape[1]/3:2*win.roi_shape[1]/3]
 	px3 = px[:,2*win.roi_shape[1]/3:]
 
-
-
-
+	# Determine "black" and "white" values for MTF calculation
+	image = win.im1.get_active_image()
+	px_whole = image.px_float
+	
+	xc = win.xc
+	yc = win.yc
+	phantom=win.phantom
+	
+	if phantom=='ACR (TRA)':
+		radius_x = 95./image.xscale
+		radius_y = 95./image.yscale
+	elif phantom=='ACR (SAG)':
+		radius_x = 95./image.xscale
+		radius_y = 79./image.yscale
+	elif phantom=='ACR (COR)':
+		radius_x = 95./image.xscale
+		radius_y = 79./image.yscale
+	elif phantom=='MagNET Flood (TRA)':
+		radius_x = 95./image.xscale
+		radius_y = 95./image.yscale
+	elif phantom=='MagNET Flood (SAG)':
+		radius_x = 95./image.xscale
+		radius_y = 105./image.yscale
+	elif phantom=='MagNET Flood (COR)':
+		radius_x = 95./image.xscale
+		radius_y = 105./image.yscale
+		# Add other phantom dimensions here...
+	
+	roi_top_c = (xc,yc-radius_y-17)
+	roi_rt_c = (xc+radius_x+17,yc)
+	roi_bot_c = (xc,yc+radius_y+17)
+	roi_lt_c = (xc-radius_y-17,yc)
+	roi_long = 45
+	roi_short = 8
+	
+	win.im1.roi_ellipse(roi_top_c,roi_long,roi_short,tags=['top'],system='image')
+	win.im1.roi_ellipse(roi_rt_c,roi_short,roi_long,tags=['rt'],system='image')
+	win.im1.roi_ellipse(roi_bot_c,roi_long,roi_short,tags=['bot'],system='image')
+	win.im1.roi_ellipse(roi_lt_c,roi_short,roi_long,tags=['lt'],system='image')
+	
+	stats = win.im1.get_roi_statistics(rois=range(1,5))
+	means = stats['mean']
+	stds = stats['std']
+	areas = stats['area_px']
+	print "areas",areas
+	
+	H = win.im1.get_active_image().rows
+	W = win.im1.get_active_image().columns
+	
+	roi_outside = False
+	replaced = []
+	
+	for i in range(4):
+		coords = np.column_stack(win.im1.image_coords(win.im1.roi_list[i].coords))
+		#~ if ((coords[0]<0).all() or (coords[0]>=W).all() or (coords[1]<0).all() or (coords[1]>=H).all()):
+		if (areas[i]<0.3*areas[i-2]):
+			roi_outside = True
+			if i==0:
+				means[i]=means[i-2]
+				stds[i]=stds[i-2]
+				replaced.append('  - TOP replaced by BOTTOM')
+			elif i==1:
+				means[i]=means[i-2]
+				stds[i]=stds[i-2]
+				replaced.append('  - RIGHT replaced by LEFT')
+			elif i==2:
+				means[i]=means[i-2]
+				stds[i]=stds[i-2]
+				replaced.append('  - BOTTOM replaced by TOP')
+			elif i==3:
+				means[i]=means[i-2]
+				stds[i]=stds[i-2]
+				replaced.append('  - LEFT replaced by RIGHT')
+				
+	black = np.min([means[0]+means[2],means[1]+means[3]])/2
+	
+	threshold = black*2
+	full_white = np.mean(px_whole[np.where(px_whole>threshold)])
+	# Correct white value for "hole" area as a fraction of pixel area
+	# Compute overlapping area to get expected white value for each hole set
+	area_overlap_1 = overlap((0.5*1.1),np.mean([image.xscale,image.yscale]))
+	area_overlap_2 = overlap((0.5*1.0),np.mean([image.xscale,image.yscale]))
+	area_overlap_3 = overlap((0.5*0.9),np.mean([image.xscale,image.yscale]))
+	print area_overlap_1,area_overlap_2,area_overlap_3
+	white1 = full_white*area_overlap_1
+	white2 = full_white*area_overlap_2
+	white3 = full_white*area_overlap_3
+	print white1,white2,white3
+	
+	
+	
 
 	#~ clear_output(win)
 	#~ output(win,'Measured across central 75% of phantom\n')
