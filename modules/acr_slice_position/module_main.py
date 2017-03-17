@@ -181,8 +181,8 @@ def reset_roi(win):
 	xdim=2.
 	ydim=25.
 	
-	win.im1.roi_rectangle(xc-4,yc-80,xdim,ydim,tags=['roi'],system='image')
-	win.im1.roi_rectangle(xc+2,yc-80,xdim,ydim,tags=['roi'],system='image')
+	win.im1.roi_rectangle(xc-5,yc-80,xdim,ydim,tags=['roi'],system='image')
+	win.im1.roi_rectangle(xc+1,yc-80,xdim,ydim,tags=['roi'],system='image')
 
 def measure_slicepos(win):
 	res = 0.1

@@ -308,7 +308,7 @@ def measure_res(win):
 	white1 = full_white*area_overlap_1
 	white2 = full_white*area_overlap_2
 	white3 = full_white*area_overlap_3
-	print white1,white2,white3
+	print black,white1,white2,white3
 	
 	
 	

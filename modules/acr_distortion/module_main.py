@@ -230,36 +230,36 @@ def measure_grid_distortion(win):
 	xco0=0
 	xco1=0
 	xco2=0
-	xoff=xc
+	xoff=win.xc
 	yco0=0
 	yco1=0
 	yco2=0
-	yoff=yc
+	yoff=win.yc
 	
 	xspc = win.im1.get_active_image().xscale
 	yspc = win.im1.get_active_image().yscale
 	
-	diff_2d = np.column_stack((xdiff,ydiff))
+	#~ diff_2d = np.column_stack((xdiff,ydiff))
 	
-	xdist_opt,xdist_cov = curve_fit(polynomial,initial_positions[:,0]-win.xc,xdiff,p0=[xco0,xco1,xco2,xoff2])
-	ydist_opt,ydist_cov = curve_fit(polynomial,initial_positions[:,1]-win.yc,ydiff,p0=[yco0,yco1,yco2,yoff2])
+	#~ xdist_opt,xdist_cov = curve_fit(polynomial,initial_positions[:,0]-win.xc,xdiff,p0=[xco0,xco1,xco2,xoff])
+	#~ ydist_opt,ydist_cov = curve_fit(polynomial,initial_positions[:,1]-win.yc,ydiff,p0=[yco0,yco1,yco2,yoff])
 	
-	opt,cov = curve_fit(order2_2d,initial_positions,diff_2d,p0=[xco0,xco1,xco2,yco0,yco1,yco2,xoff,yoff])
+	#~ opt,cov = curve_fit(order2_2d,initial_positions,diff_2d,p0=[xco0,xco1,xco2,yco0,yco1,yco2,xoff,yoff])
 	
 	# Convert image coordinates to mm distances
-	xdist_opt = xdist_opt*xspc
-	ydist_opt = xdist_opt*yspc
+	#~ xdist_opt = xdist_opt*xspc
+	#~ ydist_opt = xdist_opt*yspc
 	
 	# First and second order (linear and non-linear) distortion in X and Y
-	xdist_1st = xdist_opt[1]
-	xdist_2nd = xdist_opt[2]
-	ydist_1st = ydist_opt[1]
-	ydist_2nd = ydist_opt[2]
+	#~ xdist_1st = xdist_opt[1]
+	#~ xdist_2nd = xdist_opt[2]
+	#~ ydist_1st = ydist_opt[1]
+	#~ ydist_2nd = ydist_opt[2]
 	
-	print 'X distortion (linear): {v:=.3f} mm/mm'.format(v=xdist_1st)
-	print 'X distortion (non-linear): {v:=.3f} mm/mm2'.format(v=xdist_2nd)
-	print 'Y distortion (linear): {v:=.3f} mm/mm'.format(v=ydist_1st)
-	print 'Y distortion (non-linear): {v:=.3f} mm/mm2'.format(v=ydist_2nd)
+	#~ print 'X distortion (linear): {v:=.3f} mm/mm'.format(v=xdist_1st)
+	#~ print 'X distortion (non-linear): {v:=.3f} mm/mm2'.format(v=xdist_2nd)
+	#~ print 'Y distortion (linear): {v:=.3f} mm/mm'.format(v=ydist_1st)
+	#~ print 'Y distortion (non-linear): {v:=.3f} mm/mm2'.format(v=ydist_2nd)
 	
 	# Get linear distances from grid
 	xdistances = []

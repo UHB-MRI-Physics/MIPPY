@@ -411,7 +411,16 @@ class MIPPYCanvas(Canvas):
 			self.active_str.set(str(num)+"/"+str(len(self.images)))
 			self.update_scrollbar((num-1.)/len(self.images))
 		self.delete('image')
-		self.create_image((0,0),image=self.images[self.active-1].photoimage,anchor='nw')
+		self.create_image((0,0),image=self.images[self.active-1].photoimage,anchor='nw',tags='image')
+		self.tag_lower('image')
+		#~ self.redraw_rois()
+	
+	def quick_redraw_image(self):
+		try:
+			self.delete('image')
+			self.create_image((0,0),image=self.images[self.active-1].photoimage,anchor='nw',tags='image')
+		except:
+			pass
 		
 
 	def get_roi_mask(self):
@@ -568,7 +577,7 @@ class MIPPYCanvas(Canvas):
 				#~ j=0
 			#~ tags.append('roi')
 			#~ self.create_line((coords[i][0],coords[i][1],coords[j][0],coords[j][1]),fill=color,width=1,tags=tags)
-		self.draw_roi(coords,tags=tags,color='yellow')
+		self.draw_roi(coords,tags=tags,color=color)
 		self.add_roi(coords)
 #		print "ROI should be on image now..."
 		return
@@ -813,7 +822,7 @@ class MIPPYCanvas(Canvas):
 		if self.temp_level<self.global_rangemin+min_window/2:
 			self.temp_level=self.global_rangemin+min_window/2
 		self.images[i].wl_and_display(window=self.temp_window,level=self.temp_level)
-		self.show_image()
+		self.quick_redraw_image()
 
 	def right_release(self,event):
 		if abs(self.xmouse-event.x)<1 and abs(self.ymouse-event.y)<1:
@@ -826,7 +835,6 @@ class MIPPYCanvas(Canvas):
 		for image in self.images:
 			image.wl_and_display(window=self.window,level=self.level)
 		self.show_image()
-		self.redraw_rois()
 
 	def right_double(self,event):
 		if self.images == []:
