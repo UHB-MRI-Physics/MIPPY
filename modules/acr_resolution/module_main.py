@@ -13,6 +13,7 @@ import os
 from PIL import Image,ImageTk
 import gc
 from scipy.signal import convolve2d
+import time
 
 def preload_dicom():
 	"""
@@ -59,7 +60,7 @@ def execute(master_window,dicomdir,images):
 	win = Toplevel(master_window)
 	gc.collect()
 
-	win.im1 = MIPPYCanvas(win,width=408,height=408,drawing_enabled=True)
+	win.im1 = MIPPYCanvas(win,width=200,height=200,drawing_enabled=True)
 	win.im1.img_scrollbar = Scrollbar(win,orient='horizontal')
 	win.im1.configure_scrollbar()
 	win.toolbar = Frame(win)
@@ -94,6 +95,7 @@ def execute(master_window,dicomdir,images):
 	win.im2 = MIPPYCanvas(win,width=408,height=144,drawing_enabled=True)
 	# im2 scrollbar is created but never displayed
 	win.im2.img_scrollbar = Scrollbar(win)
+	win.im2.antialias=False
 
 	win.phantom_label.grid(row=0,column=0,sticky='w')
 	win.phantom_choice.grid(row=1,column=0,sticky='ew')
@@ -208,12 +210,14 @@ def reset_roi(win):
 	
 	win.roi_shape = (ydim*2,xdim*2)
 
-	win.im1.roi_rectangle(xc+6-xdim,yc+39-ydim,xdim*2,ydim*2,tags=['res'],system='image')
+	win.im1.roi_rectangle(xc+8-xdim,yc+39-ydim,xdim*2,ydim*2,tags=['res'],system='image')
 
 def measure_res(win):
 
 
 	px = np.array(win.im1.get_roi_pixels()[0]).reshape(win.roi_shape)
+	px_H = np.shape(px)[0]
+	px_W = np.shape(px)[1]
 	
 	win.im2.load_images([px])
 	
@@ -310,7 +314,35 @@ def measure_res(win):
 	white3 = full_white*area_overlap_3
 	print black,white1,white2,white3
 	
+	roi_len = 7
 	
+	# For each set of holes,
+	for i in range(3):
+		max_tail_hor = 0
+		max_x_hor = 0
+		max_y_hor = 0
+		max_tail_ver = 0
+		max_x_ver = 0
+		max_y_ver = 0
+		result_hor = 0
+		result_ver = 0
+		#cycle through hor profiles
+		for y in range(px_H):
+			for x in range(i*px_W/3,((i+1)*px_W)/3-roi_len):
+				#THIS IS TOO SLOW. JUST GRAB PIXELS FROM ARRAY.
+				win.im2.delete_rois()
+				win.im2.roi_rectangle(x,y,roi_len,1,system='image')
+				win.im2.update()
+				#~ time.sleep(0.5)
+		
+		#cycle through ver profiles
+		for y in range(px_H-roi_len):
+			for x in range(i*px_W/3,((i+1)*px_W)/3):
+				win.im2.delete_rois()
+				win.im2.roi_rectangle(x,y,1,roi_len,system='image')
+				win.im2.update()
+				#~ time.sleep(0.5)
+		print "Done "+str(i)
 	
 
 	#~ clear_output(win)

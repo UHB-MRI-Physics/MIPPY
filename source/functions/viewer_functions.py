@@ -360,6 +360,7 @@ class MIPPYCanvas(Canvas):
 		#~ self.zoom_factor=None
 		self.pixel_array=None
 		self.img_scrollbar=None
+		self.antialias = True
 
 #	def shift_down(self,event):
 #		self.shift = True
@@ -474,7 +475,7 @@ class MIPPYCanvas(Canvas):
 			return None
 		px_list = self.get_roi_pixels(rois=rois,tags=tags)
 		for i in range(len(px_list)):
-			print len(px_list[i])
+			#~ print len(px_list[i])
 			if len(px_list[i])==0:
 				px_list[i]=[0.,0.,0.]
 		stats = {
@@ -510,7 +511,7 @@ class MIPPYCanvas(Canvas):
 #			return None
 
 
-		print self.roi_list[index].roi_type
+		#~ print self.roi_list[index].roi_type
 		if not (self.roi_list[index].roi_type=='line' or self.roi_list[index].roi_type=='rectangle'):
 			print "Not a valid ROI type for profile.  Line or rectangle required."
 			return None
@@ -610,7 +611,7 @@ class MIPPYCanvas(Canvas):
 		elif not system=='canvas':
 			print "Invalid coordinate system specified"
 			return
-		print x1,y1,x2,y2
+		#~ print x1,y1,x2,y2
 		self.new_roi([(x1,y1),(x2,y1),(x2,y2),(x1,y2)],tags=tags,color=color)
 		return
 	
@@ -664,7 +665,8 @@ class MIPPYCanvas(Canvas):
 
 		for i in range(len(self.images)):
 			self.progress(45.*i/len(self.images)+55)
-			self.images[i].zoom(self.zoom_factor)
+			if not self.zoom_factor==1.:
+				self.images[i].zoom(self.zoom_factor,antialias=self.antialias)
 			self.images[i].wl_and_display(window=self.window,level=self.level)
 		self.configure_scrollbar()
 		self.show_image(1)
@@ -855,6 +857,7 @@ class MIPPYCanvas(Canvas):
 
 	def delete_rois(self):
 		self.roi_list = []
+		gc.collect()
 		self.delete('roi')
 
 	def progress(self,percentage):
@@ -1027,14 +1030,22 @@ class MIPPYImage():
 		self.set_display_image()
 		return
 
-	def resize(self,dim1=256,dim2=256):
-		self.image = self.image.resize((dim1,dim2), Image.ANTIALIAS)
+	def resize(self,dim1=256,dim2=256,antialias=True):
+		if antialias:
+			sampling=Image.ANTIALIAS
+		else:
+			sampling=Image.NEAREST
+		self.image = self.image.resize((dim1,dim2), sampling)
 		self.set_display_image()
 		return
 
-	def zoom(self,zoom):
-		self.image = self.image.resize((int(np.round(self.columns*zoom,0)),int(np.round(self.rows*zoom,0))), Image.ANTIALIAS)
-		self.set_display_image
+	def zoom(self,zoom,antialias=True):
+		if antialias:
+			sampling=Image.ANTIALIAS
+		else:
+			sampling=Image.NEAREST
+		self.image = self.image.resize((int(np.round(self.columns*zoom,0)),int(np.round(self.rows*zoom,0))), sampling)
+		self.set_display_image()
 		return
 
 	def apply_overlay(self):
