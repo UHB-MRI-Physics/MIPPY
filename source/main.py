@@ -40,6 +40,8 @@ print "    Garbage Collection"
 import gc
 print "    Python itertools"
 import itertools
+print "    getpass"
+import getpass
 
 print "Initialising GUI...\n"
 
@@ -101,10 +103,13 @@ class ToolboxHome(Frame):
 		Mac = /tmp
 		Linux = /tmp
 		'''
+		
+		self.user = getpass.getuser()
+		
 		if 'darwin' in sys.platform or 'linux' in sys.platform:
-			self.tempdir = '/tmp/MIPPY_temp'
+			self.tempdir = '/tmp/MIPPY_temp_'+self.user
 		elif 'win' in sys.platform:
-			self.tempdir = r'C:\Temp\MIPPY_temp'
+			self.tempdir = r'C:\Temp\MIPPY_temp_'+self.user
 		else:
 			tkMessageBox.showerror('ERROR', 'Unsupported operating system, please contact the developers.')
 			sys.exit()
