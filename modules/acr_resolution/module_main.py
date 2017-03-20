@@ -159,20 +159,6 @@ def reset_roi(win):
 	win.xc = xc
 	win.yc = yc
 
-#	if (win.phantom_v.get()=='ACR (TRA)'
-#		or win.phantom_v.get()=='ACR (SAG)'
-#		or win.phantom_v.get()=='ACR (COR)'):
-#		win.phantom = imp.make_ACR()
-#	elif (win.phantom_v.get()=='MagNET Flood (TRA)'
-#		or win.phantom_v.get()=='MagNET Flood (SAG)'
-#		or win.phantom_v.get()=='MagNET Flood (COR)'):
-#		win.phantom = imp.make_MagNET_flood()
-
-#	if '(TRA)' in win.phantom_v.get():
-#		roi_r = 0.85*win.phantom._r
-#		roi_r_px_x = roi_r * win.im1.get_active_image().xscale
-#		roi_r_px_y = roi_r * win.im1.get_active_image().yscale
-
 	# Calculate phantom radius in pixels
 	image = win.im1.get_active_image()
 	if phantom=='ACR (TRA)':
@@ -193,22 +179,9 @@ def reset_roi(win):
 	elif phantom=='MagNET Flood (COR)':
 		radius_x = 95./image.xscale
 		radius_y = 105./image.yscale
-		# Add other phantom dimensions here...
-
-	#~ xdim = radius_x*0.75
-	#~ ydim = radius_y*0.75
-
-	#~ if xdim<ydim:
-		#~ ydim=xdim
-	#~ elif ydim<xdim:
-		#~ xdim=ydim
-
-	#~ win.xdim = xdim
-	#~ win.ydim = ydim
-
-	#~ roi_ellipse_coords = win.im1.canvas_coords(get_ellipse_coords(center,xdim,ydim))
-#~ #	print roi_ellipse_coords
-	#~ win.im1.new_roi(roi_ellipse_coords,tags=['e'])
+	
+	win.radius_x = radius_x
+	win.radius_y = radius_y
 	
 	
 	xdim=34
@@ -238,27 +211,8 @@ def measure_res(win):
 	
 	xc = win.xc
 	yc = win.yc
-	phantom=win.phantom
-	
-	if phantom=='ACR (TRA)':
-		radius_x = 95./image.xscale
-		radius_y = 95./image.yscale
-	elif phantom=='ACR (SAG)':
-		radius_x = 95./image.xscale
-		radius_y = 79./image.yscale
-	elif phantom=='ACR (COR)':
-		radius_x = 95./image.xscale
-		radius_y = 79./image.yscale
-	elif phantom=='MagNET Flood (TRA)':
-		radius_x = 95./image.xscale
-		radius_y = 95./image.yscale
-	elif phantom=='MagNET Flood (SAG)':
-		radius_x = 95./image.xscale
-		radius_y = 105./image.yscale
-	elif phantom=='MagNET Flood (COR)':
-		radius_x = 95./image.xscale
-		radius_y = 105./image.yscale
-		# Add other phantom dimensions here...
+	radius_x = win.radius_x
+	radius_y = win.radius_y
 	
 	roi_top_c = (xc,yc-radius_y-17)
 	roi_rt_c = (xc+radius_x+17,yc)
