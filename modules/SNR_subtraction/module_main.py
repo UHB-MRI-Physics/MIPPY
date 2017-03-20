@@ -50,6 +50,7 @@ def execute(master_window,dicomdir,images):
 		return
 
 	win = Toplevel(master_window)
+	win.images = images
 
 	win.im1 = MIPPYCanvas(win,width=300,height=300,drawing_enabled=True)
 	win.im2 = MIPPYCanvas(win,width=300,height=300,drawing_enabled=True)
@@ -86,6 +87,9 @@ def execute(master_window,dicomdir,images):
 								onvalue='same',offvalue='valid')
 	win.mode_label = Label(win.toolbar,text='N.B. Advanced positioning is much slower, but accounts for the phantom not being fully contained in the image.',
 					wraplength=200,justify=LEFT)
+					
+	win.infobox = Text(win,state='disabled',height=20,width=40)
+	win.outputbox = Text(win,state='disabled',height=10,width=80)
 
 	win.toolbar.grid(row=0,column=2,sticky='nsew')
 	win.roi_button.grid(row=2,column=0,sticky='ew')
@@ -95,12 +99,17 @@ def execute(master_window,dicomdir,images):
 	win.phantom_choice.grid(row=1,column=0,sticky='ew')
 	win.advanced_checkbox.grid(row=5,column=0,sticky='w')
 	win.mode_label.grid(row=6,column=0,sticky='w')
+	
+	win.outputbox.grid(row=2,column=0,columnspan=4,sticky='nsew')
+	win.infobox.grid(row=0,column=3,rowspan=2,sticky='nsew')
 
 	win.rowconfigure(0,weight=1)
 	win.rowconfigure(1,weight=0)
+	win.rowconfigure(2,weight=0)
 	win.columnconfigure(0,weight=1)
 	win.columnconfigure(1,weight=1)
 	win.columnconfigure(2,weight=0)
+	win.columnconfigure(3,weight=0)
 	win.toolbar.rowconfigure(0,weight=0)
 	win.toolbar.rowconfigure(1,weight=0)
 	win.toolbar.rowconfigure(2,weight=0)
@@ -110,26 +119,44 @@ def execute(master_window,dicomdir,images):
 	win.toolbar.rowconfigure(6,weight=0)
 	win.toolbar.columnconfigure(0,weight=0)
 
-#	win.images_split = [[]]
-#	for image in images:
-#		matched=False
-#		series = image.SeriesInstanceUID
-#		for imlist in win.images_split:
-#			if len(imlist)==0:
-#				imlist.append(image)
-#				matched=True
-#				break
-#			if imlist[0].SeriesInstanceUID==series:
-#				imlist.append(image)
-#				matched=True
-#				break
-#		if not matched:
-#			win.images_split.append([image])
+
 	win.im1.load_images(images[0])
 	win.im2.load_images(images[1])
+	
+	win.im1.show_image(7)
+	win.im2.show_image(7)
 
 
 	return
+
+def output(win,txt):
+	win.outputbox.config(state=NORMAL)
+	win.outputbox.insert(END,txt+'\n')
+	win.outputbox.config(state=DISABLED)
+	win.outputbox.see(END)
+	win.update()
+	return
+
+def clear_output(win):
+	win.outputbox.config(state=NORMAL)
+	win.outputbox.delete('1.0', END)
+	win.outputbox.config(state=DISABLED)
+	win.update()
+
+def info(win,txt):
+	win.infobox.config(state=NORMAL)
+	win.infobox.insert(END,txt+'\n')
+	win.infobox.config(state=DISABLED)
+	win.infobox.see(END)
+	win.update()
+	return
+
+def clear_info(win):
+	win.infobox.config(state=NORMAL)
+	win.infobox.delete('1.0', END)
+	win.infobox.insert(END,'DICOM HEADER CONFLICTS: \n\n')
+	win.infobox.config(state=DISABLED)
+	win.update()
 
 def close_window(window):
 	"""Closes the window passed as an argument"""
@@ -155,12 +182,55 @@ def roi_reset(win):
 
 def snr_calc(win):
 	print "SNR calc"
-	rois = win.im1.find_withtag('roi')
-	if len(rois)==0:
+	#~ rois = win.im1.find_withtag('roi')
+	if len(win.im1.roi_list)==0:
 		tkMessageBox.showerror("ERROR", "No ROI selected. Please create one or more"
 							+" regions to analyse.")
 		return
-	imnum = win.im2.active
+	imnum1 = win.im1.active
+	imnum2 = win.im2.active
+	
+	# Check image headers to ensure images are matched.
+	header_info = []
+	
+	clear_info(win)
+	count=0
+	
+	for element in win.images[0][imnum1]:
+		#~ print element
+		#~ print element.tag
+		#~ print element.value
+		#~ print win.images[1][imnum2][element.tag].value
+		#~ break
+		val1 = element.value
+		try:
+			val2 = win.images[1][imnum2][element.tag].value
+		except:
+			info(win,'MISSING TAG: '+str(element.name)+'\n')
+			continue
+		exclude_list = ['UID',
+					'REFERENCED IMAGE SEQUENCE',
+					'SERIES TIME',
+					'ACQUISITION TIME',
+					'CONTENT TIME',
+					'CREATION TIME',
+					'PIXEL VALUE',
+					'WINDOW',
+					'CSA',
+					'PIXEL DATA',
+					'[', #private tags
+					']']
+		if not val1==val2:
+			if not any(s in element.name.upper() for s in exclude_list):
+				info(win,element.name+'\n1: '+str(val1)+'\n2: '+str(val2)+'\n')
+				count+=1
+	if count==0:
+		info(win,'None detected')
+	win.infobox.see('1.0')
+	
+	
+	
+	
 	sub_image = [win.im1.get_active_image().px_float-win.im2.get_active_image().px_float]
 	win.im2.load_images(sub_image)
 	win.im2.roi_list = win.im1.roi_list
@@ -169,32 +239,55 @@ def snr_calc(win):
 	snr_list = []
 	for i in range(len(signal['mean'])):
 		snr_list.append(signal['mean'][i]/noise['std'][i]*np.sqrt(2))
-	print snr_list
-	print np.mean(snr_list)
+	#~ print snr_list
+	#~ print np.mean(snr_list)
+	
+	#~ print len(signal['mean'])
+	#~ print signal
+	
+	clear_output(win)
+	output(win,'SNR: {v:=.2f}'.format(v=np.mean(snr_list)))
+	output(win,'Bandwidth (Hz/px): {v:=.2f}'.format(v=win.images[0][imnum1].PixelBandwidth))
+	output(win,'Prescribed voxel size (mm): {x:=.2f} / {y:=.2f} / {s:=.2f}'.format(
+			x=win.im1.get_active_image().xscale,
+			y=win.im1.get_active_image().yscale,
+			s=win.images[0][imnum1].SliceThickness))
+	
+	output(win,'\nMS Excel Results Table')
+	output(win,'Region\tArea\tMean\tStd Dev\tMin\tMax')
+	for i in range(len(signal['mean'])):
+		output(win,'Signal '+str(i+1)+'\t{area:=.2f}\t{mean:=.2f}\t{std:=.2f}\t{min:=.2f}\t{max:=.2f}'.format(
+			area=signal['area_px'][i],mean=signal['mean'][i],std=signal['std'][i],min=signal['min'][i],max=signal['max'][i]))
+	for i in range(len(noise['mean'])):
+		output(win,'Noise '+str(i+1)+'\t{area:=.2f}\t{mean:=.2f}\t{std:=.2f}\t{min:=.2f}\t{max:=.2f}'.format(
+			area=noise['area_px'][i],mean=noise['mean'][i],std=noise['std'][i],min=noise['min'][i],max=noise['max'][i]))
+	win.outputbox.see('1.0')
+	
+	
 
-	results = {
+	#~ results = {
 		#~ 'Signal': signal['mean'],
 		#~ 'Noise': noise['std'],
-		'Sig 1': signal['mean'][0],
-		'Sig 2': signal['mean'][1],
-		'Sig 3': signal['mean'][2],
-		'Sig 4': signal['mean'][3],
-		'Sig 5': signal['mean'][4],
-		'Noi 1': noise['std'][0],
-		'Noi 2': noise['std'][1],
-		'Noi 3': noise['std'][2],
-		'Noi 4': noise['std'][3],
-		'Noi 5': noise['std'][4],
-		'SNR (mean)': np.mean(snr_list),
-		'Stdev (SNR)': np.std(snr_list)
-		}
-	print results
+		#~ 'Sig 1': signal['mean'][0],
+		#~ 'Sig 2': signal['mean'][1],
+		#~ 'Sig 3': signal['mean'][2],
+		#~ 'Sig 4': signal['mean'][3],
+		#~ 'Sig 5': signal['mean'][4],
+		#~ 'Noi 1': noise['std'][0],
+		#~ 'Noi 2': noise['std'][1],
+		#~ 'Noi 3': noise['std'][2],
+		#~ 'Noi 4': noise['std'][3],
+		#~ 'Noi 5': noise['std'][4],
+		#~ 'SNR (mean)': np.mean(snr_list),
+		#~ 'Stdev (SNR)': np.std(snr_list)
+		#~ }
+	#~ print results
 
-	save_results(results)
+	#~ save_results(results)
 #	display_results(results,win)
 
-	win.im2.load_images(win.images_split[1])
-	win.im2.show_image(imnum)
+	win.im2.load_images(win.images[1])
+	win.im2.show_image(imnum2)
 
 	return
 
