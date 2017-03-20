@@ -76,14 +76,16 @@ def execute(master_window,dicomdir,images):
 
 	win.phantom_label = Label(win.toolbar,text='\nPhantom selection:')
 	win.phantom_v = StringVar(win)
-
-#	print win.phantom_v.get()
-#	win.phantom_v.set(win.phantom_options[1])
-#	win.phantom_choice = apply(OptionMenu,(win.toolbar,win.phantom_v)+tuple(win.phantom_options))
 	win.phantom_choice = OptionMenu(win.toolbar,win.phantom_v,win.phantom_options[0],*win.phantom_options)
 	mpy.optionmenu_patch(win.phantom_choice,win.phantom_v)
-		# default value
-#	print win.phantom_v.get()
+	
+	win.n_holes_options = ['3 hole method','4 hole method']
+	win.n_holes = StringVar(win)
+	win.n_holes_label = Label(win.toolbar,text='\nAnalysis method:\n(3 holes preferred for 1.1mm and 0.9mm, 4\nholes preferred for 1.0mm)')
+	win.n_holes_choice = OptionMenu(win.toolbar,win.n_holes,win.n_holes_options[1],*win.n_holes_options)
+	mpy.optionmenu_patch(win.n_holes_choice,win.n_holes)
+	
+	
 	win.mode=StringVar()
 	win.mode.set('valid')
 	win.advanced_checkbox = Checkbutton(win.toolbar,text='Use advanced ROI positioning?',var=win.mode,
@@ -103,7 +105,11 @@ def execute(master_window,dicomdir,images):
 	win.mode_label.grid(row=3,column=0,sticky='w')
 
 	win.roibutton.grid(row=4,column=0,sticky='ew')
-	win.measurebutton.grid(row=5,column=0,sticky='ew')
+	
+	win.n_holes_label.grid(row=5,column=0,sticky='sw')
+	win.n_holes_choice.grid(row=6,column=0,sticky='new')
+	
+	win.measurebutton.grid(row=7,column=0,sticky='ew')
 
 	win.im1.grid(row=0,column=0,sticky='nw')
 	win.im1.img_scrollbar.grid(row=1,column=0,sticky='ew')
@@ -220,6 +226,7 @@ def measure_res(win):
 	px_W = np.shape(px)[1]
 	
 	win.im2.load_images([px])
+	win.im2.update()
 	
 	px1 = px[:,0:win.roi_shape[1]/3]
 	px2 = px[:,win.roi_shape[1]/3:2*win.roi_shape[1]/3]
@@ -309,12 +316,23 @@ def measure_res(win):
 	area_overlap_2 = overlap((0.5*1.0),np.mean([image.xscale,image.yscale]))
 	area_overlap_3 = overlap((0.5*0.9),np.mean([image.xscale,image.yscale]))
 	print area_overlap_1,area_overlap_2,area_overlap_3
-	white1 = full_white*area_overlap_1
-	white2 = full_white*area_overlap_2
-	white3 = full_white*area_overlap_3
-	print black,white1,white2,white3
+	white11 = full_white*area_overlap_1
+	white10 = full_white*area_overlap_2
+	white09 = full_white*area_overlap_3
+	print black,white11,white10,white09
 	
-	roi_len = 7
+	if win.n_holes.get()=='3 hole method':
+		roi_len = 5
+	elif win.n_holes.get()=='4 hole method':
+		roi_len = 7
+	else:
+		print "Number of holes not decided properly - poorly coded!"
+	fft_len=32
+	
+	profiles = []
+	fft_results = []
+	
+	z = win.im2.zoom_factor
 	
 	# For each set of holes,
 	for i in range(3):
@@ -326,37 +344,108 @@ def measure_res(win):
 		max_y_ver = 0
 		result_hor = 0
 		result_ver = 0
+		profile_temp_hor = []
+		profile_temp_ver = []
 		#cycle through hor profiles
 		for y in range(px_H):
 			for x in range(i*px_W/3,((i+1)*px_W)/3-roi_len):
-				#THIS IS TOO SLOW. JUST GRAB PIXELS FROM ARRAY.
-				win.im2.delete_rois()
-				win.im2.roi_rectangle(x,y,roi_len,1,system='image')
+				win.im2.delete('temp')
+				profile = px[y,x:x+roi_len].flatten()
+				win.im2.create_rectangle((x*z,y*z,(x+roi_len)*z,(y+1)*z),outline='yellow',tags='temp')
 				win.im2.update()
-				#~ time.sleep(0.5)
+				transform = np.fft.fft(profile,fft_len)
+				
+				if abs(transform[fft_len/2])>max_tail_hor and (0.5<profile[0]/profile[-1]<1.5 or 0.5<profile[-1]/profile[0]<1.5):
+					max_tail_hor = abs(transform[fft_len/2])
+					max_x_hor = x
+					max_y_hor = y
+					result_hor = abs(transform[fft_len/2])/abs(transform[0])
+					profile_temp_hor = np.array(profile)
+		win.im2.delete('temp')
 		
 		#cycle through ver profiles
 		for y in range(px_H-roi_len):
 			for x in range(i*px_W/3,((i+1)*px_W)/3):
-				win.im2.delete_rois()
-				win.im2.roi_rectangle(x,y,1,roi_len,system='image')
+				win.im2.delete('temp')
+				profile = px[y:y+roi_len,x].flatten()
+				win.im2.create_rectangle((x*z,y*z,(x+1)*z,(y+roi_len)*z),outline='yellow',tags='temp')
 				win.im2.update()
-				#~ time.sleep(0.5)
-		print "Done "+str(i)
+				transform = np.fft.fft(profile,fft_len)
+				
+				if abs(transform[fft_len/2])>max_tail_ver and (0.5<profile[0]/profile[-1]<1.5 or 0.5<profile[-1]/profile[0]<1.5):
+					max_tail_ver = abs(transform[fft_len/2])
+					max_x_ver = x
+					max_y_ver = y
+					result_ver = abs(transform[fft_len/2])/abs(transform[0])
+					profile_temp_ver = np.array(profile)
+		win.im2.delete('temp')
+		win.im2.create_rectangle((max_x_hor*z,max_y_hor*z,(max_x_hor+roi_len)*z,(max_y_hor+1)*z),outline='magenta',tags='final')
+		win.im2.create_rectangle((max_x_ver*z,max_y_ver*z,(max_x_ver+1)*z,(max_y_ver+roi_len)*z),outline='magenta',tags='final')
+		
+		profiles.append(profile_temp_hor)
+		profiles.append(profile_temp_ver)
+		fft_results.append(result_hor)
+		fft_results.append(result_ver)
+		
+	fft_array = np.array(fft_results)
+	
+	# MTF results from FFT
+	mtf11_fft = np.mean(fft_array[0:2])*(np.pi/4)
+	mtf10_fft = np.mean(fft_array[2:4])*(np.pi/4)
+	mtf09_fft = np.mean(fft_array[4:6])*(np.pi/4)
+	
+	# MTF results from profiles and CTF
+	contrast_11_h = abs((np.max(profiles[0])-np.min(profiles[0]))/(np.max(profiles[0])+np.min(profiles[0])))
+	contrast_11_v = abs((np.max(profiles[1])-np.min(profiles[1]))/(np.max(profiles[1])+np.min(profiles[1])))
+	contrast_10_h = abs((np.max(profiles[2])-np.min(profiles[2]))/(np.max(profiles[2])+np.min(profiles[2])))
+	contrast_10_v = abs((np.max(profiles[3])-np.min(profiles[3]))/(np.max(profiles[3])+np.min(profiles[3])))
+	contrast_09_h = abs((np.max(profiles[4])-np.min(profiles[4]))/(np.max(profiles[4])+np.min(profiles[4])))
+	contrast_09_v = abs((np.max(profiles[5])-np.min(profiles[5]))/(np.max(profiles[5])+np.min(profiles[5])))
+	
+	contrast_11_ideal = (white11-black)/(white11+black)
+	contrast_10_ideal = (white10-black)/(white10+black)
+	contrast_09_ideal = (white09-black)/(white09+black)
+	
+	ctf_11_h = contrast_11_h/contrast_11_ideal
+	ctf_11_v = contrast_11_v/contrast_11_ideal
+	ctf_10_h = contrast_10_h/contrast_10_ideal
+	ctf_10_v = contrast_10_v/contrast_10_ideal
+	ctf_09_h = contrast_09_h/contrast_09_ideal
+	ctf_09_v = contrast_09_v/contrast_09_ideal
+	
+	mtf11_ctf = np.mean([ctf_11_h,ctf_11_v])*np.pi/4
+	mtf10_ctf = np.mean([ctf_10_h,ctf_10_v])*np.pi/4
+	mtf09_ctf = np.mean([ctf_09_h,ctf_09_v])*np.pi/4
+	
+	print "FFT based results"
+	print mtf11_fft,mtf10_fft,mtf09_fft
+	print "CTF based results"
+	print mtf11_ctf,mtf10_ctf,mtf09_ctf
 	
 
-	#~ clear_output(win)
-	#~ output(win,'Measured across central 75% of phantom\n')
-
-	#~ output(win,"Integral uniformity (ACR) = "+str(np.round(int_uniformity*100,1))+" %\n")
-
-	#~ output(win,"Fractional uniformity (Horizontal) = "+str(np.round(h_uni*100,1))+" %")
-	#~ output(win,"Fractional uniformity (Vertical) = "+str(np.round(v_uni*100,1))+" %")
-
-	#~ output(win,'\nThe following can be copied and pasted directly into MS Excel or similar')
-	#~ output(win,'\nX (mm)\tHorizontal\tY (mm)\tVertical')
-	#~ for row in range(len(profile_h)):
-		#~ output(win,str(x[row]*xscale)+'\t'+str(profile_h[row])+'\t'+str(y[row]*yscale)+'\t'+str(profile_v[row]))
-#~ #	win.im1.grid(row=0,column=0,sticky='nw')
-	#~ win.outputbox.see('1.0')
-#~ #	win.update()
+	clear_output(win)
+	output(win,'MTF measured using FFT of hole profiles')
+	output(win,'1.1mm holes: {v:=.1f} %'.format(v=mtf11_fft*100))
+	output(win,'1.0mm holes: {v:=.1f} %'.format(v=mtf10_fft*100))
+	output(win,'0.9mm holes: {v:=.1f} %'.format(v=mtf09_fft*100))
+	
+	output(win,'\nMTF measured using CTF from max/min of hole profiles')
+	output(win,'1.1mm holes: {v:=.1f} %'.format(v=mtf11_ctf*100))
+	output(win,'1.0mm holes: {v:=.1f} %'.format(v=mtf10_ctf*100))
+	output(win,'0.9mm holes: {v:=.1f} %'.format(v=mtf09_ctf*100))
+	
+	output(win,'\nWhite and black values corrected for hole size')
+	output(win,'Black: {v:=.2f}'.format(v=black))
+	output(win,'White (raw): {v:=.2f}'.format(v=full_white))
+	output(win,'White (1.1mm): {v:=.2f}'.format(v=white11))
+	output(win,'White (1.0mm): {v:=.2f}'.format(v=white10))
+	output(win,'White (0.9mm): {v:=.2f}'.format(v=white09))
+	
+	output(win,'\nProfiles for MS Excel')
+	output(win,'1.1 hor\t1.1 ver\t1.0 hor\t1.0 ver\t0.9 hor\t0.9 ver')
+	for i in range(roi_len):
+		output(win,'{a:=.2f}\t{b:=.2f}\t{c:=.2f}\t{d:=.2f}\t{e:=.2f}\t{f:=.2f}'.format(
+			a=profiles[0][i],b=profiles[1][i],c=profiles[2][i],d=profiles[3][i],e=profiles[4][i],f=profiles[5][i]))
+			
+	win.outputbox.see('1.0')
+	win.update()
