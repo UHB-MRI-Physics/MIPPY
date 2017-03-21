@@ -108,11 +108,23 @@ class ToolboxHome(Frame):
 		
 		if 'darwin' in sys.platform or 'linux' in sys.platform:
 			self.tempdir = '/tmp/MIPPY_temp_'+self.user
+			
 		elif 'win' in sys.platform:
-			self.tempdir = r'C:\Temp\MIPPY_temp_'+self.user
+			sys_temp  = os.getenv("TEMP",r'C:\TEMP')
+			self.tempdir = os.path.join(sys_temp,"MIPPY_temp_"+self.user)
 		else:
 			tkMessageBox.showerror('ERROR', 'Unsupported operating system, please contact the developers.')
 			sys.exit()
+		if not os.path.exists(self.tempdir):
+			os.makedirs(self.tempdir)
+		
+		#~ if 'darwin' in sys.platform or 'linux' in sys.platform:
+			#~ self.tempdir = '/tmp/MIPPY_temp_'+self.user
+		#~ elif 'win' in sys.platform:
+			#~ self.tempdir = r'C:\Temp\MIPPY_temp_'+self.user
+		#~ else:
+			#~ tkMessageBox.showerror('ERROR', 'Unsupported operating system, please contact the developers.')
+			#~ sys.exit()
 #		print self.tempdir
 
 		# Create menu bar for the top of the window
