@@ -246,9 +246,9 @@ def measure_sliceprofile(win):
 	xscale = win.im1.get_active_image().xscale
 	yscale = win.im1.get_active_image().yscale
 	
-	slice_thickness = 0.2*(diff_a * diff_b)/(diff_a-diff_b)*xscale
+	slice_thickness = 0.2*(diff_a * diff_b)/(diff_a+diff_b)*xscale
 	
-	slthk_rob = np.mean([0.1*diff_a,0.1*diff_b])*xscale
+	#~ slthk_rob = np.mean([0.1*diff_a,0.1*diff_b])*xscale
 	
 
 
@@ -256,9 +256,9 @@ def measure_sliceprofile(win):
 
 
 	clear_output(win)
-
-	output(win,"Slice width = "+str(np.round(slice_thickness,2))+" mm\n")
-	output(win,"Slice width (Rob) = "+str(np.round(slthk_rob,2))+" mm\n")
+	
+	#~ output(win,"Slice width (Mean FWHM) = "+str(np.round(slthk_rob,2))+" mm")
+	output(win,"Slice width: {v:=.2f} mm".format(v=slice_thickness))
 
 	output(win,'\nThe following can be copied and pasted directly into MS Excel or similar')
 	output(win,'\nX1 (mm)\tValue\tX2 (mm)\tValue')

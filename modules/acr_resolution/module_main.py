@@ -60,7 +60,7 @@ def execute(master_window,dicomdir,images):
 	win = Toplevel(master_window)
 	gc.collect()
 
-	win.im1 = MIPPYCanvas(win,width=200,height=200,drawing_enabled=True)
+	win.im1 = MIPPYCanvas(win,width=340,height=340,drawing_enabled=True)
 	win.im1.img_scrollbar = Scrollbar(win,orient='horizontal')
 	win.im1.configure_scrollbar()
 	win.toolbar = Frame(win)
@@ -94,7 +94,7 @@ def execute(master_window,dicomdir,images):
 					wraplength=200,justify=LEFT)
 					
 	# Create extra canvas for viewing just the resolution insert
-	win.im2 = MIPPYCanvas(win,width=408,height=144,drawing_enabled=True)
+	win.im2 = MIPPYCanvas(win,width=340,height=120,drawing_enabled=True)
 	# im2 scrollbar is created but never displayed
 	win.im2.img_scrollbar = Scrollbar(win)
 	win.im2.antialias=False
