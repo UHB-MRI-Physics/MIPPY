@@ -203,6 +203,10 @@ def roi_reset(win):
 
 	xspc = radius_x*0.75-dim*1.2
 	yspc = radius_y*0.75-dim*1.2
+	
+	# Comment this out to use phantom-adjusted spacing
+	#~ xspc = 40
+	#~ yspc = 40
 
 	# Add five ROI's
 	win.im1.roi_rectangle(xc-dim,yc-yspc-dim,dim*2,dim*2,tags=['top'],system='image')
@@ -229,7 +233,7 @@ def snr_calc(win):
 	clear_info(win)
 	count=0
 	
-	for element in win.images[0][imnum1]:
+	for element in win.images[0][imnum1-1]:
 		#~ print element
 		#~ print element.tag
 		#~ print element.value
@@ -237,9 +241,9 @@ def snr_calc(win):
 		#~ break
 		val1 = element.value
 		try:
-			val2 = win.images[1][imnum2][element.tag].value
+			val2 = win.images[1][imnum2-1][element.tag].value
 		except:
-			info(win,'MISSING TAG: '+str(element.name)+'\n')
+			info(win,'\nMISSING TAG: '+str(element.name))
 			continue
 		exclude_list = ['UID',
 					'REFERENCED IMAGE SEQUENCE',
@@ -282,11 +286,11 @@ def snr_calc(win):
 	
 	clear_output(win)
 	output(win,'SNR: {v:=.2f}'.format(v=np.mean(snr_list)))
-	output(win,'Bandwidth (Hz/px): {v:=.2f}'.format(v=win.images[0][imnum1].PixelBandwidth))
+	output(win,'Bandwidth (Hz/px): {v:=.2f}'.format(v=win.images[0][imnum1-1].PixelBandwidth))
 	output(win,'Prescribed voxel size (mm): {x:=.2f} / {y:=.2f} / {s:=.2f}'.format(
 			x=win.im1.get_active_image().xscale,
 			y=win.im1.get_active_image().yscale,
-			s=win.images[0][imnum1].SliceThickness))
+			s=win.images[0][imnum1-1].SliceThickness))
 	
 	output(win,'\nMS Excel Results Table')
 	output(win,'Region\tArea\tMean\tStd Dev\tMin\tMax')
