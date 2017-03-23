@@ -8,6 +8,7 @@ import scipy.stats as sps
 from datetime import datetime
 import scipy.ndimage.interpolation as spim
 import gc
+import time
 
 ########################################
 ########################################
@@ -155,11 +156,14 @@ def get_global_min_and_max(image_list):
 	"""
 	min = np.amin(image_list[0].px_float)
 	max = np.amax(image_list[0].px_float)
-	for image in image_list:
-		if np.amin(image.px_float) < min:
-			min = np.amin(image.px_float)
-		if np.amax(image.px_float) > max:
-			max = np.amax(image.px_float)
+	for image in image_list[1:]:
+		newmin = np.min(image.px_float)
+		newmax = np.max(image.px_float)
+		
+		if newmin < min:
+			min = newmin
+		if newmax > max:
+			max = newmax
 	return min,max
 
 def bits_to_ndarray(bits, shape):
@@ -362,14 +366,6 @@ class MIPPYCanvas(Canvas):
 		self.img_scrollbar=None
 		self.antialias = True
 
-#	def shift_down(self,event):
-#		self.shift = True
-#		print "SHIFT DOWN"
-#
-#	def shift_up(self,event):
-#		self.shift = False
-#		print "SHIFT UP"
-
 	def configure_scrollbar(self):
 		if self.img_scrollbar:
 			self.img_scrollbar.config(command=self.scroll_images)
@@ -414,7 +410,6 @@ class MIPPYCanvas(Canvas):
 		self.delete('image')
 		self.create_image((0,0),image=self.images[self.active-1].photoimage,anchor='nw',tags='image')
 		self.tag_lower('image')
-		#~ self.redraw_rois()
 	
 	def quick_redraw_image(self):
 		try:
@@ -462,15 +457,11 @@ class MIPPYCanvas(Canvas):
 					if self.roi_list[i].contains((x*self.zoom_factor,y*self.zoom_factor)):
 						px[j].append(im.px_float[y][x])
 					j+=1
-
-
 		return px
 
 	def get_roi_statistics(self,rois=[],tags=[]):
 		if len(self.roi_list)<1:
 			return None
-#		else:
-#			stats = []
 		if self.roi_list[0].roi_type=='line':
 			return None
 		px_list = self.get_roi_pixels(rois=rois,tags=tags)
@@ -496,29 +487,9 @@ class MIPPYCanvas(Canvas):
 	def get_profile(self,resolution=1,width=1,interpolate=False,direction='horizontal',index=0):
 		"""Returns a line profile from the image"""
 
-#		if len(tags)==0:
-#			if not len(self.roi_list)==1:
-#				return None
-#			rois = self.roi_list
-#
-#		else:
-#			rois = []
-#			for roi in self.roi_list:
-#				if all(tags) in roi.tags:
-#					rois.append(roi)
-#		if len(rois)>1:
-#			print "Too many ROI's found."
-#			return None
-
-
-		#~ print self.roi_list[index].roi_type
 		if not (self.roi_list[index].roi_type=='line' or self.roi_list[index].roi_type=='rectangle'):
 			print "Not a valid ROI type for profile.  Line or rectangle required."
 			return None
-#		if self.shift:
-#			direction='vertical'
-#		else:
-#			direction='horizontal'
 
 		roi = self.roi_list[index]
 		coords = roi.coords/self.zoom_factor
@@ -642,32 +613,31 @@ class MIPPYCanvas(Canvas):
 		self.images = []
 		self.delete('all')
 		n=0
-#		open_ds = None
-#		current_path = None
+		
+		print "Generating MIPPYImage objects"
 		for ref in image_list:
 			self.progress(45.*n/len(image_list)+10)
 			self.images.append(MIPPYImage(ref))
 			n+=1
 
-		#~ for image in self.images:
-			#~ image.resize(self.width,self.height)
-			#~ image.zoom(self.zoom_factor)
-
 		self.global_min,self.global_max = get_global_min_and_max(self.images)
-		self.global_rangemin = self.images[0].rangemin
-		self.global_rangemax = self.images[0].rangemax
-		self.fullrange = self.global_rangemax-self.global_rangemin
+		#~ self.global_rangemin = self.images[0].rangemin
+		#~ self.global_rangemax = self.images[0].rangemax
+		self.fullrange = self.global_min-self.global_max
 		self.default_window = self.global_max-self.global_min
 		self.default_level = self.global_min + self.default_window/2
 		self.level = self.default_level
 		self.window = self.default_window
-		self.zoom_factor = np.amin([float(self.width)/float(self.images[0].columns),float(self.height)/float(self.images[0].rows)])
+		self.zoom_factor = np.min([float(self.width)/float(self.images[0].columns),float(self.height)/float(self.images[0].rows)])
 
+		print "Generating PILLOW images"
 		for i in range(len(self.images)):
 			self.progress(45.*i/len(self.images)+55)
-			if not self.zoom_factor==1.:
-				self.images[i].zoom(self.zoom_factor,antialias=self.antialias)
-			self.images[i].wl_and_display(window=self.window,level=self.level)
+			#~ if not self.zoom_factor==1.:
+				#~ print "Zooming"
+				#~ self.images[i].zoom(self.zoom_factor,antialias=self.antialias)
+			#~ print "Displaying"
+			self.images[i].wl_and_display(window=self.window,level=self.level,zoom=self.zoom_factor,antialias=self.antialias)
 		self.configure_scrollbar()
 		self.show_image(1)
 
@@ -821,8 +791,8 @@ class MIPPYCanvas(Canvas):
 		self.temp_level = self.level-ymove*(self.fullrange/level_sensitivity)
 		if self.temp_window<min_window:
 			self.temp_window=min_window
-		if self.temp_level<self.global_rangemin+min_window/2:
-			self.temp_level=self.global_rangemin+min_window/2
+		if self.temp_level<self.global_min+min_window/2:
+			self.temp_level=self.global_min+min_window/2
 		self.images[i].wl_and_display(window=self.temp_window,level=self.temp_level)
 		self.quick_redraw_image()
 
@@ -926,7 +896,7 @@ class MIPPYImage():
 	I should type "actual" some more...
 	"""
 
-	def __init__(self,dicom_dataset):
+	def __init__(self,dicom_dataset,create_pillow=True):
 		if type(dicom_dataset) is str or type(dicom_dataset) is unicode:
 			ds = dicom.read_file(dicom_dataset)
 		elif type(dicom_dataset) is dicom.dataset.FileDataset:
@@ -975,7 +945,8 @@ class MIPPYImage():
 		#~ self.photoimage = ImageTk.PhotoImage(image)
 		self.image = None
 		self.photoimage = None
-		self.wl_and_display()
+		if create_pillow:
+			self.wl_and_display()
 		return
 
 	def construct_from_array(self,pixel_array):
@@ -1004,30 +975,51 @@ class MIPPYImage():
 							+ image_coords[1]*self.yscale*self.image_orientation[1])
 		return (voxel_position[0],voxel_position[1],voxel_position[2])
 
-	def wl_and_display(self,window=None,level=None):
+	def wl_and_display(self,window=None,level=None,zoom=None,antialias=True):
+		if antialias:
+			resampling=Image.ANTIALIAS
+		else:
+			resampling=Image.NEAREST
 		if window and level:
 			self.window = window
 			self.level = level
 		else:
 			self.window = self.rangemax-self.rangemin
 			self.level = (self.rangemax-self.rangemin)/2+self.rangemin
-		if self.image:
+		if zoom:
+			size=(int(np.round(np.shape(self.px_float)[1]*zoom,0)),int(np.round(np.shape(self.px_float)[0]*zoom,0)))
+		elif self.image:
 			size=self.image.size
 		else:
 			size=(np.shape(self.px_float)[1],np.shape(self.px_float)[0])
 
 		if self.level-self.rangemin<self.window/2:
 			self.window=2*(self.level-self.rangemin)
-		#~ elif self.rangemax-self.level<self.window/2:
-			#~ self.window = 2*(self.rangemax-self.level)
-
+		#~ start = time.time()
 		windowed_px = np.clip(self.px_float,self.level-self.window/2,self.level+self.window/2-1)
-		px_view = np.clip(((windowed_px-np.amin(windowed_px))/self.window * np.power(2,8)),0.,255.).astype(np.uint8)
+		px_view = np.clip(((windowed_px-np.min(windowed_px))/self.window * 256.),0.,255.).astype(np.uint8)
+		#~ end = time.time()
+		#~ time1 = end-start
+		
+		#~ start = time.time()
 		self.image = Image.fromarray(px_view, mode='L')
+		#~ end = time.time()
+		#~ time2 = end-start
+		
 		self.apply_overlay()
+		
+		#~ start = time.time()
 		if not size==self.image.size:
-			self.resize(size[0],size[1])
+			self.resize(size[0],size[1],resampling)
+		#~ end = time.time()
+		#~ time3 = end-start
+		
+		#~ start = time.time()
 		self.set_display_image()
+		#~ end = time.time()
+		#~ time4 = end-start
+		
+		#~ print time1,time2,time3,time4
 		return
 
 	def resize(self,dim1=256,dim2=256,antialias=True):
@@ -1055,7 +1047,7 @@ class MIPPYImage():
 
 	def set_display_image(self):
 		self.photoimage = ImageTk.PhotoImage(self.image)
-		gc.collect()
+		#~ gc.collect()
 		return
 
 class Slicer3D():

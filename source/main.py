@@ -468,8 +468,6 @@ class ToolboxHome(Frame):
 		return
 
 	def load_selected_module(self):
-#		print "DO NOTHING!"
-		gc.collect()
 		try:
 			moduledir = self.moduleframe.moduletree.selection()[0]
 			module_name = 'modules.'+moduledir+'.module_main'
@@ -494,7 +492,6 @@ class ToolboxHome(Frame):
 						"======================================\n\n")
 				print message
 				flatten_list = True
-			#~ if preload_dicom=='full':
 			if preload_dicom:
 				self.datasets_to_pass = []
 				previous_tag = None
@@ -537,7 +534,7 @@ class ToolboxHome(Frame):
 									self.datasets_to_pass[-1].append(split_ds)
 								save_temp_ds(split_ds,self.tempdir,tag['instanceuid']+'.mds')
 						previous_tag = tag
-					gc.collect()
+					#~ gc.collect()
 			else:
 				self.datasets_to_pass = []
 				previous_tag = None
@@ -556,8 +553,8 @@ class ToolboxHome(Frame):
 							else:
 								self.datasets_to_pass[-1].append(tag['path'])
 
-				gc.collect()
-			gc.collect()
+				#~ gc.collect()
+			#~ gc.collect()
 			if flatten_list:
 				self.datasets_to_pass = list(itertools.chain.from_iterable(self.datasets_to_pass))
 			active_module.execute(self.master,self.dicomdir,self.datasets_to_pass)
