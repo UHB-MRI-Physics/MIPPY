@@ -164,8 +164,8 @@ def reset_roi(win):
 		radius_y = 105./image.yscale
 		# Add other phantom dimensions here...
 
-	xdim = radius_x*0.75
-	ydim = radius_y*0.75
+	xdim = radius_x*np.sqrt(0.65)
+	ydim = radius_y*np.sqrt(0.65)
 
 	if xdim<ydim:
 		ydim=xdim
@@ -174,13 +174,16 @@ def reset_roi(win):
 
 	win.xdim = xdim
 	win.ydim = ydim
+	
+	xdim_rec = radius_x*0.80
+	ydim_rec = radius_y*0.80
 
 	roi_ellipse_coords = get_ellipse_coords(center,xdim,ydim)
 #	print roi_ellipse_coords
 	win.im1.new_roi(roi_ellipse_coords,tags=['e'],system='image')
 
-	win.im1.roi_rectangle(xc-xdim,yc-5,xdim*2,10,tags=['h'],system='image')
-	win.im1.roi_rectangle(xc-5,yc-ydim,10,ydim*2,tags=['v'],system='image')
+	win.im1.roi_rectangle(xc-xdim_rec,yc-5,xdim_rec*2,10,tags=['h'],system='image')
+	win.im1.roi_rectangle(xc-5,yc-ydim_rec,10,ydim_rec*2,tags=['v'],system='image')
 
 def measure_uni(win):
 	profile_h, x = win.im1.get_profile(direction='horizontal',index=1)
