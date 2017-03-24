@@ -252,3 +252,7 @@ def measure_ghosting(win):
 	output(win,'Central\t{m:=.2f}\t{s:=.2f}'.format(m=central['mean'][0],s=central['std'][0]))
 
 	win.outputbox.see('1.0')
+	
+	txt = win.outputbox.get('1.0',END)
+	from source.functions.file_functions import save_results
+	save_results(txt,name='GHOSTING')

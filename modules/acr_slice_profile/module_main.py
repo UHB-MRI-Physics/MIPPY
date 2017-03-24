@@ -267,3 +267,6 @@ def measure_sliceprofile(win):
 #	win.im1.grid(row=0,column=0,sticky='nw')
 	win.outputbox.see('1.0')
 #	win.update()
+	txt = win.outputbox.get('1.0',END)
+	from source.functions.file_functions import save_results
+	save_results(txt,name='SLICE_PROFILE')

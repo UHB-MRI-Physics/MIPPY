@@ -3,6 +3,7 @@ from ttk import *
 from source.functions.viewer_functions import *
 import source.functions.image_processing as imp
 from source.functions.file_functions import *
+import source.functions.dicom_functions as dcm
 import source.functions.misc_functions as mpy
 import tkMessageBox
 import os
@@ -159,7 +160,7 @@ def info(win,txt,red=False):
 def clear_info(win):
 	win.infobox.config(state=NORMAL)
 	win.infobox.delete('1.0', END)
-	win.infobox.insert(END,'DICOM HEADER CONFLICTS:')
+	win.infobox.insert(END,'DICOM HEADER CONFLICTS:\n')
 	win.infobox.config(state=DISABLED)
 	win.update()
 
@@ -217,6 +218,8 @@ def roi_reset(win):
 	win.order = ['Top','Right','Bottom','Left','Center']
 	return
 
+
+
 def snr_calc(win):
 	print "SNR calc"
 	#~ rois = win.im1.find_withtag('roi')
@@ -228,43 +231,17 @@ def snr_calc(win):
 	imnum2 = win.im2.active
 	
 	# Check image headers to ensure images are matched.
-	header_info = []
 	
 	clear_info(win)
-	count=0
-	
-	for element in win.images[0][imnum1-1]:
-		#~ print element
-		#~ print element.tag
-		#~ print element.value
-		#~ print win.images[1][imnum2][element.tag].value
-		#~ break
-		val1 = element.value
-		try:
-			val2 = win.images[1][imnum2-1][element.tag].value
-		except:
-			info(win,'\nMISSING TAG: '+str(element.name))
-			continue
-		exclude_list = ['UID',
-					'REFERENCED IMAGE SEQUENCE',
-					'SERIES TIME',
-					'ACQUISITION TIME',
-					'CONTENT TIME',
-					'CREATION TIME',
-					'PIXEL VALUE',
-					'WINDOW',
-					'CSA',
-					'PIXEL DATA',
-					'[', #private tags
-					']']
-		if not val1==val2:
-			if not any(s in element.name.upper() for s in exclude_list):
-				info(win,'\n'+element.name)
-				info(win,'1: '+str(val1),'highlight')
-				info(win,'2: '+str(val2),'highlight')
-				count+=1
-	if count==0:
+	diffs = dcm.compare_dicom(win.images[0][imnum1-1],win.images[1][imnum2-1])
+	if len(diffs)==0:
 		info(win,'\nNone detected')
+	else:
+		for row in diffs:
+			print row
+			info(win,'\n'+row[0]+':')
+			info(win,'1: '+row[1],red=True)
+			info(win,'2: '+row[2],red=True)
 	win.infobox.see('1.0')
 	
 	
@@ -286,7 +263,7 @@ def snr_calc(win):
 	
 	clear_output(win)
 	output(win,'SNR: {v:=.2f}'.format(v=np.mean(snr_list)))
-	output(win,'Bandwidth (Hz/px): {v:=.2f}'.format(v=win.images[0][imnum1-1].PixelBandwidth))
+	output(win,'Bandwidth (Hz/px): \t\t{v:=.2f}'.format(v=win.images[0][imnum1-1].PixelBandwidth))
 	output(win,'Prescribed voxel size (mm): {x:=.2f} / {y:=.2f} / {s:=.2f}'.format(
 			x=win.im1.get_active_image().xscale,
 			y=win.im1.get_active_image().yscale,
@@ -301,6 +278,10 @@ def snr_calc(win):
 		output(win,'NOI'+str(i+1)+' ('+win.order[i]+')\t{area:=.2f}\t{mean:=.2f}\t{std:=.2f}\t{min:=.2f}\t{max:=.2f}'.format(
 			area=noise['area_px'][i],mean=noise['mean'][i],std=noise['std'][i],min=noise['min'][i],max=noise['max'][i]))
 	win.outputbox.see('1.0')
+	
+	txt = win.outputbox.get('1.0',END)
+	from source.functions.file_functions import save_results
+	save_results(txt,name='SNR')
 	
 	
 

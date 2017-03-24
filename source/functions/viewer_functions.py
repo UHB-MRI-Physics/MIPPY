@@ -327,7 +327,7 @@ class ROI():
 
 
 class MIPPYCanvas(Canvas):
-	def __init__(self,master,width=256,height=256,bd=0,drawing_enabled=False):
+	def __init__(self,master,width=256,height=256,bd=0,drawing_enabled=False,autostats=False):
 		Canvas.__init__(self,master,width=width,height=height,bd=bd,bg='black')
 		self.master = master
 		self.zoom_factor = 1
@@ -365,6 +365,7 @@ class MIPPYCanvas(Canvas):
 		self.pixel_array=None
 		self.img_scrollbar=None
 		self.antialias = True
+		self.autostats = autostats
 
 	def configure_scrollbar(self):
 		if self.img_scrollbar:
@@ -761,6 +762,8 @@ class MIPPYCanvas(Canvas):
 			if len(self.roi_list)>0:
 				for roi in self.roi_list:
 					roi.update(total_xmove,total_ymove)
+		if self.autostats == True:
+			print self.get_roi_statistics()
 		self.tempcoords = []
 		self.tempx = None
 		self.tempy = None

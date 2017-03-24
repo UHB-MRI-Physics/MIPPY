@@ -43,7 +43,7 @@ def execute(master_window,dicomdir,images):
 		canvas_size=320
 	else:
 		canvas_size=512
-	window.imcanvas = MIPPYCanvas(window,bd=0,width=canvas_size,height=canvas_size,drawing_enabled=False)
+	window.imcanvas = MIPPYCanvas(window,bd=0,width=canvas_size,height=canvas_size,drawing_enabled=False,autostats=True)
 	# Open icons for button
 	window.roi_sq_im = ImageTk.PhotoImage(file='source/images/square_roi.png')
 	window.roi_el_im = ImageTk.PhotoImage(file='source/images/ellipse_roi.png')
