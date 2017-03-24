@@ -403,3 +403,7 @@ def measure_res(win):
 			
 	win.outputbox.see('1.0')
 	win.update()
+	
+	txt = win.outputbox.get('1.0',END)
+	from source.functions.file_functions import save_results
+	save_results(txt,name='RESOLUTION')

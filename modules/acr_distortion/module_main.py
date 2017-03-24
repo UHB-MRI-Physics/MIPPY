@@ -309,6 +309,10 @@ def measure_grid_distortion(win):
 		output(win,'{x:=.2f}\t{y:=.2f}'.format(x=xdistances[i],y=ydistances[i]))
 
 	win.outputbox.see('1.0')
+	
+	txt = win.outputbox.get('1.0',END)
+	from source.functions.file_functions import save_results
+	save_results(txt,name='DISTORTION_GRID')
 
 
 
@@ -461,3 +465,8 @@ def measure_profile_distortion(win):
 	for value in lengths[1:]:
 		output(win,'{v:=.2f}'.format(v=value*np.mean([xscale,yscale])))
 	win.outputbox.see('1.0')
+	
+	# Dump results to text file
+	txt = win.outputbox.get('1.0',END)
+	from source.functions.file_functions import save_results
+	save_results(txt,name='DISTORTION_PROFILES')

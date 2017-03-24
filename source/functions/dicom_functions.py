@@ -8,6 +8,51 @@ from viewer_functions import *
 import gc
 import cPickle as pickle
 
+def compare_dicom(ds1,ds2,diffs=None,num=None,name=''):
+	if diffs is None:
+		diffs = []
+		gc.collect()
+	if num:
+		num=' ('+str(num).zfill(4)+')'
+	else:
+		num=''
+	exclude_list = ['UID',
+				'REFERENCE',	# Don't care what localisers were used
+				'SERIES TIME',
+				'ACQUISITION TIME',
+				'CONTENT TIME',
+				'CREATION TIME',
+				'PIXEL VALUE',
+				'WINDOW',
+				'CSA',		# Still don't really know what CSA is
+				'PIXEL DATA',
+				'PADDING']
+	for element in ds1:
+		if any(s in element.name.upper() for s in exclude_list):
+			continue
+		val1 = element.value
+		try:
+			val2 = ds2[element.tag].value
+		except:
+			diffs.append((name+str(element.name)+num,str(val1),'--MISSING--'))
+			continue
+		if element.VR=="SQ":
+			for i in range(len(val1)):
+				compare_dicom(val1[i],val2[i],diffs=diffs,num=i,name=str(element.name)+' >> ')
+			continue
+		if not val1==val2:
+			if not any(s in element.name.upper() for s in exclude_list):
+				diffs.append((name+str(element.name)+num,str(val1),str(val2)))
+	for element in ds2:
+		val2 = element.value
+		try:
+			val1 = ds1[element.tag].value
+		except:
+			diffs.append((name+str(element.name)+num,'--MISSING--',str(val2)))
+			continue
+	
+	return diffs
+
 def get_px_array(ds,enhanced=False,instance=None):
 	try:
 		rs = float(ds[0x28,0x1053].value)

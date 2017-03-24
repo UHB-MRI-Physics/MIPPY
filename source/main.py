@@ -134,12 +134,17 @@ class ToolboxHome(Frame):
 		self.filemenu.add_command(label="Load image directory", command=lambda:self.load_image_directory())
 		self.filemenu.add_command(label="Refresh module list", command=lambda:self.scan_modules_directory())
 		self.filemenu.add_command(label="Exit program",command=lambda:self.exit_program())
+		# Create and populate "Image" menu
+		self.imagemenu = Menu(self.menubar,tearoff=0)
+		self.imagemenu.add_command(label="View DICOM header", command=lambda:self.view_header())
+		self.imagemenu.add_command(label="Compare DICOM headers", command=lambda:self.compare_headers())
 		# Create and populate "Help" menu
 		self.helpmenu = Menu(self.menubar, tearoff=0)
 		self.helpmenu.add_command(label="Open the wiki",command=lambda:self.load_wiki())
 		self.helpmenu.add_command(label="About...",command=lambda:self.display_version_info())
 		# Add menus to menubar and display menubar in window
 		self.menubar.add_cascade(label="File",menu=self.filemenu)
+		self.menubar.add_cascade(label="Image",menu=self.imagemenu)
 		self.menubar.add_cascade(label="Help",menu=self.helpmenu)
 		self.master.config(menu=self.menubar)
 
@@ -567,6 +572,57 @@ class ToolboxHome(Frame):
 	def clear_temp_dir(self):
 		if os.path.exists(self.tempdir):
 			shutil.rmtree(self.tempdir)
+			
+	def view_header(self):
+		if not hasattr(self, 'active_uids'):
+			tkMessageBox.showerror('ERROR','No image selected.')
+			return			
+		if len(self.active_uids)>1:
+			tkMessageBox.showerror('ERROR','You can only view header for a single image/slice at a time.')
+			return
+		if len(self.active_uids)<1:
+			tkMessageBox.showerror('ERROR','No image selected.')
+			return
+		for tag in self.sorted_list:
+			if tag['instanceuid'] in self.active_uids:
+				dcm_view = Toplevel(self.master)
+				dcm_view.text = Text(dcm_view,width=120,height=30)
+				dcm_view.text.insert(END,str(dicom.read_file(tag['path'])))
+				dcm_view.text.config(state='disabled')
+				dcm_view.text.see('1.0')
+				dcm_view.text.pack()
+		pass
+		
+	def compare_headers(self):
+		if not hasattr(self, 'active_uids'):
+			tkMessageBox.showerror('ERROR','No image selected.')
+			return
+		if len(self.active_uids)<1:
+			tkMessageBox.showerror('ERROR','No image selected.')
+			return
+		if not len(self.active_uids)==2:
+			tkMessageBox.showerror('ERROR','You can only compare headers for 2 single images/slices at a time.')
+			return
+		dicoms = []
+		for tag in self.sorted_list:
+			if tag['instanceuid'] in self.active_uids:
+				dicoms.append(dicom.read_file(tag['path']))
+		diffs = compare_dicom(*dicoms)
+		dcm_compare = Toplevel(self.master)
+		dcm_compare.text = Text(dcm_compare,width=120,height=30)
+		dcm_compare.text.tag_config('highlight', foreground='red')
+		dcm_compare.text.tag_config('unhighlight', foreground='black')
+		if len(diffs)==0:
+			dcm_compare.text.insert(END,'No differences found.')
+		else:
+			dcm_compare.text.insert(END,'DIFFERENCES IN DICOM HEADER (Some tags ignored)\n')
+			for row in diffs:
+				print row
+				dcm_compare.text.insert(END,'\n'+row[0]+':\n')
+				dcm_compare.text.insert(END,'1: '+row[1]+'\n','highlight')
+				dcm_compare.text.insert(END,'2: '+row[2]+'\n','highlight')
+		dcm_compare.text.config(state='disabled')
+		dcm_compare.text.pack()
 
 #########################################################
 """
