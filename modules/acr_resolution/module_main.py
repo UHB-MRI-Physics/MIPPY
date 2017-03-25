@@ -206,66 +206,81 @@ def measure_res(win):
 	px3 = px[:,2*win.roi_shape[1]/3:]
 
 	# Determine "black" and "white" values for MTF calculation
-	image = win.im1.get_active_image()
-	px_whole = image.px_float
 	
-	xc = win.xc
-	yc = win.yc
-	radius_x = win.radius_x
-	radius_y = win.radius_y
+	bbox = win.im1.roi_list[0].bbox
+	win.im1.roi_rectangle(bbox[0],bbox[1]-70,75,15,tags=['white'],color='blue')
+	win.im1.roi_rectangle(bbox[0]-18,bbox[1],15,15,tags=['black'],color='red')
 	
-	roi_top_c = (xc,yc-radius_y-17)
-	roi_rt_c = (xc+radius_x+17,yc)
-	roi_bot_c = (xc,yc+radius_y+17)
-	roi_lt_c = (xc-radius_y-17,yc)
-	roi_long = 45
-	roi_short = 8
+	black = win.im1.get_roi_statistics(tags=['black'])['mean'][0]
+	full_white = win.im1.get_roi_statistics(tags=['white'])['mean'][0]
+	print "Black",black
+	print "White",full_white
 	
-	win.im1.roi_ellipse(roi_top_c,roi_long,roi_short,tags=['top'],system='image')
-	win.im1.roi_ellipse(roi_rt_c,roi_short,roi_long,tags=['rt'],system='image')
-	win.im1.roi_ellipse(roi_bot_c,roi_long,roi_short,tags=['bot'],system='image')
-	win.im1.roi_ellipse(roi_lt_c,roi_short,roi_long,tags=['lt'],system='image')
 	
-	stats = win.im1.get_roi_statistics(rois=range(1,5))
-	means = stats['mean']
-	stds = stats['std']
-	areas = stats['area_px']
-	print "areas",areas
 	
-	H = win.im1.get_active_image().rows
-	W = win.im1.get_active_image().columns
+	#~ image = win.im1.get_active_image()
+	#~ px_whole = image.px_float
 	
-	roi_outside = False
-	replaced = []
+	#~ xc = win.xc
+	#~ yc = win.yc
+	#~ radius_x = win.radius_x
+	#~ radius_y = win.radius_y
 	
-	for i in range(4):
-		coords = np.column_stack(win.im1.image_coords(win.im1.roi_list[i].coords))
-		#~ if ((coords[0]<0).all() or (coords[0]>=W).all() or (coords[1]<0).all() or (coords[1]>=H).all()):
-		if (areas[i]<0.3*areas[i-2]):
-			roi_outside = True
-			if i==0:
-				means[i]=means[i-2]
-				stds[i]=stds[i-2]
-				replaced.append('  - TOP replaced by BOTTOM')
-			elif i==1:
-				means[i]=means[i-2]
-				stds[i]=stds[i-2]
-				replaced.append('  - RIGHT replaced by LEFT')
-			elif i==2:
-				means[i]=means[i-2]
-				stds[i]=stds[i-2]
-				replaced.append('  - BOTTOM replaced by TOP')
-			elif i==3:
-				means[i]=means[i-2]
-				stds[i]=stds[i-2]
-				replaced.append('  - LEFT replaced by RIGHT')
+	#~ roi_top_c = (xc,yc-radius_y-17)
+	#~ roi_rt_c = (xc+radius_x+17,yc)
+	#~ roi_bot_c = (xc,yc+radius_y+17)
+	#~ roi_lt_c = (xc-radius_y-17,yc)
+	#~ roi_long = 45
+	#~ roi_short = 8
+	
+	#~ win.im1.roi_ellipse(roi_top_c,roi_long,roi_short,tags=['top'],system='image')
+	#~ win.im1.roi_ellipse(roi_rt_c,roi_short,roi_long,tags=['rt'],system='image')
+	#~ win.im1.roi_ellipse(roi_bot_c,roi_long,roi_short,tags=['bot'],system='image')
+	#~ win.im1.roi_ellipse(roi_lt_c,roi_short,roi_long,tags=['lt'],system='image')
+	
+	#~ stats = win.im1.get_roi_statistics(rois=range(1,5))
+	#~ means = stats['mean']
+	#~ stds = stats['std']
+	#~ areas = stats['area_px']
+	#~ print "areas",areas
+	
+	#~ H = win.im1.get_active_image().rows
+	#~ W = win.im1.get_active_image().columns
+	
+	#~ roi_outside = False
+	#~ replaced = []
+	
+	#~ for i in range(4):
+		#~ coords = np.column_stack(win.im1.image_coords(win.im1.roi_list[i].coords))
+		#~ ###if ((coords[0]<0).all() or (coords[0]>=W).all() or (coords[1]<0).all() or (coords[1]>=H).all()):
+		#~ if (areas[i]<0.3*areas[i-2]):
+			#~ roi_outside = True
+			#~ if i==0:
+				#~ means[i]=means[i-2]
+				#~ stds[i]=stds[i-2]
+				#~ replaced.append('  - TOP replaced by BOTTOM')
+			#~ elif i==1:
+				#~ means[i]=means[i-2]
+				#~ stds[i]=stds[i-2]
+				#~ replaced.append('  - RIGHT replaced by LEFT')
+			#~ elif i==2:
+				#~ means[i]=means[i-2]
+				#~ stds[i]=stds[i-2]
+				#~ replaced.append('  - BOTTOM replaced by TOP')
+			#~ elif i==3:
+				#~ means[i]=means[i-2]
+				#~ stds[i]=stds[i-2]
+				#~ replaced.append('  - LEFT replaced by RIGHT')
 				
-	black = np.min([means[0]+means[2],means[1]+means[3]])/2
+	#~ black = np.min([means[0]+means[2],means[1]+means[3]])/2
 	
-	threshold = black*2
-	full_white = np.mean(px_whole[np.where(px_whole>threshold)])
+	#~ threshold = black*2
+	#~ full_white = np.mean(px_whole[np.where(px_whole>threshold)])
+	
+	
 	# Correct white value for "hole" area as a fraction of pixel area
 	# Compute overlapping area to get expected white value for each hole set
+	image = win.im1.get_active_image()
 	area_overlap_1 = overlap((0.5*1.1),np.mean([image.xscale,image.yscale]))
 	area_overlap_2 = overlap((0.5*1.0),np.mean([image.xscale,image.yscale]))
 	area_overlap_3 = overlap((0.5*0.9),np.mean([image.xscale,image.yscale]))
@@ -290,16 +305,16 @@ def measure_res(win):
 	
 	# For each set of holes,
 	for i in range(3):
-		max_tail_hor = 0
-		max_x_hor = 0
-		max_y_hor = 0
-		max_tail_ver = 0
-		max_x_ver = 0
-		max_y_ver = 0
-		result_hor = 0
-		result_ver = 0
-		profile_temp_hor = []
-		profile_temp_ver = []
+		max_tail_hor = [0]
+		max_x_hor = [0]
+		max_y_hor = [0]
+		max_tail_ver = [0]
+		max_x_ver = [0]
+		max_y_ver = [0]
+		result_hor = [0]
+		result_ver = [0]
+		profile_temp_hor = [0]
+		profile_temp_ver = [0]
 		#cycle through hor profiles
 		for y in range(px_H):
 			for x in range(i*px_W/3,((i+1)*px_W)/3-roi_len):
@@ -309,12 +324,23 @@ def measure_res(win):
 				win.im2.update()
 				transform = np.fft.fft(profile,fft_len)
 				
-				if abs(transform[fft_len/2])>max_tail_hor and (0.5<profile[0]/profile[-1]<1.5 or 0.5<profile[-1]/profile[0]<1.5):
-					max_tail_hor = abs(transform[fft_len/2])
-					max_x_hor = x
-					max_y_hor = y
-					result_hor = abs(transform[fft_len/2])/abs(transform[0])
-					profile_temp_hor = np.array(profile)
+				new_min = np.min(max_tail_hor)
+				
+				if abs(transform[fft_len/2])>new_min and (0.5<profile[0]/profile[-1]<1.5 or 0.5<profile[-1]/profile[0]<1.5):
+					if len(max_tail_hor)<4:
+						max_tail_hor.append(abs(transform[fft_len/2]))
+						max_x_hor .append(x)
+						max_y_hor.append(y)
+						result_hor.append(abs(transform[fft_len/2])/abs(transform[0]))
+						profile_temp_hor.append(np.array(profile))
+					else:
+						k = np.min([np.argmin(max_tail_hor)])
+						print k
+						max_tail_hor[k] = abs(transform[fft_len/2])
+						max_x_hor[k]=x
+						max_y_hor[k]=y
+						result_hor[k]=abs(transform[fft_len/2])/abs(transform[0])
+						profile_temp_hor[k]=np.array(profile)
 		win.im2.delete('temp')
 		
 		#cycle through ver profiles
@@ -326,20 +352,37 @@ def measure_res(win):
 				win.im2.update()
 				transform = np.fft.fft(profile,fft_len)
 				
-				if abs(transform[fft_len/2])>max_tail_ver and (0.5<profile[0]/profile[-1]<1.5 or 0.5<profile[-1]/profile[0]<1.5):
-					max_tail_ver = abs(transform[fft_len/2])
-					max_x_ver = x
-					max_y_ver = y
-					result_ver = abs(transform[fft_len/2])/abs(transform[0])
-					profile_temp_ver = np.array(profile)
+				new_min = np.min(max_tail_ver)
+				
+				if abs(transform[fft_len/2])>new_min and (0.5<profile[0]/profile[-1]<1.5 or 0.5<profile[-1]/profile[0]<1.5) and profile[0]>profile[1]:
+					if len(max_tail_ver)<4:
+						max_tail_ver.append(abs(transform[fft_len/2]))
+						max_x_ver .append(x)
+						max_y_ver.append(y)
+						result_ver.append(abs(transform[fft_len/2])/abs(transform[0]))
+						profile_temp_ver.append(np.array(profile))
+					else:
+						k = np.min([np.argmin(max_tail_ver)])
+						print k
+						max_tail_ver[k] = abs(transform[fft_len/2])
+						max_x_ver[k]=x
+						max_y_ver[k]=y
+						result_ver[k]=abs(transform[fft_len/2])/abs(transform[0])
+						profile_temp_ver[k]=np.array(profile)
+		best_hor = np.argmax((np.ptp(a)[0] for a in profile_temp_hor))
+		best_ver = np.argmax((np.ptp(a)[0] for a in profile_temp_ver))
+		old_hor = np.argmax(max_tail_hor)
+		old_ver = np.argmax(max_tail_ver)
 		win.im2.delete('temp')
-		win.im2.create_rectangle((max_x_hor*z,max_y_hor*z,(max_x_hor+roi_len)*z,(max_y_hor+1)*z),outline='magenta',tags='final')
-		win.im2.create_rectangle((max_x_ver*z,max_y_ver*z,(max_x_ver+1)*z,(max_y_ver+roi_len)*z),outline='magenta',tags='final')
+		win.im2.create_rectangle((max_x_hor[old_hor]*z,max_y_hor[old_hor]*z,(max_x_hor[old_hor]+roi_len)*z,(max_y_hor[old_hor]+1)*z),outline='magenta',tags='final')
+		win.im2.create_rectangle((max_x_ver[old_hor]*z,max_y_ver[old_hor]*z,(max_x_ver[old_hor]+1)*z,(max_y_ver[old_hor]+roi_len)*z),outline='magenta',tags='final')
+		win.im2.create_rectangle((max_x_hor[best_hor]*z,max_y_hor[best_hor]*z,(max_x_hor[best_hor]+roi_len)*z,(max_y_hor[best_hor]+1)*z),outline='green',tags='final')
+		win.im2.create_rectangle((max_x_ver[best_ver]*z,max_y_ver[best_ver]*z,(max_x_ver[best_ver]+1)*z,(max_y_ver[best_ver]+roi_len)*z),outline='green',tags='final')
 		
-		profiles.append(profile_temp_hor)
-		profiles.append(profile_temp_ver)
-		fft_results.append(result_hor)
-		fft_results.append(result_ver)
+		profiles.append(profile_temp_hor[best_hor])
+		profiles.append(profile_temp_ver[best_ver])
+		fft_results.append(np.max(result_hor))
+		fft_results.append(np.max(result_ver))
 		
 	fft_array = np.array(fft_results)
 	
