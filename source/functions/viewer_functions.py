@@ -1005,14 +1005,14 @@ class MIPPYImage():
 		return
 		
 	def rotate_right(self):
-		self.px_float = spim.rotate(self.px_float,90.,order=0,prefilter=False)
+		self.px_float = spim.rotate(self.px_float,270.,order=0,prefilter=False)
 		self.rotations += 1
 		self.swap_phase()
 		self.swap_dimensions()
 		return
 	
 	def rotate_left(self):
-		self.px_float = spim.rotate(self.px_float,270.,order=0,prefilter=False)
+		self.px_float = spim.rotate(self.px_float,90.,order=0,prefilter=False)
 		self.rotations -= 1
 		self.swap_phase()
 		self.swap_dimensions()

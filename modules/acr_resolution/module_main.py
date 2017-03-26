@@ -85,6 +85,21 @@ def execute(master_window,dicomdir,images):
 	win.n_holes_choice = OptionMenu(win.toolbar,win.n_holes,win.n_holes_options[1],*win.n_holes_options)
 	mpy.optionmenu_patch(win.n_holes_choice,win.n_holes)
 	
+	win.controlbox = Frame(win)
+	win.controlbox.rot_left = Button(win.controlbox,text="Rot L",command=lambda:rot_left(win.im1))
+	win.controlbox.rot_right = Button(win.controlbox,text="Rot R",command=lambda:rot_right(win.im1))
+	win.controlbox.flip_h = Button(win.controlbox,text="Flip H",command=lambda:flip_h(win.im1))
+	win.controlbox.flip_v = Button(win.controlbox,text="Flip V",command=lambda:flip_v(win.im1))
+	win.controlbox.rot_left.grid(row=0,column=0)
+	win.controlbox.rot_right.grid(row=0,column=1)
+	win.controlbox.flip_h.grid(row=0,column=2)
+	win.controlbox.flip_v.grid(row=0,column=3)
+	win.controlbox.rowconfigure(0,weight=0)
+	win.controlbox.columnconfigure(0,weight=1)
+	win.controlbox.columnconfigure(1,weight=1)
+	win.controlbox.columnconfigure(2,weight=1)
+	win.controlbox.columnconfigure(3,weight=1)
+	
 	
 	win.mode=StringVar()
 	win.mode.set('valid')
@@ -111,15 +126,18 @@ def execute(master_window,dicomdir,images):
 	
 	win.measurebutton.grid(row=7,column=0,sticky='ew')
 
-	win.im1.grid(row=0,column=0,sticky='nw')
-	win.im1.img_scrollbar.grid(row=1,column=0,sticky='ew')
+	win.im1.grid(row=1,column=0,sticky='nw')
+	win.im1.img_scrollbar.grid(row=2,column=0,sticky='ew')
 	win.toolbar.grid(row=0,column=1,rowspan=3,sticky='new')
-	win.im2.grid(row=2,column=0,sticky='nw')
-	win.outputbox.grid(row=3,column=0,columnspan=2,sticky='nsew')
+	win.controlbox.grid(row=0,column=0,sticky='nsew')
+	win.im2.grid(row=3,column=0,sticky='nw')
+	win.outputbox.grid(row=4,column=0,columnspan=2,sticky='nsew')
 
 	win.rowconfigure(0,weight=0)
 	win.rowconfigure(1,weight=0)
-	win.rowconfigure(2,weight=1)
+	win.rowconfigure(2,weight=0)
+	win.rowconfigure(3,weight=0)
+	win.rowconfigure(4,weight=0)
 	win.columnconfigure(0,weight=0)
 	win.columnconfigure(1,weight=1)
 
@@ -128,6 +146,30 @@ def execute(master_window,dicomdir,images):
 	win.im1.load_images(images)
 
 	return
+
+def rot_left(canvas):
+	for im in canvas.images:
+		im.rotate_left()
+		im.wl_and_display()
+	canvas.show_image()
+
+def rot_right(canvas):
+	for im in canvas.images:
+		im.rotate_right()
+		im.wl_and_display()
+	canvas.show_image()
+
+def flip_h(canvas):
+	for im in canvas.images:
+		im.flip_horizontal()
+		im.wl_and_display()
+	canvas.show_image()
+
+def flip_v(canvas):
+	for im in canvas.images:
+		im.flip_vertical()
+		im.wl_and_display()
+	canvas.show_image()
 
 def close_window(window):
 	"""Closes the window passed as an argument"""
