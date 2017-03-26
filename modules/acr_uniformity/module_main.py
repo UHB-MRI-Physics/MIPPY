@@ -49,6 +49,7 @@ def execute(master_window,dicomdir,images):
 	win.roibutton = Button(win.toolbar,text='Create/Reset ROIs',command=lambda:reset_roi(win))
 	win.measurebutton = Button(win.toolbar,text='Measure Uniformity',command=lambda:measure_uni(win))
 	win.outputbox = Text(win,state='disabled',height=10,width=80)
+	win.imageflipper = ImageFlipper(win,win.im1)
 
 	win.phantom_options = [
 		'ACR (TRA)',
@@ -72,23 +73,31 @@ def execute(master_window,dicomdir,images):
 								onvalue='same',offvalue='valid')
 	win.mode_label = Label(win.toolbar,text='N.B. Advanced positioning is much slower, but accounts for the phantom not being fully contained in the image.',
 					wraplength=200,justify=LEFT)
+	win.percent_area = StringVar()
+	win.percent_area_label=Label(win.toolbar,text='Percentage phantom area to use:')
+	win.percent_area_box = Entry(win.toolbar,text='Percentage Area:',textvariable=win.percent_area)
+	win.percent_area.set('60')
 
 	win.phantom_label.grid(row=0,column=0,sticky='w')
 	win.phantom_choice.grid(row=1,column=0,sticky='ew')
 	win.advanced_checkbox.grid(row=2,column=0,sticky='w')
 	win.mode_label.grid(row=3,column=0,sticky='w')
 
-	win.roibutton.grid(row=4,column=0,sticky='ew')
-	win.measurebutton.grid(row=5,column=0,sticky='ew')
+	win.roibutton.grid(row=6,column=0,sticky='ew')
+	win.measurebutton.grid(row=7,column=0,sticky='ew')
+	win.percent_area_label.grid(row=4,column=0,sticky='sew')
+	win.percent_area_box.grid(row=5,column=0,sticky='sew')
 
-	win.im1.grid(row=0,column=0,sticky='nw')
-	win.im1.img_scrollbar.grid(row=1,column=0,sticky='ew')
-	win.toolbar.grid(row=0,column=1,rowspan=2,sticky='new')
-	win.outputbox.grid(row=2,column=0,columnspan=2,sticky='nsew')
+	win.im1.grid(row=1,column=0,sticky='nw')
+	win.imageflipper.grid(row=0,column=0,sticky='nsew')
+	win.im1.img_scrollbar.grid(row=2,column=0,sticky='ew')
+	win.toolbar.grid(row=0,column=1,rowspan=3,sticky='new')
+	win.outputbox.grid(row=3,column=0,columnspan=2,sticky='nsew')
 
 	win.rowconfigure(0,weight=0)
 	win.rowconfigure(1,weight=0)
-	win.rowconfigure(2,weight=1)
+	win.rowconfigure(2,weight=0)
+	win.rowconfigure(3,weight=1)
 	win.columnconfigure(0,weight=0)
 	win.columnconfigure(1,weight=1)
 
@@ -164,8 +173,10 @@ def reset_roi(win):
 		radius_y = 105./image.yscale
 		# Add other phantom dimensions here...
 
-	xdim = radius_x*np.sqrt(0.65)
-	ydim = radius_y*np.sqrt(0.65)
+
+	percent_area = float(win.percent_area.get())
+	xdim = radius_x*np.sqrt(percent_area/100)
+	ydim = radius_y*np.sqrt(percent_area/100)
 
 	if xdim<ydim:
 		ydim=xdim
@@ -175,11 +186,10 @@ def reset_roi(win):
 	win.xdim = xdim
 	win.ydim = ydim
 	
-	xdim_rec = radius_x*0.80
-	ydim_rec = radius_y*0.80
+	xdim_rec = xdim
+	ydim_rec = ydim
 
 	roi_ellipse_coords = get_ellipse_coords(center,xdim,ydim)
-#	print roi_ellipse_coords
 	win.im1.new_roi(roi_ellipse_coords,tags=['e'],system='image')
 
 	win.im1.roi_rectangle(xc-xdim_rec,yc-5,xdim_rec*2,10,tags=['h'],system='image')
@@ -228,7 +238,7 @@ def measure_uni(win):
 
 	# INTEGRAL UNIFORMITY
 	convolve_radius = np.round(np.sqrt(100/np.pi),0)	# Gives 100px circular area
-	mask = np.zeros((int(convolve_radius*2+1),int(convolve_radius*2+1))).astype(np.float64)
+	mask = np.zeros((int(convolve_radius*2+3),int(convolve_radius*2+3))).astype(np.float64)
 	for j in range(np.shape(mask)[0]):
 		for i in range(np.shape(mask)[1]):
 			if (i-convolve_radius-1)**2+(j-convolve_radius-1)**2 < convolve_radius**2:
@@ -236,6 +246,7 @@ def measure_uni(win):
 	area = np.sum(mask)
 	mask = mask/area
 	area_str = str(np.round(area,1))
+	print area_str
 
 	px = np.copy(win.im1.get_active_image().px_float)
 	px_smooth = convolve2d(px,mask,mode='same',boundary='fill',fillvalue=0)
@@ -247,7 +258,7 @@ def measure_uni(win):
 #	win.hiddencanvas.grid(row=0,column=0,sticky='nw')
 #	win.update()
 	win.hiddencanvas.roi_list = [win.im1.roi_list[0]]
-	stats = win.hiddencanvas.get_roi_statistics()
+	stats = win.hiddencanvas.get_roi_statistics(tags=['e'])
 	int_uniformity = 1. - (stats['max'][0]-stats['min'][0])/(stats['max'][0]+stats['min'][0])
 
 
@@ -255,7 +266,7 @@ def measure_uni(win):
 
 
 	clear_output(win)
-	output(win,'Measured across central 75% of phantom\n')
+	output(win,'Measured across central {v:=.0f}% of phantom area\n'.format(v=float(win.percent_area.get())))
 
 	output(win,"Integral uniformity (ACR) = "+str(np.round(int_uniformity*100,1))+" %\n")
 	

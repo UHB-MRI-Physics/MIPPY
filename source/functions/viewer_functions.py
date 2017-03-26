@@ -154,8 +154,8 @@ def get_global_min_and_max(image_list):
 	"""
 	Will only work with MIPPY_8bitviewer type objects
 	"""
-	min = np.amin(image_list[0].px_float)
-	max = np.amax(image_list[0].px_float)
+	min = np.min(image_list[0].px_float)
+	max = np.max(image_list[0].px_float)
 	for image in image_list[1:]:
 		newmin = np.min(image.px_float)
 		newmax = np.max(image.px_float)
@@ -269,7 +269,7 @@ def get_ellipse_coords(center,a,b,n=128):
 ########################################
 
 class ROI():
-	def __init__(self,coords,roi_type=None,tags=[]):
+	def __init__(self,coords,tags=[],roi_type=None):
 		"""
 		Expecting a string of 2- or 3-tuples to define bounding coordinates.
 		Type of ROI will be inferred from number of points.
@@ -323,6 +323,52 @@ class ROI():
 	#~ def generate_mask(self):
 		#~ pass
 
+class ImageFlipper(Frame):
+	def __init__(self,master,canvas):
+		Frame.__init__(self,master)
+		self.canvas = canvas
+		self.rot_left_button = Button(self,text="Rot L",command=lambda:self.rot_left(canvas))
+		self.rot_right_button = Button(self,text="Rot R",command=lambda:self.rot_right(canvas))
+		self.flip_h_button = Button(self,text="Flip H",command=lambda:self.flip_h(canvas))
+		self.flip_v_button = Button(self,text="Flip V",command=lambda:self.flip_v(canvas))
+		self.rot_left_button.grid(row=0,column=0,sticky='nsew')
+		self.rot_right_button.grid(row=0,column=1,sticky='nsew')
+		self.flip_h_button.grid(row=0,column=2,sticky='nsew')
+		self.flip_v_button.grid(row=0,column=3,sticky='nsew')
+		self.rowconfigure(0,weight=0)
+		self.columnconfigure(0,weight=1)
+		self.columnconfigure(1,weight=1)
+		self.columnconfigure(2,weight=1)
+		self.columnconfigure(3,weight=1)
+		return
+	
+	def rot_left(self,canvas):
+		for im in canvas.images:
+			im.rotate_left()
+			im.wl_and_display()
+		canvas.show_image()
+		return
+
+	def rot_right(self,canvas):
+		for im in canvas.images:
+			im.rotate_right()
+			im.wl_and_display()
+		canvas.show_image()
+		return
+
+	def flip_h(self,canvas):
+		for im in canvas.images:
+			im.flip_horizontal()
+			im.wl_and_display()
+		canvas.show_image()
+		return
+
+	def flip_v(self,canvas):
+		for im in canvas.images:
+			im.flip_vertical()
+			im.wl_and_display()
+		canvas.show_image()
+		return
 
 
 
@@ -550,8 +596,10 @@ class MIPPYCanvas(Canvas):
 				#~ j=0
 			#~ tags.append('roi')
 			#~ self.create_line((coords[i][0],coords[i][1],coords[j][0],coords[j][1]),fill=color,width=1,tags=tags)
+		if not 'roi' in tags:
+			tags.append('roi')
 		self.draw_roi(coords,tags=tags,color=color)
-		self.add_roi(coords)
+		self.add_roi(coords,tags)
 #		print "ROI should be on image now..."
 		return
 	
@@ -624,7 +672,7 @@ class MIPPYCanvas(Canvas):
 		self.global_min,self.global_max = get_global_min_and_max(self.images)
 		#~ self.global_rangemin = self.images[0].rangemin
 		#~ self.global_rangemax = self.images[0].rangemax
-		self.fullrange = self.global_min-self.global_max
+		self.fullrange = self.global_max-self.global_min
 		self.default_window = self.global_max-self.global_min
 		self.default_level = self.global_min + self.default_window/2
 		self.level = self.default_level
@@ -796,7 +844,7 @@ class MIPPYCanvas(Canvas):
 			self.temp_window=min_window
 		if self.temp_level<self.global_min+min_window/2:
 			self.temp_level=self.global_min+min_window/2
-		self.images[i].wl_and_display(window=self.temp_window,level=self.temp_level)
+		self.images[i].wl_and_display(window=self.temp_window,level=self.temp_level,antialias=self.antialias)
 		self.quick_redraw_image()
 
 	def right_release(self,event):
@@ -804,11 +852,11 @@ class MIPPYCanvas(Canvas):
 			return
 		self.set_window_level(self.temp_window,self.temp_level)
 
-	def set_window_level(self,window,level):
+	def set_window_level(self,window,level,antialias=True):
 		self.window = window
 		self.level = level
 		for image in self.images:
-			image.wl_and_display(window=self.window,level=self.level)
+			image.wl_and_display(window=self.window,level=self.level,antialias=self.antialias)
 		self.show_image()
 
 	def right_double(self,event):
@@ -825,8 +873,8 @@ class MIPPYCanvas(Canvas):
 		self.show_image(self.active)
 
 
-	def add_roi(self,coords,roi_type=None):
-		self.roi_list.append(ROI(coords,roi_type))
+	def add_roi(self,coords,tags=['roi'],roi_type=None):
+		self.roi_list.append(ROI(coords,tags,roi_type))
 
 	def delete_rois(self):
 		self.roi_list = []
@@ -900,6 +948,14 @@ class MIPPYImage():
 	"""
 
 	def __init__(self,dicom_dataset,create_pillow=True):
+		
+		# Need some tags to describe the state of the image
+		# Use integers, increment as approrpriate and test with % function
+		self.flip_h = 0
+		self.flip_v = 0
+		# Describe 90 degrees clockwise as 1 rotation
+		self.rotations = 0
+		
 		if type(dicom_dataset) is str or type(dicom_dataset) is unicode:
 			ds = dicom.read_file(dicom_dataset)
 		elif type(dicom_dataset) is dicom.dataset.FileDataset:
@@ -932,6 +988,15 @@ class MIPPYImage():
 		self.rangemin = generate_px_float(0,self.rs,self.ri,self.ss)
 		self.image_position = np.array(ds.ImagePositionPatient)
 		self.image_orientation = np.array(ds.ImageOrientationPatient).reshape((2,3))
+		
+		# Change this tag with rotations
+		self.pe_direction = ds.InPlanePhaseEncodingDirection
+		
+		self.pixel_bandwidth = ds.PixelBandwidth
+		if self.pe_direction == 'ROW':
+			self.image_bandwidth = float(self.pixel_bandwidth) * float(self.columns)/2
+		elif self.pe_direction == 'COLUMN':
+			self.image_bandwidth = float(self.pixel_bandwidth) * float(self.rows)/2
 		try:
 			self.xscale = ds.PixelSpacing[0]
 			self.yscale = ds.PixelSpacing[1]
@@ -948,8 +1013,9 @@ class MIPPYImage():
 		#~ self.photoimage = ImageTk.PhotoImage(image)
 		self.image = None
 		self.photoimage = None
-		if create_pillow:
-			self.wl_and_display()
+		self.wl_and_display()
+		
+				
 		return
 
 	def construct_from_array(self,pixel_array):
@@ -968,6 +1034,44 @@ class MIPPYImage():
 		self.rows = np.shape(pixel_array)[0]
 		self.columns = np.shape(pixel_array)[1]
 		self.wl_and_display()
+		return
+	
+	def swap_phase(self):
+		if not hasattr(self,'pe_direction'):
+			return
+		else:
+			if self.pe_direction=='ROW':
+				self.pe_direction=='COLUMN'
+			elif self.pe_direction=='COLUMN':
+				self.pe_direction=='ROW'
+	
+	def swap_dimensions(self):
+		# Standard pythonic way of swapping pointers
+		self.rows, self.columns = self.columns, self.rows
+		return
+		
+	def rotate_right(self):
+		self.px_float = spim.rotate(self.px_float,270.,order=0,prefilter=False)
+		self.rotations += 1
+		self.swap_phase()
+		self.swap_dimensions()
+		return
+	
+	def rotate_left(self):
+		self.px_float = spim.rotate(self.px_float,90.,order=0,prefilter=False)
+		self.rotations -= 1
+		self.swap_phase()
+		self.swap_dimensions()
+		return
+	
+	def flip_horizontal(self):
+		self.px_float = np.fliplr(self.px_float)
+		self.flip_h += 1
+		return
+	
+	def flip_vertical(self):
+		self.px_float = np.flipud(self.px_float)
+		self.flip_v += 1
 		return
 
 	def get_pt_coords(self,image_coords):
