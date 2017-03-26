@@ -261,9 +261,12 @@ def snr_calc(win):
 	#~ print len(signal['mean'])
 	#~ print signal
 	
+	image1 = win.im1.get_active_image()
+	
 	clear_output(win)
 	output(win,'SNR: {v:=.2f}'.format(v=np.mean(snr_list)))
-	output(win,'Bandwidth (Hz/px): \t\t{v:=.2f}'.format(v=win.images[0][imnum1-1].PixelBandwidth))
+	output(win,'Pixel Bandwidth (Hz/px): \t\t{v:=.2f}'.format(v=image1.pixel_bandwidth))
+	output(win,'Image Bandwidth (Hz): \t\t{v:=.2f}'.format(v=image1.image_bandwidth))
 	output(win,'Prescribed voxel size (mm): {x:=.2f} / {y:=.2f} / {s:=.2f}'.format(
 			x=win.im1.get_active_image().xscale,
 			y=win.im1.get_active_image().yscale,

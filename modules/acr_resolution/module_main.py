@@ -266,7 +266,7 @@ def measure_res(win):
 				
 				new_min = np.min(max_tail_hor)
 				
-				if abs(transform[fft_len/2])>new_min and (0.5<profile[0]/profile[-1]<1.5 or 0.5<profile[-1]/profile[0]<1.5):
+				if abs(transform[fft_len/2])>new_min and (0.5<profile[0]/profile[-1]<1.5 or 0.5<profile[-1]/profile[0]<1.5) and profile[0]>profile[1]:
 					if len(max_tail_hor)<4:
 						max_tail_hor.append(abs(transform[fft_len/2]))
 						max_x_hor .append(x)
@@ -373,24 +373,32 @@ def measure_res(win):
 	print "CTF based results"
 	print mtf11_ctf,mtf10_ctf,mtf09_ctf
 	
+	xspc = win.im1.get_active_image().xscale
+	yspc = win.im1.get_active_image().yscale
+	
 
 	clear_output(win)
 	output(win,'MTF measured using FFT of hole profiles')
-	output(win,'1.1mm holes (Hor,Ver,Mean): {h:=.1f}%\t{v:=.1f}%\t{m:=.1f}%'.format(h=mtf11_fft_h*100,v=mtf11_fft_v*100,m=mtf11_fft*100))
-	output(win,'1.0mm holes (Hor,Ver,Mean): {h:=.1f}%\t{v:=.1f}%\t{m:=.1f}%'.format(h=mtf10_fft_h*100,v=mtf10_fft_v*100,m=mtf10_fft*100))
-	output(win,'0.9mm holes (Hor,Ver,Mean): {h:=.1f}%\t{v:=.1f}%\t{m:=.1f}%'.format(h=mtf09_fft_h*100,v=mtf09_fft_v*100,m=mtf09_fft*100))
+	output(win,'Hole size (mm)\tHor\tVer\tMean')
+	output(win,'1.1\t{h:=.1f}%\t{v:=.1f}%\t{m:=.1f}%'.format(h=mtf11_fft_h*100,v=mtf11_fft_v*100,m=mtf11_fft*100))
+	output(win,'1.0\t{h:=.1f}%\t{v:=.1f}%\t{m:=.1f}%'.format(h=mtf10_fft_h*100,v=mtf10_fft_v*100,m=mtf10_fft*100))
+	output(win,'0.9\t{h:=.1f}%\t{v:=.1f}%\t{m:=.1f}%'.format(h=mtf09_fft_h*100,v=mtf09_fft_v*100,m=mtf09_fft*100))
 	
 	output(win,'\nMTF measured using CTF from max/min of hole profiles')
-	output(win,'1.1mm holes (Hor,Ver,Mean): {h:=.1f}%\t{v:=.1f}%\t{m:=.1f}%'.format(h=mtf11_ctf_h*100,v=mtf11_ctf_v*100,m=mtf11_ctf*100))
-	output(win,'1.0mm holes (Hor,Ver,Mean): {h:=.1f}%\t{v:=.1f}%\t{m:=.1f}%'.format(h=mtf10_ctf_h*100,v=mtf10_ctf_v*100,m=mtf10_ctf*100))
-	output(win,'0.9mm holes (Hor,Ver,Mean): {h:=.1f}%\t{v:=.1f}%\t{m:=.1f}%'.format(h=mtf09_ctf_h*100,v=mtf09_ctf_v*100,m=mtf09_ctf*100))
+	output(win,'Hole size (mm)\tHor\tVer\tMean')
+	output(win,'1.1\t{h:=.1f}%\t{v:=.1f}%\t{m:=.1f}%'.format(h=mtf11_ctf_h*100,v=mtf11_ctf_v*100,m=mtf11_ctf*100))
+	output(win,'1.0\t{h:=.1f}%\t{v:=.1f}%\t{m:=.1f}%'.format(h=mtf10_ctf_h*100,v=mtf10_ctf_v*100,m=mtf10_ctf*100))
+	output(win,'0.9\t{h:=.1f}%\t{v:=.1f}%\t{m:=.1f}%'.format(h=mtf09_ctf_h*100,v=mtf09_ctf_v*100,m=mtf09_ctf*100))
 	
 	output(win,'\nWhite and black values corrected for hole size')
-	output(win,'Black: {v:=.2f}'.format(v=black))
-	output(win,'White (raw): {v:=.2f}'.format(v=full_white))
-	output(win,'White (1.1mm): {v:=.2f}'.format(v=white11))
-	output(win,'White (1.0mm): {v:=.2f}'.format(v=white10))
-	output(win,'White (0.9mm): {v:=.2f}'.format(v=white09))
+	output(win,'Black:\t\t{v:=.2f}'.format(v=black))
+	output(win,'White (raw):\t\t{v:=.2f}'.format(v=full_white))
+	output(win,'White (1.1mm):\t\t{v:=.2f}'.format(v=white11))
+	output(win,'White (1.0mm):\t\t{v:=.2f}'.format(v=white10))
+	output(win,'White (0.9mm):\t\t{v:=.2f}'.format(v=white09))
+	
+	output(win,'\nX px spacing:\t\t{v:=.5f}'.format(v=xspc))
+	output(win,'Y px spacing:\t\t{v:=.5f}'.format(v=yspc))
 	
 	output(win,'\nProfiles for MS Excel')
 	output(win,'1.1 hor\t1.1 ver\t1.0 hor\t1.0 ver\t0.9 hor\t0.9 ver')

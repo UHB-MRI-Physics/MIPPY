@@ -241,11 +241,6 @@ def measure_ghosting(win):
 
 	output(win,"Percentage Ghost Intensity (ACR) = {v:=.2f} %".format(v=ghost*100))
 	
-	if roi_outside:
-		output(win,'\nWARNING! ROIs more than 70% outside of the image have been replaced by\ntheir opposite ROI for the calculation:')
-		for string in replaced:
-			output(win,string)
-	
 	output(win,'\nMS Excel Table:')
 	output(win,'Region\tMean\tStdDev')
 	output(win,'Top\t{m:=.2f}\t{s:=.2f}'.format(m=means[0],s=stds[0]))
@@ -253,6 +248,11 @@ def measure_ghosting(win):
 	output(win,'Left\t{m:=.2f}\t{s:=.2f}'.format(m=means[1],s=stds[1]))
 	output(win,'Right\t{m:=.2f}\t{s:=.2f}'.format(m=means[3],s=stds[3]))
 	output(win,'Central\t{m:=.2f}\t{s:=.2f}'.format(m=central['mean'][0],s=central['std'][0]))
+	
+	if roi_outside:
+		output(win,'\nWARNING! ROIs more than 70% outside of the image have been replaced by\ntheir opposite ROI for the calculation:')
+		for string in replaced:
+			output(win,string)
 
 	win.outputbox.see('1.0')
 	

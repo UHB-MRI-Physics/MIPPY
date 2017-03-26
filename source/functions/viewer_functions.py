@@ -993,9 +993,9 @@ class MIPPYImage():
 		self.pe_direction = ds.InPlanePhaseEncodingDirection
 		
 		self.pixel_bandwidth = ds.PixelBandwidth
-		if self.pe_direction == 'ROW':
+		if 'ROW' in self.pe_direction:
 			self.image_bandwidth = float(self.pixel_bandwidth) * float(self.columns)/2
-		elif self.pe_direction == 'COLUMN':
+		elif 'COL' in self.pe_direction:
 			self.image_bandwidth = float(self.pixel_bandwidth) * float(self.rows)/2
 		try:
 			self.xscale = ds.PixelSpacing[0]
