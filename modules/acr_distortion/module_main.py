@@ -75,6 +75,7 @@ def execute(master_window,dicomdir,images):
 	win.measurebutton = Button(win.toolbar,text='Measure Grid Distortion',command=lambda:measure_grid_distortion(win))
 	win.profilebutton = Button(win.toolbar,text='Initialise Profiles',command=lambda:reset_profiles(win))
 	win.measureprofbutton = Button(win.toolbar,text='Measure Profile Distortion',command=lambda:measure_profile_distortion(win))
+	win.controlbox = ImageFlipper(win,win.im1)
 	
 	win.outputbox = Text(win,state='disabled',height=10,width=80)
 
@@ -108,14 +109,16 @@ def execute(master_window,dicomdir,images):
 	win.measurebutton.grid(row=5,column=0,sticky='ew')
 	win.profilebutton.grid(row=6,column=0,sticky='ew')
 	win.measureprofbutton.grid(row=7,column=0,sticky='ew')
-
-	win.im1.grid(row=0,column=0,sticky='nw')
-	win.im1.img_scrollbar.grid(row=1,column=0,sticky='ew')
-	win.toolbar.grid(row=0,column=1,rowspan=2,sticky='new')
-	win.outputbox.grid(row=2,column=0,columnspan=2,sticky='nsew')
+	
+	win.controlbox.grid(row=0,column=0,sticky='nsew')
+	win.im1.grid(row=1,column=0,sticky='nw')
+	win.im1.img_scrollbar.grid(row=2,column=0,sticky='ew')
+	win.toolbar.grid(row=0,column=1,rowspan=3,sticky='new')
+	win.outputbox.grid(row=3,column=0,columnspan=2,sticky='nsew')
 
 	win.rowconfigure(0,weight=0)
 	win.rowconfigure(1,weight=0)
+	win.rowconfigure(2,weight=0)
 	win.rowconfigure(2,weight=1)
 	win.columnconfigure(0,weight=0)
 	win.columnconfigure(1,weight=1)

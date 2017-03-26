@@ -85,21 +85,7 @@ def execute(master_window,dicomdir,images):
 	win.n_holes_choice = OptionMenu(win.toolbar,win.n_holes,win.n_holes_options[1],*win.n_holes_options)
 	mpy.optionmenu_patch(win.n_holes_choice,win.n_holes)
 	
-	win.controlbox = Frame(win)
-	win.controlbox.rot_left = Button(win.controlbox,text="Rot L",command=lambda:rot_left(win.im1))
-	win.controlbox.rot_right = Button(win.controlbox,text="Rot R",command=lambda:rot_right(win.im1))
-	win.controlbox.flip_h = Button(win.controlbox,text="Flip H",command=lambda:flip_h(win.im1))
-	win.controlbox.flip_v = Button(win.controlbox,text="Flip V",command=lambda:flip_v(win.im1))
-	win.controlbox.rot_left.grid(row=0,column=0)
-	win.controlbox.rot_right.grid(row=0,column=1)
-	win.controlbox.flip_h.grid(row=0,column=2)
-	win.controlbox.flip_v.grid(row=0,column=3)
-	win.controlbox.rowconfigure(0,weight=0)
-	win.controlbox.columnconfigure(0,weight=1)
-	win.controlbox.columnconfigure(1,weight=1)
-	win.controlbox.columnconfigure(2,weight=1)
-	win.controlbox.columnconfigure(3,weight=1)
-	
+	win.controlbox = ImageFlipper(win,win.im1)	
 	
 	win.mode=StringVar()
 	win.mode.set('valid')
@@ -140,36 +126,9 @@ def execute(master_window,dicomdir,images):
 	win.rowconfigure(4,weight=0)
 	win.columnconfigure(0,weight=0)
 	win.columnconfigure(1,weight=1)
-
 	win.toolbar.columnconfigure(0,weight=1)
-
 	win.im1.load_images(images)
-
 	return
-
-def rot_left(canvas):
-	for im in canvas.images:
-		im.rotate_left()
-		im.wl_and_display()
-	canvas.show_image()
-
-def rot_right(canvas):
-	for im in canvas.images:
-		im.rotate_right()
-		im.wl_and_display()
-	canvas.show_image()
-
-def flip_h(canvas):
-	for im in canvas.images:
-		im.flip_horizontal()
-		im.wl_and_display()
-	canvas.show_image()
-
-def flip_v(canvas):
-	for im in canvas.images:
-		im.flip_vertical()
-		im.wl_and_display()
-	canvas.show_image()
 
 def close_window(window):
 	"""Closes the window passed as an argument"""
@@ -259,67 +218,6 @@ def measure_res(win):
 	print "White",full_white
 	
 	
-	
-	#~ image = win.im1.get_active_image()
-	#~ px_whole = image.px_float
-	
-	#~ xc = win.xc
-	#~ yc = win.yc
-	#~ radius_x = win.radius_x
-	#~ radius_y = win.radius_y
-	
-	#~ roi_top_c = (xc,yc-radius_y-17)
-	#~ roi_rt_c = (xc+radius_x+17,yc)
-	#~ roi_bot_c = (xc,yc+radius_y+17)
-	#~ roi_lt_c = (xc-radius_y-17,yc)
-	#~ roi_long = 45
-	#~ roi_short = 8
-	
-	#~ win.im1.roi_ellipse(roi_top_c,roi_long,roi_short,tags=['top'],system='image')
-	#~ win.im1.roi_ellipse(roi_rt_c,roi_short,roi_long,tags=['rt'],system='image')
-	#~ win.im1.roi_ellipse(roi_bot_c,roi_long,roi_short,tags=['bot'],system='image')
-	#~ win.im1.roi_ellipse(roi_lt_c,roi_short,roi_long,tags=['lt'],system='image')
-	
-	#~ stats = win.im1.get_roi_statistics(rois=range(1,5))
-	#~ means = stats['mean']
-	#~ stds = stats['std']
-	#~ areas = stats['area_px']
-	#~ print "areas",areas
-	
-	#~ H = win.im1.get_active_image().rows
-	#~ W = win.im1.get_active_image().columns
-	
-	#~ roi_outside = False
-	#~ replaced = []
-	
-	#~ for i in range(4):
-		#~ coords = np.column_stack(win.im1.image_coords(win.im1.roi_list[i].coords))
-		#~ ###if ((coords[0]<0).all() or (coords[0]>=W).all() or (coords[1]<0).all() or (coords[1]>=H).all()):
-		#~ if (areas[i]<0.3*areas[i-2]):
-			#~ roi_outside = True
-			#~ if i==0:
-				#~ means[i]=means[i-2]
-				#~ stds[i]=stds[i-2]
-				#~ replaced.append('  - TOP replaced by BOTTOM')
-			#~ elif i==1:
-				#~ means[i]=means[i-2]
-				#~ stds[i]=stds[i-2]
-				#~ replaced.append('  - RIGHT replaced by LEFT')
-			#~ elif i==2:
-				#~ means[i]=means[i-2]
-				#~ stds[i]=stds[i-2]
-				#~ replaced.append('  - BOTTOM replaced by TOP')
-			#~ elif i==3:
-				#~ means[i]=means[i-2]
-				#~ stds[i]=stds[i-2]
-				#~ replaced.append('  - LEFT replaced by RIGHT')
-				
-	#~ black = np.min([means[0]+means[2],means[1]+means[3]])/2
-	
-	#~ threshold = black*2
-	#~ full_white = np.mean(px_whole[np.where(px_whole>threshold)])
-	
-	
 	# Correct white value for "hole" area as a fraction of pixel area
 	# Compute overlapping area to get expected white value for each hole set
 	image = win.im1.get_active_image()
@@ -377,7 +275,7 @@ def measure_res(win):
 						profile_temp_hor.append(np.array(profile))
 					else:
 						k = np.min([np.argmin(max_tail_hor)])
-						print k
+						#~ print k
 						max_tail_hor[k] = abs(transform[fft_len/2])
 						max_x_hor[k]=x
 						max_y_hor[k]=y
@@ -405,7 +303,7 @@ def measure_res(win):
 						profile_temp_ver.append(np.array(profile))
 					else:
 						k = np.min([np.argmin(max_tail_ver)])
-						print k
+						#~ print k
 						max_tail_ver[k] = abs(transform[fft_len/2])
 						max_x_ver[k]=x
 						max_y_ver[k]=y
@@ -416,10 +314,10 @@ def measure_res(win):
 		old_hor = np.argmax(max_tail_hor)
 		old_ver = np.argmax(max_tail_ver)
 		win.im2.delete('temp')
-		win.im2.create_rectangle((max_x_hor[old_hor]*z,max_y_hor[old_hor]*z,(max_x_hor[old_hor]+roi_len)*z,(max_y_hor[old_hor]+1)*z),outline='magenta',tags='final')
-		win.im2.create_rectangle((max_x_ver[old_hor]*z,max_y_ver[old_hor]*z,(max_x_ver[old_hor]+1)*z,(max_y_ver[old_hor]+roi_len)*z),outline='magenta',tags='final')
-		win.im2.create_rectangle((max_x_hor[best_hor]*z,max_y_hor[best_hor]*z,(max_x_hor[best_hor]+roi_len)*z,(max_y_hor[best_hor]+1)*z),outline='green',tags='final')
-		win.im2.create_rectangle((max_x_ver[best_ver]*z,max_y_ver[best_ver]*z,(max_x_ver[best_ver]+1)*z,(max_y_ver[best_ver]+roi_len)*z),outline='green',tags='final')
+		win.im2.create_rectangle((max_x_hor[old_hor]*z,max_y_hor[old_hor]*z,(max_x_hor[old_hor]+roi_len)*z,(max_y_hor[old_hor]+1)*z),outline='magenta',tags='final_fft')
+		win.im2.create_rectangle((max_x_ver[old_hor]*z,max_y_ver[old_hor]*z,(max_x_ver[old_hor]+1)*z,(max_y_ver[old_hor]+roi_len)*z),outline='magenta',tags='final_fft')
+		win.im2.create_rectangle((max_x_hor[best_hor]*z,max_y_hor[best_hor]*z,(max_x_hor[best_hor]+roi_len)*z,(max_y_hor[best_hor]+1)*z),outline='cyan',tags='final_ctf')
+		win.im2.create_rectangle((max_x_ver[best_ver]*z,max_y_ver[best_ver]*z,(max_x_ver[best_ver]+1)*z,(max_y_ver[best_ver]+roi_len)*z),outline='cyan',tags='final_ctf')
 		
 		profiles.append(profile_temp_hor[best_hor])
 		profiles.append(profile_temp_ver[best_ver])
@@ -429,9 +327,16 @@ def measure_res(win):
 	fft_array = np.array(fft_results)
 	
 	# MTF results from FFT
-	mtf11_fft = np.mean(fft_array[0:2])*(np.pi/4)
-	mtf10_fft = np.mean(fft_array[2:4])*(np.pi/4)
-	mtf09_fft = np.mean(fft_array[4:6])*(np.pi/4)
+	mtf11_fft_h = fft_array[0]*(np.pi/4)
+	mtf11_fft_v = fft_array[1]*(np.pi/4)
+	mtf10_fft_h = fft_array[2]*(np.pi/4)
+	mtf10_fft_v = fft_array[3]*(np.pi/4)
+	mtf09_fft_h = fft_array[4]*(np.pi/4)
+	mtf09_fft_v = fft_array[5]*(np.pi/4)
+	
+	mtf11_fft = np.mean([mtf11_fft_h,mtf11_fft_v])
+	mtf10_fft = np.mean([mtf10_fft_h,mtf10_fft_v])
+	mtf09_fft = np.mean([mtf09_fft_h,mtf09_fft_v])
 	
 	# MTF results from profiles and CTF
 	contrast_11_h = abs((np.max(profiles[0])-np.min(profiles[0]))/(np.max(profiles[0])+np.min(profiles[0])))
@@ -452,9 +357,16 @@ def measure_res(win):
 	ctf_09_h = contrast_09_h/contrast_09_ideal
 	ctf_09_v = contrast_09_v/contrast_09_ideal
 	
-	mtf11_ctf = np.mean([ctf_11_h,ctf_11_v])*np.pi/4
-	mtf10_ctf = np.mean([ctf_10_h,ctf_10_v])*np.pi/4
-	mtf09_ctf = np.mean([ctf_09_h,ctf_09_v])*np.pi/4
+	mtf11_ctf_h = ctf_11_h*np.pi/4
+	mtf11_ctf_v = ctf_11_v*np.pi/4
+	mtf10_ctf_h = ctf_10_h*np.pi/4
+	mtf10_ctf_v = ctf_10_v*np.pi/4
+	mtf09_ctf_h = ctf_09_h*np.pi/4
+	mtf09_ctf_v = ctf_09_v*np.pi/4
+	
+	mtf11_ctf = np.mean([mtf11_ctf_h,mtf11_ctf_v])
+	mtf10_ctf = np.mean([mtf10_ctf_h,mtf10_ctf_v])
+	mtf09_ctf = np.mean([mtf09_ctf_h,mtf09_ctf_v])
 	
 	print "FFT based results"
 	print mtf11_fft,mtf10_fft,mtf09_fft
@@ -464,14 +376,14 @@ def measure_res(win):
 
 	clear_output(win)
 	output(win,'MTF measured using FFT of hole profiles')
-	output(win,'1.1mm holes: {v:=.1f} %'.format(v=mtf11_fft*100))
-	output(win,'1.0mm holes: {v:=.1f} %'.format(v=mtf10_fft*100))
-	output(win,'0.9mm holes: {v:=.1f} %'.format(v=mtf09_fft*100))
+	output(win,'1.1mm holes (Hor,Ver,Mean): {h:=.1f}%\t{v:=.1f}%\t{m:=.1f}%'.format(h=mtf11_fft_h*100,v=mtf11_fft_v*100,m=mtf11_fft*100))
+	output(win,'1.0mm holes (Hor,Ver,Mean): {h:=.1f}%\t{v:=.1f}%\t{m:=.1f}%'.format(h=mtf10_fft_h*100,v=mtf10_fft_v*100,m=mtf10_fft*100))
+	output(win,'0.9mm holes (Hor,Ver,Mean): {h:=.1f}%\t{v:=.1f}%\t{m:=.1f}%'.format(h=mtf09_fft_h*100,v=mtf09_fft_v*100,m=mtf09_fft*100))
 	
 	output(win,'\nMTF measured using CTF from max/min of hole profiles')
-	output(win,'1.1mm holes: {v:=.1f} %'.format(v=mtf11_ctf*100))
-	output(win,'1.0mm holes: {v:=.1f} %'.format(v=mtf10_ctf*100))
-	output(win,'0.9mm holes: {v:=.1f} %'.format(v=mtf09_ctf*100))
+	output(win,'1.1mm holes (Hor,Ver,Mean): {h:=.1f}%\t{v:=.1f}%\t{m:=.1f}%'.format(h=mtf11_ctf_h*100,v=mtf11_ctf_v*100,m=mtf11_ctf*100))
+	output(win,'1.0mm holes (Hor,Ver,Mean): {h:=.1f}%\t{v:=.1f}%\t{m:=.1f}%'.format(h=mtf10_ctf_h*100,v=mtf10_ctf_v*100,m=mtf10_ctf*100))
+	output(win,'0.9mm holes (Hor,Ver,Mean): {h:=.1f}%\t{v:=.1f}%\t{m:=.1f}%'.format(h=mtf09_ctf_h*100,v=mtf09_ctf_v*100,m=mtf09_ctf*100))
 	
 	output(win,'\nWhite and black values corrected for hole size')
 	output(win,'Black: {v:=.2f}'.format(v=black))

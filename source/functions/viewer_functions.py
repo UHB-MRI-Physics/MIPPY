@@ -154,8 +154,8 @@ def get_global_min_and_max(image_list):
 	"""
 	Will only work with MIPPY_8bitviewer type objects
 	"""
-	min = np.amin(image_list[0].px_float)
-	max = np.amax(image_list[0].px_float)
+	min = np.min(image_list[0].px_float)
+	max = np.max(image_list[0].px_float)
 	for image in image_list[1:]:
 		newmin = np.min(image.px_float)
 		newmax = np.max(image.px_float)
@@ -323,6 +323,52 @@ class ROI():
 	#~ def generate_mask(self):
 		#~ pass
 
+class ImageFlipper(Frame):
+	def __init__(self,master,canvas):
+		Frame.__init__(self,master)
+		self.canvas = canvas
+		self.rot_left_button = Button(self,text="Rot L",command=lambda:self.rot_left(canvas))
+		self.rot_right_button = Button(self,text="Rot R",command=lambda:self.rot_right(canvas))
+		self.flip_h_button = Button(self,text="Flip H",command=lambda:self.flip_h(canvas))
+		self.flip_v_button = Button(self,text="Flip V",command=lambda:self.flip_v(canvas))
+		self.rot_left_button.grid(row=0,column=0,sticky='nsew')
+		self.rot_right_button.grid(row=0,column=1,sticky='nsew')
+		self.flip_h_button.grid(row=0,column=2,sticky='nsew')
+		self.flip_v_button.grid(row=0,column=3,sticky='nsew')
+		self.rowconfigure(0,weight=0)
+		self.columnconfigure(0,weight=1)
+		self.columnconfigure(1,weight=1)
+		self.columnconfigure(2,weight=1)
+		self.columnconfigure(3,weight=1)
+		return
+	
+	def rot_left(self,canvas):
+		for im in canvas.images:
+			im.rotate_left()
+			im.wl_and_display()
+		canvas.show_image()
+		return
+
+	def rot_right(self,canvas):
+		for im in canvas.images:
+			im.rotate_right()
+			im.wl_and_display()
+		canvas.show_image()
+		return
+
+	def flip_h(self,canvas):
+		for im in canvas.images:
+			im.flip_horizontal()
+			im.wl_and_display()
+		canvas.show_image()
+		return
+
+	def flip_v(self,canvas):
+		for im in canvas.images:
+			im.flip_vertical()
+			im.wl_and_display()
+		canvas.show_image()
+		return
 
 
 
@@ -626,7 +672,7 @@ class MIPPYCanvas(Canvas):
 		self.global_min,self.global_max = get_global_min_and_max(self.images)
 		#~ self.global_rangemin = self.images[0].rangemin
 		#~ self.global_rangemax = self.images[0].rangemax
-		self.fullrange = self.global_min-self.global_max
+		self.fullrange = self.global_max-self.global_min
 		self.default_window = self.global_max-self.global_min
 		self.default_level = self.global_min + self.default_window/2
 		self.level = self.default_level
@@ -798,7 +844,7 @@ class MIPPYCanvas(Canvas):
 			self.temp_window=min_window
 		if self.temp_level<self.global_min+min_window/2:
 			self.temp_level=self.global_min+min_window/2
-		self.images[i].wl_and_display(window=self.temp_window,level=self.temp_level)
+		self.images[i].wl_and_display(window=self.temp_window,level=self.temp_level,antialias=self.antialias)
 		self.quick_redraw_image()
 
 	def right_release(self,event):
@@ -806,11 +852,11 @@ class MIPPYCanvas(Canvas):
 			return
 		self.set_window_level(self.temp_window,self.temp_level)
 
-	def set_window_level(self,window,level):
+	def set_window_level(self,window,level,antialias=True):
 		self.window = window
 		self.level = level
 		for image in self.images:
-			image.wl_and_display(window=self.window,level=self.level)
+			image.wl_and_display(window=self.window,level=self.level,antialias=self.antialias)
 		self.show_image()
 
 	def right_double(self,event):

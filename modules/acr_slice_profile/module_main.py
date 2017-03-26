@@ -41,10 +41,10 @@ def execute(master_window,dicomdir,images):
 
 	win = Toplevel(master_window)
 	win.title("ACR Slice Profile Assessment")
-	if "nt" == os.name:
-		win.wm_iconbitmap(bitmap = "source/images/brain_orange.ico")
-	else:
-		win.wm_iconbitmap('@'+os.path.join(root_path,'source','images','brain_bw.xbm'))
+	#~ if "nt" == os.name:
+		#~ win.wm_iconbitmap(bitmap = "source/images/brain_orange.ico")
+	#~ else:
+		#~ win.wm_iconbitmap('@'+os.path.join(root_path,'source','images','brain_bw.xbm'))
 	gc.collect()
 
 	win.im1 = MIPPYCanvas(win,width=400,height=400,drawing_enabled=True)
@@ -54,6 +54,7 @@ def execute(master_window,dicomdir,images):
 	win.roibutton = Button(win.toolbar,text='Create/Reset ROIs',command=lambda:reset_roi(win))
 	win.measurebutton = Button(win.toolbar,text='Measure Slice Profile',command=lambda:measure_sliceprofile(win))
 	win.outputbox = Text(win,state='disabled',height=10,width=80)
+	win.imageflipper = ImageFlipper(win,win.im1)
 
 	win.phantom_options = [
 		'ACR (TRA)']
@@ -83,14 +84,16 @@ def execute(master_window,dicomdir,images):
 	win.roibutton.grid(row=4,column=0,sticky='ew')
 	win.measurebutton.grid(row=5,column=0,sticky='ew')
 
-	win.im1.grid(row=0,column=0,sticky='nw')
-	win.im1.img_scrollbar.grid(row=1,column=0,sticky='ew')
-	win.toolbar.grid(row=0,column=1,rowspan=2,sticky='new')
-	win.outputbox.grid(row=2,column=0,columnspan=2,sticky='nsew')
+	win.im1.grid(row=1,column=0,sticky='nw')
+	win.imageflipper.grid(row=0,column=0,sticky='nsew')
+	win.im1.img_scrollbar.grid(row=2,column=0,sticky='ew')
+	win.toolbar.grid(row=0,column=1,rowspan=3,sticky='new')
+	win.outputbox.grid(row=3,column=0,columnspan=2,sticky='nsew')
 
 	win.rowconfigure(0,weight=0)
 	win.rowconfigure(1,weight=0)
-	win.rowconfigure(2,weight=1)
+	win.rowconfigure(2,weight=0)
+	win.rowconfigure(3,weight=1)
 	win.columnconfigure(0,weight=0)
 	win.columnconfigure(1,weight=1)
 
