@@ -81,7 +81,7 @@ def execute(master_window,dicomdir,images):
 
         # Create canvases
 	win.imcanvases=Frame(win)
-	win.imcanvas_orig = MIPPYCanvas(win.imcanvases,bd=0 ,width=384,height=384,drawing_enabled=True)
+	win.imcanvas_orig = MIPPYCanvas(win.imcanvases,bd=0 ,width=384,height=384,drawing_enabled=False)
 	win.imcanvas_maps = MIPPYCanvas(win.imcanvases,bd=0 ,width=384,height=384,drawing_enabled=True)
 
 	win.imcanvas_orig.roi_mode='ellipse'
@@ -145,19 +145,23 @@ def execute(master_window,dicomdir,images):
         win.TE_in=StringVar(win)
         win.b_TE = Entry(win.buttons,textvariable=win.TE_in,width=30,state="disabled")
 
+        win.b_ROI = Button(win.buttons, text="Analyse ROI", command=lambda:ROI_stats(win))
+
         # Window layout
         
-        win.rb_TEauto.grid(row=0,column=0,sticky='sw',rowspan=2,columnspan=4)
-        win.rb_TE.grid(row=2,column=0,sticky='nw',columnspan=2)
-        win.b_TE.grid(row=3,column=0,sticky='nw')
+        win.rb_TEauto.grid(row=0,column=0,sticky='nw')
+        win.rb_TE.grid(row=1,column=0,sticky='nw')
+        win.b_TE.grid(row=2,column=0,rowspan=2,sticky='nw')
+
+        win.b_ROI.grid(row=5,column=0,rowspan=2,sticky='sw')
                             
         win.buttons.grid(row=0,column=1,sticky='news')
 
         # Resizing options
         win.buttons.rowconfigure(0,weight=0)
         win.buttons.rowconfigure(1,weight=0)
+        win.buttons.rowconfigure(5,weight=1)
         win.buttons.columnconfigure(0,weight=0)
-        win.buttons.columnconfigure(1,weight=0)
 
         # Message box
         win.message_box=Frame(win)
@@ -179,7 +183,7 @@ def execute(master_window,dicomdir,images):
         try:
                 win.Im4D=np.array([a.px_float for a in win.imcanvas_orig.images]).reshape((win.dyns,win.slcs,win.rows,win.cols))
         except Exception,win.Im4D:
-                status(win,"Multiple Series Detected...\n")
+                status(win,"Multiple Series Detected...")
                 win.c_rev_in.set(1)
                 win.Im4D=np.array([a.px_float for a in win.imcanvas_orig.images]).reshape((np.size(images,0)/win.slcs,win.slcs,win.rows,win.cols))
         win.b_run = Button(win.run_buttons, text="Create T2 maps", command=lambda:T2_map(win,images))
@@ -192,16 +196,32 @@ def execute(master_window,dicomdir,images):
         win.run_buttons.grid(row=1,column=1,sticky="news")
         
 	return
+
+def ROI_stats(win):
+        stats=win.imcanvas_maps.get_roi_statistics()
+        if stats==None:
+                stats=win.imcanvas_orig.get_roi_statistics()
+                status(win,'mean=',np.round(stats['mean'][0],1),' std=',np.round(stats['std'][0]+0.05,1),
+                       ' min=',np.round(stats['min'][0],1),' max=',np.round(stats['max'][0],1),' area=',stats['area_px'][0],'px')
+        else:
+                status(win,'mean=',np.round(stats['mean'][0],1),' std=',np.round(stats['std'][0]+0.05,1),
+                       ' min=',np.round(stats['min'][0],1),' max=',np.round(stats['max'][0],1),' area=',stats['area_px'][0],'px')
+
+        return
 	
 def close_window(win):
 	"""Closes the window passed as an argument"""
 	active_frame.destroy()
 	return
 
-def status(win,txt):
+def status(win,*txt):
+        print_str = ''
+        for arg in txt:
+                print_str = print_str+str(arg)
         win.b_message.config(state=NORMAL)
-        win.b_message.insert(END,txt)
+        win.b_message.insert(END,print_str+'\n')
         win.b_message.config(state=DISABLED)
+        win.b_message.bind('<1>', lambda event: win.b_message.focus_set())
         win.b_message.see(END)
         win.update()
 
@@ -231,7 +251,7 @@ def T2_map(win,images):
         
         if win.TEs==None:
                 return
-        status(win,"Fitting T2 maps...\n")
+        status(win,"Fitting T2 maps..")
         start_time=time.time()
         win.maps=np.zeros((5,win.slcs,win.rows,win.cols))
         win.maps=T2map(win.Im4D,win.TEs,images,threshold=0,GoF=50)
@@ -239,18 +259,21 @@ def T2_map(win,images):
         run_time = time.time()-start_time
 
         if run_time>=60:
-                txt=("Fitting completed in %s minutes and %s seconds. \n" %(int(run_time/60),int(run_time-int(run_time/60)*60)) )
+                txt=("Fitting completed in %s minutes and %s seconds." %(int(run_time/60),int(run_time-int(run_time/60)*60)) )
         else:
-                txt=("Fitting completed in %s seconds. \n" %(int(np.ceil(run_time))) )
+                txt=("Fitting completed in %s seconds." %(int(np.ceil(run_time))) )
         status(win,txt)        
 
+        win_level=np.mean(win.maps[0].flatten()[np.where(win.maps[0].flatten()>0)])
+        win_range=2*win_level
         win.imcanvas_maps.load_images([b for b in (np.reshape(win.maps,(5*win.slcs,win.rows,win.cols)) )])
+        win.imcanvas_maps.set_window_level(window=win_range,level=win_level)
                 
         return
 
 def sort_TEs(win,images):
         """Sorting TEs for each individual image"""
-        status(win,"Sorting TEs for each image... \n")
+        status(win,"Sorting TEs for each image...")
         TEs=np.zeros(win.dyns*win.slcs)
         if win.rb_TEvar.get()==1:
                 for d in range(win.dyns):
@@ -259,20 +282,19 @@ def sort_TEs(win,images):
         elif win.rb_TEvar.get()==2:
                 TE=np.genfromtxt([win.TEs_in.get()],delimiter=",")
                 if np.size(TE,0)!=win.dyns:
-                        status(win,"Provided number of TEs does not match number of dynamics...\n")
+                        status(win,"Provided number of TEs does not match number of dynamics...")
                         return None
                         
                 for d in range(win.dyns):
                         for s in range(win.slcs):
                                 TEs[int(win.slcs)*d+s]=s*win.TE_in.get()
 
-        status(win,"These are the follwing echo times for each image:\n")
+        status(win,"These are the follwing echo times for each image:")
         status(win,TEs)
-        status(win,"\n")
         return TEs
 
 def save(win,dicomdir,images):
-        status(win,"Saving maps in DICOM format... \n")
+        status(win,"Saving maps in DICOM format...")
         rows=win.rows
         cols=win.cols
         slcs=win.slcs

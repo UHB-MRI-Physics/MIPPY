@@ -76,7 +76,7 @@ def T2_mapping(Im4D,TE,images,threshold,GoF):
 ##                    xdata = np.trim_zeros(TI[:,s,y,x],'b')
                     xdata = TE[s::slcs]
                     ydata = Im4D[0:len(xdata),s,y,x]
-                    T2 = 50.
+                    T2 = 5.
                     M0 = 1.2*np.amax(ydata)
                     popt,pcov = curve_fit(T2_decay,xdata,ydata,p0=[M0,T2])
 
