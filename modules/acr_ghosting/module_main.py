@@ -49,6 +49,7 @@ def execute(master_window,dicomdir,images):
 	win.roibutton = Button(win.toolbar,text='Create/Reset ROIs',command=lambda:reset_roi(win))
 	win.measurebutton = Button(win.toolbar,text='Measure Ghosting',command=lambda:measure_ghosting(win))
 	win.outputbox = Text(win,state='disabled',height=10,width=80)
+	win.imageflipper = ImageFlipper(win,win.im1)
 
 	win.phantom_options = [
 		'ACR (TRA)']
@@ -78,14 +79,16 @@ def execute(master_window,dicomdir,images):
 	win.roibutton.grid(row=4,column=0,sticky='ew')
 	win.measurebutton.grid(row=5,column=0,sticky='ew')
 
-	win.im1.grid(row=0,column=0,sticky='nw')
-	win.im1.img_scrollbar.grid(row=1,column=0,sticky='ew')
-	win.toolbar.grid(row=0,column=1,rowspan=2,sticky='new')
-	win.outputbox.grid(row=2,column=0,columnspan=2,sticky='nsew')
+	win.imageflipper.grid(row=0,column=0,sticky='nsew')
+	win.im1.grid(row=1,column=0,sticky='nw')
+	win.im1.img_scrollbar.grid(row=2,column=0,sticky='ew')
+	win.toolbar.grid(row=0,column=1,rowspan=3,sticky='new')
+	win.outputbox.grid(row=3,column=0,columnspan=2,sticky='nsew')
 
 	win.rowconfigure(0,weight=0)
 	win.rowconfigure(1,weight=0)
-	win.rowconfigure(2,weight=1)
+	win.rowconfigure(2,weight=0)
+	win.rowconfigure(3,weight=1)
 	win.columnconfigure(0,weight=0)
 	win.columnconfigure(1,weight=1)
 
@@ -238,11 +241,6 @@ def measure_ghosting(win):
 
 	output(win,"Percentage Ghost Intensity (ACR) = {v:=.2f} %".format(v=ghost*100))
 	
-	if roi_outside:
-		output(win,'\nWARNING! ROIs more than 70% outside of the image have been replaced by\ntheir opposite ROI for the calculation:')
-		for string in replaced:
-			output(win,string)
-	
 	output(win,'\nMS Excel Table:')
 	output(win,'Region\tMean\tStdDev')
 	output(win,'Top\t{m:=.2f}\t{s:=.2f}'.format(m=means[0],s=stds[0]))
@@ -250,6 +248,11 @@ def measure_ghosting(win):
 	output(win,'Left\t{m:=.2f}\t{s:=.2f}'.format(m=means[1],s=stds[1]))
 	output(win,'Right\t{m:=.2f}\t{s:=.2f}'.format(m=means[3],s=stds[3]))
 	output(win,'Central\t{m:=.2f}\t{s:=.2f}'.format(m=central['mean'][0],s=central['std'][0]))
+	
+	if roi_outside:
+		output(win,'\nWARNING! ROIs more than 70% outside of the image have been replaced by\ntheir opposite ROI for the calculation:')
+		for string in replaced:
+			output(win,string)
 
 	win.outputbox.see('1.0')
 	
