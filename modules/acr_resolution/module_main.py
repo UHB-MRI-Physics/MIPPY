@@ -195,7 +195,7 @@ def reset_roi(win):
 def measure_res(win):
 
 
-	px = np.array(win.im1.get_roi_pixels()[0]).reshape(win.roi_shape)
+	px = np.array(win.im1.get_roi_pixels(tags=['res'])[0]).reshape(win.roi_shape)
 	px_H = np.shape(px)[0]
 	px_W = np.shape(px)[1]
 	
@@ -309,13 +309,31 @@ def measure_res(win):
 						max_y_ver[k]=y
 						result_ver[k]=abs(transform[fft_len/2])/abs(transform[0])
 						profile_temp_ver[k]=np.array(profile)
-		best_hor = np.argmax((np.ptp(a)[0] for a in profile_temp_hor))
-		best_ver = np.argmax((np.ptp(a)[0] for a in profile_temp_ver))
+		max_contrast_hor = 0
+		max_contrast_ver = 0
+		best_hor = None
+		best_ver = None
+		for k in range(4):
+			high_h = np.max(profile_temp_hor[k])
+			low_h = np.min(profile_temp_hor[k])
+			high_v = np.max(profile_temp_ver[k])
+			low_v = np.min(profile_temp_ver[k])
+			contrast_h = (high_h-low_h)/(high_h+low_h)
+			contrast_v = (high_v-low_v)/(high_v+low_v)
+			if contrast_h > max_contrast_hor:
+				max_contrast_hor = contrast_h
+				best_hor = k
+			if contrast_v > max_contrast_ver:
+				max_contrast_ver = contrast_v
+				best_ver = k
 		old_hor = np.argmax(max_tail_hor)
 		old_ver = np.argmax(max_tail_ver)
 		win.im2.delete('temp')
+		#~ for k in range(4):
+			#~ win.im2.create_rectangle((max_x_hor[k]*z,max_y_hor[k]*z,(max_x_hor[k]+roi_len)*z,(max_y_hor[k]+1)*z),outline='magenta',tags='final_fft')
+			#~ win.im2.create_rectangle((max_x_ver[k]*z,max_y_ver[k]*z,(max_x_ver[k]+1)*z,(max_y_ver[k]+roi_len)*z),outline='magenta',tags='final_fft')
 		win.im2.create_rectangle((max_x_hor[old_hor]*z,max_y_hor[old_hor]*z,(max_x_hor[old_hor]+roi_len)*z,(max_y_hor[old_hor]+1)*z),outline='magenta',tags='final_fft')
-		win.im2.create_rectangle((max_x_ver[old_hor]*z,max_y_ver[old_hor]*z,(max_x_ver[old_hor]+1)*z,(max_y_ver[old_hor]+roi_len)*z),outline='magenta',tags='final_fft')
+		win.im2.create_rectangle((max_x_ver[old_ver]*z,max_y_ver[old_ver]*z,(max_x_ver[old_ver]+1)*z,(max_y_ver[old_ver]+roi_len)*z),outline='magenta',tags='final_fft')
 		win.im2.create_rectangle((max_x_hor[best_hor]*z,max_y_hor[best_hor]*z,(max_x_hor[best_hor]+roi_len)*z,(max_y_hor[best_hor]+1)*z),outline='cyan',tags='final_ctf')
 		win.im2.create_rectangle((max_x_ver[best_ver]*z,max_y_ver[best_ver]*z,(max_x_ver[best_ver]+1)*z,(max_y_ver[best_ver]+roi_len)*z),outline='cyan',tags='final_ctf')
 		
