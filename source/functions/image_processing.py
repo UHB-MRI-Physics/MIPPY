@@ -14,7 +14,7 @@ This module contains only functions for the analysis of 2D or 3D image data
 which must be passed MIPPYImage objects.
 """
 
-def find_phantom_center(image,phantom='ACR',subpixel=True,mode='valid'):
+def find_phantom_center_old(image,phantom='ACR',subpixel=True,mode='valid'):
 	"""
 	Assumes circular/ellipsoid phantom.  For anything else, you'll
 	need a different method.
@@ -106,6 +106,138 @@ def find_phantom_center(image,phantom='ACR',subpixel=True,mode='valid'):
 		return (x,y)
 	else:
 		return (int(np.round(x,0)),int(np.round(y,0)))
+
+def find_phantom_center(image,phantom='ACR',subpixel=True,mode='valid'):
+	geo = find_phantom_geometry(image,subpixel)
+	return (geo[0],geo[1])
+
+def phantom_fit_rectangle(geo,px_binary):
+	"""
+	geo is a tuple in the format xc,yc,xr,yr)
+	"""
+	shape_px = np.shape(px_binary)
+	mask = np.zeros(shape_px).astype(np.float64)
+	xc=geo[0]
+	yc=geo[1]
+	xr=geo[2]
+	yr=geo[3]
+	if xr>xc:
+		xmin=0
+	else:
+		xmin=int(xc-xr)
+	if xc+xr>shape_px[1]:
+		xmax=shape_px[1]
+	else:
+		xmax=int(xc+xr)
+	if yr>yc:
+		ymin=0
+	else:
+		ymin=int(yc-yr)
+	if yc+yr>shape_px[0]:
+		ymax=shape_px[0]
+	else:
+		ymax=int(yc+yr)
+	#~ print "making mask"
+	mask[ymin:ymax,xmin:xmax]=1.
+	#~ np.savetxt(r'K:\binarymaskrectangle.txt',mask)
+	result = np.sum(np.abs(mask-px_binary))
+	#~ print float(result)/100000
+	return float(result)/100000
+
+def phantom_fit_ellipse(geo,px_binary):
+	"""
+	geo is a tuple in the format xc,yc,xr,yr)
+	"""
+	shape_px = np.shape(px_binary)
+	mask = np.zeros(shape_px).astype(np.float64)
+	xc=geo[0]
+	yc=geo[1]
+	xr=geo[2]
+	yr=geo[3]
+	#~ if xr>xc:
+		#~ xmin=0
+	#~ else:
+		#~ xmin=int(xc-xr)
+	#~ if xc+xr>shape_px[1]:
+		#~ xmax=shape_px[1]
+	#~ else:
+		#~ xmax=int(xc+xr)
+	if yr>yc:
+		ymin=0
+	else:
+		ymin=int(yc-yr-1)
+	if yc+yr>shape_px[0]:
+		ymax=shape_px[0]
+	else:
+		ymax=int(yc+yr)
+	#~ print "making mask"
+	for y in range(ymin,ymax):
+		y = float(y)
+		if ((y-yc)**2)>(yr**2):
+			#~ print y, "Skipping"
+			continue
+		else:
+			xsol = int(np.round(np.sqrt((1.-(((y-yc+1)**2)/(yr**2)))*(xr**2)),0))
+			#~ print y, xsol
+		mask[y,xc-xsol+1:xc+xsol+1]=1.
+		#~ for x in range(xmin,xmax):
+			#~ x = float(x)
+			#~ y = float(y)
+			#~ if abs(x-xc)**2/xr**2 + abs(y-yc)**2/yr**2 <= 1.:
+				#~ mask[y,x]=1.
+	#~ print "done making mask"
+	#~ np.savetxt(r'K:\binarymaskellipse.txt',mask)
+	result = np.sum(np.abs(mask-px_binary))
+	#~ print float(result)/100000
+	return float(result)/100000
+
+def find_phantom_geometry(image,subpixel=True):
+	"""
+	Takes a MIPPY image and finds the best fit of an ellipse or rectangle to the
+	object in the image.
+	
+	Returns the centre, shape type and X/Y radius/half length.
+	"""
+	px = image.px_float
+	shape_px = np.shape(px)
+	px_binary = np.zeros(shape_px).astype(np.float64)
+	# Make binary
+	threshold = 0.05*np.mean(px[np.where(px>np.percentile(px,75))])
+	px_binary[np.where(px>threshold)] = 1.
+	#~ np.savetxt(r"K:\binarypx.txt",px_binary)
+	xc=float(shape_px[1]/2)
+	yc=float(shape_px[0]/2)
+	xr=float(shape_px[1]/3)
+	yr=float(shape_px[0]/3)
+	print "Fitting ellipse"
+	best_ellipse = minimize(phantom_fit_ellipse,(xc,yc,xr,yr),args=(px_binary),method='Nelder-Mead',options={'maxiter':30})
+	#~ best_ellipse = minimize(phantom_fit_ellipse,(xc,yc,xr,yr),args=(px_binary),options={'maxiter':10})
+	#~ print best_ellipse.success
+	print "Fitting rectangle"
+	best_rectangle = minimize(phantom_fit_rectangle,(xc,yc,xr,yr),args=(px_binary),method='Nelder-Mead',options={'maxiter':30})
+	#~ best_rectangle = minimize(phantom_fit_rectangle,(xc,yc,xr,yr),args=(px_binary),options={'maxiter':10})
+	#~ print best_rectangle.success
+	
+	ellipse_val = best_ellipse.fun
+	rectangle_val = best_rectangle.fun
+	
+	#~ print ellipse_val
+	#~ print rectangle_val
+	
+	if ellipse_val < rectangle_val:
+		result = best_ellipse.x
+		shapetype='ellipse'
+	elif ellipse_val > rectangle_val:
+		result = best_rectangle.x
+		shapetype='rectangle'
+	else:
+		print "Something went wrong"
+	
+	print result,shapetype
+	
+	
+	# Return xc,yc,xr,yr,shapetype
+	return (result[0],result[1],result[2],result[3],shapetype)
 
 def get_inverse_sum(c,arr,size=3):
 	# c is center in [x,y] format

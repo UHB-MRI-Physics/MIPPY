@@ -79,11 +79,11 @@ def execute(master_window,dicomdir,images):
 	win.phantom_choice = OptionMenu(win.toolbar,win.phantom_v,win.phantom_options[0],*win.phantom_options)
 	mpy.optionmenu_patch(win.phantom_choice,win.phantom_v)
 	
-	win.n_holes_options = ['3 hole method','4 hole method']
-	win.n_holes = StringVar(win)
-	win.n_holes_label = Label(win.toolbar,text='\nAnalysis method:\n(3 holes preferred for 1.1mm and 0.9mm, 4\nholes preferred for 1.0mm)')
-	win.n_holes_choice = OptionMenu(win.toolbar,win.n_holes,win.n_holes_options[1],*win.n_holes_options)
-	mpy.optionmenu_patch(win.n_holes_choice,win.n_holes)
+	#~ win.n_holes_options = ['3 hole method','4 hole method']
+	#~ win.n_holes = StringVar(win)
+	#~ win.n_holes_label = Label(win.toolbar,text='\nAnalysis method:\n(3 holes preferred for 1.1mm and 0.9mm, 4\nholes preferred for 1.0mm)')
+	#~ win.n_holes_choice = OptionMenu(win.toolbar,win.n_holes,win.n_holes_options[1],*win.n_holes_options)
+	#~ mpy.optionmenu_patch(win.n_holes_choice,win.n_holes)
 	
 	win.controlbox = ImageFlipper(win,win.im1)	
 	
@@ -107,8 +107,8 @@ def execute(master_window,dicomdir,images):
 
 	win.roibutton.grid(row=4,column=0,sticky='ew')
 	
-	win.n_holes_label.grid(row=5,column=0,sticky='sw')
-	win.n_holes_choice.grid(row=6,column=0,sticky='new')
+	#~ win.n_holes_label.grid(row=5,column=0,sticky='sw')
+	#~ win.n_holes_choice.grid(row=6,column=0,sticky='new')
 	
 	win.measurebutton.grid(row=7,column=0,sticky='ew')
 
@@ -205,6 +205,16 @@ def measure_res(win):
 	px1 = px[:,0:win.roi_shape[1]/3]
 	px2 = px[:,win.roi_shape[1]/3:2*win.roi_shape[1]/3]
 	px3 = px[:,2*win.roi_shape[1]/3:]
+	
+	# Get threshold values to accept profiles
+	# 31 holes, take 90% of top 31 values
+	px_threshold = [0,0,0]
+	#~ px_threshold[0] = np.max(px1)*0.4
+	px_threshold[0] = 0.5*np.mean(np.sort(px1.flatten())[-1:-5:-1])
+	#~ px_threshold[1] = np.max(px2)*0.4
+	px_threshold[1] = 0.5*np.mean(np.sort(px2.flatten())[-1:-5:-1])
+	#~ px_threshold[2] = np.max(px3)*0.4
+	px_threshold[2] = 0.5*np.mean(np.sort(px3.flatten())[-1:-5:-1])
 
 	# Determine "black" and "white" values for MTF calculation
 	
@@ -230,13 +240,14 @@ def measure_res(win):
 	white09 = full_white*area_overlap_3
 	print black,white11,white10,white09
 	
-	if win.n_holes.get()=='3 hole method':
-		roi_len = 5
-	elif win.n_holes.get()=='4 hole method':
-		roi_len = 7
-	else:
-		print "Number of holes not decided properly - poorly coded!"
-	fft_len=32
+	#~ if win.n_holes.get()=='3 hole method':
+		#~ roi_len = 5
+	#~ elif win.n_holes.get()=='4 hole method':
+		#~ roi_len = 7
+	#~ else:
+		#~ print "Number of holes not decided properly - poorly coded!"
+	fft_len=8
+	n_profiles = 4
 	
 	profiles = []
 	fft_results = []
@@ -245,6 +256,10 @@ def measure_res(win):
 	
 	# For each set of holes,
 	for i in range(3):
+		if i==1:
+			roi_len=7
+		else:
+			roi_len=7
 		max_tail_hor = [0]
 		max_x_hor = [0]
 		max_y_hor = [0]
@@ -266,8 +281,15 @@ def measure_res(win):
 				
 				new_min = np.min(max_tail_hor)
 				
-				if abs(transform[fft_len/2])>new_min and (0.5<profile[0]/profile[-1]<1.5 or 0.5<profile[-1]/profile[0]<1.5) and profile[0]>profile[1]:
-					if len(max_tail_hor)<4:
+				if (abs(transform[fft_len/2])>new_min 
+					and (0.5<profile[-1]/profile[0]<1.5 or 0.5<profile[0]/profile[-1]<1.5)
+					#~ and (profile[0]>px_threshold[i] and profile[-1]>px_threshold[i])
+					#~ and np.sum(profile>px_threshold[i])>=(roi_len+1)/2
+					#~ and (profile[0]>profile[1] and (profile[-1]>profile[-2] or profile[-2]>profile[-3])) 
+					and profile[0]>profile[1]
+					):
+					#~ print "FOUND ONE HOR"
+					if len(max_tail_hor)<n_profiles:
 						max_tail_hor.append(abs(transform[fft_len/2]))
 						max_x_hor .append(x)
 						max_y_hor.append(y)
@@ -294,10 +316,17 @@ def measure_res(win):
 				
 				new_min = np.min(max_tail_ver)
 				
-				if abs(transform[fft_len/2])>new_min and (0.5<profile[0]/profile[-1]<1.5 or 0.5<profile[-1]/profile[0]<1.5) and profile[0]>profile[1]:
-					if len(max_tail_ver)<4:
+				if (abs(transform[fft_len/2])>new_min 
+					and (0.5<profile[-1]/profile[0]<1.5 or 0.5<profile[0]/profile[-1]<1.5)
+					#~ and (profile[0]>px_threshold[i] and profile[-1]>px_threshold[i])
+					#~ and np.sum(profile>px_threshold[i])>=(roi_len+1)/2
+					#~ and (profile[0]>profile[1] and (profile[-1]>profile[-2] or profile[-2]>profile[-3])) 
+					and profile[0]>profile[1]
+					):
+					#~ print "FOUND ONE VER"
+					if len(max_tail_ver)<n_profiles:
 						max_tail_ver.append(abs(transform[fft_len/2]))
-						max_x_ver .append(x)
+						max_x_ver.append(x)
 						max_y_ver.append(y)
 						result_ver.append(abs(transform[fft_len/2])/abs(transform[0]))
 						profile_temp_ver.append(np.array(profile))
@@ -313,7 +342,9 @@ def measure_res(win):
 		max_contrast_ver = 0
 		best_hor = None
 		best_ver = None
-		for k in range(4):
+		old_hor = np.argmax(max_tail_hor)
+		old_ver = np.argmax(max_tail_ver)
+		for k in range(n_profiles):
 			high_h = np.max(profile_temp_hor[k])
 			low_h = np.min(profile_temp_hor[k])
 			high_v = np.max(profile_temp_ver[k])
@@ -326,12 +357,9 @@ def measure_res(win):
 			if contrast_v > max_contrast_ver:
 				max_contrast_ver = contrast_v
 				best_ver = k
-		old_hor = np.argmax(max_tail_hor)
-		old_ver = np.argmax(max_tail_ver)
+		best_hor = old_hor
+		best_ver = old_ver
 		win.im2.delete('temp')
-		#~ for k in range(4):
-			#~ win.im2.create_rectangle((max_x_hor[k]*z,max_y_hor[k]*z,(max_x_hor[k]+roi_len)*z,(max_y_hor[k]+1)*z),outline='magenta',tags='final_fft')
-			#~ win.im2.create_rectangle((max_x_ver[k]*z,max_y_ver[k]*z,(max_x_ver[k]+1)*z,(max_y_ver[k]+roi_len)*z),outline='magenta',tags='final_fft')
 		win.im2.create_rectangle((max_x_hor[old_hor]*z,max_y_hor[old_hor]*z,(max_x_hor[old_hor]+roi_len)*z,(max_y_hor[old_hor]+1)*z),outline='magenta',tags='final_fft')
 		win.im2.create_rectangle((max_x_ver[old_ver]*z,max_y_ver[old_ver]*z,(max_x_ver[old_ver]+1)*z,(max_y_ver[old_ver]+roi_len)*z),outline='magenta',tags='final_fft')
 		win.im2.create_rectangle((max_x_hor[best_hor]*z,max_y_hor[best_hor]*z,(max_x_hor[best_hor]+roi_len)*z,(max_y_hor[best_hor]+1)*z),outline='cyan',tags='final_ctf')
