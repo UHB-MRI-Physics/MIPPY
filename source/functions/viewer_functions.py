@@ -869,7 +869,7 @@ class MIPPYCanvas(Canvas):
 		self.level = self.default_level
 
 		for image in self.images:
-			image.wl_and_display(window = self.default_window, level = self.default_level)
+			image.wl_and_display(window = self.default_window, level = self.default_level, antialias=self.antialias)
 		self.show_image(self.active)
 
 

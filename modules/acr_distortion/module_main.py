@@ -346,10 +346,20 @@ def reset_profiles(win):
 	phantom=win.phantom_v.get()
 	center = imp.find_phantom_center(win.im1.get_active_image(),phantom,
 							subpixel=False,mode=win.mode.get())
+	#~ geometry = imp.find_phantom_geometry(win.im1.get_active_image())
 	xc = center[0]
 	yc = center[1]
+	#~ xc = geometry[0]
+	#~ yc = geometry[1]
+	#~ xr = geometry[2]
+	#~ yr = geometry[3]
+	#~ if geometry[4]=='rectangle':
+		#~ win.im1.roi_rectangle(xc-xr,yc-yr,xr*2,yr*2,system='image',color='red')
+	#~ elif geometry[4]=='ellipse':
+		#~ win.im1.roi_ellipse((xc,yc),xr,yr,tags=[],system='image',resolution=32,color='red')
 	win.xc = xc
 	win.yc = yc
+	#~ center = (xc,yc)
 	print "Center",center
 	
 	image = win.im1.get_active_image()
