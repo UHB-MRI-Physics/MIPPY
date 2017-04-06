@@ -253,6 +253,8 @@ def measure_res(win):
 	fft_results = []
 	
 	z = win.im2.zoom_factor
+	with open('profiles.txt','w')as textfile:
+		textfile.write('profile list\n')
 	
 	# For each set of holes,
 	for i in range(3):
@@ -306,6 +308,7 @@ def measure_res(win):
 		win.im2.delete('temp')
 		
 		#cycle through ver profiles
+		
 		for y in range(px_H-roi_len):
 			for x in range(i*px_W/3,((i+1)*px_W)/3):
 				win.im2.delete('temp')
@@ -315,7 +318,8 @@ def measure_res(win):
 				transform = np.fft.fft(profile,fft_len)
 				
 				new_min = np.min(max_tail_ver)
-				
+				with open('profiles.txt','a')as textfile:
+					textfile.write(str(x)+" "+str(y)+" "+str(profile)+'\n')
 				if (abs(transform[fft_len/2])>new_min 
 					and (0.5<profile[-1]/profile[0]<1.5 or 0.5<profile[0]/profile[-1]<1.5)
 					#~ and (profile[0]>px_threshold[i] and profile[-1]>px_threshold[i])

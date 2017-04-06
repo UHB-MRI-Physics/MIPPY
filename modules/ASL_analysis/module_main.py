@@ -101,7 +101,7 @@ def execute(master_window,dicomdir,images):
 
 	rlen=[0,1,2,3,2,3,3]
 
-        win.imASL=None
+	win.imASL=None
 	win.imT1=None
 	win.imM0=None
 	
