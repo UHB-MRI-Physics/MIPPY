@@ -231,14 +231,16 @@ def measure_res(win):
 	# Correct white value for "hole" area as a fraction of pixel area
 	# Compute overlapping area to get expected white value for each hole set
 	image = win.im1.get_active_image()
-	area_overlap_1 = overlap((0.5*1.1),np.mean([image.xscale,image.yscale]))
-	area_overlap_2 = overlap((0.5*1.0),np.mean([image.xscale,image.yscale]))
-	area_overlap_3 = overlap((0.5*0.9),np.mean([image.xscale,image.yscale]))
-	print area_overlap_1,area_overlap_2,area_overlap_3
-	white11 = full_white*area_overlap_1
-	white10 = full_white*area_overlap_2
-	white09 = full_white*area_overlap_3
-	print black,white11,white10,white09
+	area_overlap = [None,None,None]
+	area_overlap[0] = overlap((0.5*1.1),np.mean([image.xscale,image.yscale]))
+	area_overlap[1] = overlap((0.5*1.0),np.mean([image.xscale,image.yscale]))
+	area_overlap[2] = overlap((0.5*0.9),np.mean([image.xscale,image.yscale]))
+	#~ print area_overlap_1,area_overlap_2,area_overlap_3
+	adj_white = [None,None,None]
+	adj_white[0] = full_white*area_overlap[0]
+	adj_white[1] = full_white*area_overlap[1]
+	adj_white[2] = full_white*area_overlap[2]
+	#~ print black,white11,white10,white09
 	
 	#~ if win.n_holes.get()=='3 hole method':
 		#~ roi_len = 5
@@ -254,205 +256,354 @@ def measure_res(win):
 	
 	z = win.im2.zoom_factor
 	
-	# For each set of holes,
-	for i in range(3):
-		if i==1:
-			roi_len=7
-		else:
-			roi_len=7
-		max_tail_hor = [0]
-		max_x_hor = [0]
-		max_y_hor = [0]
-		max_tail_ver = [0]
-		max_x_ver = [0]
-		max_y_ver = [0]
-		result_hor = [0]
-		result_ver = [0]
-		profile_temp_hor = [0]
-		profile_temp_ver = [0]
-		#cycle through hor profiles
-		for y in range(px_H):
-			for x in range(i*px_W/3,((i+1)*px_W)/3-roi_len):
-				win.im2.delete('temp')
-				profile = px[y,x:x+roi_len].flatten()
-				win.im2.create_rectangle((x*z,y*z,(x+roi_len)*z,(y+1)*z),outline='yellow',tags='temp')
-				win.im2.update()
-				transform = np.fft.fft(profile,fft_len)
-				
-				new_min = np.min(max_tail_hor)
-				
-				if (abs(transform[fft_len/2])>new_min 
-					and (0.5<profile[-1]/profile[0]<1.5 or 0.5<profile[0]/profile[-1]<1.5)
-					#~ and (profile[0]>px_threshold[i] and profile[-1]>px_threshold[i])
-					#~ and np.sum(profile>px_threshold[i])>=(roi_len+1)/2
-					#~ and (profile[0]>profile[1] and (profile[-1]>profile[-2] or profile[-2]>profile[-3])) 
-					and profile[0]>profile[1]
-					):
-					#~ print "FOUND ONE HOR"
-					if len(max_tail_hor)<n_profiles:
-						max_tail_hor.append(abs(transform[fft_len/2]))
-						max_x_hor .append(x)
-						max_y_hor.append(y)
-						result_hor.append(abs(transform[fft_len/2])/abs(transform[0]))
-						profile_temp_hor.append(np.array(profile))
-					else:
-						k = np.min([np.argmin(max_tail_hor)])
-						#~ print k
-						max_tail_hor[k] = abs(transform[fft_len/2])
-						max_x_hor[k]=x
-						max_y_hor[k]=y
-						result_hor[k]=abs(transform[fft_len/2])/abs(transform[0])
-						profile_temp_hor[k]=np.array(profile)
-		win.im2.delete('temp')
-		
-		#cycle through ver profiles
+	# Determine hole set to use - take closest hole size to image resolution
+	xscale = win.im1.get_active_image().xscale
+	yscale = win.im1.get_active_image().yscale
+	
+	if 0.85 <= xscale < 0.95:
+		hor_set = 2
+		hor_size=0.9
+	elif 0.95 <= xscale < 1.05:
+		hor_set = 1
+		hor_size=1.0
+	elif 1.05 <= xscale < 1.15:
+		hor_set = 0
+		hor_size=1.1
+	if 0.85 <= yscale < 0.95:
+		ver_set = 2
+		ver_size=0.9
+	elif 0.95 <= yscale < 1.05:
+		ver_set = 1
+		ver_size=1.0
+	elif 1.05 <= yscale < 1.15:
+		ver_set = 0
+		ver_size=1.1
+	
+	# Find best n horizontal profiles
+	roi_len = 7
+	n_profiles = 7
+	profiles_hor = []
+	max_x_hor = []
+	hole_sum_hor = []
+	zoom = win.im2.zoom_factor
+	for y in range(px_H):
+		this_row_profile = np.zeros(roi_len)
+		this_max_x = 0
+		this_value = 0
+		for x in range(hor_set*px_W/3,((hor_set+1)*px_W)/3-roi_len):
+			win.im2.delete('temp')
+			win.im2.create_rectangle(x*zoom,y*zoom,(x+roi_len)*zoom,(y+1)*zoom,outline='yellow',tags='temp')
+			win.im2.update()
+			profile = px[y,x:x+roi_len].flatten()
+			test_value = np.mean(profile[::2])
+			if test_value > this_value:
+			#~ if np.sum(profile[::2]) > np.sum(this_row_profile[::2]):
+				this_row_profile = profile
+				this_max_x = x
+				#~ this_value = np.sum(profile[::2])
+				this_value = test_value
+		profiles_hor.append(this_row_profile)
+		max_x_hor.append(this_max_x)
+		hole_sum_hor.append(this_value)
+	print hole_sum_hor
+	y_values_hor = np.array(hole_sum_hor).argsort()[-n_profiles:][::-1]
+	x_values_hor = np.array(max_x_hor)[y_values_hor]
+	x_values_hor = x_values_hor[y_values_hor.argsort()]
+	y_values_hor = np.sort(y_values_hor)
+	print x_values_hor
+	print y_values_hor
+	win.im2.delete('temp')
+	for i in range(n_profiles):
+		win.im2.create_rectangle(x_values_hor[i]*zoom,y_values_hor[i]*zoom,(x_values_hor[i]+roi_len)*zoom,(y_values_hor[i]+1)*zoom,outline='cyan')
+	
+	best_contrast_hor = 0
+	best_x_hor = None
+	best_y_hor = None
+	best_diff_hor=0
+	#~ for i in range((n_profiles+1)/2):
+	for i in range(n_profiles):
+		profile = px[y_values_hor[i],x_values_hor[i]:x_values_hor[i]+roi_len]
+		max = np.max(profile)
+		min = np.min(profile)
+		contrast = (max-min)/(max+min)
+		#~ diff = np.sum(profile[::2])-np.sum(profile[1::2])
+		#~ diff=max-min
+		#~ if diff > best_diff_hor:
+		if contrast > best_contrast_hor:
+			best_contrast_hor = contrast
+			best_x_hor = x_values_hor[i]
+			best_y_hor = y_values_hor[i]
+	
+	# Find best n vertical profiles
+	profiles_ver = []
+	max_y_ver = []
+	hole_sum_ver = []
+	zoom = win.im2.zoom_factor
+	for x in range(ver_set*px_W/3,((ver_set+1)*px_W)/3):
+		this_col_profile = np.zeros(roi_len)
+		this_max_y = 0
+		this_value = 0
 		for y in range(px_H-roi_len):
-			for x in range(i*px_W/3,((i+1)*px_W)/3):
-				win.im2.delete('temp')
-				profile = px[y:y+roi_len,x].flatten()
-				win.im2.create_rectangle((x*z,y*z,(x+1)*z,(y+roi_len)*z),outline='yellow',tags='temp')
-				win.im2.update()
-				transform = np.fft.fft(profile,fft_len)
+			win.im2.delete('temp')
+			win.im2.create_rectangle(x*zoom,y*zoom,(x+1)*zoom,(y+roi_len)*zoom,outline='yellow',tags='temp')
+			win.im2.update()
+			profile = px[y:y+roi_len,x].flatten()
+			test_value = np.mean(profile[::2])
+			if test_value > this_value:
+				this_col_profile = profile
+				this_max_y = y
+				#~ this_value = np.sum(profile[::2])
+				this_value = test_value
+		profiles_ver.append(this_col_profile)
+		max_y_ver.append(this_max_y)
+		hole_sum_ver.append(this_value)
+	print hole_sum_ver
+	x_values_ver = np.array(hole_sum_ver).argsort()[-n_profiles:][::-1]
+	y_values_ver = np.array(max_y_ver)[x_values_ver]
+	y_values_ver = y_values_ver[x_values_ver.argsort()]
+	x_values_ver = np.sort(x_values_ver)
+	x_values_ver = x_values_ver+(ver_set*px_W/3)
+	win.im2.delete('temp')
+	for i in range(n_profiles):
+		win.im2.create_rectangle(x_values_ver[i]*zoom,y_values_ver[i]*zoom,(x_values_ver[i]+1)*zoom,(y_values_ver[i]+roi_len)*zoom,outline='cyan')
+	
+	best_contrast_ver = 0
+	best_diff_ver= 0
+	best_x_ver = None
+	best_y_ver = None
+	#~ for i in range((n_profiles-1)/2,n_profiles):
+	for i in range(n_profiles):
+		profile = px[y_values_ver[i]:y_values_ver[i]+roi_len,x_values_ver[i]]
+		max = np.max(profile)
+		min = np.min(profile)
+		contrast = (max-min)/(max+min)
+		#~ diff = np.sum(profile[::2])-np.sum(profile[1::2])
+		#~ diff=max-min
+		#~ if diff > best_diff_ver:
+		if contrast > best_contrast_ver:
+			best_contrast_ver = contrast
+			best_x_ver = x_values_ver[i]
+			best_y_ver = y_values_ver[i]
+	win.im2.create_rectangle(best_x_hor*zoom,best_y_hor*zoom,(best_x_hor+roi_len)*zoom,(best_y_hor+1)*zoom,outline='magenta')
+	win.im2.create_rectangle(best_x_ver*zoom,best_y_ver*zoom,(best_x_ver+1)*zoom,(best_y_ver+roi_len)*zoom,outline='magenta')
+	
+	contrast_zero_hor = (adj_white[hor_set]-black)/(adj_white[hor_set]+black)
+	contrast_zero_ver = (adj_white[ver_set]-black)/(adj_white[ver_set]+black)
+	
+	mtf_hor = best_contrast_hor/contrast_zero_hor * np.pi / 4.
+	mtf_ver = best_contrast_ver/contrast_zero_ver * np.pi / 4.
+	
+	print mtf_hor,mtf_ver,np.mean([mtf_hor,mtf_ver])
+	
+	clear_output(win)
+	output(win,'\nMTF measured using CTF from max/min of hole profiles')
+	output(win,'Mean: {v:=.1f}\t%'.format(v=np.mean([mtf_hor,mtf_ver])*100))
+	output(win,'\nDirection\tPixel Size (mm)\tHole size (mm)\tMTF (%)')
+	output(win,'Horizontal\t{p:=.3f}\t{h:=.1f}\t{m:=.1f}'.format(p=xscale,h=hor_size,m=mtf_hor*100))
+	output(win,'Vertical\t{p:=.3f}\t{h:=.1f}\t{m:=.1f}'.format(p=yscale,h=ver_size,m=mtf_ver*100))
+	win.outputbox.see('1.0')
+	
+	
+	
+	# For each set of holes,
+	#~ for i in range(3):
+		#~ if i==1:
+			#~ roi_len=7
+		#~ else:
+			#~ roi_len=7
+		#~ max_tail_hor = [0]
+		#~ max_x_hor = [0]
+		#~ max_y_hor = [0]
+		#~ max_tail_ver = [0]
+		#~ max_x_ver = [0]
+		#~ max_y_ver = [0]
+		#~ result_hor = [0]
+		#~ result_ver = [0]
+		#~ profile_temp_hor = [0]
+		#~ profile_temp_ver = [0]
+		#~ #cycle through hor profiles
+		#~ for y in range(px_H):
+			#~ for x in range(i*px_W/3,((i+1)*px_W)/3-roi_len):
+				#~ win.im2.delete('temp')
+				#~ profile = px[y,x:x+roi_len].flatten()
+				#~ win.im2.create_rectangle((x*z,y*z,(x+roi_len)*z,(y+1)*z),outline='yellow',tags='temp')
+				#~ win.im2.update()
+				#~ transform = np.fft.fft(profile,fft_len)
 				
-				new_min = np.min(max_tail_ver)
+				#~ new_min = np.min(max_tail_hor)
 				
-				if (abs(transform[fft_len/2])>new_min 
-					and (0.5<profile[-1]/profile[0]<1.5 or 0.5<profile[0]/profile[-1]<1.5)
+				#~ if (abs(transform[fft_len/2])>new_min 
+					#~ and (0.5<profile[-1]/profile[0]<1.5 or 0.5<profile[0]/profile[-1]<1.5)
 					#~ and (profile[0]>px_threshold[i] and profile[-1]>px_threshold[i])
 					#~ and np.sum(profile>px_threshold[i])>=(roi_len+1)/2
 					#~ and (profile[0]>profile[1] and (profile[-1]>profile[-2] or profile[-2]>profile[-3])) 
-					and profile[0]>profile[1]
-					):
-					#~ print "FOUND ONE VER"
-					if len(max_tail_ver)<n_profiles:
-						max_tail_ver.append(abs(transform[fft_len/2]))
-						max_x_ver.append(x)
-						max_y_ver.append(y)
-						result_ver.append(abs(transform[fft_len/2])/abs(transform[0]))
-						profile_temp_ver.append(np.array(profile))
-					else:
-						k = np.min([np.argmin(max_tail_ver)])
+					#~ and profile[0]>profile[1]
+					#~ ):
+					#~ print "FOUND ONE HOR"
+					#~ if len(max_tail_hor)<n_profiles:
+						#~ max_tail_hor.append(abs(transform[fft_len/2]))
+						#~ max_x_hor .append(x)
+						#~ max_y_hor.append(y)
+						#~ result_hor.append(abs(transform[fft_len/2])/abs(transform[0]))
+						#~ profile_temp_hor.append(np.array(profile))
+					#~ else:
+						#~ k = np.min([np.argmin(max_tail_hor)])
 						#~ print k
-						max_tail_ver[k] = abs(transform[fft_len/2])
-						max_x_ver[k]=x
-						max_y_ver[k]=y
-						result_ver[k]=abs(transform[fft_len/2])/abs(transform[0])
-						profile_temp_ver[k]=np.array(profile)
-		max_contrast_hor = 0
-		max_contrast_ver = 0
-		best_hor = None
-		best_ver = None
-		old_hor = np.argmax(max_tail_hor)
-		old_ver = np.argmax(max_tail_ver)
-		for k in range(n_profiles):
-			high_h = np.max(profile_temp_hor[k])
-			low_h = np.min(profile_temp_hor[k])
-			high_v = np.max(profile_temp_ver[k])
-			low_v = np.min(profile_temp_ver[k])
-			contrast_h = (high_h-low_h)/(high_h+low_h)
-			contrast_v = (high_v-low_v)/(high_v+low_v)
-			if contrast_h > max_contrast_hor:
-				max_contrast_hor = contrast_h
-				best_hor = k
-			if contrast_v > max_contrast_ver:
-				max_contrast_ver = contrast_v
-				best_ver = k
-		best_hor = old_hor
-		best_ver = old_ver
-		win.im2.delete('temp')
-		win.im2.create_rectangle((max_x_hor[old_hor]*z,max_y_hor[old_hor]*z,(max_x_hor[old_hor]+roi_len)*z,(max_y_hor[old_hor]+1)*z),outline='magenta',tags='final_fft')
-		win.im2.create_rectangle((max_x_ver[old_ver]*z,max_y_ver[old_ver]*z,(max_x_ver[old_ver]+1)*z,(max_y_ver[old_ver]+roi_len)*z),outline='magenta',tags='final_fft')
-		win.im2.create_rectangle((max_x_hor[best_hor]*z,max_y_hor[best_hor]*z,(max_x_hor[best_hor]+roi_len)*z,(max_y_hor[best_hor]+1)*z),outline='cyan',tags='final_ctf')
-		win.im2.create_rectangle((max_x_ver[best_ver]*z,max_y_ver[best_ver]*z,(max_x_ver[best_ver]+1)*z,(max_y_ver[best_ver]+roi_len)*z),outline='cyan',tags='final_ctf')
+						#~ max_tail_hor[k] = abs(transform[fft_len/2])
+						#~ max_x_hor[k]=x
+						#~ max_y_hor[k]=y
+						#~ result_hor[k]=abs(transform[fft_len/2])/abs(transform[0])
+						#~ profile_temp_hor[k]=np.array(profile)
+		#~ win.im2.delete('temp')
 		
-		profiles.append(profile_temp_hor[best_hor])
-		profiles.append(profile_temp_ver[best_ver])
-		fft_results.append(np.max(result_hor))
-		fft_results.append(np.max(result_ver))
+		#~ #cycle through ver profiles
+		#~ for y in range(px_H-roi_len):
+			#~ for x in range(i*px_W/3,((i+1)*px_W)/3):
+				#~ win.im2.delete('temp')
+				#~ profile = px[y:y+roi_len,x].flatten()
+				#~ win.im2.create_rectangle((x*z,y*z,(x+1)*z,(y+roi_len)*z),outline='yellow',tags='temp')
+				#~ win.im2.update()
+				#~ transform = np.fft.fft(profile,fft_len)
+				
+				#~ new_min = np.min(max_tail_ver)
+				
+				#~ if (abs(transform[fft_len/2])>new_min 
+					#~ and (0.5<profile[-1]/profile[0]<1.5 or 0.5<profile[0]/profile[-1]<1.5)
+					#~ and (profile[0]>px_threshold[i] and profile[-1]>px_threshold[i])
+					#~ and np.sum(profile>px_threshold[i])>=(roi_len+1)/2
+					#~ and (profile[0]>profile[1] and (profile[-1]>profile[-2] or profile[-2]>profile[-3])) 
+					#~ and profile[0]>profile[1]
+					#~ ):
+					#~ print "FOUND ONE VER"
+					#~ if len(max_tail_ver)<n_profiles:
+						#~ max_tail_ver.append(abs(transform[fft_len/2]))
+						#~ max_x_ver.append(x)
+						#~ max_y_ver.append(y)
+						#~ result_ver.append(abs(transform[fft_len/2])/abs(transform[0]))
+						#~ profile_temp_ver.append(np.array(profile))
+					#~ else:
+						#~ k = np.min([np.argmin(max_tail_ver)])
+						#~ print k
+						#~ max_tail_ver[k] = abs(transform[fft_len/2])
+						#~ max_x_ver[k]=x
+						#~ max_y_ver[k]=y
+						#~ result_ver[k]=abs(transform[fft_len/2])/abs(transform[0])
+						#~ profile_temp_ver[k]=np.array(profile)
+		#~ max_contrast_hor = 0
+		#~ max_contrast_ver = 0
+		#~ best_hor = None
+		#~ best_ver = None
+		#~ old_hor = np.argmax(max_tail_hor)
+		#~ old_ver = np.argmax(max_tail_ver)
+		#~ for k in range(n_profiles):
+			#~ high_h = np.max(profile_temp_hor[k])
+			#~ low_h = np.min(profile_temp_hor[k])
+			#~ high_v = np.max(profile_temp_ver[k])
+			#~ low_v = np.min(profile_temp_ver[k])
+			#~ contrast_h = (high_h-low_h)/(high_h+low_h)
+			#~ contrast_v = (high_v-low_v)/(high_v+low_v)
+			#~ if contrast_h > max_contrast_hor:
+				#~ max_contrast_hor = contrast_h
+				#~ best_hor = k
+			#~ if contrast_v > max_contrast_ver:
+				#~ max_contrast_ver = contrast_v
+				#~ best_ver = k
+		#~ best_hor = old_hor
+		#~ best_ver = old_ver
+		#~ win.im2.delete('temp')
+		#~ win.im2.create_rectangle((max_x_hor[old_hor]*z,max_y_hor[old_hor]*z,(max_x_hor[old_hor]+roi_len)*z,(max_y_hor[old_hor]+1)*z),outline='magenta',tags='final_fft')
+		#~ win.im2.create_rectangle((max_x_ver[old_ver]*z,max_y_ver[old_ver]*z,(max_x_ver[old_ver]+1)*z,(max_y_ver[old_ver]+roi_len)*z),outline='magenta',tags='final_fft')
+		#~ win.im2.create_rectangle((max_x_hor[best_hor]*z,max_y_hor[best_hor]*z,(max_x_hor[best_hor]+roi_len)*z,(max_y_hor[best_hor]+1)*z),outline='cyan',tags='final_ctf')
+		#~ win.im2.create_rectangle((max_x_ver[best_ver]*z,max_y_ver[best_ver]*z,(max_x_ver[best_ver]+1)*z,(max_y_ver[best_ver]+roi_len)*z),outline='cyan',tags='final_ctf')
 		
-	fft_array = np.array(fft_results)
+		#~ profiles.append(profile_temp_hor[best_hor])
+		#~ profiles.append(profile_temp_ver[best_ver])
+		#~ fft_results.append(np.max(result_hor))
+		#~ fft_results.append(np.max(result_ver))
+		
+	#~ fft_array = np.array(fft_results)
 	
-	# MTF results from FFT
-	mtf11_fft_h = fft_array[0]*(np.pi/4)
-	mtf11_fft_v = fft_array[1]*(np.pi/4)
-	mtf10_fft_h = fft_array[2]*(np.pi/4)
-	mtf10_fft_v = fft_array[3]*(np.pi/4)
-	mtf09_fft_h = fft_array[4]*(np.pi/4)
-	mtf09_fft_v = fft_array[5]*(np.pi/4)
+	#~ # MTF results from FFT
+	#~ mtf11_fft_h = fft_array[0]*(np.pi/4)
+	#~ mtf11_fft_v = fft_array[1]*(np.pi/4)
+	#~ mtf10_fft_h = fft_array[2]*(np.pi/4)
+	#~ mtf10_fft_v = fft_array[3]*(np.pi/4)
+	#~ mtf09_fft_h = fft_array[4]*(np.pi/4)
+	#~ mtf09_fft_v = fft_array[5]*(np.pi/4)
 	
-	mtf11_fft = np.mean([mtf11_fft_h,mtf11_fft_v])
-	mtf10_fft = np.mean([mtf10_fft_h,mtf10_fft_v])
-	mtf09_fft = np.mean([mtf09_fft_h,mtf09_fft_v])
+	#~ mtf11_fft = np.mean([mtf11_fft_h,mtf11_fft_v])
+	#~ mtf10_fft = np.mean([mtf10_fft_h,mtf10_fft_v])
+	#~ mtf09_fft = np.mean([mtf09_fft_h,mtf09_fft_v])
 	
-	# MTF results from profiles and CTF
-	contrast_11_h = abs((np.max(profiles[0])-np.min(profiles[0]))/(np.max(profiles[0])+np.min(profiles[0])))
-	contrast_11_v = abs((np.max(profiles[1])-np.min(profiles[1]))/(np.max(profiles[1])+np.min(profiles[1])))
-	contrast_10_h = abs((np.max(profiles[2])-np.min(profiles[2]))/(np.max(profiles[2])+np.min(profiles[2])))
-	contrast_10_v = abs((np.max(profiles[3])-np.min(profiles[3]))/(np.max(profiles[3])+np.min(profiles[3])))
-	contrast_09_h = abs((np.max(profiles[4])-np.min(profiles[4]))/(np.max(profiles[4])+np.min(profiles[4])))
-	contrast_09_v = abs((np.max(profiles[5])-np.min(profiles[5]))/(np.max(profiles[5])+np.min(profiles[5])))
+	#~ # MTF results from profiles and CTF
+	#~ contrast_11_h = abs((np.max(profiles[0])-np.min(profiles[0]))/(np.max(profiles[0])+np.min(profiles[0])))
+	#~ contrast_11_v = abs((np.max(profiles[1])-np.min(profiles[1]))/(np.max(profiles[1])+np.min(profiles[1])))
+	#~ contrast_10_h = abs((np.max(profiles[2])-np.min(profiles[2]))/(np.max(profiles[2])+np.min(profiles[2])))
+	#~ contrast_10_v = abs((np.max(profiles[3])-np.min(profiles[3]))/(np.max(profiles[3])+np.min(profiles[3])))
+	#~ contrast_09_h = abs((np.max(profiles[4])-np.min(profiles[4]))/(np.max(profiles[4])+np.min(profiles[4])))
+	#~ contrast_09_v = abs((np.max(profiles[5])-np.min(profiles[5]))/(np.max(profiles[5])+np.min(profiles[5])))
 	
-	contrast_11_ideal = (white11-black)/(white11+black)
-	contrast_10_ideal = (white10-black)/(white10+black)
-	contrast_09_ideal = (white09-black)/(white09+black)
+	#~ contrast_11_ideal = (white11-black)/(white11+black)
+	#~ contrast_10_ideal = (white10-black)/(white10+black)
+	#~ contrast_09_ideal = (white09-black)/(white09+black)
 	
-	ctf_11_h = contrast_11_h/contrast_11_ideal
-	ctf_11_v = contrast_11_v/contrast_11_ideal
-	ctf_10_h = contrast_10_h/contrast_10_ideal
-	ctf_10_v = contrast_10_v/contrast_10_ideal
-	ctf_09_h = contrast_09_h/contrast_09_ideal
-	ctf_09_v = contrast_09_v/contrast_09_ideal
+	#~ ctf_11_h = contrast_11_h/contrast_11_ideal
+	#~ ctf_11_v = contrast_11_v/contrast_11_ideal
+	#~ ctf_10_h = contrast_10_h/contrast_10_ideal
+	#~ ctf_10_v = contrast_10_v/contrast_10_ideal
+	#~ ctf_09_h = contrast_09_h/contrast_09_ideal
+	#~ ctf_09_v = contrast_09_v/contrast_09_ideal
 	
-	mtf11_ctf_h = ctf_11_h*np.pi/4
-	mtf11_ctf_v = ctf_11_v*np.pi/4
-	mtf10_ctf_h = ctf_10_h*np.pi/4
-	mtf10_ctf_v = ctf_10_v*np.pi/4
-	mtf09_ctf_h = ctf_09_h*np.pi/4
-	mtf09_ctf_v = ctf_09_v*np.pi/4
+	#~ mtf11_ctf_h = ctf_11_h*np.pi/4
+	#~ mtf11_ctf_v = ctf_11_v*np.pi/4
+	#~ mtf10_ctf_h = ctf_10_h*np.pi/4
+	#~ mtf10_ctf_v = ctf_10_v*np.pi/4
+	#~ mtf09_ctf_h = ctf_09_h*np.pi/4
+	#~ mtf09_ctf_v = ctf_09_v*np.pi/4
 	
-	mtf11_ctf = np.mean([mtf11_ctf_h,mtf11_ctf_v])
-	mtf10_ctf = np.mean([mtf10_ctf_h,mtf10_ctf_v])
-	mtf09_ctf = np.mean([mtf09_ctf_h,mtf09_ctf_v])
+	#~ mtf11_ctf = np.mean([mtf11_ctf_h,mtf11_ctf_v])
+	#~ mtf10_ctf = np.mean([mtf10_ctf_h,mtf10_ctf_v])
+	#~ mtf09_ctf = np.mean([mtf09_ctf_h,mtf09_ctf_v])
 	
-	print "FFT based results"
-	print mtf11_fft,mtf10_fft,mtf09_fft
-	print "CTF based results"
-	print mtf11_ctf,mtf10_ctf,mtf09_ctf
+	#~ print "FFT based results"
+	#~ print mtf11_fft,mtf10_fft,mtf09_fft
+	#~ print "CTF based results"
+	#~ print mtf11_ctf,mtf10_ctf,mtf09_ctf
 	
-	xspc = win.im1.get_active_image().xscale
-	yspc = win.im1.get_active_image().yscale
+	#~ xspc = win.im1.get_active_image().xscale
+	#~ yspc = win.im1.get_active_image().yscale
 	
 
-	clear_output(win)
-	output(win,'MTF measured using FFT of hole profiles')
-	output(win,'Hole size (mm)\tHor\tVer\tMean')
-	output(win,'1.1\t{h:=.1f}%\t{v:=.1f}%\t{m:=.1f}%'.format(h=mtf11_fft_h*100,v=mtf11_fft_v*100,m=mtf11_fft*100))
-	output(win,'1.0\t{h:=.1f}%\t{v:=.1f}%\t{m:=.1f}%'.format(h=mtf10_fft_h*100,v=mtf10_fft_v*100,m=mtf10_fft*100))
-	output(win,'0.9\t{h:=.1f}%\t{v:=.1f}%\t{m:=.1f}%'.format(h=mtf09_fft_h*100,v=mtf09_fft_v*100,m=mtf09_fft*100))
+	#~ clear_output(win)
+	#~ output(win,'MTF measured using FFT of hole profiles')
+	#~ output(win,'Hole size (mm)\tHor\tVer\tMean')
+	#~ output(win,'1.1\t{h:=.1f}%\t{v:=.1f}%\t{m:=.1f}%'.format(h=mtf11_fft_h*100,v=mtf11_fft_v*100,m=mtf11_fft*100))
+	#~ output(win,'1.0\t{h:=.1f}%\t{v:=.1f}%\t{m:=.1f}%'.format(h=mtf10_fft_h*100,v=mtf10_fft_v*100,m=mtf10_fft*100))
+	#~ output(win,'0.9\t{h:=.1f}%\t{v:=.1f}%\t{m:=.1f}%'.format(h=mtf09_fft_h*100,v=mtf09_fft_v*100,m=mtf09_fft*100))
 	
-	output(win,'\nMTF measured using CTF from max/min of hole profiles')
-	output(win,'Hole size (mm)\tHor\tVer\tMean')
-	output(win,'1.1\t{h:=.1f}%\t{v:=.1f}%\t{m:=.1f}%'.format(h=mtf11_ctf_h*100,v=mtf11_ctf_v*100,m=mtf11_ctf*100))
-	output(win,'1.0\t{h:=.1f}%\t{v:=.1f}%\t{m:=.1f}%'.format(h=mtf10_ctf_h*100,v=mtf10_ctf_v*100,m=mtf10_ctf*100))
-	output(win,'0.9\t{h:=.1f}%\t{v:=.1f}%\t{m:=.1f}%'.format(h=mtf09_ctf_h*100,v=mtf09_ctf_v*100,m=mtf09_ctf*100))
+	#~ output(win,'\nMTF measured using CTF from max/min of hole profiles')
+	#~ output(win,'Hole size (mm)\tHor\tVer\tMean')
+	#~ output(win,'1.1\t{h:=.1f}%\t{v:=.1f}%\t{m:=.1f}%'.format(h=mtf11_ctf_h*100,v=mtf11_ctf_v*100,m=mtf11_ctf*100))
+	#~ output(win,'1.0\t{h:=.1f}%\t{v:=.1f}%\t{m:=.1f}%'.format(h=mtf10_ctf_h*100,v=mtf10_ctf_v*100,m=mtf10_ctf*100))
+	#~ output(win,'0.9\t{h:=.1f}%\t{v:=.1f}%\t{m:=.1f}%'.format(h=mtf09_ctf_h*100,v=mtf09_ctf_v*100,m=mtf09_ctf*100))
 	
-	output(win,'\nWhite and black values corrected for hole size')
-	output(win,'Black:\t\t{v:=.2f}'.format(v=black))
-	output(win,'White (raw):\t\t{v:=.2f}'.format(v=full_white))
-	output(win,'White (1.1mm):\t\t{v:=.2f}'.format(v=white11))
-	output(win,'White (1.0mm):\t\t{v:=.2f}'.format(v=white10))
-	output(win,'White (0.9mm):\t\t{v:=.2f}'.format(v=white09))
+	#~ output(win,'\nWhite and black values corrected for hole size')
+	#~ output(win,'Black:\t\t{v:=.2f}'.format(v=black))
+	#~ output(win,'White (raw):\t\t{v:=.2f}'.format(v=full_white))
+	#~ output(win,'White (1.1mm):\t\t{v:=.2f}'.format(v=white11))
+	#~ output(win,'White (1.0mm):\t\t{v:=.2f}'.format(v=white10))
+	#~ output(win,'White (0.9mm):\t\t{v:=.2f}'.format(v=white09))
 	
-	output(win,'\nX px spacing:\t\t{v:=.5f}'.format(v=xspc))
-	output(win,'Y px spacing:\t\t{v:=.5f}'.format(v=yspc))
+	#~ output(win,'\nX px spacing:\t\t{v:=.5f}'.format(v=xspc))
+	#~ output(win,'Y px spacing:\t\t{v:=.5f}'.format(v=yspc))
 	
-	output(win,'\nProfiles for MS Excel')
-	output(win,'1.1 hor\t1.1 ver\t1.0 hor\t1.0 ver\t0.9 hor\t0.9 ver')
-	for i in range(roi_len):
-		output(win,'{a:=.2f}\t{b:=.2f}\t{c:=.2f}\t{d:=.2f}\t{e:=.2f}\t{f:=.2f}'.format(
-			a=profiles[0][i],b=profiles[1][i],c=profiles[2][i],d=profiles[3][i],e=profiles[4][i],f=profiles[5][i]))
+	#~ output(win,'\nProfiles for MS Excel')
+	#~ output(win,'1.1 hor\t1.1 ver\t1.0 hor\t1.0 ver\t0.9 hor\t0.9 ver')
+	#~ for i in range(roi_len):
+		#~ output(win,'{a:=.2f}\t{b:=.2f}\t{c:=.2f}\t{d:=.2f}\t{e:=.2f}\t{f:=.2f}'.format(
+			#~ a=profiles[0][i],b=profiles[1][i],c=profiles[2][i],d=profiles[3][i],e=profiles[4][i],f=profiles[5][i]))
 			
-	win.outputbox.see('1.0')
+	#~ win.outputbox.see('1.0')
 	win.update()
 	
 	txt = win.outputbox.get('1.0',END)
