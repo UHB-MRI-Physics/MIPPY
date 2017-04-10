@@ -281,7 +281,7 @@ def measure_res(win):
 	
 	# Find best n horizontal profiles
 	roi_len = 7
-	n_profiles = 7
+	n_profiles = 4
 	profiles_hor = []
 	max_x_hor = []
 	hole_sum_hor = []
