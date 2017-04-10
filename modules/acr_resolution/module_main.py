@@ -282,9 +282,18 @@ def measure_res(win):
 	# Find best n horizontal profiles
 	roi_len = 7
 	n_profiles = 4
+	fft_len=32
 	profiles_hor = []
 	max_x_hor = []
 	hole_sum_hor = []
+	fft_tail_max_hor = 0
+	fft_best_x_hor = 0
+	fft_best_y_hor = 0
+	fft_result_hor = 0
+	fft_tail_max_ver = 0
+	fft_best_x_ver = 0
+	fft_best_y_ver = 0
+	fft_result_ver = 0
 	zoom = win.im2.zoom_factor
 	for y in range(px_H):
 		this_row_profile = np.zeros(roi_len)
@@ -302,6 +311,12 @@ def measure_res(win):
 				this_max_x = x
 				#~ this_value = np.sum(profile[::2])
 				this_value = test_value
+			transform = np.fft.fft(profile,fft_len)
+			if abs(transform[fft_len/2])>fft_tail_max_hor:
+				fft_tail_max_hor = abs(transform[fft_len/2])
+				fft_best_x_hor = x
+				fft_best_y_hor = y
+				fft_result_hor = abs(transform[fft_len/2])/abs(transform[0])
 		profiles_hor.append(this_row_profile)
 		max_x_hor.append(this_max_x)
 		hole_sum_hor.append(this_value)
@@ -354,6 +369,12 @@ def measure_res(win):
 				this_max_y = y
 				#~ this_value = np.sum(profile[::2])
 				this_value = test_value
+			transform = np.fft.fft(profile,fft_len)
+			if abs(transform[fft_len/2])>fft_tail_max_ver:
+				fft_tail_max_ver = abs(transform[fft_len/2])
+				fft_best_x_ver = x
+				fft_best_y_ver = y
+				fft_result_ver = abs(transform[fft_len/2])/abs(transform[0])
 		profiles_ver.append(this_col_profile)
 		max_y_ver.append(this_max_y)
 		hole_sum_ver.append(this_value)
@@ -387,6 +408,9 @@ def measure_res(win):
 	win.im2.create_rectangle(best_x_hor*zoom,best_y_hor*zoom,(best_x_hor+roi_len)*zoom,(best_y_hor+1)*zoom,outline='magenta')
 	win.im2.create_rectangle(best_x_ver*zoom,best_y_ver*zoom,(best_x_ver+1)*zoom,(best_y_ver+roi_len)*zoom,outline='magenta')
 	
+	win.im2.create_rectangle(fft_best_x_hor*zoom,fft_best_y_hor*zoom,(fft_best_x_hor+roi_len)*zoom,(fft_best_y_hor+1)*zoom,outline='red')
+	win.im2.create_rectangle(fft_best_x_ver*zoom,fft_best_y_ver*zoom,(fft_best_x_ver+1)*zoom,(fft_best_y_ver+roi_len)*zoom,outline='red')
+	
 	contrast_zero_hor = (adj_white[hor_set]-black)/(adj_white[hor_set]+black)
 	contrast_zero_ver = (adj_white[ver_set]-black)/(adj_white[ver_set]+black)
 	
@@ -396,11 +420,17 @@ def measure_res(win):
 	print mtf_hor,mtf_ver,np.mean([mtf_hor,mtf_ver])
 	
 	clear_output(win)
-	output(win,'\nMTF measured using CTF from max/min of hole profiles')
+	output(win,'MTF measured using CTF from max/min of hole profiles')
 	output(win,'Mean: {v:=.1f}\t%'.format(v=np.mean([mtf_hor,mtf_ver])*100))
 	output(win,'\nDirection\tPixel Size (mm)\tHole size (mm)\tMTF (%)')
 	output(win,'Horizontal\t{p:=.3f}\t{h:=.1f}\t{m:=.1f}'.format(p=xscale,h=hor_size,m=mtf_hor*100))
 	output(win,'Vertical\t{p:=.3f}\t{h:=.1f}\t{m:=.1f}'.format(p=yscale,h=ver_size,m=mtf_ver*100))
+	
+	output(win,'\nMTF measured using FFT of hole profiles')
+	output(win,'Mean: {v:=.1f}\t%'.format(v=np.mean([fft_result_hor,fft_result_ver])*100))
+	output(win,'\nDirection\tPixel Size (mm)\tHole size (mm)\tMTF (%)')
+	output(win,'Horizontal\t{p:=.3f}\t{h:=.1f}\t{m:=.1f}'.format(p=xscale,h=hor_size,m=fft_result_hor*100))
+	output(win,'Vertical\t{p:=.3f}\t{h:=.1f}\t{m:=.1f}'.format(p=yscale,h=ver_size,m=fft_result_ver*100))
 	win.outputbox.see('1.0')
 	
 	
