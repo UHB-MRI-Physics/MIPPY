@@ -29,14 +29,12 @@ https://groups.google.com/forum/#!forum/mippyusers
 
 ### Requirements
 
-MIPPY relies on a number of external python packages, but these should all be available via PyPI and install automatically when running the setup script. Any issues with installation, please get in touch.
+MIPPY relies on a number of external python packages, all available via PyPI:
+- PyDICOM
+- NumPy
+- SciPy
+- Pillow (PIL fork)
 
-### Installation
-
-To install, head to the following link:
-https://gitlab.com/rbf906/mippy/repository/archive.zip?ref=master
-
-(On Windows) Unpack the zip file into where you want the program to live and run the "install_mippy" file.  This should download all the necessary packages.  You should then be able to run "MIPPY.pyw" to start the program.
 
 ### Configuration
 
@@ -44,9 +42,8 @@ There should be no further configuration required after installation.
 
 ## Authors
 
-Robert Flintham
-
-RW
+- Robert Flintham
+- RW
 
 ## Contact
 

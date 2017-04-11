@@ -71,9 +71,9 @@ def execute(master_window,dicomdir,images):
 	win.im1.img_scrollbar = Scrollbar(win,orient='horizontal')
 	win.im1.configure_scrollbar()
 	win.toolbar = Frame(win)
-	win.roibutton = Button(win.toolbar,text='Initialise Grid',command=lambda:reset_grid(win))
-	win.measurebutton = Button(win.toolbar,text='Measure Grid Distortion',command=lambda:measure_grid_distortion(win))
-	win.profilebutton = Button(win.toolbar,text='Initialise Profiles',command=lambda:reset_profiles(win))
+	win.roibutton = Button(win.toolbar,text='Find central grid point',command=lambda:reset_grid(win))
+	win.measurebutton = Button(win.toolbar,text='Measure Distortion',command=lambda:measure_grid_distortion(win))
+	#~ win.profilebutton = Button(win.toolbar,text='Initialise Profiles',command=lambda:reset_profiles(win))
 	win.measureprofbutton = Button(win.toolbar,text='Measure Profile Distortion',command=lambda:measure_profile_distortion(win))
 	win.controlbox = ImageFlipper(win,win.im1)
 	
@@ -174,8 +174,10 @@ def reset_grid(win):
 				win.expected_positions.append((x_exp,y_exp))
 	print "Finished calculating positions"
 	
-	for roi_pos in win.expected_positions:
-		win.im1.roi_circle(roi_pos,2,resolution=3,system='image')
+	#~ for roi_pos in win.expected_positions:
+		#~ win.im1.roi_circle(roi_pos,2,resolution=3,system='image')
+	
+	win.im1.roi_circle((xc,yc),4,resolution=4,system='image',tags='center')
 
 #	if (win.phantom_v.get()=='ACR (TRA)'
 #		or win.phantom_v.get()=='ACR (SAG)'
@@ -219,6 +221,9 @@ def measure_grid_distortion(win):
 		diff = np.sum(abs(pos_new-pos_old))/len(actual_positions)
 	print 'Iterations = '+str(n)
 	
+	win.im1.roi_list.remove(win.im1.roi_list[0])
+	win.im1.delete('center')
+	
 	for p in actual_positions:
 		win.im1.roi_circle(p,2,resolution=3,system='image',color='magenta')
 	
@@ -229,6 +234,11 @@ def measure_grid_distortion(win):
 	# Find x and y differences in grid positions
 	xdiff = actual_positions[:,0]-initial_positions[:,0]
 	ydiff = actual_positions[:,1]-initial_positions[:,1]
+	
+	gridpoints = len(actual_positions)
+	
+	win.xc = actual_positions[(gridpoints+1)/2,0]
+	win.yc = actual_positions[(gridpoints+1)/2,1]
 	
 	xco0=0
 	xco1=0
@@ -295,6 +305,8 @@ def measure_grid_distortion(win):
 	cov_x = np.std(xdistances)/lin_x
 	cov_y = np.std(ydistances)/lin_y
 	
+	
+	
 	print 'Linearity (X): {v:=.2f} mm'.format(v=lin_x)
 	print 'Linearity (Y): {v:=.2f} mm'.format(v=lin_y)
 	print 'CoV Distortion (X): {v:=.2f} %'.format(v=cov_x*100)
@@ -316,6 +328,9 @@ def measure_grid_distortion(win):
 	txt = win.outputbox.get('1.0',END)
 	from source.functions.file_functions import save_results
 	save_results(txt,name='DISTORTION_GRID')
+	
+	reset_profiles(win)
+	measure_profile_distortion(win)
 
 
 
