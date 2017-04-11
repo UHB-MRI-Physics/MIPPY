@@ -107,7 +107,7 @@ def execute(master_window,dicomdir,images):
 
 	win.roibutton.grid(row=4,column=0,sticky='ew')
 	win.measurebutton.grid(row=5,column=0,sticky='ew')
-	win.profilebutton.grid(row=6,column=0,sticky='ew')
+	#~ win.profilebutton.grid(row=6,column=0,sticky='ew')
 	win.measureprofbutton.grid(row=7,column=0,sticky='ew')
 	
 	win.controlbox.grid(row=0,column=0,sticky='nsew')
@@ -177,7 +177,7 @@ def reset_grid(win):
 	#~ for roi_pos in win.expected_positions:
 		#~ win.im1.roi_circle(roi_pos,2,resolution=3,system='image')
 	
-	win.im1.roi_circle((xc,yc),4,resolution=4,system='image',tags='center')
+	win.im1.roi_circle((xc,yc),4,resolution=4,system='image',tags=['center'])
 
 #	if (win.phantom_v.get()=='ACR (TRA)'
 #		or win.phantom_v.get()=='ACR (SAG)'
@@ -226,6 +226,7 @@ def measure_grid_distortion(win):
 	
 	for p in actual_positions:
 		win.im1.roi_circle(p,2,resolution=3,system='image',color='magenta')
+	win.update()
 	
 	# Convert initial and final positions to arrays
 	actual_positions = np.array(actual_positions)
@@ -237,8 +238,8 @@ def measure_grid_distortion(win):
 	
 	gridpoints = len(actual_positions)
 	
-	win.xc = actual_positions[(gridpoints+1)/2,0]
-	win.yc = actual_positions[(gridpoints+1)/2,1]
+	win.xc = actual_positions[(gridpoints-1)/2,0]
+	win.yc = actual_positions[(gridpoints-1)/2,1]
 	
 	xco0=0
 	xco1=0
@@ -359,11 +360,11 @@ def measure_grid_distortion(win):
 def reset_profiles(win):
 	win.im1.delete_rois()
 	phantom=win.phantom_v.get()
-	center = imp.find_phantom_center(win.im1.get_active_image(),phantom,
-							subpixel=False,mode=win.mode.get())
+	#~ center = imp.find_phantom_center(win.im1.get_active_image(),phantom,
+							#~ subpixel=False,mode=win.mode.get())
 	#~ geometry = imp.find_phantom_geometry(win.im1.get_active_image())
-	xc = center[0]
-	yc = center[1]
+	#~ xc = center[0]
+	#~ yc = center[1]
 	#~ xc = geometry[0]
 	#~ yc = geometry[1]
 	#~ xr = geometry[2]
@@ -372,9 +373,11 @@ def reset_profiles(win):
 		#~ win.im1.roi_rectangle(xc-xr,yc-yr,xr*2,yr*2,system='image',color='red')
 	#~ elif geometry[4]=='ellipse':
 		#~ win.im1.roi_ellipse((xc,yc),xr,yr,tags=[],system='image',resolution=32,color='red')
-	win.xc = xc
-	win.yc = yc
-	#~ center = (xc,yc)
+	#~ win.xc = xc
+	#~ win.yc = yc
+	xc = win.xc
+	yc = win.yc
+	center = (xc,yc)
 	print "Center",center
 	
 	image = win.im1.get_active_image()
