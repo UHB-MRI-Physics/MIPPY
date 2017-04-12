@@ -373,7 +373,7 @@ class ImageFlipper(Frame):
 
 
 class MIPPYCanvas(Canvas):
-	def __init__(self,master,width=256,height=256,bd=0,drawing_enabled=False,autostats=False):
+	def __init__(self,master,width=256,height=256,bd=0,drawing_enabled=False,autostats=False,antialias=True):
 		Canvas.__init__(self,master,width=width,height=height,bd=bd,bg='black')
 		self.master = master
 		self.zoom_factor = 1
@@ -410,7 +410,7 @@ class MIPPYCanvas(Canvas):
 		#~ self.zoom_factor=None
 		self.pixel_array=None
 		self.img_scrollbar=None
-		self.antialias = True
+		self.antialias = antialias
 		self.autostats = autostats
 
 	def configure_scrollbar(self):
