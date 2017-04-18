@@ -143,6 +143,7 @@ class ToolboxHome(Frame):
 		self.helpmenu.add_command(label="Open the wiki",command=lambda:self.load_wiki())
 		self.helpmenu.add_command(label="About MIPPY",command=lambda:self.display_version_info())
 		self.helpmenu.add_command(label="View changelog",command=lambda:self.display_changelog())
+		self.helpmenu.add_command(label="Report issue",command=lambda:self.report_issue())
 		# Add menus to menubar and display menubar in window
 		self.menubar.add_cascade(label="File",menu=self.filemenu)
 		self.menubar.add_cascade(label="Image",menu=self.imagemenu)
@@ -463,6 +464,13 @@ class ToolboxHome(Frame):
 	def load_wiki(self):
 		print "Load wiki"
 		webbrowser.open_new('http://tree.taiga.io/project/robflintham-mippy/wiki/home')
+		return
+	
+	def report_issue(self):
+		print "Report issue (email)"
+		tkMessageBox.showinfo("Issue reporting",'Please include the title of your issue in the subject, and a description in the body of the email.\n\n'+
+							'Where possible, please attach the appropriate log file from MIPPY/logs. Log files are date/time stamped.')
+		webbrowser.open_new('mailto:incoming+rbf906/mippy+DLf59wdUc6H5qfE6Tbiw@gitlab.com;robert.flintham@uhb.nhs.uk')
 		return
 
 	def display_version_info(self):
