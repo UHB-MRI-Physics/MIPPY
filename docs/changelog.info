@@ -1,0 +1,16 @@
+v0.18.2
+18/04/2017 @ 14:09
+
+- Added ability to view this changelog file from within
+  MIPPY
+- Moved changelog and version info into 'docs'
+
+============================================================
+
+v0.18.1
+18/04/2017 @ 13:57
+
+- Reworked ACR distortion module to use central grid point 
+  as origin for radial profiles
+- Corrected bug in profile smoothing for ACR distortion which 
+  led to inflated pixel values

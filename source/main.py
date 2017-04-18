@@ -141,7 +141,8 @@ class ToolboxHome(Frame):
 		# Create and populate "Help" menu
 		self.helpmenu = Menu(self.menubar, tearoff=0)
 		self.helpmenu.add_command(label="Open the wiki",command=lambda:self.load_wiki())
-		self.helpmenu.add_command(label="About...",command=lambda:self.display_version_info())
+		self.helpmenu.add_command(label="About MIPPY",command=lambda:self.display_version_info())
+		self.helpmenu.add_command(label="View changelog",command=lambda:self.display_changelog())
 		# Add menus to menubar and display menubar in window
 		self.menubar.add_cascade(label="File",menu=self.filemenu)
 		self.menubar.add_cascade(label="Image",menu=self.imagemenu)
@@ -467,10 +468,22 @@ class ToolboxHome(Frame):
 	def display_version_info(self):
 		print "Display version info"
 		info = ""
-		with open('source/version.info','r') as infofile:
+		with open('docs/version.info','r') as infofile:
 			info = infofile.read()
 		tkMessageBox.showinfo("MIPPY: Version info",info)
 		return
+	
+	def display_changelog(self):
+		print "Display changelog"
+		info = ""
+		with open('docs/changelog.info','r') as infofile:
+			info = infofile.read()
+		info_view = Toplevel(self.master)
+		info_view.text = Text(info_view,width=120,height=30)
+		info_view.text.insert(END,info)
+		info_view.text.config(state='disabled')
+		info_view.text.see('1.0')
+		info_view.text.pack()
 
 	def load_selected_module(self):
 		try:
