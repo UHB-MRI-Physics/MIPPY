@@ -75,6 +75,9 @@ def execute(master_window,dicomdir,images):
 	if win.screenheight < 800 or win.screenwidth < 1200:
 		imwidth=300
 		imheight=300
+	else:
+		imwidth=400
+		imheight=400
 
 	win.im1 = MIPPYCanvas(win,width=imwidth,height=imheight,drawing_enabled=True,antialias=True)
 	win.im1.img_scrollbar = Scrollbar(win,orient='horizontal')
@@ -352,7 +355,7 @@ def measure_distortion(win):
 	for i in range(len(win.im1.roi_list)-8,len(win.im1.roi_list)):
 		# Temporary fix for now, skip circular ROIs
 		this_prof, this_px = win.im1.get_profile(index=i,resolution=res,interpolate=True)
-		profiles.append(convolve(np.array(this_prof),np.ones(smoothing/res),mode='same'))
+		profiles.append(convolve(np.array(this_prof),np.ones(smoothing/res)/(smoothing/res),mode='same'))
 		px.append(this_px)
 		print "profile",len(this_px)
 
@@ -416,6 +419,8 @@ def measure_distortion(win):
 	output(win,'Grid Distortion (CoV Y): {v:=.2f} %'.format(v=cov_y_grid*100))
 	output(win,'\nRadial Linearity (Mean diameter): {v:=.2f} mm'.format(v=lin_radial))
 	output(win,'Radial Distortion (CoV diameter): {v:=.2f} %'.format(v=cov_radial*100))
+	
+	output(win,'\nEdge threshold value: {v:=.2f}'.format(v=half_value))
 
 	output(win,'\nMS Excel Results Table 1:')
 	output(win,'Grid X distances (mm)\tGrid Y distances (mm)')
@@ -427,6 +432,21 @@ def measure_distortion(win):
 	output(win,'{v:=.2f}\t--IGNORED--'.format(v=lengths[0]))
 	for value in lengths[1:]:
 		output(win,'{v:=.2f}'.format(v=value))
+	
+	output(win,'\nRadial Profiles:')
+	output(win,'Pixels\tEdge Value\tP1\tP2\tP3\tP4\tP5\tP6\tP7\tP8')
+	for i in range(0,len(profiles[0]),5):
+		output(win,'{p:=.1f}\t{edge:=.2f}\t{a:=.2f}\t{b:=.2f}\t{c:=.2f}\t{d:=.2f}\t{e:=.2f}\t{f:=.2f}\t{g:=.2f}\t{h:=.2f}'.format(
+			p=px[0][i]*res,
+			edge=half_value,
+			a=profiles[0][i],
+			b=profiles[1][i],
+			c=profiles[2][i],
+			d=profiles[3][i],
+			e=profiles[4][i],
+			f=profiles[5][i],
+			g=profiles[6][i],
+			h=profiles[7][i]))
 
 	win.outputbox.see('1.0')
 	
