@@ -68,16 +68,16 @@ def execute(master_window,dicomdir,images):
 	win.measurebutton = Button(win.toolbar,text='Measure Resolution',command=lambda:measure_res(win))
 	win.outputbox = Text(win,state='disabled',height=10,width=80)
 
-	win.phantom_options = [
-		'ACR (TRA)',
-		'MagNET Flood (TRA)',
-		'MagNET Flood (SAG)',
-		'MagNET Flood (COR)']
+	#~ win.phantom_options = [
+		#~ 'ACR (TRA)',
+		#~ 'MagNET Flood (TRA)',
+		#~ 'MagNET Flood (SAG)',
+		#~ 'MagNET Flood (COR)']
 
-	win.phantom_label = Label(win.toolbar,text='\nPhantom selection:')
-	win.phantom_v = StringVar(win)
-	win.phantom_choice = OptionMenu(win.toolbar,win.phantom_v,win.phantom_options[0],*win.phantom_options)
-	mpy.optionmenu_patch(win.phantom_choice,win.phantom_v)
+	#~ win.phantom_label = Label(win.toolbar,text='\nPhantom selection:')
+	#~ win.phantom_v = StringVar(win)
+	#~ win.phantom_choice = OptionMenu(win.toolbar,win.phantom_v,win.phantom_options[0],*win.phantom_options)
+	#~ mpy.optionmenu_patch(win.phantom_choice,win.phantom_v)
 	
 	#~ win.n_holes_options = ['3 hole method','4 hole method']
 	#~ win.n_holes = StringVar(win)
@@ -87,12 +87,12 @@ def execute(master_window,dicomdir,images):
 	
 	win.controlbox = ImageFlipper(win,win.im1)	
 	
-	win.mode=StringVar()
-	win.mode.set('valid')
-	win.advanced_checkbox = Checkbutton(win.toolbar,text='Use advanced ROI positioning?',var=win.mode,
-								onvalue='same',offvalue='valid')
-	win.mode_label = Label(win.toolbar,text='N.B. Advanced positioning is much slower, but accounts for the phantom not being fully contained in the image.',
-					wraplength=200,justify=LEFT)
+	#~ win.mode=StringVar()
+	#~ win.mode.set('valid')
+	#~ win.advanced_checkbox = Checkbutton(win.toolbar,text='Use advanced ROI positioning?',var=win.mode,
+								#~ onvalue='same',offvalue='valid')
+	#~ win.mode_label = Label(win.toolbar,text='N.B. Advanced positioning is much slower, but accounts for the phantom not being fully contained in the image.',
+					#~ wraplength=200,justify=LEFT)
 					
 	# Create extra canvas for viewing just the resolution insert
 	win.im2 = MIPPYCanvas(win,width=340,height=120,drawing_enabled=True)
@@ -100,10 +100,10 @@ def execute(master_window,dicomdir,images):
 	win.im2.img_scrollbar = Scrollbar(win)
 	win.im2.antialias=False
 
-	win.phantom_label.grid(row=0,column=0,sticky='w')
-	win.phantom_choice.grid(row=1,column=0,sticky='ew')
-	win.advanced_checkbox.grid(row=2,column=0,sticky='w')
-	win.mode_label.grid(row=3,column=0,sticky='w')
+	#~ win.phantom_label.grid(row=0,column=0,sticky='w')
+	#~ win.phantom_choice.grid(row=1,column=0,sticky='ew')
+	#~ win.advanced_checkbox.grid(row=2,column=0,sticky='w')
+	#~ win.mode_label.grid(row=3,column=0,sticky='w')
 
 	win.roibutton.grid(row=4,column=0,sticky='ew')
 	
@@ -114,7 +114,7 @@ def execute(master_window,dicomdir,images):
 
 	win.im1.grid(row=1,column=0,sticky='nw')
 	win.im1.img_scrollbar.grid(row=2,column=0,sticky='ew')
-	win.toolbar.grid(row=0,column=1,rowspan=3,sticky='new')
+	win.toolbar.grid(row=1,column=1,rowspan=2,sticky='new')
 	win.controlbox.grid(row=0,column=0,sticky='nsew')
 	win.im2.grid(row=3,column=0,sticky='nw')
 	win.outputbox.grid(row=4,column=0,columnspan=2,sticky='nsew')
@@ -151,38 +151,47 @@ def clear_output(win):
 
 def reset_roi(win):
 	win.im1.delete_rois()
-	phantom=win.phantom_v.get()
-	win.phantom=phantom
-	center = imp.find_phantom_center(win.im1.get_active_image(),phantom,
-							subpixel=False,mode=win.mode.get())
-	xc = center[0]
-	yc = center[1]
-	win.xc = xc
-	win.yc = yc
+	#~ phantom=win.phantom_v.get()
+	#~ win.phantom=phantom
+	#~ center = imp.find_phantom_center(win.im1.get_active_image(),phantom,
+							#~ subpixel=False,mode=win.mode.get())
+	#~ xc = center[0]
+	#~ yc = center[1]
+	#~ win.xc = xc
+	#~ win.yc = yc
 
-	# Calculate phantom radius in pixels
-	image = win.im1.get_active_image()
-	if phantom=='ACR (TRA)':
-		radius_x = 95./image.xscale
-		radius_y = 95./image.yscale
-	elif phantom=='ACR (SAG)':
-		radius_x = 95./image.xscale
-		radius_y = 79./image.yscale
-	elif phantom=='ACR (COR)':
-		radius_x = 95./image.xscale
-		radius_y = 79./image.yscale
-	elif phantom=='MagNET Flood (TRA)':
-		radius_x = 95./image.xscale
-		radius_y = 95./image.yscale
-	elif phantom=='MagNET Flood (SAG)':
-		radius_x = 95./image.xscale
-		radius_y = 105./image.yscale
-	elif phantom=='MagNET Flood (COR)':
-		radius_x = 95./image.xscale
-		radius_y = 105./image.yscale
+	#~ # Calculate phantom radius in pixels
+	#~ image = win.im1.get_active_image()
+	#~ if phantom=='ACR (TRA)':
+		#~ radius_x = 95./image.xscale
+		#~ radius_y = 95./image.yscale
+	#~ elif phantom=='ACR (SAG)':
+		#~ radius_x = 95./image.xscale
+		#~ radius_y = 79./image.yscale
+	#~ elif phantom=='ACR (COR)':
+		#~ radius_x = 95./image.xscale
+		#~ radius_y = 79./image.yscale
+	#~ elif phantom=='MagNET Flood (TRA)':
+		#~ radius_x = 95./image.xscale
+		#~ radius_y = 95./image.yscale
+	#~ elif phantom=='MagNET Flood (SAG)':
+		#~ radius_x = 95./image.xscale
+		#~ radius_y = 105./image.yscale
+	#~ elif phantom=='MagNET Flood (COR)':
+		#~ radius_x = 95./image.xscale
+		#~ radius_y = 105./image.yscale
 	
-	win.radius_x = radius_x
-	win.radius_y = radius_y
+	#~ win.radius_x = radius_x
+	#~ win.radius_y = radius_y
+	
+	image = win.im1.get_active_image()
+
+	geometry = imp.find_phantom_geometry(image)
+	center = (geometry[0],geometry[1])
+	win.xc = xc = center[0]
+	win.yc = yc = center[1]
+	win.radius_x = radius_x = geometry[2]
+	win.radius_y = radius_y = geometry[3]
 	
 	
 	xdim=34

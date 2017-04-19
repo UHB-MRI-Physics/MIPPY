@@ -91,31 +91,31 @@ def execute(master_window,dicomdir,images):
 	
 	win.outputbox = Text(win,state='disabled',height=10,width=80)
 
-	win.phantom_options = [
-		'ACR (TRA)',
-		'MagNET Flood (TRA)']
+	#~ win.phantom_options = [
+		#~ 'ACR (TRA)',
+		#~ 'MagNET Flood (TRA)']
 
-	win.phantom_label = Label(win.toolbar,text='\nPhantom selection:')
-	win.phantom_v = StringVar(win)
+	#~ win.phantom_label = Label(win.toolbar,text='\nPhantom selection:')
+	#~ win.phantom_v = StringVar(win)
 
 #	print win.phantom_v.get()
 #	win.phantom_v.set(win.phantom_options[1])
 #	win.phantom_choice = apply(OptionMenu,(win.toolbar,win.phantom_v)+tuple(win.phantom_options))
-	win.phantom_choice = OptionMenu(win.toolbar,win.phantom_v,win.phantom_options[0],*win.phantom_options)
-	mpy.optionmenu_patch(win.phantom_choice,win.phantom_v)
+	#~ win.phantom_choice = OptionMenu(win.toolbar,win.phantom_v,win.phantom_options[0],*win.phantom_options)
+	#~ mpy.optionmenu_patch(win.phantom_choice,win.phantom_v)
 		# default value
 #	print win.phantom_v.get()
-	win.mode=StringVar()
-	win.mode.set('valid')
-	win.advanced_checkbox = Checkbutton(win.toolbar,text='Use advanced ROI positioning?',var=win.mode,
-								onvalue='same',offvalue='valid')
-	win.mode_label = Label(win.toolbar,text='N.B. Advanced positioning is much slower, but accounts for the phantom not being fully contained in the image.',
-					wraplength=200,justify=LEFT)
+	#~ win.mode=StringVar()
+	#~ win.mode.set('valid')
+	#~ win.advanced_checkbox = Checkbutton(win.toolbar,text='Use advanced ROI positioning?',var=win.mode,
+								#~ onvalue='same',offvalue='valid')
+	#~ win.mode_label = Label(win.toolbar,text='N.B. Advanced positioning is much slower, but accounts for the phantom not being fully contained in the image.',
+					#~ wraplength=200,justify=LEFT)
 
-	win.phantom_label.grid(row=0,column=0,sticky='w')
-	win.phantom_choice.grid(row=1,column=0,sticky='ew')
-	win.advanced_checkbox.grid(row=2,column=0,sticky='w')
-	win.mode_label.grid(row=3,column=0,sticky='w')
+	#~ win.phantom_label.grid(row=0,column=0,sticky='w')
+	#~ win.phantom_choice.grid(row=1,column=0,sticky='ew')
+	#~ win.advanced_checkbox.grid(row=2,column=0,sticky='w')
+	#~ win.mode_label.grid(row=3,column=0,sticky='w')
 
 	win.roibutton.grid(row=4,column=0,sticky='ew')
 	win.measurebutton.grid(row=5,column=0,sticky='ew')
@@ -125,7 +125,7 @@ def execute(master_window,dicomdir,images):
 	win.controlbox.grid(row=0,column=0,sticky='nsew')
 	win.im1.grid(row=1,column=0,sticky='nw')
 	win.im1.img_scrollbar.grid(row=2,column=0,sticky='ew')
-	win.toolbar.grid(row=0,column=1,rowspan=3,sticky='new')
+	win.toolbar.grid(row=1,column=1,rowspan=2,sticky='new')
 	win.outputbox.grid(row=3,column=0,columnspan=2,sticky='nsew')
 
 	win.rowconfigure(0,weight=0)
@@ -163,13 +163,15 @@ def clear_output(win):
 
 def reset_grid(win):
 	win.im1.delete_rois()
-	phantom=win.phantom_v.get()
-	center = imp.find_phantom_center(win.im1.get_active_image(),phantom,
-							subpixel=False,mode=win.mode.get())
-	xc = center[0]
-	yc = center[1]
-	win.xc = xc
-	win.yc = yc
+	#~ phantom=win.phantom_v.get()
+	image = win.im1.get_active_image()
+
+	geometry = imp.find_phantom_geometry(image)
+	center = (geometry[0],geometry[1])
+	win.xc = xc = center[0]
+	win.yc = yc = center[1]
+	radius_x = geometry[2]
+	radius_y = geometry[3]
 	print "Center",center
 
 	win.im1.roi_circle((xc,yc),4,resolution=4,system='image',tags=['center'])
@@ -178,11 +180,20 @@ def measure_distortion(win):
 	# Get new center position from ROI
 	output(win,'Calculating expected grid point locations...')
 	coords = win.im1.roi_list[0].coords
-	center = win.im1.image_coords([( coords[0][0] , (coords[len(coords)/2][1]-coords[0][1])/2+coords[0][1])])[0]
-	win.xc = center[0]
-	win.yc = center[1]
-	xc = win.xc
-	yc = win.yc
+	#~ center = win.im1.image_coords([( coords[0][0] , (coords[len(coords)/2][1]-coords[0][1])/2+coords[0][1])])[0]
+	#~ win.xc = center[0]
+	#~ win.yc = center[1]
+	#~ xc = win.xc
+	#~ yc = win.yc
+	
+	image = win.im1.get_active_image()
+
+	geometry = imp.find_phantom_geometry(image)
+	center = (geometry[0],geometry[1])
+	win.xc = xc = center[0]
+	win.yc = yc = center[1]
+	win.radius_x = radius_x = geometry[2]
+	win.radius_y = radius_y = geometry[3]
 	
 	exp_gridsize = 15
 	
@@ -297,35 +308,35 @@ def measure_distortion(win):
 
 	output(win,"Generating radial profile positions...")
 	#~ win.im1.delete_rois()
-	phantom=win.phantom_v.get()
+	#~ phantom=win.phantom_v.get()
 	xc = win.xc
 	yc = win.yc
 	center = (xc,yc)
 	print "Center",center
 	
 	image = win.im1.get_active_image()
-	if phantom=='ACR (TRA)':
-		radius_x = 95./image.xscale
-		radius_y = 95./image.yscale
-	elif phantom=='ACR (SAG)':
-		radius_x = 95./image.xscale
-		radius_y = 79./image.yscale
-	elif phantom=='ACR (COR)':
-		radius_x = 95./image.xscale
-		radius_y = 79./image.yscale
-	elif phantom=='MagNET Flood (TRA)':
-		radius_x = 95./image.xscale
-		radius_y = 95./image.yscale
-	elif phantom=='MagNET Flood (SAG)':
-		radius_x = 95./image.xscale
-		radius_y = 105./image.yscale
-	elif phantom=='MagNET Flood (COR)':
-		radius_x = 95./image.xscale
-		radius_y = 105./image.yscale
+	#~ if phantom=='ACR (TRA)':
+		#~ radius_x = 95./image.xscale
+		#~ radius_y = 95./image.yscale
+	#~ elif phantom=='ACR (SAG)':
+		#~ radius_x = 95./image.xscale
+		#~ radius_y = 79./image.yscale
+	#~ elif phantom=='ACR (COR)':
+		#~ radius_x = 95./image.xscale
+		#~ radius_y = 79./image.yscale
+	#~ elif phantom=='MagNET Flood (TRA)':
+		#~ radius_x = 95./image.xscale
+		#~ radius_y = 95./image.yscale
+	#~ elif phantom=='MagNET Flood (SAG)':
+		#~ radius_x = 95./image.xscale
+		#~ radius_y = 105./image.yscale
+	#~ elif phantom=='MagNET Flood (COR)':
+		#~ radius_x = 95./image.xscale
+		#~ radius_y = 105./image.yscale
 		# Add other phantom dimensions here...
 
-	xdim = radius_x * 1.2	      # 10% more than anticipated diameter
-	ydim = radius_y * 1.2       # 10% more than anticipated diameter
+	xdim = win.radius_x * 1.2	      # 10% more than anticipated diameter
+	ydim = win.radius_y * 1.2       # 10% more than anticipated diameter
 
 	if xdim>ydim:
 		ydim=xdim

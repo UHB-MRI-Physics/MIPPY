@@ -68,26 +68,26 @@ def execute(master_window,dicomdir,images):
 	win.roi_button = Button(win.toolbar,text="Create/reset ROIs",command=lambda:roi_reset(win),width=30)
 	win.subtract_button = Button(win.toolbar,text="View subtraction image",command=lambda:view_subtraction(win))
 	win.calc_button = Button(win.toolbar,text="Calculate SNR",command=lambda:snr_calc(win))
-	win.phantom_label = Label(win.toolbar,text='\nPhantom selection:')
-	win.phantom_options = [
-		'ACR (TRA)',
-		'ACR (SAG)',
-		'ACR (COR)',
-		'MagNET Flood (TRA)',
-		'MagNET Flood (SAG)',
-		'MagNET Flood (COR)']
+	#~ win.phantom_label = Label(win.toolbar,text='\nPhantom selection:')
+	#~ win.phantom_options = [
+		#~ 'ACR (TRA)',
+		#~ 'ACR (SAG)',
+		#~ 'ACR (COR)',
+		#~ 'MagNET Flood (TRA)',
+		#~ 'MagNET Flood (SAG)',
+		#~ 'MagNET Flood (COR)']
 
-	win.phantom_label = Label(win.toolbar,text='\nPhantom selection:')
-	win.phantom = StringVar(win)
-	win.phantom_choice = OptionMenu(win.toolbar,win.phantom,win.phantom_options[0],*win.phantom_options)
-	mpy.optionmenu_patch(win.phantom_choice,win.phantom)
+	#~ win.phantom_label = Label(win.toolbar,text='\nPhantom selection:')
+	#~ win.phantom = StringVar(win)
+	#~ win.phantom_choice = OptionMenu(win.toolbar,win.phantom,win.phantom_options[0],*win.phantom_options)
+	#~ mpy.optionmenu_patch(win.phantom_choice,win.phantom)
 #	win.phantom.set(win.phantom_options[1])		# default value
-	win.mode=StringVar()
-	win.mode.set('valid')
-	win.advanced_checkbox = Checkbutton(win.toolbar,text='Use advanced ROI positioning?',var=win.mode,
-								onvalue='same',offvalue='valid')
-	win.mode_label = Label(win.toolbar,text='N.B. Advanced positioning is much slower, but accounts for the phantom not being fully contained in the image.',
-					wraplength=200,justify=LEFT)
+	#~ win.mode=StringVar()
+	#~ win.mode.set('valid')
+	#~ win.advanced_checkbox = Checkbutton(win.toolbar,text='Use advanced ROI positioning?',var=win.mode,
+								#~ onvalue='same',offvalue='valid')
+	#~ win.mode_label = Label(win.toolbar,text='N.B. Advanced positioning is much slower, but accounts for the phantom not being fully contained in the image.',
+					#~ wraplength=200,justify=LEFT)
 					
 	win.infobox = Text(win,state='disabled',height=20,width=40)
 	win.infobox.tag_config('highlight', foreground='red')
@@ -98,10 +98,10 @@ def execute(master_window,dicomdir,images):
 	win.roi_button.grid(row=2,column=0,sticky='ew')
 	win.subtract_button.grid(row=3,column=0,sticky='ew')
 	win.calc_button.grid(row=4,column=0,sticky='ew')
-	win.phantom_label.grid(row=0,column=0,sticky='w')
-	win.phantom_choice.grid(row=1,column=0,sticky='ew')
-	win.advanced_checkbox.grid(row=5,column=0,sticky='w')
-	win.mode_label.grid(row=6,column=0,sticky='w')
+	#~ win.phantom_label.grid(row=0,column=0,sticky='w')
+	#~ win.phantom_choice.grid(row=1,column=0,sticky='ew')
+	#~ win.advanced_checkbox.grid(row=5,column=0,sticky='w')
+	#~ win.mode_label.grid(row=6,column=0,sticky='w')
 	
 	win.outputbox.grid(row=2,column=0,columnspan=4,sticky='nsew')
 	win.infobox.grid(row=0,column=3,rowspan=2,sticky='nsew')
@@ -172,33 +172,42 @@ def close_window(window):
 def roi_reset(win):
 	print "ROI reset"
 	win.im1.delete_rois()
-	center = imp.find_phantom_center(win.im1.get_active_image(),phantom=win.phantom.get(),
-							subpixel=False,mode=win.mode.get())
-	xc = center[0]
-	yc = center[1]
-	print xc, yc
+	#~ center = imp.find_phantom_center(win.im1.get_active_image(),phantom=win.phantom.get(),
+							#~ subpixel=False,mode=win.mode.get())
+	#~ xc = center[0]
+	#~ yc = center[1]
+	#~ print xc, yc
 	
-	image = win.im1.get_active_image()
-	phantom=win.phantom.get()
-	if phantom=='ACR (TRA)':
-		radius_x = 95./image.xscale
-		radius_y = 95./image.yscale
-	elif phantom=='ACR (SAG)':
-		radius_x = 95./image.xscale
-		radius_y = 79./image.yscale
-	elif phantom=='ACR (COR)':
-		radius_x = 95./image.xscale
-		radius_y = 79./image.yscale
-	elif phantom=='MagNET Flood (TRA)':
-		radius_x = 95./image.xscale
-		radius_y = 95./image.yscale
-	elif phantom=='MagNET Flood (SAG)':
-		radius_x = 95./image.xscale
-		radius_y = 105./image.yscale
-	elif phantom=='MagNET Flood (COR)':
-		radius_x = 95./image.xscale
-		radius_y = 105./image.yscale
+	#~ image = win.im1.get_active_image()
+	#~ phantom=win.phantom.get()
+	#~ if phantom=='ACR (TRA)':
+		#~ radius_x = 95./image.xscale
+		#~ radius_y = 95./image.yscale
+	#~ elif phantom=='ACR (SAG)':
+		#~ radius_x = 95./image.xscale
+		#~ radius_y = 79./image.yscale
+	#~ elif phantom=='ACR (COR)':
+		#~ radius_x = 95./image.xscale
+		#~ radius_y = 79./image.yscale
+	#~ elif phantom=='MagNET Flood (TRA)':
+		#~ radius_x = 95./image.xscale
+		#~ radius_y = 95./image.yscale
+	#~ elif phantom=='MagNET Flood (SAG)':
+		#~ radius_x = 95./image.xscale
+		#~ radius_y = 105./image.yscale
+	#~ elif phantom=='MagNET Flood (COR)':
+		#~ radius_x = 95./image.xscale
+		#~ radius_y = 105./image.yscale
 		# Add other phantom dimensions here...
+		
+	image = win.im1.get_active_image()
+
+	geometry = imp.find_phantom_geometry(image,subpixel=False)
+	center = (geometry[0],geometry[1])
+	win.xc = xc = center[0]
+	win.yc = yc = center[1]
+	win.radius_x = radius_x = geometry[2]
+	win.radius_y = radius_y = geometry[3]
 
 	dim = 10
 
