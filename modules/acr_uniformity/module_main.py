@@ -51,37 +51,37 @@ def execute(master_window,dicomdir,images):
 	win.outputbox = Text(win,state='disabled',height=10,width=80)
 	win.imageflipper = ImageFlipper(win,win.im1)
 
-	win.phantom_options = [
-		'ACR (TRA)',
-		'MagNET Flood (TRA)',
-		'MagNET Flood (SAG)',
-		'MagNET Flood (COR)']
+	#~ win.phantom_options = [
+		#~ 'ACR (TRA)',
+		#~ 'MagNET Flood (TRA)',
+		#~ 'MagNET Flood (SAG)',
+		#~ 'MagNET Flood (COR)']
 
-	win.phantom_label = Label(win.toolbar,text='\nPhantom selection:')
-	win.phantom_v = StringVar(win)
+	#~ win.phantom_label = Label(win.toolbar,text='\nPhantom selection:')
+	#~ win.phantom_v = StringVar(win)
 
 #	print win.phantom_v.get()
 #	win.phantom_v.set(win.phantom_options[1])
 #	win.phantom_choice = apply(OptionMenu,(win.toolbar,win.phantom_v)+tuple(win.phantom_options))
-	win.phantom_choice = OptionMenu(win.toolbar,win.phantom_v,win.phantom_options[0],*win.phantom_options)
-	mpy.optionmenu_patch(win.phantom_choice,win.phantom_v)
+	#~ win.phantom_choice = OptionMenu(win.toolbar,win.phantom_v,win.phantom_options[0],*win.phantom_options)
+	#~ mpy.optionmenu_patch(win.phantom_choice,win.phantom_v)
 		# default value
 #	print win.phantom_v.get()
-	win.mode=StringVar()
-	win.mode.set('valid')
-	win.advanced_checkbox = Checkbutton(win.toolbar,text='Use advanced ROI positioning?',var=win.mode,
-								onvalue='same',offvalue='valid')
-	win.mode_label = Label(win.toolbar,text='N.B. Advanced positioning is much slower, but accounts for the phantom not being fully contained in the image.',
-					wraplength=200,justify=LEFT)
+	#~ win.mode=StringVar()
+	#~ win.mode.set('valid')
+	#~ win.advanced_checkbox = Checkbutton(win.toolbar,text='Use advanced ROI positioning?',var=win.mode,
+								#~ onvalue='same',offvalue='valid')
+	#~ win.mode_label = Label(win.toolbar,text='N.B. Advanced positioning is much slower, but accounts for the phantom not being fully contained in the image.',
+					#~ wraplength=200,justify=LEFT)
 	win.percent_area = StringVar()
 	win.percent_area_label=Label(win.toolbar,text='Percentage phantom area to use:')
 	win.percent_area_box = Entry(win.toolbar,text='Percentage Area:',textvariable=win.percent_area)
 	win.percent_area.set('60')
 
-	win.phantom_label.grid(row=0,column=0,sticky='w')
-	win.phantom_choice.grid(row=1,column=0,sticky='ew')
-	win.advanced_checkbox.grid(row=2,column=0,sticky='w')
-	win.mode_label.grid(row=3,column=0,sticky='w')
+	#~ win.phantom_label.grid(row=0,column=0,sticky='w')
+	#~ win.phantom_choice.grid(row=1,column=0,sticky='ew')
+	#~ win.advanced_checkbox.grid(row=2,column=0,sticky='w')
+	#~ win.mode_label.grid(row=3,column=0,sticky='w')
 
 	win.roibutton.grid(row=6,column=0,sticky='ew')
 	win.measurebutton.grid(row=7,column=0,sticky='ew')
@@ -91,7 +91,7 @@ def execute(master_window,dicomdir,images):
 	win.im1.grid(row=1,column=0,sticky='nw')
 	win.imageflipper.grid(row=0,column=0,sticky='nsew')
 	win.im1.img_scrollbar.grid(row=2,column=0,sticky='ew')
-	win.toolbar.grid(row=0,column=1,rowspan=3,sticky='new')
+	win.toolbar.grid(row=1,column=1,rowspan=2,sticky='new')
 	win.outputbox.grid(row=3,column=0,columnspan=2,sticky='nsew')
 
 	win.rowconfigure(0,weight=0)
@@ -129,13 +129,23 @@ def clear_output(win):
 
 def reset_roi(win):
 	win.im1.delete_rois()
-	phantom=win.phantom_v.get()
-	center = imp.find_phantom_center(win.im1.get_active_image(),phantom,
-							subpixel=False,mode=win.mode.get())
-	xc = center[0]
-	yc = center[1]
-	win.xc = xc
-	win.yc = yc
+	#~ phantom=win.phantom_v.get()
+	
+	image = win.im1.get_active_image()
+
+	geometry = imp.find_phantom_geometry(image,subpixel=False)
+	center = (geometry[0],geometry[1])
+	win.xc = xc = center[0]
+	win.yc = yc = center[1]
+	win.radius_x = radius_x = geometry[2]
+	win.radius_y = radius_y = geometry[3]
+	
+	#~ center = imp.find_phantom_center(win.im1.get_active_image(),phantom,
+							#~ subpixel=False,mode=win.mode.get())
+	#~ xc = center[0]
+	#~ yc = center[1]
+	#~ win.xc = xc
+	#~ win.yc = yc
 
 #	if (win.phantom_v.get()=='ACR (TRA)'
 #		or win.phantom_v.get()=='ACR (SAG)'
@@ -152,25 +162,25 @@ def reset_roi(win):
 #		roi_r_px_y = roi_r * win.im1.get_active_image().yscale
 
 	# Calculate phantom radius in pixels
-	image = win.im1.get_active_image()
-	if phantom=='ACR (TRA)':
-		radius_x = 95./image.xscale
-		radius_y = 95./image.yscale
-	elif phantom=='ACR (SAG)':
-		radius_x = 95./image.xscale
-		radius_y = 79./image.yscale
-	elif phantom=='ACR (COR)':
-		radius_x = 95./image.xscale
-		radius_y = 79./image.yscale
-	elif phantom=='MagNET Flood (TRA)':
-		radius_x = 95./image.xscale
-		radius_y = 95./image.yscale
-	elif phantom=='MagNET Flood (SAG)':
-		radius_x = 95./image.xscale
-		radius_y = 105./image.yscale
-	elif phantom=='MagNET Flood (COR)':
-		radius_x = 95./image.xscale
-		radius_y = 105./image.yscale
+	#~ image = win.im1.get_active_image()
+	#~ if phantom=='ACR (TRA)':
+		#~ radius_x = 95./image.xscale
+		#~ radius_y = 95./image.yscale
+	#~ elif phantom=='ACR (SAG)':
+		#~ radius_x = 95./image.xscale
+		#~ radius_y = 79./image.yscale
+	#~ elif phantom=='ACR (COR)':
+		#~ radius_x = 95./image.xscale
+		#~ radius_y = 79./image.yscale
+	#~ elif phantom=='MagNET Flood (TRA)':
+		#~ radius_x = 95./image.xscale
+		#~ radius_y = 95./image.yscale
+	#~ elif phantom=='MagNET Flood (SAG)':
+		#~ radius_x = 95./image.xscale
+		#~ radius_y = 105./image.yscale
+	#~ elif phantom=='MagNET Flood (COR)':
+		#~ radius_x = 95./image.xscale
+		#~ radius_y = 105./image.yscale
 		# Add other phantom dimensions here...
 
 
@@ -178,10 +188,10 @@ def reset_roi(win):
 	xdim = radius_x*np.sqrt(percent_area/100)
 	ydim = radius_y*np.sqrt(percent_area/100)
 
-	if xdim<ydim:
-		ydim=xdim
-	elif ydim<xdim:
-		xdim=ydim
+	#~ if xdim<ydim:
+		#~ ydim=xdim
+	#~ elif ydim<xdim:
+		#~ xdim=ydim
 
 	win.xdim = xdim
 	win.ydim = ydim
@@ -280,8 +290,20 @@ def measure_uni(win):
 
 	output(win,'\nThe following can be copied and pasted directly into MS Excel or similar')
 	output(win,'\nX (mm)\tHorizontal\tY (mm)\tVertical')
-	for row in range(len(profile_h)):
-		output(win,str(x[row]*xscale)+'\t'+str(profile_h[row])+'\t'+str(y[row]*yscale)+'\t'+str(profile_v[row]))
+	for row in range(int(np.max([len(profile_h),len(profile_v)]))):
+		try:
+			xpos = str(x[row]*xscale)
+			xval = str(profile_h[row])
+		except IndexError:
+			xpos = "--"
+			xval = "--"
+		try:
+			ypos = str(y[row]*yscale)
+			yval = str(profile_v[row])
+		except IndexError:
+			ypos = "--"
+			yval = "--"
+		output(win,xpos+'\t'+xval+'\t'+ypos+'\t'+yval)
 #	win.im1.grid(row=0,column=0,sticky='nw')
 	win.outputbox.see('1.0')
 #	win.update()

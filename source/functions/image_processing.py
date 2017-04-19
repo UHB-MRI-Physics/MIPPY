@@ -237,7 +237,14 @@ def find_phantom_geometry(image,subpixel=True):
 	
 	
 	# Return xc,yc,xr,yr,shapetype
-	return (result[0],result[1],result[2],result[3],shapetype)
+	if subpixel:
+		return (result[0],result[1],result[2],result[3],shapetype)
+	else:
+		result[0] = int(np.round(result[0],0))
+		result[1] = int(np.round(result[1],0))
+		result[2] = int(np.round(result[2],0))
+		result[3] = int(np.round(result[3],0))
+		return (result[0],result[1],result[2],result[3],shapetype)
 
 def get_inverse_sum(c,arr,size=3):
 	# c is center in [x,y] format

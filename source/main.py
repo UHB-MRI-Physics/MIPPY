@@ -141,7 +141,9 @@ class ToolboxHome(Frame):
 		# Create and populate "Help" menu
 		self.helpmenu = Menu(self.menubar, tearoff=0)
 		self.helpmenu.add_command(label="Open the wiki",command=lambda:self.load_wiki())
-		self.helpmenu.add_command(label="About...",command=lambda:self.display_version_info())
+		self.helpmenu.add_command(label="About MIPPY",command=lambda:self.display_version_info())
+		self.helpmenu.add_command(label="View changelog",command=lambda:self.display_changelog())
+		self.helpmenu.add_command(label="Report issue",command=lambda:self.report_issue())
 		# Add menus to menubar and display menubar in window
 		self.menubar.add_cascade(label="File",menu=self.filemenu)
 		self.menubar.add_cascade(label="Image",menu=self.imagemenu)
@@ -463,14 +465,33 @@ class ToolboxHome(Frame):
 		print "Load wiki"
 		webbrowser.open_new('http://tree.taiga.io/project/robflintham-mippy/wiki/home')
 		return
+	
+	def report_issue(self):
+		print "Report issue (email)"
+		tkMessageBox.showinfo("Issue reporting",'Please include the title of your issue in the subject, and a description in the body of the email.\n\n'+
+							'Where possible, please attach the appropriate log file from MIPPY/logs. Log files are date/time stamped.')
+		webbrowser.open_new('mailto:incoming+rbf906/mippy+DLf59wdUc6H5qfE6Tbiw@gitlab.com;robert.flintham@uhb.nhs.uk')
+		return
 
 	def display_version_info(self):
 		print "Display version info"
 		info = ""
-		with open('source/version.info','r') as infofile:
+		with open('docs/version.info','r') as infofile:
 			info = infofile.read()
 		tkMessageBox.showinfo("MIPPY: Version info",info)
 		return
+	
+	def display_changelog(self):
+		print "Display changelog"
+		info = ""
+		with open('docs/changelog.info','r') as infofile:
+			info = infofile.read()
+		info_view = Toplevel(self.master)
+		info_view.text = Text(info_view,width=120,height=30)
+		info_view.text.insert(END,info)
+		info_view.text.config(state='disabled')
+		info_view.text.see('1.0')
+		info_view.text.pack()
 
 	def load_selected_module(self):
 		try:

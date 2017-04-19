@@ -1,5 +1,5 @@
 @echo off
-cd ..
+cd ..\..
 python .\MIPPY\compile_pyc.py .\MIPPY
 M:\Software_Programs\Python27\Scripts\pyinstaller ^
 	-D ^

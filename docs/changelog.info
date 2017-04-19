@@ -1,0 +1,45 @@
+v0.19.1
+19/04/2017 @ 10:25
+
+- Changed all ACR/QA modules to automatically detect phantom
+  geometry and removed phantom/orientation options
+- Changed ACR slice profile to use longer profiles (at 
+  request of AC)
+- Added subpixel=False option to find_phantom_geometry
+- Changed ACR uniformity to allow elliptical ROI to match
+  non-circular phantoms
+
+============================================================
+
+v0.18.4
+18/04/2017 @ 16:36
+
+- Edited resolution results output to give white/black
+  values and all profiles. Also identifies which colour
+  profiles correspond to which result.
+
+============================================================
+
+v0.18.3
+18/04/2017 @ 15:48
+
+- Added issue reporting tool to Help menu
+
+============================================================
+
+v0.18.2
+18/04/2017 @ 14:09
+
+- Added ability to view this changelog file from within
+  MIPPY
+- Moved changelog and version info into 'docs'
+
+============================================================
+
+v0.18.1
+18/04/2017 @ 13:57
+
+- Reworked ACR distortion module to use central grid point 
+  as origin for radial profiles
+- Corrected bug in profile smoothing for ACR distortion which 
+  led to inflated pixel values
