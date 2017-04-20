@@ -1,3 +1,15 @@
+v0.20.2
+20/04/2017 @ 15:56
+
+- Added a try/except to catch images without PixelBandwidth in
+  the DICOM header.
+- When no PixelBandwidth is detected, MIPPY takes a value of
+  -1 for both pixel bandwidth and image bandwidth. This should
+  prevent errors/exceptions in most cases, but still make it
+  obvious that it's not a true value.
+
+============================================================
+
 v0.20.1
 20/04/2017 @ 14:00
 

@@ -991,12 +991,17 @@ class MIPPYImage():
 		
 		# Change this tag with rotations
 		self.pe_direction = ds.InPlanePhaseEncodingDirection
-		
-		self.pixel_bandwidth = ds.PixelBandwidth
-		if 'ROW' in self.pe_direction:
-			self.image_bandwidth = float(self.pixel_bandwidth) * float(self.columns)/2
-		elif 'COL' in self.pe_direction:
-			self.image_bandwidth = float(self.pixel_bandwidth) * float(self.rows)/2
+		try:
+			self.pixel_bandwidth = ds.PixelBandwidth
+			if 'ROW' in self.pe_direction:
+				self.image_bandwidth = float(self.pixel_bandwidth) * float(self.columns)/2
+			elif 'COL' in self.pe_direction:
+				self.image_bandwidth = float(self.pixel_bandwidth) * float(self.rows)/2
+		except AttributeError:
+			# Here because images from Toshiba ExcelART 1.5T MR scanner do not write pixel_bandwidth into the header. Which is annoying.
+			print "PIXEL BANDWIDTH NOT FOUND IN HEADER. REPLACED WITH A VALUE OF -1"
+			self.pixel_bandwidth = -1
+			self.image_bandwidth = -1
 		try:
 			self.xscale = ds.PixelSpacing[0]
 			self.yscale = ds.PixelSpacing[1]
