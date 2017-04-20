@@ -266,9 +266,9 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 					print seriesdesc+' '+str(i).zfill(3)
 					print "    COMPRESSED DICOM - Uncompressing"
 					if 'darwin' in sys.platform:
-						dcmdjpeg=r'lib\dcmdjpeg_mac'
+						dcmdjpeg=r'lib/dcmdjpeg_mac'
 					elif 'linux' in sys.platform:
-						dcmdjpeg=r'lib\dcmdjpeg_linux'
+						dcmdjpeg=r'lib/dcmdjpeg_linux'
 					elif 'win' in sys.platform:
 						dcmdjpeg=r'lib\dcmdjpeg_win.exe'
 					else:
