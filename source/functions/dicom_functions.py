@@ -156,13 +156,23 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 	ds = None
 	#Read file, if not DICOM then ignore
 	try:
-		ds = dicom.read_file(path, force=force_read)				
-		gc.collect()
+		ds = dicom.read_file(path, force=force_read)
+		# Removed this garbage collection call to try speed up directory reading
+		#~ gc.collect()
 	except Exception:
 		print path+'\n...is not a valid DICOM file and is being ignored.'
 		return tags
 	if ds:
+		#~ print path
+			
+		try:
+			# There has to be a better way of testing this...?
+			# If "ImageType" tag doesn't exist, then it's probably an annoying "XX" type file from Philips
+			type = ds.ImageType
+		except Exception:
+			return tags
 		# Ignore "OT" (other?) modality DICOM objects - for now at least...
+		# Particularly for Siemens 3D data viewing!
 		modality = ds.Modality
 		if (
 			'OT' in modality
@@ -174,15 +184,6 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 			compressed = True
 		else:
 			compressed = False
-
-			
-			
-		try:
-			# There has to be a better way of testing this...?
-			# If "ImageType" tag doesn't exist, then it's probably an annoying "XX" type file from Philips
-			type = ds.ImageType
-		except Exception:
-			return tags
 		try:
 			# Some manufacturers use a handy "series description" tag, some don't
 			seriesdesc = ds.SeriesDescription
