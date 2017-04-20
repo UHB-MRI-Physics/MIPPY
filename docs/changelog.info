@@ -1,3 +1,12 @@
+v0.20.1
+20/04/2017 @ 14:00
+
+- Added automatic JPEG decompression for compressed DICOM
+  files. Uses DCMTK's dcmdjpeg, with compiled binaries for
+  Windows, Linux and Mac in MIPPY/lib directory.
+
+============================================================
+
 v0.19.1
 19/04/2017 @ 10:25
 
