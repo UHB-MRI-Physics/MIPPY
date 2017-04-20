@@ -403,7 +403,7 @@ class ToolboxHome(Frame):
 		repeats_found = False
 		n_repeats = 0
 		for scan in self.sorted_list:
-			print "Adding to tree: "+scan['path']
+			#~ print "Adding to tree: "+scan['path']
 			if not self.dirframe.dicomtree.exists(scan['studyuid']):
 				#~ i+=1
 				self.dirframe.dicomtree.insert('','end',scan['studyuid'],text='------',

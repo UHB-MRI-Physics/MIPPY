@@ -217,9 +217,14 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 			# Set "instance" array to match number of frames
 			instance = np.array(range(frames))+1
 		else:
-			# Of if not enhanced/multi-frame, just create a single element list so that the code
+			# Or if not enhanced/multi-frame, just create a single element list so that the code
 			# below still works
-			instance = [ds.InstanceNumber]
+			try:
+				instance = [ds.InstanceNumber]
+			except AttributeError:
+				print "INSTANCE NUMBER TAG DOESN'T EXIST"
+				print path
+				raise
 		
 		instance_uid = 'UNKNOWN'
 		
