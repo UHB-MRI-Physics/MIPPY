@@ -162,6 +162,13 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 		print path+'\n...is not a valid DICOM file and is being ignored.'
 		return tags
 	if ds:
+		# Ignore "OT" (other?) modality DICOM objects - for now at least...
+		modality = ds.Modality
+		if (
+			'OT' in modality
+			):
+			return tags
+		
 		transfer_syntax =  str(ds.file_meta[0x2,0x10].value)
 		if 'JPEG' in transfer_syntax:
 			compressed = True
