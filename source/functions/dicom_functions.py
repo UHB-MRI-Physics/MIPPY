@@ -7,6 +7,8 @@ import numpy as np
 from viewer_functions import *
 import gc
 import cPickle as pickle
+import sys
+from subprocess import call
 
 def compare_dicom(ds1,ds2,diffs=None,num=None,name=''):
 	if diffs is None:
@@ -54,6 +56,10 @@ def compare_dicom(ds1,ds2,diffs=None,num=None,name=''):
 	return diffs
 
 def get_px_array(ds,enhanced=False,instance=None):
+	if 'JPEG' in str(ds.file_meta[0x2,0x10].value):
+		compressed = True
+	else:
+		compressed = False
 	try:
 		rs = float(ds[0x28,0x1053].value)
 	except:
@@ -156,6 +162,14 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 		print path+'\n...is not a valid DICOM file and is being ignored.'
 		return tags
 	if ds:
+		transfer_syntax =  str(ds.file_meta[0x2,0x10].value)
+		if 'JPEG' in transfer_syntax:
+			compressed = True
+		else:
+			compressed = False
+
+			
+			
 		try:
 			# There has to be a better way of testing this...?
 			# If "ImageType" tag doesn't exist, then it's probably an annoying "XX" type file from Philips
@@ -234,6 +248,36 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 			else:
 				# Append instance UID with the frame number to give unique reference to each slice
 				instance_uid = ds.SOPInstanceUID+"_"+str(i).zfill(3)
+		
+			if compressed:
+				# Check if temp file already exists for that InstanceUID. If so, read that file. If not, 
+				# uncompress the file and replace ds. Dataset will get saved as temp file at the end of this
+				# function.
+				temppath = os.path.join(tempdir,instance_uid+'.mds')
+				if os.path.exists(temppath):
+					print seriesdesc+' '+str(i).zfill(3)
+					print "    COMPRESSED DICOM - Temp file found"
+					with open(temppath,'rb') as tempfile:
+						ds = pickle.load(tempfile)
+					tempfile.close()
+				else:
+					# Uncompress the file
+					outpath=os.path.join(tempdir,'UNCOMP_'+instance_uid+'.DCM')
+					print seriesdesc+' '+str(i).zfill(3)
+					print "    COMPRESSED DICOM - Uncompressing"
+					if 'darwin' in sys.platform:
+						dcmdjpeg=r'lib\dcmdjpeg_mac'
+					elif 'linux' in sys.platform:
+						dcmdjpeg=r'lib\dcmdjpeg_linux'
+					elif 'win' in sys.platform:
+						dcmdjpeg=r'lib\dcmdjpeg_win.exe'
+					else:
+						print "UNSUPPORTED OPERATING SYSTEM"
+						print str(sys.platform)
+					call(dcmdjpeg+' \"'+path+'\" \"'+outpath+'\"')
+					#~ path = outpath
+					ds = dicom.read_file(outpath)
+				
 			
 			pxfloat=get_px_array(ds,enhanced,i)
 			if pxfloat is None:
@@ -243,7 +287,8 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 			tags.append(dict([('date',date),('time',time),('name',name),('studyuid',study_uid),
 					('series',series),('seriesuid',series_uid),('studydesc',studydesc),
 					('seriesdesc',seriesdesc),('instance',i),('instanceuid',instance_uid),
-					('path',path),('enhanced',enhanced),('px_array',pxfloat)]))
+					('path',path),('enhanced',enhanced),('compressed',compressed),
+					('px_array',pxfloat)]))
 		# Assuming all this has worked, serialise the dataset (ds) for later use, with the instance UID
 		# as the file number
 		if not enhanced:
