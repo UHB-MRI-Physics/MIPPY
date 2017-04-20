@@ -1,6 +1,8 @@
 """
 ACR uniformity assessment.
 Rob Flintham. Nov 2016
+
+New version 20/4/2017
 """
 
 
