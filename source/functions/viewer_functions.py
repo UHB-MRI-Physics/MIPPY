@@ -663,7 +663,7 @@ class MIPPYCanvas(Canvas):
 		self.delete('all')
 		n=0
 		
-		print "Generating MIPPYImage objects"
+		#print "Generating MIPPYImage objects"
 		for ref in image_list:
 			self.progress(45.*n/len(image_list)+10)
 			self.images.append(MIPPYImage(ref))
@@ -679,7 +679,7 @@ class MIPPYCanvas(Canvas):
 		self.window = self.default_window
 		self.zoom_factor = np.min([float(self.width)/float(self.images[0].columns),float(self.height)/float(self.images[0].rows)])
 
-		print "Generating PILLOW images"
+		#print "Generating PILLOW images"
 		for i in range(len(self.images)):
 			self.progress(45.*i/len(self.images)+55)
 			#~ if not self.zoom_factor==1.:
@@ -690,9 +690,9 @@ class MIPPYCanvas(Canvas):
 		self.configure_scrollbar()
 		self.show_image(1)
 
-		print "canvas width,height: %s,%s" %(self.width,self.height)
-		print "image width,height: %s,%s" %(self.get_active_image().columns,self.get_active_image().rows)
-		print "zoom: %s" %(self.zoom_factor)
+		#print "canvas width,height: %s,%s" %(self.width,self.height)
+		#print "image width,height: %s,%s" %(self.get_active_image().columns,self.get_active_image().rows)
+		#print "zoom: %s" %(self.zoom_factor)
 
 		#~ self.pixel_array = np.array(a.px_float for a in self.images)
 

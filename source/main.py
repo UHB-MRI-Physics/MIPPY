@@ -107,8 +107,7 @@ class ToolboxHome(Frame):
 		self.user = getpass.getuser()
 		
 		if 'darwin' in sys.platform or 'linux' in sys.platform:
-			self.tempdir = '/tmp/MIPPY_temp_'+self.user
-			
+			self.tempdir = '/tmp/MIPPY_temp_'+self.user			
 		elif 'win' in sys.platform:
 			sys_temp  = os.getenv("TEMP",r'C:\TEMP')
 			self.tempdir = os.path.join(sys_temp,"MIPPY_temp_"+self.user)
