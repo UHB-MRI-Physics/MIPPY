@@ -273,10 +273,10 @@ def snr_calc(win):
 	image1 = win.im1.get_active_image()
 	
 	clear_output(win)
-	output(win,'SNR: {v:=.2f}'.format(v=np.mean(snr_list)))
-	output(win,'Pixel Bandwidth (Hz/px): \t\t{v:=.2f}'.format(v=image1.pixel_bandwidth))
-	output(win,'Image Bandwidth (Hz): \t\t{v:=.2f}'.format(v=image1.image_bandwidth))
-	output(win,'Prescribed voxel size (mm): {x:=.2f} / {y:=.2f} / {s:=.2f}'.format(
+	output(win,'SNR:\t{v:=.2f}'.format(v=np.mean(snr_list)))
+	output(win,'Pixel Bandwidth (Hz/px):\t{v:=.2f}'.format(v=image1.pixel_bandwidth))
+	output(win,'Image Bandwidth (Hz):\t{v:=.2f}'.format(v=image1.image_bandwidth))
+	output(win,'Prescribed voxel size (X,Y,Z mm):\t{x:=.2f}\t{y:=.2f}\t{s:=.2f}'.format(
 			x=win.im1.get_active_image().xscale,
 			y=win.im1.get_active_image().yscale,
 			s=win.images[0][imnum1-1].SliceThickness))

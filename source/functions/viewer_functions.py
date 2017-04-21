@@ -990,7 +990,13 @@ class MIPPYImage():
 		self.image_orientation = np.array(ds.ImageOrientationPatient).reshape((2,3))
 		
 		# Change this tag with rotations
-		self.pe_direction = ds.InPlanePhaseEncodingDirection
+		pe_direction = ds.InPlanePhaseEncodingDirection
+		if 'ROW' in pe_direction.upper():
+			self.pe_direction='ROW'
+		elif 'COL' in pe_direction.upper():
+			self.pe_direction='COL'
+		else:
+			self.pe_direction='UNKNOWN'
 		try:
 			self.pixel_bandwidth = ds.PixelBandwidth
 			if 'ROW' in self.pe_direction:
@@ -1046,8 +1052,8 @@ class MIPPYImage():
 			return
 		else:
 			if self.pe_direction=='ROW':
-				self.pe_direction=='COLUMN'
-			elif self.pe_direction=='COLUMN':
+				self.pe_direction=='COL'
+			elif self.pe_direction=='COL':
 				self.pe_direction=='ROW'
 	
 	def swap_dimensions(self):

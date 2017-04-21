@@ -430,18 +430,30 @@ def measure_res(win):
 	
 	print mtf_hor,mtf_ver,np.mean([mtf_hor,mtf_ver])
 	
-	clear_output(win)
-	output(win,'MTF measured using CTF from max/min of hole profiles (magenta profiles)')
-	output(win,'Mean:\t{v:=.1f} %'.format(v=np.mean([mtf_hor,mtf_ver])*100))
-	output(win,'\nDirection\tPixel Size (mm)\tHole size (mm)\tMTF (%)')
-	output(win,'Horizontal\t{p:=.3f}\t{h:=.1f}\t{m:=.1f}'.format(p=xscale,h=hor_size,m=mtf_hor*100))
-	output(win,'Vertical\t{p:=.3f}\t{h:=.1f}\t{m:=.1f}'.format(p=yscale,h=ver_size,m=mtf_ver*100))
+	phase = win.im1.get_active_image().pe_direction
 	
-	output(win,'\nMTF measured using FFT of hole profiles (red profiles)')
-	output(win,'Mean:\t{v:=.1f} %'.format(v=np.mean([fft_result_hor,fft_result_ver])*100))
+	clear_output(win)
+	output(win,'Estimated MTF using max CTF (magenta profiles)')
+	output(win,'Mean:\t{v:=.1f}\t%'.format(v=np.mean([mtf_hor,mtf_ver])*100))
 	output(win,'\nDirection\tPixel Size (mm)\tHole size (mm)\tMTF (%)')
-	output(win,'Horizontal\t{p:=.3f}\t{h:=.1f}\t{m:=.1f}'.format(p=xscale,h=hor_size,m=fft_result_hor*100))
-	output(win,'Vertical\t{p:=.3f}\t{h:=.1f}\t{m:=.1f}'.format(p=yscale,h=ver_size,m=fft_result_ver*100))
+	if phase=='ROW':
+		output(win,'Phase\t{p:=.3f}\t{h:=.1f}\t{m:=.1f}'.format(p=xscale,h=hor_size,m=mtf_hor*100))
+		output(win,'Frequency\t{p:=.3f}\t{h:=.1f}\t{m:=.1f}'.format(p=yscale,h=ver_size,m=mtf_ver*100))
+	elif phase=='COL':
+		output(win,'Phase\t{p:=.3f}\t{h:=.1f}\t{m:=.1f}'.format(p=yscale,h=ver_size,m=mtf_ver*100))
+		output(win,'Frequency\t{p:=.3f}\t{h:=.1f}\t{m:=.1f}'.format(p=xscale,h=hor_size,m=mtf_hor*100))
+	
+	output(win,'\nEstimated MTF using FFT of profiles (red profiles)')
+	output(win,'Mean:\t{v:=.1f}\t%'.format(v=np.mean([fft_result_hor,fft_result_ver])*100))
+	output(win,'\nDirection\tPixel Size (mm)\tHole size (mm)\tMTF (%)')
+	if phase=='ROW':
+		output(win,'Phase\t{p:=.3f}\t{h:=.1f}\t{m:=.1f}'.format(p=xscale,h=hor_size,m=fft_result_hor*100))
+		output(win,'Frequency\t{p:=.3f}\t{h:=.1f}\t{m:=.1f}'.format(p=yscale,h=ver_size,m=fft_result_ver*100))
+	elif phase=='COL':
+		output(win,'Phase\t{p:=.3f}\t{h:=.1f}\t{m:=.1f}'.format(p=yscale,h=ver_size,m=fft_result_ver*100))
+		output(win,'Frequency\t{p:=.3f}\t{h:=.1f}\t{m:=.1f}'.format(p=xscale,h=hor_size,m=fft_result_hor*100))
+	
+	output(win,'\nPhase encode direction:\t'+phase)
 	
 	# Output 4 profiles from each direction
 	output(win,'\nProfiles:')

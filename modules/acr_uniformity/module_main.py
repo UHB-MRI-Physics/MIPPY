@@ -278,17 +278,17 @@ def measure_uni(win):
 	clear_output(win)
 	output(win,'Measured across central {v:=.0f}% of phantom area\n'.format(v=float(win.percent_area.get())))
 
-	output(win,"Integral uniformity (ACR) = "+str(np.round(int_uniformity*100,1))+" %\n")
+	output(win,"Integral uniformity (ACR):\t\t"+str(np.round(int_uniformity*100,1))+"\t%\n")
 	
 	output(win,'MS Excel Table:')
 	output(win,'Region\tArea\tMean')
 	output(win,'Low\t'+area_str+'\t{v:=.2f}'.format(v=stats['min'][0]))
 	output(win,'High\t'+area_str+'\t{v:=.2f}'.format(v=stats['max'][0]))
 
-	output(win,"\nFractional uniformity (Horizontal) = "+str(np.round(h_uni*100,1))+" %")
-	output(win,"Fractional uniformity (Vertical) = "+str(np.round(v_uni*100,1))+" %")
+	output(win,"\nFractional uniformity (H):\t\t"+str(np.round(h_uni*100,1))+"\t%")
+	output(win,"Fractional uniformity (V):\t\t"+str(np.round(v_uni*100,1))+"\t%")
 
-	output(win,'\nThe following can be copied and pasted directly into MS Excel or similar')
+	#~ output(win,'\nThe following can be copied and pasted directly into MS Excel or similar')
 	output(win,'\nX (mm)\tHorizontal\tY (mm)\tVertical')
 	for row in range(int(np.max([len(profile_h),len(profile_v)]))):
 		try:
