@@ -219,13 +219,13 @@ def measure_res(win):
 	
 	# Get threshold values to accept profiles
 	# 31 holes, take 90% of top 31 values
-	px_threshold = [0,0,0]
+	#~ px_threshold = [0,0,0]
 	#~ px_threshold[0] = np.max(px1)*0.4
-	px_threshold[0] = 0.5*np.mean(np.sort(px1.flatten())[-1:-5:-1])
+	#~ px_threshold[0] = 0.5*np.mean(np.sort(px1.flatten())[-1:-5:-1])
 	#~ px_threshold[1] = np.max(px2)*0.4
-	px_threshold[1] = 0.5*np.mean(np.sort(px2.flatten())[-1:-5:-1])
+	#~ px_threshold[1] = 0.5*np.mean(np.sort(px2.flatten())[-1:-5:-1])
 	#~ px_threshold[2] = np.max(px3)*0.4
-	px_threshold[2] = 0.5*np.mean(np.sort(px3.flatten())[-1:-5:-1])
+	#~ px_threshold[2] = 0.5*np.mean(np.sort(px3.flatten())[-1:-5:-1])
 
 	# Determine "black" and "white" values for MTF calculation
 	
@@ -456,19 +456,24 @@ def measure_res(win):
 	output(win,'\nPhase encode direction:\t'+phase)
 	
 	# Output 4 profiles from each direction
+	best_ver_profiles = []
+	best_hor_profiles = []
+	for i in range(n_profiles):
+		best_ver_profiles.append(px[y_values_ver[i]:y_values_ver[i]+roi_len,x_values_ver[i]])
+		best_hor_profiles.append(px[y_values_hor[i],x_values_hor[i]:x_values_hor[i]+roi_len])
 	output(win,'\nProfiles:')
 	output(win,'Pixel\tHor 1\tHor 2\tHor 3\tHor 4\tVer 1\tVer 2\tVer 3\tVer 4')
 	for i in range(roi_len):
 		output(win,'{p:=.0f}\t{h1:=.2f}\t{h2:=.2f}\t{h3:=.2f}\t{h4:=.2f}\t{v1:=.2f}\t{v2:=.2f}\t{v3:=.2f}\t{v4:=.2f}'.format(
 				p=i,
-				h1=profiles_hor[0][i],
-				h2=profiles_hor[1][i],
-				h3=profiles_hor[2][i],
-				h4=profiles_hor[3][i],
-				v1=profiles_ver[0][i],
-				v2=profiles_ver[1][i],
-				v3=profiles_ver[2][i],
-				v4=profiles_ver[3][i]))
+				h1=best_hor_profiles[0][i],
+				h2=best_hor_profiles[1][i],
+				h3=best_hor_profiles[2][i],
+				h4=best_hor_profiles[3][i],
+				v1=best_ver_profiles[0][i],
+				v2=best_ver_profiles[1][i],
+				v3=best_ver_profiles[2][i],
+				v4=best_ver_profiles[3][i]))
 				
 	output(win,'\nBlack\tWhite (Hor)\tWhite(Ver)')
 	output(win,'{b:=.2f}\t{wh:=.2f}\t{wv:=.2f}'.format(b=black,wh=adj_white[hor_set],wv=adj_white[ver_set]))

@@ -203,12 +203,20 @@ def reset_roi(win):
 	win.im1.roi_rectangle(xc-(xdim/2),yc+0,xdim,ydim,tags=['roi'],system='image')
 
 def measure_sliceprofile(win):
-	res = 0.1
+	res = 0.1		# Keep resolution to a rational fraction, e.g. 1/10, 1/4, 1/8 pixels
 	smoothing = 3
+	# Ignore N pixels at each end of profile to correct for distortion
+	# This is a fudge to keep Ali happy...
+	end_crushers = 20
 	profile_a_raw, x_a = win.im1.get_profile(direction='horizontal',index=0,resolution=res,interpolate=True)
 	profile_b_raw, x_b = win.im1.get_profile(direction='horizontal',index=1,resolution=res,interpolate=True)
 	profile_a = convolve(np.array(profile_a_raw),np.ones(smoothing/res),mode='same')
 	profile_b = convolve(np.array(profile_b_raw),np.ones(smoothing/res),mode='same')
+	
+	profile_a[0:end_crushers/res] = 0.
+	profile_a[-1:-end_crushers/res] = 0.
+	profile_b[0:end_crushers/res] = 0.
+	profile_b[-1:-end_crushers/res] = 0.
 	
 	print len(profile_a)
 	print len(profile_b)
@@ -271,9 +279,9 @@ def measure_sliceprofile(win):
 	clear_output(win)
 	
 	#~ output(win,"Slice width (Mean FWHM) = "+str(np.round(slthk_rob,2))+" mm")
-	output(win,"Slice width: {v:=.2f} mm".format(v=slice_thickness))
+	output(win,"Slice width:\t\t{v:=.2f}\tmm".format(v=slice_thickness))
 
-	output(win,'\nThe following can be copied and pasted directly into MS Excel or similar')
+	output(win,'\nMS Excel Results Table')
 	output(win,'\nX1 (mm)\tValue\tX2 (mm)\tValue')
 	for row in range(0,len(profile_a),10):
 		output(win,str(x_a[row]*res*xscale)+'\t'+str(profile_a_raw[row])+'\t'+str(x_b[row]*res*yscale)+'\t'+str(profile_b_raw[row]))

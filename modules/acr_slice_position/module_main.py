@@ -246,9 +246,9 @@ def measure_slicepos(win):
 
 	clear_output(win)
 
-	output(win,"Slice position error = "+str(np.round(slicepos_error,2))+" mm\n")
+	output(win,"Slice position error:\t\t{v:=.2f}\tmm".format(v=slicepos_error))
 
-	output(win,'\nThe following can be copied and pasted directly into MS Excel or similar')
+	output(win,'\nMS Excel Results Table')
 	output(win,'\nY1 (mm)\tValue\tY2 (mm)\tValue')
 	for row in range(0,len(profile_a),10):
 		output(win,str(y_a[row]*res*yscale)+'\t'+str(profile_a[row])+'\t'+str(y_b[row]*res*yscale)+'\t'+str(profile_b[row]))

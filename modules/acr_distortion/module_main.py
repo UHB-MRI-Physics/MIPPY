@@ -424,14 +424,14 @@ def measure_distortion(win):
 	#~ print 'CoV Distortion (Y): {v:=.2f} %'.format(v=cov_y*100)
 	
 	clear_output(win)
-	output(win,'Grid Linearity (Mean X): {v:=.2f} mm'.format(v=lin_x_grid))
-	output(win,'Grid Linearity (Mean Y): {v:=.2f} mm'.format(v=lin_y_grid))
-	output(win,'Grid Distortion (CoV X): {v:=.2f} %'.format(v=cov_x_grid*100))
-	output(win,'Grid Distortion (CoV Y): {v:=.2f} %'.format(v=cov_y_grid*100))
-	output(win,'\nRadial Linearity (Mean diameter): {v:=.2f} mm'.format(v=lin_radial))
-	output(win,'Radial Distortion (CoV diameter): {v:=.2f} %'.format(v=cov_radial*100))
+	output(win,'Grid Linearity (Mean X):\t\t\t\t{v:=.2f}\tmm'.format(v=lin_x_grid))
+	output(win,'Grid Linearity (Mean Y):\t\t\t\t{v:=.2f}\tmm'.format(v=lin_y_grid))
+	output(win,'Grid Distortion (CoV X):\t\t\t\t{v:=.2f}\t%'.format(v=cov_x_grid*100))
+	output(win,'Grid Distortion (CoV Y):\t\t\t\t{v:=.2f}\t%'.format(v=cov_y_grid*100))
+	output(win,'\nRadial Linearity (Mean diameter):\t\t\t\t{v:=.2f}\tmm'.format(v=lin_radial))
+	output(win,'Radial Distortion (CoV diameter):\t\t\t\t{v:=.2f}\t%'.format(v=cov_radial*100))
 	
-	output(win,'\nEdge threshold value: {v:=.2f}'.format(v=half_value))
+	output(win,'\nEdge threshold value:\t\t\t\t{v:=.2f}'.format(v=half_value))
 
 	output(win,'\nMS Excel Results Table 1:')
 	output(win,'Grid X distances (mm)\tGrid Y distances (mm)')

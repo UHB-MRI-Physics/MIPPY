@@ -176,11 +176,11 @@ def reset_roi(win):
 	roi_lt_w = 8
 	roi_lt_h = 45
 
-	win.im1.roi_ellipse(roi_top_c,roi_top_w,roi_top_h,tags=['top'],system='image')
-	win.im1.roi_ellipse(roi_rt_c,roi_rt_w,roi_rt_h,tags=['rt'],system='image')
-	win.im1.roi_ellipse(roi_bot_c,roi_bot_w,roi_bot_h,tags=['bot'],system='image')
-	win.im1.roi_ellipse(roi_lt_c,roi_lt_w,roi_lt_h,tags=['lt'],system='image')
-	win.im1.roi_circle((xc,yc),65,tags=['center'],system='image')
+	win.im1.roi_ellipse(roi_top_c,roi_top_w,roi_top_h,tags=['top'],system='image',color='red')
+	win.im1.roi_ellipse(roi_rt_c,roi_rt_w,roi_rt_h,tags=['rt'],system='image',color='blue')
+	win.im1.roi_ellipse(roi_bot_c,roi_bot_w,roi_bot_h,tags=['bot'],system='image',color='red')
+	win.im1.roi_ellipse(roi_lt_c,roi_lt_w,roi_lt_h,tags=['lt'],system='image',color='blue')
+	win.im1.roi_circle((xc,yc),65,tags=['center'],system='image',color='magenta')
 
 def measure_ghosting(win):
 	#~ means = []
@@ -234,7 +234,7 @@ def measure_ghosting(win):
 	
 	clear_output(win)
 
-	output(win,"Percentage Ghost Intensity (ACR) = {v:=.2f} %".format(v=ghost*100))
+	output(win,"Percentage Ghost Intensity (ACR):\t\t\t\t{v:=.2f}\t%".format(v=ghost*100))
 	
 	output(win,'\nMS Excel Table:')
 	output(win,'Region\tMean\tStdDev')
@@ -245,7 +245,7 @@ def measure_ghosting(win):
 	output(win,'Central\t{m:=.2f}\t{s:=.2f}'.format(m=central['mean'][0],s=central['std'][0]))
 	
 	if roi_outside:
-		output(win,'\nWARNING! ROIs more than 70% outside of the image have been replaced by\ntheir opposite ROI for the calculation:')
+		output(win,'\nWARNING! ROIs more than 70% outside of the image\nhave been replaced by their opposite ROI\nfor the calculation:')
 		for string in replaced:
 			output(win,string)
 
