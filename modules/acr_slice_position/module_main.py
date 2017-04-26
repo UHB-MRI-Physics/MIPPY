@@ -194,7 +194,7 @@ def reset_roi(win):
 	xdim=2.
 	ydim=25.
 	
-	win.im1.roi_rectangle(xc-5,yc-80,xdim,ydim,tags=['roi'],system='image')
+	win.im1.roi_rectangle(xc-6,yc-80,xdim,ydim,tags=['roi'],system='image')
 	win.im1.roi_rectangle(xc+1,yc-80,xdim,ydim,tags=['roi'],system='image')
 
 def measure_slicepos(win):
@@ -208,10 +208,10 @@ def measure_slicepos(win):
 	print len(profile_a)
 	print len(profile_b)
 	
-	high_a = np.mean(profile_a[-ends*res-1:-1])
-	high_b = np.mean(profile_b[-ends*res-1:-1])
-	low_a = np.mean(profile_a[0:ends*res])
-	low_b = np.mean(profile_b[0:ends*res])
+	high_a = np.mean(profile_a[-int(ends/res)-1:-1])
+	high_b = np.mean(profile_b[-int(ends/res)-1:-1])
+	low_a = np.mean(profile_a[0:int(ends/res)])
+	low_b = np.mean(profile_b[0:int(ends/res)])
 	threshold_a = low_a+0.5*(high_a-low_a)
 	threshold_b = low_b+0.5*(high_b-low_b)
 	
