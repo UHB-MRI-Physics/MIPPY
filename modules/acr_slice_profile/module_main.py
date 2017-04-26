@@ -203,10 +203,14 @@ def reset_roi(win):
 	win.im1.roi_rectangle(xc-(xdim/2),yc+0,xdim,ydim,tags=['roi'],system='image')
 
 def measure_sliceprofile(win):
-	res = 0.1		# Keep resolution to a rational fraction, e.g. 1/10, 1/4, 1/8 pixels
-	smoothing = 3
+	# Keep resolution to a rational fraction, e.g. 1/10, 1/4, 1/8 pixels
+	res = 1./10.
+	# Number of pixels across which to smooth profiles
+	smoothing = 3.
+	
 	# Ignore N pixels at each end of profile to correct for distortion
 	# This is a fudge to keep Ali happy...
+	
 	end_crushers = 20
 	profile_a_raw, x_a = win.im1.get_profile(direction='horizontal',index=0,resolution=res,interpolate=True)
 	profile_b_raw, x_b = win.im1.get_profile(direction='horizontal',index=1,resolution=res,interpolate=True)

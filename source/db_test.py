@@ -5,7 +5,7 @@ Created on Tue Jan 03 12:30:07 2017
 @author: rtfm
 """
 
-import source.functions.rrpps_functions as rrpps
+import functions.db_functions as MDB
 import numpy as np
 from Tkinter import *
 from ttk import *
@@ -17,7 +17,7 @@ class App(object):
 	def __init__(self, master):
 		frame = Frame(master)
 		frame.pack()
-		db = rrpps.QADatabase()
+		db = MDB.QADatabase()
 		db.popup_save(master)
 
 root = Tk()

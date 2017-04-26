@@ -110,8 +110,11 @@ class QADatabase(object):
 		conn.close()
 		return
 
-	def popup_save(self,master_window):
+	def popup_save(self,master_window,results=None,replace=False):
+		if results is None:
+			return
 		saver = Toplevel(master_window)
+		saver.title('SAVE RESULTS TO DATABASE')
 		saver.site_label = Label(saver,text='Please select the site:')
 		saver.scanner_label = Label(saver,text='Please select the scanner:')
 		saver.replace_label = Label(saver,text='Replace existing results? (if available)')
@@ -151,10 +154,13 @@ class QADatabase(object):
 		site_index = win.sites.index(site)
 		win.scanner_choice['menu'].delete(0,'end')
 		for choice in win.scanners_by_site[site_index]:
-			win.scanner_choice['menu'].add_command(label=choice, command=win.scanners_v.set(choice))
+			win.scanner_choice['menu'].add_command(label=choice, command=lambda temp = choice: win.scanner_choice.setvar(win.scanner_choice.cget("textvariable"), value = temp))
 		win.scanners_v.set(win.scanners_by_site[site_index][0])
 		win.update()
 		return
+	
+	def null_func():
+		pass
 
 
 
