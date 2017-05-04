@@ -210,9 +210,17 @@ def roi_reset(win):
 	win.radius_y = radius_y = geometry[3]
 
 	dim = 10
-
-	xspc = radius_x*0.75-dim*1.2
-	yspc = radius_y*0.75-dim*1.2
+	
+	cr_x = radius_x * np.sqrt(0.7)
+	cr_y = radius_y * np.sqrt(0.7)
+	
+	
+	
+	h_x = cr_x - np.sqrt((cr_x**2) - ((dim*2)**2)/4) +dim
+	h_y = cr_y - np.sqrt((cr_y**2) - ((dim*2)**2)/4) +dim
+	
+	xspc = cr_x-h_x-dim
+	yspc = cr_y-h_y-dim
 	
 	# Comment this out to use phantom-adjusted spacing
 	#~ xspc = 40
@@ -225,6 +233,8 @@ def roi_reset(win):
 	win.im1.roi_rectangle(xc-xspc-dim,yc-dim,dim*2,dim*2,tags=['left'],system='image')
 	win.im1.roi_rectangle(xc-dim,yc-dim,dim*2,dim*2,tags=['center'],system='image')
 	win.order = ['Top','Right','Bottom','Left','Center']
+	z = win.im1.zoom_factor
+	win.im1.create_oval(((xc-cr_x)*z,(yc-cr_y)*z,(xc+cr_x)*z,(yc+cr_y)*z),tags='round',outline='blue')
 	return
 
 
@@ -247,7 +257,7 @@ def snr_calc(win):
 		info(win,'\nNone detected')
 	else:
 		for row in diffs:
-			print row
+			#~ print row
 			info(win,'\n'+row[0]+':')
 			info(win,'1: '+row[1],red=True)
 			info(win,'2: '+row[2],red=True)

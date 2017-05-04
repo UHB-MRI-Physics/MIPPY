@@ -76,7 +76,7 @@ def execute(master_window,dicomdir,images):
 	win.percent_area = StringVar()
 	win.percent_area_label=Label(win.toolbar,text='Percentage phantom area to use:')
 	win.percent_area_box = Entry(win.toolbar,text='Percentage Area:',textvariable=win.percent_area)
-	win.percent_area.set('60')
+	win.percent_area.set('70')
 
 	#~ win.phantom_label.grid(row=0,column=0,sticky='w')
 	#~ win.phantom_choice.grid(row=1,column=0,sticky='ew')
