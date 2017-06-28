@@ -69,7 +69,7 @@ def launch_MIPPY():
 			impath = '@'+resource_filename('mippy','resources/brain_bw.xbm')
 		root_window.wm_iconbitmap(impath)
 
-		with splash.SplashScreen(root_window,splashpath, 3.0):
+		with splash.SplashScreen(root_window,splashpath, 0.5):
 			root_app = MIPPYMain(master = root_window)
 		root_app.mainloop()
 	except Exception as e:
