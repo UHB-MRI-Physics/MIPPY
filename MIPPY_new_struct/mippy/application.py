@@ -15,6 +15,7 @@ print "Importing system modules"
 from pkg_resources import resource_filename
 import os
 import tkMessageBox
+import tkFileDialog
 from Tkinter import *
 from ttk import *
 from datetime import datetime
@@ -25,11 +26,16 @@ import webbrowser
 import shutil
 import importlib
 import getpass
+import cPickle as pickle
+import itertools
 print "Imports finished!"
+from functools import partial
 
 print "Importing MIPPY code"
 from . import viewing as mview
-from . import dicom as mdicom
+from . import mdicom
+from . import fileio
+from .threading import multithread
 print "Done!"
 
 def launch_MIPPY():
@@ -150,6 +156,12 @@ class MIPPYMain(Frame):
 		if not os.path.exists(self.tempdir):
 			os.makedirs(self.tempdir)
 		
+		# Set default module directory
+		if os.path.exists(os.path.join(self.root_dir, 'modules')):
+			self.moduledir = os.path.join(self.root_dir, 'modules')
+		else:
+			self.moduledir = None
+		
 		#~ if 'darwin' in sys.platform or 'linux' in sys.platform:
 			#~ self.tempdir = '/tmp/MIPPY_temp_'+self.user
 		#~ elif 'win' in sys.platform:
@@ -163,9 +175,12 @@ class MIPPYMain(Frame):
 		self.menubar = Menu(master)
 		# Create and populate "File" menu
 		self.filemenu = Menu(self.menubar, tearoff=0)
-		self.filemenu.add_command(label="Load image directory", command=lambda:self.load_image_directory())
-		self.filemenu.add_command(label="Refresh module list", command=lambda:self.scan_modules_directory())
+		self.filemenu.add_command(label="Load new image directory", command=lambda:self.load_image_directory())
 		self.filemenu.add_command(label="Exit program",command=lambda:self.exit_program())
+		# Create and populate "Modules" menu
+		self.modulemenu = Menu(self.menubar,tearoff=0)
+		self.modulemenu.add_command(label="Load new module directory",command=lambda:self.select_modules_directory())
+		self.modulemenu.add_command(label="Refresh module list", command=lambda:self.scan_modules_directory())
 		# Create and populate "Image" menu
 		self.imagemenu = Menu(self.menubar,tearoff=0)
 		self.imagemenu.add_command(label="View DICOM header", command=lambda:self.view_header())
@@ -178,6 +193,7 @@ class MIPPYMain(Frame):
 		self.helpmenu.add_command(label="Report issue",command=lambda:self.report_issue())
 		# Add menus to menubar and display menubar in window
 		self.menubar.add_cascade(label="File",menu=self.filemenu)
+		self.menubar.add_cascade(label="Modules",menu=self.modulemenu)
 		self.menubar.add_cascade(label="Image",menu=self.imagemenu)
 		self.menubar.add_cascade(label="Help",menu=self.helpmenu)
 		self.master.config(menu=self.menubar)
@@ -397,10 +413,10 @@ class MIPPYMain(Frame):
 			return
 		ask_recursive = tkMessageBox.askyesno("Search recursively?","Do you want to include all subdirectories?")
 
-		self.path_list = []
+		#~ self.path_list = []
 		self.active_series = None
 
-		self.path_list = list_all_files(self.dicomdir,file_list=self.path_list,recursive=ask_recursive)
+		self.path_list = fileio.list_all_files(self.dicomdir,recursive=ask_recursive)
 
 		self.filter_dicom_files()
 		self.build_dicom_tree()
@@ -409,13 +425,19 @@ class MIPPYMain(Frame):
 
 	def filter_dicom_files(self):
 		self.tag_list = []
-		for p in self.path_list:
-			self.progress(100*(float(self.path_list.index(p))/float(len(self.path_list))))
-			tags = collect_dicomdir_info(p,tempdir=self.tempdir)
-			if tags:
-				for row in tags:
-					self.tag_list.append(row)
-		self.progress(0.)
+		f = partial(mdicom.collect_dicomdir_info,tempdir=self.tempdir)
+		self.tag_list = multithread(f,self.path_list,progressbar=self.progress)
+		self.tag_list = [item for sublist in self.tag_list for item in sublist]
+		self.tag_list = [value for value in self.tag_list if value != []]
+		#~ print self.tag_list
+		
+		#~ for p in self.path_list:
+			#~ self.progress(100*(float(self.path_list.index(p))/float(len(self.path_list))))
+			#~ tags = mdicom.collect_dicomdir_info(p,tempdir=self.tempdir)
+			#~ if not tags is None:
+				#~ for row in tags:
+					#~ self.tag_list.append(row)
+		#~ self.progress(0.)
 		return
 
 	def build_dicom_tree(self):
@@ -461,20 +483,34 @@ class MIPPYMain(Frame):
 
 		#~ self.master.progress = 100
 		return
+	
+	def select_modules_directory(self):
+		print "Load module directory"
+		if self.moduledir in sys.path:
+			sys.path.remove(self.moduledir)
+		self.moduledir = tkFileDialog.askdirectory(parent=self,initialdir=self.root_dir,title="Select module directory")
+		if not self.moduledir:
+			return
+		sys.path.append(self.moduledir)
+		self.scan_modules_directory()
+		return		
 
 	def scan_modules_directory(self):
 		self.module_list = []
-		for folder in os.listdir(os.path.join(self.root_dir,'modules')):
-			if not os.path.isdir(os.path.join(self.root_dir,'modules',folder)):
+		if self.moduledir is None or not self.moduledir:
+			return
+		for folder in os.listdir(self.moduledir):
+			if not os.path.isdir(os.path.join(self.moduledir,folder)):
 				continue
-			file_list = os.listdir(os.path.join(self.root_dir,'modules',folder))
+			file_list = os.listdir(os.path.join(self.moduledir,folder))
 			if (('__init__.py' in file_list or '__init__.pyc' in file_list)
 				and ('module_main.py' in file_list or 'module_main.pyc' in file_list)
 				and 'config' in file_list):
-				cfg_file = os.path.join(self.root_dir,'modules',folder,'config')
+				cfg_file = os.path.join(self.moduledir,folder,'config')
 				with open(cfg_file,'r') as file_object:
 					module_info = pickle.load(file_object)
 				self.module_list.append(module_info)
+				print module_info
 		self.module_list = sorted(self.module_list,key=lambda item: item['name'])
 		try:
 			for item in self.moduleframe.moduletree.get_children():
@@ -528,8 +564,9 @@ class MIPPYMain(Frame):
 
 	def load_selected_module(self):
 		try:
+			print sys.path
 			moduledir = self.moduleframe.moduletree.selection()[0]
-			module_name = 'modules.'+moduledir+'.module_main'
+			module_name = moduledir+'.module_main'
 			if not module_name in sys.modules:
 				active_module = importlib.import_module(module_name)
 			else:

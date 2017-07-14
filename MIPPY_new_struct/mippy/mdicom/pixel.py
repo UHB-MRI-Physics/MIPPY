@@ -1,3 +1,5 @@
+import numpy as np
+
 def get_px_array(ds,enhanced=False,instance=None):
 	if 'JPEG' in str(ds.file_meta[0x2,0x10].value):
 		compressed = True
@@ -29,3 +31,26 @@ def get_px_array(ds,enhanced=False,instance=None):
 	except:
 		return None
 	return px_float
+
+def px_bytes_to_array(byte_array,rows,cols,bitdepth=16,mode='littleendian',rs=1,ri=0,ss=None):
+	if bitdepth==16:
+		if mode=='littleendian':
+			this_dtype = np.dtype('<u2')
+		else:
+			this_dtype = np.dtype('>u2')
+	elif bitdepth==8:
+		this_dtype = np.dytpe('u1')
+	abytes = np.frombuffer(byte_array, dtype=this_dtype)
+#	print np.mean(abytes)
+#	print np.shape(abytes)
+#	print abytes
+	abytes = abytes.reshape((cols,rows))
+	px_float = generate_px_float(abytes,rs,ri,ss)
+#	print np.mean(px_float)
+	return px_float
+
+def generate_px_float(pixels,rs,ri,ss=None):
+	if ss:
+		return (pixels*rs+ri)/(rs*ss)
+	else:
+		return (pixels*rs+ri)

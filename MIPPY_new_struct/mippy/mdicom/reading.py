@@ -1,8 +1,11 @@
-from multiprocessing import Pool
+#~ from multiprocessing import Pool
 from multiprocessing.dummy import Pool as ThreadPool
 import os
 import dicom
 from . import io
+from . import pixel
+from pkg_resources import resource_filename
+from subprocess import call
 
 def recursive_file_finder(path):
 	pathlist = []
@@ -32,7 +35,9 @@ def multidicomread(paths,threads=None):
 
 
 def collect_dicomdir_info(path,tempdir=None,force_read=False):
-	tags= None
+	tags=[]
+	# Variables to contain path to dcmdjpeg for compressed DICOM
+	dcmdjpeg = None
 	# This automatically excludes Philips "XX_" files, but only based on name.  If they've been renamed they
 	# won't be picked up until the "try/except" below.
 	if os.path.split(path)[1].startswith("XX_"):
@@ -119,8 +124,8 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 				# If all else fails, just use a generic string
 				studydesc = "Unknown Study Type"
 		
-		if not tags:
-			tags = []
+		#~ if tags is None:
+			#~ tags = []
 		
 		if enhanced:
 			# Set "instance" array to match number of frames
@@ -156,6 +161,17 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 						ds = pickle.load(tempfile)
 					tempfile.close()
 				else:
+					# Set path to dcmdjpeg if necessary
+					if dcmdjpeg is None:
+						if 'darwin' in sys.platform:
+							dcmdjpeg= resource_filename('mippy','resources/dcmdjpeg_mac')
+						elif 'linux' in sys.platform:
+							dcmdjpeg=resource_filename('mippy','resources/dcmdjpeg_linux')
+						elif 'win' in sys.platform:
+							dcmdjpeg=resource_filename('mippy','resources\dcmdjpeg_win.exe')
+						else:
+							print "UNSUPPORTED OPERATING SYSTEM"
+							print str(sys.platform)
 					# Uncompress the file
 					outpath=os.path.join(tempdir,'UNCOMP_'+instance_uid+'.DCM')
 					print seriesdesc+' '+str(i).zfill(3)
@@ -176,7 +192,7 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 					ds = dicom.read_file(outpath)
 				
 			
-			pxfloat=get_px_array(ds,enhanced,i)
+			pxfloat=pixel.get_px_array(ds,enhanced,i)
 			if pxfloat is None:
 				continue
 			
@@ -187,10 +203,10 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 					('path',path),('enhanced',enhanced),('compressed',compressed),
 					('px_array',pxfloat)]))
 		# Assuming all this has worked, serialise the dataset (ds) for later use, with the instance UID
-		# as the file number
+		# as the file name
 		if not enhanced:
 			if tempdir:
-				save_temp_ds(ds,tempdir,instance_uid+'.mds')
+				io.save_temp_ds(ds,tempdir,instance_uid+'.mds')
 		
 	return tags
 
