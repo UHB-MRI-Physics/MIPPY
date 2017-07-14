@@ -1,0 +1,13 @@
+Metadata-Version: 1.1
+Name: MIPPY
+Version: 0.24.1
+Summary: Modular Image Processing in Python
+Home-page: UNKNOWN
+Author: Robert Flintham
+Author-email: robert.flintham@uhb.nhs.uk
+License: MIT
+Description: UNKNOWN
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python :: 2.7
