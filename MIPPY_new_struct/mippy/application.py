@@ -438,7 +438,7 @@ class MIPPYMain(Frame):
 		else:
 			for p in self.path_list:
 				self.progress(100*(float(self.path_list.index(p))/float(len(self.path_list))))
-				tags = mdicom.collect_dicomdir_info(p,tempdir=self.tempdir)
+				tags = collect_dicomdir_info(p,tempdir=self.tempdir)
 				if not tags is None:
 					for row in tags:
 						self.tag_list.append(row)
