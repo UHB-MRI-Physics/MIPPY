@@ -1,7 +1,8 @@
-from multiprocessing import Pool, cpu_count
+from multiprocessing import Pool, cpu_count, freeze_support
 import time
 
 def multithread(func,input,progressbar=None,threads=None):
+	#~ freeze_support()
 	if threads is None:
 		threads=cpu_count()
 	pool = Pool(threads)

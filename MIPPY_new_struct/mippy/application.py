@@ -30,6 +30,7 @@ import cPickle as pickle
 import itertools
 print "Imports finished!"
 from functools import partial
+from multiprocessing import freeze_support
 
 print "Importing MIPPY code"
 from . import viewing as mview
@@ -39,49 +40,9 @@ from . import fileio
 from .threading import multithread
 print "Done!"
 
-def launch_MIPPY():
-	print "Launching MIPPY..."
-	# Set up logging
-	try:
-		if sys.argv [1]=='debug':
-			debug_mode=True
-		else:
-			debug_mode=False
-	except:
-		debug_mode=False
-	if not debug_mode:
-		logpath = os.path.join(os.getcwd(),"MIPPY-logs",str(datetime.now()).replace(":",".").replace(" ","_")+".txt")
-		try:
-			os.makedirs(os.path.split(logpath)[0])
-		except:
-			pass
-		with open(logpath,'w') as logout:
-			logout.write('LOG FILE\n')
-		redir_out = RedirectText(logpath)
-		redir_err = RedirectText(logpath)
-		sys.stdout = redir_out
-		sys.stderr = redir_err
-		
-	# Start application behind splash screen
-	try:
-		from . import splash
-		splashpath =  resource_filename('mippy','resources/splash.jpg')
-		root_window = Tk()
-		root_window.title("MIPPY: Modular Image Processing in Python")
-		root_window.minsize(650,400)
-		root_path = os.getcwd()
-		if "nt" == os.name:
-			impath = resource_filename('mippy','resources/brain_orange.ico')
-		else:
-			impath = '@'+resource_filename('mippy','resources/brain_bw.xbm')
-		root_window.wm_iconbitmap(impath)
+print __name__
 
-		with splash.SplashScreen(root_window,splashpath, 0.5):
-			root_app = MIPPYMain(master = root_window)
-		root_app.mainloop()
-	except Exception as e:
-		print e
-		tkMessageBox.showerror('ERROR','Error occurred. Please consult log files.')
+
 	
 
 class MIPPYMain(Frame):
@@ -146,6 +107,7 @@ class MIPPYMain(Frame):
 		
 		# Use parallel processing?
 		self.multiprocess = True
+		#~ freeze_support()
 		
 		self.user = getpass.getuser()
 		
@@ -728,3 +690,51 @@ class RedirectText(object):
 	def write(self, string):
 		with open(self.logfile,'a') as f:
 			f.write('\n'+string)
+			
+
+# This launches the application
+
+if __name__=='mippy.application':
+	freeze_support()
+	print "Launching MIPPY..."
+	# Set up logging
+	try:
+		if sys.argv [1]=='debug':
+			debug_mode=True
+		else:
+			debug_mode=False
+	except:
+		debug_mode=False
+	if not debug_mode:
+		logpath = os.path.join(os.getcwd(),"MIPPY-logs",str(datetime.now()).replace(":",".").replace(" ","_")+".txt")
+		try:
+			os.makedirs(os.path.split(logpath)[0])
+		except:
+			pass
+		with open(logpath,'w') as logout:
+			logout.write('LOG FILE\n')
+		redir_out = RedirectText(logpath)
+		redir_err = RedirectText(logpath)
+		sys.stdout = redir_out
+		sys.stderr = redir_err
+		
+	# Start application behind splash screen
+	try:
+		from . import splash
+		splashpath =  resource_filename('mippy','resources/splash.jpg')
+		root_window = Tk()
+		root_window.title("MIPPY: Modular Image Processing in Python")
+		root_window.minsize(650,400)
+		root_path = os.getcwd()
+		if "nt" == os.name:
+			impath = resource_filename('mippy','resources/brain_orange.ico')
+		else:
+			impath = '@'+resource_filename('mippy','resources/brain_bw.xbm')
+		root_window.wm_iconbitmap(impath)
+
+		with splash.SplashScreen(root_window,splashpath, 0.5):
+			root_app = MIPPYMain(master = root_window)
+		root_app.mainloop()
+	except Exception as e:
+		print e
+		tkMessageBox.showerror('ERROR','Error occurred. Please consult log files.')
