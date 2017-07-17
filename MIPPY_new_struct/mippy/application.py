@@ -144,6 +144,9 @@ class MIPPYMain(Frame):
 		Linux = /tmp
 		'''
 		
+		# Use parallel processing?
+		self.multiprocess = True
+		
 		self.user = getpass.getuser()
 		
 		if 'darwin' in sys.platform or 'linux' in sys.platform:
@@ -426,19 +429,20 @@ class MIPPYMain(Frame):
 
 	def filter_dicom_files(self):
 		self.tag_list = []
-		f = partial(collect_dicomdir_info,tempdir=self.tempdir)
-		self.tag_list = multithread(f,self.path_list,progressbar=self.progress)
-		self.tag_list = [item for sublist in self.tag_list for item in sublist]
-		self.tag_list = [value for value in self.tag_list if value != []]
-		#~ print self.tag_list
 		
-		#~ for p in self.path_list:
-			#~ self.progress(100*(float(self.path_list.index(p))/float(len(self.path_list))))
-			#~ tags = mdicom.collect_dicomdir_info(p,tempdir=self.tempdir)
-			#~ if not tags is None:
-				#~ for row in tags:
-					#~ self.tag_list.append(row)
-		#~ self.progress(0.)
+		if self.multiprocess:
+			f = partial(collect_dicomdir_info,tempdir=self.tempdir)
+			self.tag_list = multithread(f,self.path_list,progressbar=self.progress)
+			self.tag_list = [item for sublist in self.tag_list for item in sublist]
+			self.tag_list = [value for value in self.tag_list if value != []]
+		else:
+			for p in self.path_list:
+				self.progress(100*(float(self.path_list.index(p))/float(len(self.path_list))))
+				tags = mdicom.collect_dicomdir_info(p,tempdir=self.tempdir)
+				if not tags is None:
+					for row in tags:
+						self.tag_list.append(row)
+			self.progress(0.)
 		return
 
 	def build_dicom_tree(self):

@@ -2,8 +2,8 @@ from multiprocessing.dummy import Pool, cpu_count
 import time
 
 def multithread(func,input,progressbar=None):
-	#~ pool = Pool(cpu_count())
-	pool = Pool()
+	pool = Pool(cpu_count()*3)
+	#~ pool = Pool()
 	result = pool.map_async(func,input,chunksize=1)
 	while not result.ready():
 		if not progressbar is None:
