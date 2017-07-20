@@ -11,13 +11,14 @@ all do.
 """
 
 # Import system/python modules
-print "Importing system modules"
+#~ print "Importing system modules"
 from pkg_resources import resource_filename
 import os
 import tkMessageBox
 import tkFileDialog
 from Tkinter import *
 from ttk import *
+import ScrolledText
 from datetime import datetime
 import sys
 import numpy as np
@@ -28,19 +29,17 @@ import importlib
 import getpass
 import cPickle as pickle
 import itertools
-print "Imports finished!"
 from functools import partial
-from multiprocessing import freeze_support
+#~ from multiprocessing import freeze_support
+#~ print "Imports finished!"
 
-print "Importing MIPPY code"
+#~ print "Importing MIPPY code"
 from . import viewing as mview
 from . import mdicom
 from mdicom.reading import collect_dicomdir_info
 from . import fileio
 from .threading import multithread
-print "Done!"
-
-print __name__
+#~ print "Done!"
 
 
 	
@@ -77,6 +76,26 @@ class MIPPYMain(Frame):
 		Frame.__init__(self, master)
 		self.master = master
 		self.master.root_dir = os.getcwd()
+		self.master.title("MIPPY: Modular Image Processing in Python")
+		#~ self.master.minsize(650,400)
+		#~ self.root_path = os.getcwd()
+		
+		# Set up logfile in logs directory
+		self.logpath=os.path.join(self.root_dir,"MIPPY-logs",str(datetime.now()).replace(":",".").replace(" ","_")+".txt")
+		#~ with open(logpath,'w') as logout:
+			#~ logout.write('LOG FILE\n')
+			# Add capture for stdout and stderr output for log file, and scrollable text box
+		self.master.logoutput = ScrolledText.ScrolledText(self.master,height=6)
+		redir_out = RedirectText(self.logpath)
+		redir_err = RedirectText(self.logpath)
+		sys.stdout = redir_out
+		sys.stderr = redir_err
+		
+		if "nt" == os.name:
+			impath = resource_filename('mippy','resources/brain_orange.ico')
+		else:
+			impath = '@'+resource_filename('mippy','resources/brain_bw.xbm')
+		self.master.wm_iconbitmap(impath)
 
 		# Catches any calls to close the window (e.g. clicking the X button in Windows) and pops
 		# up an "Are you sure?" dialog
@@ -84,18 +103,10 @@ class MIPPYMain(Frame):
 
 
 
-		#~ # Set up logfile in logs directory
-		#~ logpath=os.path.join(os.getcwd(),"logs",str(datetime.now()).replace(":",".").replace(" ","_")+".txt")
-		#~ with open(logpath,'w') as logout:
-			#~ logout.write('LOG FILE\n')
+		
 
 
-		#~ # Add capture for stdout and stderr output for log file, and scrollable text box
-		#~ self.master.logoutput = ScrolledText.ScrolledText(self.master,height=6)
-		#~ redir_out = RedirectText(self.master.logoutput,logpath)
-		#~ redir_err = RedirectText(self.master.logoutput,logpath)
-		#~ sys.stdout = redir_out
-		#~ sys.stderr = redir_err
+		
 
 		'''
 		This section is to determine the host OS, and set up the appropriate temp
@@ -107,7 +118,6 @@ class MIPPYMain(Frame):
 		
 		# Use parallel processing?
 		self.multiprocess = True
-		#~ freeze_support()
 		
 		self.user = getpass.getuser()
 		
@@ -157,6 +167,7 @@ class MIPPYMain(Frame):
 		self.helpmenu.add_command(label="About MIPPY",command=lambda:self.display_version_info())
 		self.helpmenu.add_command(label="View changelog",command=lambda:self.display_changelog())
 		self.helpmenu.add_command(label="Report issue",command=lambda:self.report_issue())
+		self.helpmenu.add_command(label="View current log file",command=lambda:self.show_log())
 		# Add menus to menubar and display menubar in window
 		self.menubar.add_cascade(label="File",menu=self.filemenu)
 		self.menubar.add_cascade(label="Modules",menu=self.modulemenu)
@@ -681,60 +692,70 @@ class MIPPYMain(Frame):
 				dcm_compare.text.insert(END,'2: '+row[2]+'\n','highlight')
 		dcm_compare.text.config(state='disabled')
 		dcm_compare.text.pack()
+	
+	def show_log(self):
+		logwin = Toplevel()
+		logtext = ScrolledText.ScrolledText(logwin)
+		with open(self.logpath,'r') as logfile:
+			text = logfile.readlines()
+			for row in text:
+				logtext.insert(END,row+'\n')
+		logtext.pack()
 
 #########################################################
 
 class RedirectText(object):
 	def __init__(self, log):
 		self.logfile = log
+		self.write("LOG FILE: "+str(datetime.now()))
 	def write(self, string):
 		with open(self.logfile,'a') as f:
-			f.write('\n'+string)
+			f.write(string)
 			
 
 # This launches the application
 
-if __name__=='mippy.application':
-	freeze_support()
-	print "Launching MIPPY..."
-	# Set up logging
-	try:
-		if sys.argv [1]=='debug':
-			debug_mode=True
-		else:
-			debug_mode=False
-	except:
-		debug_mode=False
-	if not debug_mode:
-		logpath = os.path.join(os.getcwd(),"MIPPY-logs",str(datetime.now()).replace(":",".").replace(" ","_")+".txt")
-		try:
-			os.makedirs(os.path.split(logpath)[0])
-		except:
-			pass
-		with open(logpath,'w') as logout:
-			logout.write('LOG FILE\n')
-		redir_out = RedirectText(logpath)
-		redir_err = RedirectText(logpath)
-		sys.stdout = redir_out
-		sys.stderr = redir_err
+#~ if __name__=='mippy.application':
+	#~ freeze_support()
+	#~ print "Launching MIPPY..."
+	#~ # Set up logging
+	#~ try:
+		#~ if sys.argv [1]=='debug':
+			#~ debug_mode=True
+		#~ else:
+			#~ debug_mode=False
+	#~ except:
+		#~ debug_mode=False
+	#~ if not debug_mode:
+		#~ logpath = os.path.join(os.getcwd(),"MIPPY-logs",str(datetime.now()).replace(":",".").replace(" ","_")+".txt")
+		#~ try:
+			#~ os.makedirs(os.path.split(logpath)[0])
+		#~ except:
+			#~ pass
+		#~ with open(logpath,'w') as logout:
+			#~ logout.write('LOG FILE\n')
+		#~ redir_out = RedirectText(logpath)
+		#~ redir_err = RedirectText(logpath)
+		#~ sys.stdout = redir_out
+		#~ sys.stderr = redir_err
 		
-	# Start application behind splash screen
-	try:
-		from . import splash
-		splashpath =  resource_filename('mippy','resources/splash.jpg')
-		root_window = Tk()
-		root_window.title("MIPPY: Modular Image Processing in Python")
-		root_window.minsize(650,400)
-		root_path = os.getcwd()
-		if "nt" == os.name:
-			impath = resource_filename('mippy','resources/brain_orange.ico')
-		else:
-			impath = '@'+resource_filename('mippy','resources/brain_bw.xbm')
-		root_window.wm_iconbitmap(impath)
+	#~ # Start application behind splash screen
+	#~ try:
+		#~ from . import splash
+		#~ splashpath =  resource_filename('mippy','resources/splash.jpg')
+		#~ root_window = Tk()
+		#~ root_window.title("MIPPY: Modular Image Processing in Python")
+		#~ root_window.minsize(650,400)
+		#~ root_path = os.getcwd()
+		#~ if "nt" == os.name:
+			#~ impath = resource_filename('mippy','resources/brain_orange.ico')
+		#~ else:
+			#~ impath = '@'+resource_filename('mippy','resources/brain_bw.xbm')
+		#~ root_window.wm_iconbitmap(impath)
 
-		with splash.SplashScreen(root_window,splashpath, 0.5):
-			root_app = MIPPYMain(master = root_window)
-		root_app.mainloop()
-	except Exception as e:
-		print e
-		tkMessageBox.showerror('ERROR','Error occurred. Please consult log files.')
+		#~ with splash.SplashScreen(root_window,splashpath, 0.5):
+			#~ root_app = MIPPYMain(master = root_window)
+		#~ root_app.mainloop()
+	#~ except Exception as e:
+		#~ print e
+		#~ tkMessageBox.showerror('ERROR','Error occurred. Please consult log files.')

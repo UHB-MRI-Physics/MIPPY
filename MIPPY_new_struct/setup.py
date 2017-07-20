@@ -7,7 +7,7 @@ from os import path
 here = path.abspath(path.dirname(__file__))
 
 setup(	name='MIPPY',
-		version='0.24.1',
+		version='1.0.1',
 		description='Modular Image Processing in Python',
 		author='Robert Flintham',
 		author_email='robert.flintham@uhb.nhs.uk',
