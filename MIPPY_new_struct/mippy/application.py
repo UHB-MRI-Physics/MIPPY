@@ -135,6 +135,8 @@ class MIPPYMain(Frame):
 		# Set default module directory
 		if os.path.exists(os.path.join(self.root_dir, 'modules')):
 			self.moduledir = os.path.join(self.root_dir, 'modules')
+			if not self.moduledir in sys.path:
+				sys.path.append(self.moduledir)
 		else:
 			self.moduledir = None
 		
@@ -252,7 +254,7 @@ class MIPPYMain(Frame):
 		#~ self.master.moduleframe.moduletree.bind('<Enter>',self.moduletree_focus)
 
 		# Load modules to list
-		#~ self.scan_modules_directory()
+		self.scan_modules_directory()
 		# TEMPORARILY DISABLED
 
 		# Bind "module select" event to required action
@@ -542,7 +544,7 @@ class MIPPYMain(Frame):
 
 	def load_selected_module(self):
 		try:
-			print sys.path
+			
 			moduledir = self.moduleframe.moduletree.selection()[0]
 			module_name = moduledir+'.module_main'
 			if not module_name in sys.modules:

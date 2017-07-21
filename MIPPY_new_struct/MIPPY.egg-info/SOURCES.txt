@@ -18,7 +18,6 @@ mippy/mdicom/io.py
 mippy/mdicom/mrenhanced.py
 mippy/mdicom/pixel.py
 mippy/mdicom/reading.py
-mippy/resources/Thumbs.db
 mippy/resources/brain_bw.xbm
 mippy/resources/brain_orange.ico
 mippy/resources/brain_orange.png
