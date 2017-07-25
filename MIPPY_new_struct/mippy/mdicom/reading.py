@@ -213,7 +213,7 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 def compare_dicom(ds1,ds2,diffs=None,num=None,name=''):
 	if diffs is None:
 		diffs = []
-		gc.collect()
+		#~ gc.collect()
 	if num:
 		num=' ('+str(num).zfill(4)+')'
 	else:

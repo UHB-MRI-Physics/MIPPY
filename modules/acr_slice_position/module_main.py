@@ -6,9 +6,11 @@ Rob Flintham. Nov 2016
 
 from Tkinter import *
 from ttk import *
-from source.functions.viewer_functions import *
-import source.functions.image_processing as imp
-import source.functions.misc_functions as mpy
+#~ from source.functions.viewer_functions import *
+from mippy.viewing import *
+#~ import source.functions.image_processing as imp
+import mippy.improcess as imp
+#~ import source.functions.misc_functions as mpy
 import os
 from PIL import Image,ImageTk
 import gc
@@ -123,7 +125,7 @@ def reset_roi(win):
 	
 	image = win.im1.get_active_image()
 
-	geometry = imp.find_phantom_geometry(image)
+	geometry = imp.find_object_geometry(image)
 	center = (geometry[0],geometry[1])
 	win.xc = xc = center[0]
 	win.yc = yc = center[1]
@@ -257,6 +259,6 @@ def measure_slicepos(win):
 	win.outputbox.see('1.0')
 #	win.update()
 	txt = win.outputbox.get('1.0',END)
-	from source.functions.file_functions import save_results
+	from mippy.fileio import save_results
 	num = win.im1.active
 	save_results(txt,name='SLICE_POSITION_'+str(num).zfill(4))

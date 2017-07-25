@@ -4,7 +4,7 @@ import time
 def multithread(func,input,progressbar=None,threads=None):
 	#~ freeze_support()
 	if threads is None:
-		threads=cpu_count()-1
+		threads=cpu_count()
 	pool = Pool(threads)
 	result = pool.map_async(func,input,chunksize=1)
 	while not result.ready():

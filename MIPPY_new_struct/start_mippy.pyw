@@ -35,9 +35,9 @@ if __name__=='__main__':
         
 	import mippy.splash as splash
 	from pkg_resources import resource_filename
-	splashimage = resource_filename('mippy','resources/splash2.jpg')
+	splashimage = resource_filename('mippy','resources/splash3.jpg')
 	root_window = Tk()
-	with splash.SplashScreen(root_window,splashimage,2.0):
+	with splash.SplashScreen(root_window,splashimage,3.0):
 		from mippy.application import MIPPYMain
 		root_app = MIPPYMain(master = root_window)
 	root_app.mainloop()
