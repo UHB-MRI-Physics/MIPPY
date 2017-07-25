@@ -94,6 +94,8 @@ def object_fit_ellipse(geo,px_binary):
 		else:
 			xsol = int(np.round(np.sqrt((1.-(((y-yc+1)**2)/(yr**2)))*(xr**2)),0))
 			#~ print y, xsol
+		y = int(np.round(y,0))
+		xc = int(np.round(xc,0))
 		mask[y,xc-xsol+1:xc+xsol+1]=1.
 		#~ for x in range(xmin,xmax):
 			#~ x = float(x)

@@ -8,6 +8,7 @@ mippy/__init__.py
 mippy/application.py
 mippy/fileio.py
 mippy/improcess.py
+mippy/logging.py
 mippy/math.py
 mippy/splash.py
 mippy/threading.py
@@ -18,6 +19,7 @@ mippy/mdicom/io.py
 mippy/mdicom/mrenhanced.py
 mippy/mdicom/pixel.py
 mippy/mdicom/reading.py
+mippy/resources/brain_blueprint.jpg
 mippy/resources/brain_bw.xbm
 mippy/resources/brain_orange.ico
 mippy/resources/brain_orange.png
@@ -31,4 +33,8 @@ mippy/resources/icons.pptx
 mippy/resources/line_roi.png
 mippy/resources/splash.jpg
 mippy/resources/splash.xcf
+mippy/resources/splash2.jpg
+mippy/resources/splash2.xcf
+mippy/resources/splash3.jpg
+mippy/resources/splash3.xcf
 mippy/resources/square_roi.png

@@ -18,7 +18,7 @@ import tkMessageBox
 import tkFileDialog
 from Tkinter import *
 from ttk import *
-import ScrolledText
+#~ import ScrolledText
 from datetime import datetime
 import sys
 import numpy as np
@@ -80,16 +80,7 @@ class MIPPYMain(Frame):
 		#~ self.master.minsize(650,400)
 		#~ self.root_path = os.getcwd()
 		
-		# Set up logfile in logs directory
-		self.logpath=os.path.join(self.root_dir,"MIPPY-logs",str(datetime.now()).replace(":",".").replace(" ","_")+".txt")
-		#~ with open(logpath,'w') as logout:
-			#~ logout.write('LOG FILE\n')
-			# Add capture for stdout and stderr output for log file, and scrollable text box
-		self.master.logoutput = ScrolledText.ScrolledText(self.master,height=6)
-		redir_out = RedirectText(self.logpath)
-		redir_err = RedirectText(self.logpath)
-		sys.stdout = redir_out
-		sys.stderr = redir_err
+		
 		
 		if "nt" == os.name:
 			impath = resource_filename('mippy','resources/brain_orange.ico')
@@ -135,6 +126,8 @@ class MIPPYMain(Frame):
 		# Set default module directory
 		if os.path.exists(os.path.join(self.root_dir, 'modules')):
 			self.moduledir = os.path.join(self.root_dir, 'modules')
+			if not self.moduledir in sys.path:
+				sys.path.append(self.moduledir)
 		else:
 			self.moduledir = None
 		
@@ -252,7 +245,7 @@ class MIPPYMain(Frame):
 		#~ self.master.moduleframe.moduletree.bind('<Enter>',self.moduletree_focus)
 
 		# Load modules to list
-		#~ self.scan_modules_directory()
+		self.scan_modules_directory()
 		# TEMPORARILY DISABLED
 
 		# Bind "module select" event to required action
@@ -542,7 +535,7 @@ class MIPPYMain(Frame):
 
 	def load_selected_module(self):
 		try:
-			print sys.path
+			
 			moduledir = self.moduleframe.moduletree.selection()[0]
 			module_name = moduledir+'.module_main'
 			if not module_name in sys.modules:
@@ -704,13 +697,7 @@ class MIPPYMain(Frame):
 
 #########################################################
 
-class RedirectText(object):
-	def __init__(self, log):
-		self.logfile = log
-		self.write("LOG FILE: "+str(datetime.now()))
-	def write(self, string):
-		with open(self.logfile,'a') as f:
-			f.write(string)
+
 			
 
 # This launches the application
