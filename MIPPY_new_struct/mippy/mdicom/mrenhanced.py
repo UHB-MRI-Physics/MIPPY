@@ -1,4 +1,4 @@
-def get_frame_ds(ds,frame):
+def get_frame_ds(frame,ds):
 	# "frame" starts from 1, not 0.  Need to subtract 1 for correct indexing.
 	slicenum = frame-1
 	n_frames = ds.NumberOfFrames
