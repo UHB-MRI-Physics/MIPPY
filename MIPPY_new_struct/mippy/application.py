@@ -561,6 +561,7 @@ class MIPPYMain(Frame):
 				flatten_list = True
 			if preload_dicom:
 				self.datasets_to_pass = []
+				#~ self.datasets_to_pass = multithread(self.find_dataset,self.active_uids,progressbar=self.progress)
 				previous_tag = None
 				for tag in self.sorted_list:
 
@@ -629,6 +630,13 @@ class MIPPYMain(Frame):
 			raise
 			print "Did you select a module?"
 			print "Bet you didn't."
+		return
+	
+	def find_dataset(self,uid,instance=None):
+		
+		
+		
+		
 		return
 
 	def clear_temp_dir(self):
