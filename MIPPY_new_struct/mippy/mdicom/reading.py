@@ -238,7 +238,7 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 					ds = dicom.read_file(outpath)
 				
 			
-			pxfloat=pixel.get_px_array(ds,enhanced,i)
+			pxfloat=pixel.get_px_array(ds,enhanced,i,bitdepth=8)
 			if pxfloat is None:
 				continue
 			
@@ -253,6 +253,8 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 		if not enhanced:
 			if tempdir:
 				io.save_temp_ds(ds,tempdir,instance_uid+'.mds')
+	
+	del ds
 		
 	return tags
 

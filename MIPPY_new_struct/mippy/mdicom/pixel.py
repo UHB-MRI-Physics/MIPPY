@@ -1,6 +1,6 @@
 import numpy as np
 
-def get_px_array(ds,enhanced=False,instance=None):
+def get_px_array(ds,enhanced=False,instance=None,bitdepth=64):
 	if 'JPEG' in str(ds.file_meta[0x2,0x10].value):
 		compressed = True
 	else:
@@ -30,6 +30,12 @@ def get_px_array(ds,enhanced=False,instance=None):
 			px_float = generate_px_float(ds.pixel_array.astype(np.float64),rs,ri,ss)
 	except:
 		return None
+	if bitdepth==32:
+		px_float=px_float.astype(np.float32)
+	elif bitdepth==16:
+		px_float=px_float.astype(np.int16)
+	elif bitdepth==8:
+		px_float=px_float.astype(np.int8)
 	return px_float
 
 def px_bytes_to_array(byte_array,rows,cols,bitdepth=16,mode='littleendian',rs=1,ri=0,ss=None):
