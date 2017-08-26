@@ -6,6 +6,8 @@ from . import io
 from . import pixel
 from pkg_resources import resource_filename
 from subprocess import call
+import cPickle as pickle
+import numpy as np
 
 def recursive_file_finder(path):
 	pathlist = []
@@ -32,6 +34,50 @@ def multidicomread(paths,threads=None):
 	pool.close()
 	pool.join()
 	return results
+
+def get_dataset(info,tempdir=None):
+	"""
+	This function uses instance UID and/or filepath and/or instance
+	number to find a single DICOM dataset. It checks existing MIPPY
+	temp files, and if it can't be found, loads the file/instance asked
+	for. This allows parallelisation of the process to speed up loading
+	of datasets.
+	info is a tuple of:
+	info[0] = UID (from MIPPY, i.e. including instance number for
+			enhanced DICOM)
+	info[1] = absolute file path
+	info[2] = instance number
+	
+	UID cannot be None. The other two can, but it might not find anything.
+	"""
+	uid = info[0]
+	filepath = info[1]
+	instance = info[2]
+	
+	# First, check for UID in temp files
+	if not uid is None:
+		temppath = os.path.join(tempdir,str(uid)+'.mds')
+		if os.path.exists(temppath):
+			print "TEMP FILE FOUND: "+str(uid)
+			with open(temppath,'rb') as tempfile:
+				ds = pickle.load(tempfile)
+			return ds
+		elif not filepath is None:
+			ds = dicom.read_file(filepath)
+			if not 'ENHANCED' in str(ds.SOPClassUID).upper():
+				print "SINGLE DICOM FILE FOUND"
+				io.save_temp_ds(ds,tempdir,str(ds.SOPInstanceUID)+'.mds')
+				return ds
+			else:
+				if not instance is None:
+					from mrenhanced import get_frame_ds
+					ds_split = get_frame_ds(instance,ds)
+					io.save_temp_ds(ds_split,tempdir,str(ds.SOPInstanceUID)+"_"+str(i).zfill(3)+'.mds')
+					return ds_split
+	
+	# If it's got this far, cannot find file or not enough info
+	print "CANNOT FIND FILE"
+	return None
 
 
 def collect_dicomdir_info(path,tempdir=None,force_read=False):

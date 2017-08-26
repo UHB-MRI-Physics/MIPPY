@@ -37,6 +37,7 @@ from functools import partial
 from . import viewing as mview
 from . import mdicom
 from mdicom.reading import collect_dicomdir_info
+from mdicom.reading import get_dataset
 from . import fileio
 from .threading import multithread
 #~ print "Done!"
@@ -561,48 +562,57 @@ class MIPPYMain(Frame):
 				flatten_list = True
 			if preload_dicom:
 				self.datasets_to_pass = []
+				dcm_info = []
 				#~ self.datasets_to_pass = multithread(self.find_dataset,self.active_uids,progressbar=self.progress)
 				previous_tag = None
-				for tag in self.sorted_list:
-
-					if tag['instanceuid'] in self.active_uids:
-						# Check to see if new series
-						if previous_tag:
-							if tag['seriesuid']==previous_tag['seriesuid']:
-								new_series = False
+				if not self.multiprocess:
+					for tag in self.sorted_list:
+						if tag['instanceuid'] in self.active_uids:
+							# Check to see if new series
+							if previous_tag:
+								if tag['seriesuid']==previous_tag['seriesuid']:
+									new_series = False
+								else:
+									new_series = True
 							else:
 								new_series = True
-						else:
-							new_series = True
-						# First, check if dataset is already in temp files
-						temppath = os.path.join(self.tempdir,tag['instanceuid']+'.mds')
-						if os.path.exists(temppath):
-							print "TEMP FILE FOUND",tag['instanceuid']
-							with open(temppath,'rb') as tempfile:
-								if new_series:
-									self.datasets_to_pass.append([pickle.load(tempfile)])
-								else:
-									self.datasets_to_pass[-1].append(pickle.load(tempfile))
-								tempfile.close()
-						else:
-							if not tag['path']==self.open_file:
-								self.open_ds = dicom.read_file(tag['path'])
-								self.open_file = tag['path']
-								gc.collect()
-							if not tag['enhanced']:
-								if new_series:
-									self.datasets_to_pass.append([self.open_ds])
-								else:
-									self.datasets_to_pass[-1].append(self.open_ds)
+							# First, check if dataset is already in temp files
+							temppath = os.path.join(self.tempdir,tag['instanceuid']+'.mds')
+							if os.path.exists(temppath):
+								print "TEMP FILE FOUND",tag['instanceuid']
+								with open(temppath,'rb') as tempfile:
+									if new_series:
+										self.datasets_to_pass.append([pickle.load(tempfile)])
+									else:
+										self.datasets_to_pass[-1].append(pickle.load(tempfile))
+									tempfile.close()
 							else:
-								split_ds = get_frame_ds(self.open_ds,tag['instance'])
-								if new_series:
-									self.datasets_to_pass.append([split_ds])
+								if not tag['path']==self.open_file:
+									self.open_ds = dicom.read_file(tag['path'])
+									self.open_file = tag['path']
+									gc.collect()
+								if not tag['enhanced']:
+									if new_series:
+										self.datasets_to_pass.append([self.open_ds])
+									else:
+										self.datasets_to_pass[-1].append(self.open_ds)
 								else:
-									self.datasets_to_pass[-1].append(split_ds)
-								save_temp_ds(split_ds,self.tempdir,tag['instanceuid']+'.mds')
-						previous_tag = tag
-					#~ gc.collect()
+									split_ds = get_frame_ds(self.open_ds,tag['instance'])
+									if new_series:
+										self.datasets_to_pass.append([split_ds])
+									else:
+										self.datasets_to_pass[-1].append(split_ds)
+									save_temp_ds(split_ds,self.tempdir,tag['instanceuid']+'.mds')
+							previous_tag = tag
+						#~ gc.collect()
+				else:
+					for tag in self.sorted_list:
+						if tag['instanceuid'] in self.active_uids:
+							dcm_info.append((tag['instanceuid'],tag['path'],tag['instance']))
+					f = partial(get_dataset,tempdir=self.tempdir)
+					self.datasets_to_pass = multithread(f,dcm_info,progressbar=self.progress)
+					# Group by series, to be flattened later if 1D list required
+					self.datasets_to_pass = [list(g) for k,g, in itertools.groupby(self.datasets_to_pass, lambda ds: ds.SeriesInstanceUID)]
 			else:
 				self.datasets_to_pass = []
 				previous_tag = None
@@ -632,12 +642,7 @@ class MIPPYMain(Frame):
 			print "Bet you didn't."
 		return
 	
-	def find_dataset(self,uid,instance=None):
-		
-		
-		
-		
-		return
+	
 
 	def clear_temp_dir(self):
 		if os.path.exists(self.tempdir):

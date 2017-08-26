@@ -465,5 +465,5 @@ def measure_distortion(win):
 	win.outputbox.see('1.0')
 	
 	txt = win.outputbox.get('1.0',END)
-	from source.functions.file_functions import save_results
+	from mippy.fileio import save_results
 	save_results(txt,name='DISTORTION')
