@@ -303,6 +303,3 @@ def compare_dicom(ds1,ds2,diffs=None,num=None,name=''):
 			continue
 	
 	return diffs
-
-def uncompress_dicom(path):
-	
