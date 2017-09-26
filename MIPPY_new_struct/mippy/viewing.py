@@ -663,6 +663,10 @@ class MIPPYCanvas(Canvas):
 		self.delete('all')
 		n=0
 		
+		if len(image_list)>500:
+			print "More than 500 images - cannot be loaded to canvas."
+			print "Loading first 500 only..."
+			image_list = image_list[0:100]
 		#print "Generating MIPPYImage objects"
 		for ref in image_list:
 			self.progress(45.*n/len(image_list)+10)
