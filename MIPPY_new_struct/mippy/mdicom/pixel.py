@@ -1,6 +1,6 @@
 import numpy as np
 
-def get_px_array(ds,enhanced=False,instance=None,bitdepth=64):
+def get_px_array(ds,enhanced=False,instance=None,bitdepth=None):
 	if 'JPEG' in str(ds.file_meta[0x2,0x10].value):
 		compressed = True
 	else:
@@ -30,12 +30,25 @@ def get_px_array(ds,enhanced=False,instance=None,bitdepth=64):
 			px_float = generate_px_float(ds.pixel_array.astype(np.float64),rs,ri,ss)
 	except:
 		return None
-	if bitdepth==32:
-		px_float=px_float.astype(np.float32)
-	elif bitdepth==16:
-		px_float=px_float.astype(np.int16)
-	elif bitdepth==8:
-		px_float=px_float.astype(np.int8)
+	if not bitdepth is None:
+		# Rescale float to unsigned integer bitdepth specified
+		# Useful for preview purposes to save memory!!!
+		if not (bitdepth==8 or bitdepth==16 or bitdepth==32):
+			print "Unsupported bitdepth - please use 8, 16, 32 (arrays are 64-bit by default)"
+			return None
+		min = np.min(px_float)
+		max = np.max(px_float)
+		range = max-min
+		px_float = ((px_float-min)/range)*float((2**bitdepth)-1)
+		if bitdepth==8:
+			px_float = px_float.astype(np.uint8)
+		elif bitdepth==16:
+			px_float = px_float.astype(np.uint16)
+		elif bitdepth==32:
+			px_float = px_float.astype(np.float32)
+		
+
+
 	return px_float
 
 def px_bytes_to_array(byte_array,rows,cols,bitdepth=16,mode='littleendian',rs=1,ri=0,ss=None):

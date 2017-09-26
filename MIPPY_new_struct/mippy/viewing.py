@@ -1030,7 +1030,7 @@ class MIPPYImage():
 		return
 
 	def construct_from_array(self,pixel_array):
-		self.px_float = pixel_array
+		self.px_float = pixel_array.astype(np.float64)
 		self.rangemax = np.amax(pixel_array)
 		self.rangemin = np.amin(pixel_array)
 #		print "Max",self.rangemax
