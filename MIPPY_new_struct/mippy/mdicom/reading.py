@@ -223,16 +223,16 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 					outpath=os.path.join(tempdir,'UNCOMP_'+instance_uid+'.DCM')
 					print seriesdesc+' '+str(i).zfill(3)
 					print "    COMPRESSED DICOM - Uncompressing"
-					if 'darwin' in sys.platform:
-						#dcmdjpeg=os.path.join(os.getcwd(),'lib','dcmdjpeg_mac')
-						dcmdjpeg=r'./lib/dcmdjpeg_mac'
-					elif 'linux' in sys.platform:
-						dcmdjpeg=r'./lib/dcmdjpeg_linux'
-					elif 'win' in sys.platform:
-						dcmdjpeg=r'lib\dcmdjpeg_win.exe'
-					else:
-						print "UNSUPPORTED OPERATING SYSTEM"
-						print str(sys.platform)
+					#~ if 'darwin' in sys.platform:
+						#~ #dcmdjpeg=os.path.join(os.getcwd(),'lib','dcmdjpeg_mac')
+						#~ dcmdjpeg=r'./lib/dcmdjpeg_mac'
+					#~ elif 'linux' in sys.platform:
+						#~ dcmdjpeg=r'./lib/dcmdjpeg_linux'
+					#~ elif 'win' in sys.platform:
+						#~ dcmdjpeg=r'lib\dcmdjpeg_win.exe'
+					#~ else:
+						#~ print "UNSUPPORTED OPERATING SYSTEM"
+						#~ print str(sys.platform)
 					command = dcmdjpeg+' \"'+path+'\" \"'+outpath+'\"'
 					call(command, shell=True)
 					#~ path = outpath
@@ -303,3 +303,6 @@ def compare_dicom(ds1,ds2,diffs=None,num=None,name=''):
 			continue
 	
 	return diffs
+
+def uncompress_dicom(path):
+	
