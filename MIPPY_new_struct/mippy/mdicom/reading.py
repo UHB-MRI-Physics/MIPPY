@@ -233,7 +233,7 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 					#~ else:
 						#~ print "UNSUPPORTED OPERATING SYSTEM"
 						#~ print str(sys.platform)
-					command = dcmdjpeg+' \"'+path+'\" \"'+outpath+'\"'
+					command = [dcmdjpeg,'\"'+path+'\"','\"'+outpath+'\"']
 					call(command, shell=False)
 					#~ path = outpath
 					ds = dicom.read_file(outpath)
