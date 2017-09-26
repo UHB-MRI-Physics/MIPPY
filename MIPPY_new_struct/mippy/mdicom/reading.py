@@ -8,6 +8,7 @@ from pkg_resources import resource_filename
 from subprocess import call
 import cPickle as pickle
 import numpy as np
+import sys
 
 def recursive_file_finder(path):
 	pathlist = []

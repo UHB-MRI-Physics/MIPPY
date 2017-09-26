@@ -397,7 +397,7 @@ class MIPPYMain(Frame):
 	def filter_dicom_files(self):
 		self.tag_list = []
 		
-		if self.multiprocess:
+		if self.multiprocess and not ('win' in sys.platform and len(self.path_list)<20):
 			f = partial(collect_dicomdir_info,tempdir=self.tempdir)
 			self.tag_list = multithread(f,self.path_list,progressbar=self.progress)
 			self.tag_list = [item for sublist in self.tag_list for item in sublist]
@@ -565,7 +565,7 @@ class MIPPYMain(Frame):
 				dcm_info = []
 				#~ self.datasets_to_pass = multithread(self.find_dataset,self.active_uids,progressbar=self.progress)
 				previous_tag = None
-				if not self.multiprocess:
+				if not self.multiprocess or ('win' in sys.platform and len(self.active_uids)<25):
 					for tag in self.sorted_list:
 						if tag['instanceuid'] in self.active_uids:
 							# Check to see if new series
