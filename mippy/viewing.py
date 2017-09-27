@@ -378,6 +378,7 @@ class MIPPYCanvas(Canvas):
 		self.master = master
 		self.zoom_factor = 1
 		self.roi_list = []
+		self.masks = None
 		self.shift = False
 		self.roi_mode = 'rectangle'
 		self.bind('<Button-1>',self.left_click)
@@ -466,22 +467,26 @@ class MIPPYCanvas(Canvas):
 			pass
 		
 
-	def get_roi_mask(self):
+	def update_roi_masks(self):
 		"""
 		Returns a binary mask of all ROIs
 		"""
+		if self.roi_list == []:
+			self.masks = None
+			return
 		width = self.get_active_image().columns
 		height = self.get_active_image().rows
 
-		mask = np.zeros((height,width))
+		mask = np.zeros((len(self.roi_list),height,width))
 
 		for y in range(height):
 			for x in range(width):
 				for i in range(len(self.roi_list)):
 					if self.roi_list[i].contains((x*self.zoom_factor,y*self.zoom_factor)):
-						mask[y,x]=1
+						mask[i,y,x]=1
+		self.masks = mask
 
-		return mask
+		return
 
 
 	def get_roi_pixels(self,rois=[],tags=[]):
@@ -489,21 +494,29 @@ class MIPPYCanvas(Canvas):
 		Returns a LIST of pixel values from an ROI.
 		ROIS must be a list of ROI numbers.
 		"""
-		px = []
+		#~ px = []
 		im = self.get_active_image()
 		if len(rois)==0:
 			rois = range(len(self.roi_list))
-		for y in range(im.rows):
-			for x in range(im.columns):
-				j=0
-				for i in rois:
-					if len(tags)>0 and not any([tag in self.roi_list[i].tags for tag in tags]):
-						continue
-					if j==len(px):
-						px.append([])
-					if self.roi_list[i].contains((x*self.zoom_factor,y*self.zoom_factor)):
-						px[j].append(im.px_float[y][x])
-					j+=1
+		#~ for y in range(im.rows):
+			#~ for x in range(im.columns):
+				#~ j=0
+				#~ for i in rois:
+					#~ if len(tags)>0 and not any([tag in self.roi_list[i].tags for tag in tags]):
+						#~ continue
+					#~ if j==len(px):
+						#~ px.append([])
+					#~ if self.roi_list[i].contains((x*self.zoom_factor,y*self.zoom_factor)):
+						#~ px[j].append(im.px_float[y][x])
+					#~ j+=1
+		
+		px = []
+		pxflat = im.px_float.flatten().tolist()
+		for i in rois:
+			maskflat = self.masks[i,:,:].flatten().tolist()
+			pxlist = [pxflat[ind] for ind,val in enumerate(maskflat) if val>0]
+			px.append(pxlist)
+		
 		return px
 
 	def get_roi_statistics(self,rois=[],tags=[]):
@@ -814,6 +827,7 @@ class MIPPYCanvas(Canvas):
 			if len(self.roi_list)>0:
 				for roi in self.roi_list:
 					roi.update(total_xmove,total_ymove)
+					self.update_roi_masks()
 		if self.autostats == True:
 			print self.get_roi_statistics()
 		self.tempcoords = []
@@ -879,9 +893,11 @@ class MIPPYCanvas(Canvas):
 
 	def add_roi(self,coords,tags=['roi'],roi_type=None):
 		self.roi_list.append(ROI(coords,tags,roi_type))
+		self.update_roi_masks()
 
 	def delete_rois(self):
 		self.roi_list = []
+		self.masks = None
 		gc.collect()
 		self.delete('roi')
 
