@@ -30,6 +30,7 @@ import getpass
 import cPickle as pickle
 import itertools
 from functools import partial
+import dicom
 #~ from multiprocessing import freeze_support
 #~ print "Imports finished!"
 
