@@ -475,22 +475,22 @@ class MIPPYMain(Frame):
 			module_info = pickle.load(file_object)
 		module_info['dirname']='mippy.mviewer'
 		self.module_list.append(module_info)
-		self.module_list = sorted(self.module_list,key=lambda item: item['name'])
 		
-		if self.moduledir is None or not self.moduledir:
-			return
-		for folder in os.listdir(self.moduledir):
-			if not os.path.isdir(os.path.join(self.moduledir,folder)):
-				continue
-			file_list = os.listdir(os.path.join(self.moduledir,folder))
-			if (('__init__.py' in file_list or '__init__.pyc' in file_list)
-				and ('module_main.py' in file_list or 'module_main.pyc' in file_list)
-				and 'config' in file_list):
-				cfg_file = os.path.join(self.moduledir,folder,'config')
-				with open(cfg_file,'r') as file_object:
-					module_info = pickle.load(file_object)
-				self.module_list.append(module_info)
-				#~ print module_info
+		
+		if not (self.moduledir is None or not self.moduledir):
+			for folder in os.listdir(self.moduledir):
+				if not os.path.isdir(os.path.join(self.moduledir,folder)):
+					continue
+				file_list = os.listdir(os.path.join(self.moduledir,folder))
+				if (('__init__.py' in file_list or '__init__.pyc' in file_list)
+					and ('module_main.py' in file_list or 'module_main.pyc' in file_list)
+					and 'config' in file_list):
+					cfg_file = os.path.join(self.moduledir,folder,'config')
+					with open(cfg_file,'r') as file_object:
+						module_info = pickle.load(file_object)
+					self.module_list.append(module_info)
+					#~ print module_info
+			self.module_list = sorted(self.module_list,key=lambda item: item['name'])
 		
 		try:
 			for item in self.moduleframe.moduletree.get_children():
