@@ -483,6 +483,11 @@ class MIPPYMain(Frame):
 					module_info = pickle.load(file_object)
 				self.module_list.append(module_info)
 				print module_info
+		viewerconfigpath = resource_filename('mippy.mviewer','config')
+		with open(viewerconfigpath,'r') as file_object:
+			module_info = pickle.load(file_object)
+		module_info['dirname']='mippy.mviewer'
+		self.module_list.append(module_info)
 		self.module_list = sorted(self.module_list,key=lambda item: item['name'])
 		try:
 			for item in self.moduleframe.moduletree.get_children():
