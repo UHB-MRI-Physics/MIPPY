@@ -1,3 +1,14 @@
+v0.21.0
+27/09/2017 @ 15:46
+
+- ACR modules moved to separate project.
+- Complete overhaul of MIPPY's structure. Details in
+  full MIPPY documentation.
+- "setup.py" file created for generating wheel of the
+  mippy module to be installed in python directory.
+
+============================================================
+
 v0.20.5
 04/05/2017 @ 11:30
 
