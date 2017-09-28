@@ -1,3 +1,14 @@
+v0.21.1
+28/09/2017 @ 08:29
+
+- Corrected bug where it didn't find image viewer if no
+  default modules folder.
+- Changed ROI functions in MIPPYCanvas to create (and
+  update) masks for all active ROIs, speeding up pixel
+  retrieval and stats calculation.
+
+============================================================
+
 v0.21.0
 27/09/2017 @ 15:46
 

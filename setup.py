@@ -7,12 +7,12 @@ from os import path
 here = path.abspath(path.dirname(__file__))
 
 setup(	name='MIPPY',
-		version='0.20.1',
-		description='Medical Image Processing in Python',
+		version='0.21.1',
+		description='Meodular Image Processing in Python',
 		author='Robert Flintham',
 		author_email='robert.flintham@uhb.nhs.uk',
 		install_requires=['numpy','scipy','pydicom','pillow'],
-		license='MIT',
+		license='BSD-3-Clause',
 		classifiers=[
 			'Development Status :: 3 - Alpha',
 			'Intended Audience :: Developers',

@@ -1,8 +1,0 @@
-mippy
-mippy.gui
-mippy.dicom
-mippy.viewer
-mippy.files
-mippy.imreg
-mippy.improc
-mippy.logger
