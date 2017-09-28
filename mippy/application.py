@@ -31,6 +31,7 @@ import cPickle as pickle
 import itertools
 from functools import partial
 import dicom
+#~ import gc
 #~ from multiprocessing import freeze_support
 #~ print "Imports finished!"
 
@@ -39,6 +40,8 @@ from . import viewing as mview
 from . import mdicom
 from mdicom.reading import collect_dicomdir_info
 from mdicom.reading import get_dataset
+from mdicom.mrenhanced import get_frame_ds
+from mdicom.io import save_temp_ds
 from . import fileio
 from .threading import multithread
 #~ print "Done!"
@@ -598,14 +601,14 @@ class MIPPYMain(Frame):
 								if not tag['path']==self.open_file:
 									self.open_ds = dicom.read_file(tag['path'])
 									self.open_file = tag['path']
-									gc.collect()
+									#~ gc.collect()
 								if not tag['enhanced']:
 									if new_series:
 										self.datasets_to_pass.append([self.open_ds])
 									else:
 										self.datasets_to_pass[-1].append(self.open_ds)
 								else:
-									split_ds = get_frame_ds(self.open_ds,tag['instance'])
+									split_ds = get_frame_ds(tag['instance'],self.open_ds)
 									if new_series:
 										self.datasets_to_pass.append([split_ds])
 									else:
