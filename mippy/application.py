@@ -136,14 +136,23 @@ class MIPPYMain(Frame):
 		else:
 			self.moduledir = None
 		
-		#~ if 'darwin' in sys.platform or 'linux' in sys.platform:
-			#~ self.tempdir = '/tmp/MIPPY_temp_'+self.user
-		#~ elif 'win' in sys.platform:
-			#~ self.tempdir = r'C:\Temp\MIPPY_temp_'+self.user
-		#~ else:
-			#~ tkMessageBox.showerror('ERROR', 'Unsupported operating system, please contact the developers.')
-			#~ sys.exit()
-#		print self.tempdir
+		# Check status of DCMDJPEG for mac or unix, and set
+		# executable if necessary
+		
+		if 'darwin' in sys.platform:
+			dcmdjpegpath = resource_filename('mippy','resources/dcmdjpeg_mac')
+			if not os.access(dcmdjpegpath, os.X_OK):
+				#~ os.chmod(dcmdjpegpath,stat.S_IEXEC)
+				os.chmod(dcmdjpegpath,stat.S_IXUSR)
+				#~ os.chmod(dcmdjpegpath,stat.S_IXGRP)
+				#~ os.chmod(dcmdjpegpath,stat.S_IXOTH)
+		elif 'linux' in sys.platform:
+			dcmdjpegpath = resource_filename('mippy','resources/dcmdjpeg_linux')
+			if not os.access(dcmdjpegpath, os.X_OK):
+				#~ os.chmod(dcmdjpegpath,stat.S_IEXEC)
+				os.chmod(dcmdjpegpath,stat.S_IXUSR)
+				#~ os.chmod(dcmdjpegpath,stat.S_IXGRP)
+				#~ os.chmod(dcmdjpegpath,stat.S_IXOTH)
 
 		# Create menu bar for the top of the window
 		self.menubar = Menu(master)
