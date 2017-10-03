@@ -30,6 +30,7 @@ import getpass
 import cPickle as pickle
 import itertools
 from functools import partial
+import stat
 import dicom
 #~ import gc
 #~ from multiprocessing import freeze_support
@@ -149,10 +150,16 @@ class MIPPYMain(Frame):
 		elif 'win' in sys.platform:
 			dcmdjpegpath = resource_filename('mippy','resources/dcmdjpeg_win.exe')
 		
-		shutil.copy(dcmdjpegpath,os.path.join(self.tempdir,os.path.split(dcmdjpegpath)[1]))
+		dcmdjpeg_copy = os.path.join(self.tempdir,os.path.split(dcmdjpegpath)[1])
+		
+		shutil.copy(dcmdjpegpath,dcmdjpeg_copy)
+		
+		#~ print os.stat(dcmdjpeg_copy)
 		if not 'win' in sys.platform:
-			if not os.access(dcmdjpegpath, os.X_OK):
-				os.chmod(dcmdjpegpath,stat.S_IXUSR)
+			os.chmod(dcmdjpegcopy,stat.S_IXUSR)
+			#~ os.chmod(dcmdjpeg_copy,stat.S_IEXEC)
+			os.chmod(dcmdjpegcopy,stat.S_IXGRP)
+			os.chmod(dcmdjpegcopy,stat.S_IXOTH)
 
 		# Create menu bar for the top of the window
 		self.menubar = Menu(master)
