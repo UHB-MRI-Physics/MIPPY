@@ -1,3 +1,12 @@
+v0.21.10 (including 0.21.8 and 0.21.9)
+03/10/2017 @ 19:20
+
+- Corrected bugs in os.chmod() for dcmdjpeg copy in temp
+  folders. Moved outside of "executable" check because
+  check never failed.
+
+============================================================
+
 v0.21.7
 03/10/2017 @ 15:04
 

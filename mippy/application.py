@@ -157,7 +157,6 @@ class MIPPYMain(Frame):
 		#~ print os.stat(dcmdjpeg_copy)
 		if not 'win' in sys.platform:
 			os.chmod(dcmdjpegcopy,stat.S_IXUSR)
-			#~ os.chmod(dcmdjpeg_copy,stat.S_IEXEC)
 			os.chmod(dcmdjpegcopy,stat.S_IXGRP)
 			os.chmod(dcmdjpegcopy,stat.S_IXOTH)
 
