@@ -1,3 +1,12 @@
+v0.21.7
+03/10/2017 @ 15:04
+
+- Added use_masks switch in order to ignore mask process in
+  some instances of MIPPYCanvas. Avoids performance hit when
+  using a large number of small ROIs.
+
+============================================================
+
 v0.21.6
 03/10/2017 @ 14:47
 
