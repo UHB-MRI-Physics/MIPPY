@@ -156,9 +156,9 @@ class MIPPYMain(Frame):
 		
 		#~ print os.stat(dcmdjpeg_copy)
 		if not 'win' in sys.platform:
-			os.chmod(dcmdjpegcopy,stat.S_IXUSR)
-			os.chmod(dcmdjpegcopy,stat.S_IXGRP)
-			os.chmod(dcmdjpegcopy,stat.S_IXOTH)
+			os.chmod(dcmdjpeg_copy,stat.S_IXUSR)
+			os.chmod(dcmdjpeg_copy,stat.S_IXGRP)
+			os.chmod(dcmdjpeg_copy,stat.S_IXOTH)
 
 		# Create menu bar for the top of the window
 		self.menubar = Menu(master)
