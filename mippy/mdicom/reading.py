@@ -211,11 +211,14 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 					# Set path to dcmdjpeg if necessary
 					if dcmdjpeg is None:
 						if 'darwin' in sys.platform:
-							dcmdjpeg= resource_filename('mippy','resources/dcmdjpeg_mac')
+							#~ dcmdjpeg= resource_filename('mippy','resources/dcmdjpeg_mac')
+							dcmdjpeg = os.path.join(tempdir,"dcmdjpeg_mac")
 						elif 'linux' in sys.platform:
-							dcmdjpeg=resource_filename('mippy','resources/dcmdjpeg_linux')
+							#~ dcmdjpeg=resource_filename('mippy','resources/dcmdjpeg_linux')
+							dcmdjpeg = os.path.join(tempdir,"dcmdjpeg_linux")
 						elif 'win' in sys.platform:
-							dcmdjpeg=resource_filename('mippy','resources\dcmdjpeg_win.exe')
+							#~ dcmdjpeg=resource_filename('mippy','resources\dcmdjpeg_win.exe')
+							dcmdjpeg = os.path.join(tempdir,"dcmdjpeg_win.exe")
 						else:
 							print "UNSUPPORTED OPERATING SYSTEM"
 							print str(sys.platform)

@@ -139,20 +139,20 @@ class MIPPYMain(Frame):
 		# Check status of DCMDJPEG for mac or unix, and set
 		# executable if necessary
 		
+		# Create "working copy" of the correct DCMDJPEG in the temp folder and
+		# set executable flag as necessary
+		
 		if 'darwin' in sys.platform:
 			dcmdjpegpath = resource_filename('mippy','resources/dcmdjpeg_mac')
-			if not os.access(dcmdjpegpath, os.X_OK):
-				#~ os.chmod(dcmdjpegpath,stat.S_IEXEC)
-				os.chmod(dcmdjpegpath,stat.S_IXUSR)
-				#~ os.chmod(dcmdjpegpath,stat.S_IXGRP)
-				#~ os.chmod(dcmdjpegpath,stat.S_IXOTH)
 		elif 'linux' in sys.platform:
 			dcmdjpegpath = resource_filename('mippy','resources/dcmdjpeg_linux')
+		elif 'win' in sys.platform:
+			dcmdjpegpath = resource_filename('mippy','resources/dcmdjpeg_win.exe')
+		
+		shutil.copy(dcmdjpegpath,os.path.join(self.tempdir,os.path.split(dcmdjpegpath)[1]))
+		if not 'win' in sys.platform:
 			if not os.access(dcmdjpegpath, os.X_OK):
-				#~ os.chmod(dcmdjpegpath,stat.S_IEXEC)
 				os.chmod(dcmdjpegpath,stat.S_IXUSR)
-				#~ os.chmod(dcmdjpegpath,stat.S_IXGRP)
-				#~ os.chmod(dcmdjpegpath,stat.S_IXOTH)
 
 		# Create menu bar for the top of the window
 		self.menubar = Menu(master)
