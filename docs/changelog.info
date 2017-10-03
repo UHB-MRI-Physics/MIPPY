@@ -1,3 +1,11 @@
+v0.21.5
+03/10/2017 @ 11:21
+
+- Reworked logging to use default python logging module
+  wrapped with mippy.mlogging.
+
+============================================================
+
 v0.21.4
 02/10/2017 @ 09:46
 
