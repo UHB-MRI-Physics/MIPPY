@@ -1,3 +1,11 @@
+v0.21.6
+03/10/2017 @ 14:47
+
+- At startup, MIPPY now creates a temp copy of dcmdjpeg and
+  sets executable permissions.
+
+============================================================
+
 v0.21.5
 03/10/2017 @ 11:21
 
