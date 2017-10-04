@@ -155,10 +155,10 @@ class MIPPYMain(Frame):
 		shutil.copy(dcmdjpegpath,dcmdjpeg_copy)
 		
 		#~ print os.stat(dcmdjpeg_copy)
-		if not 'win' in sys.platform:
-			os.chmod(dcmdjpeg_copy,stat.S_IXUSR)
-			os.chmod(dcmdjpeg_copy,stat.S_IXGRP)
-			os.chmod(dcmdjpeg_copy,stat.S_IXOTH)
+		
+		if 'darwin' in sys.platform or 'linux' in sys.platform:
+			st = os.stat(dcmdjpeg_copy)
+			os.chmod(dcmdjpeg_copy,st.st_mode | stat.S_IEXEC)
 
 		# Create menu bar for the top of the window
 		self.menubar = Menu(master)
