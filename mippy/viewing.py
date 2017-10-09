@@ -1198,10 +1198,97 @@ class MIPPYImage():
 		#~ gc.collect()
 		return
 
-class Slicer3D():
+class Image3D():
 	"""
 	Class for viewing and slicing 3D image datasets.
-	Uses MIPPY image objects
+	Uses loaded DICOM datasets (via pydicom)
 	"""
-	def __init__():
+	def __init__(self,datasets):
+		"""
+		Datasets should be a list of pydicom DICOM objects.
+		Images should be the same resolution with unique slice
+		positions. Any set of slices can be displayed this way, but
+		reslicing works better with 3D or thin-slice images. The
+		nearer to isotropic resolution the better!
+		"""
+				
+		# Lazy check to make sure data is from the same series (assuming passed by MIPPY!)
+		if not datasets[0].SeriesInstanceUID == datasets[-1].SeriesInstanceUID:
+			# Not the same series!
+			return None
+		
+		# Need to get:
+		# - Matrix size
+		# - Slice positions / thicknesses / spacing
+		# - Slice orientation
+		# - Pixel data!!!!
+		# - Number of slices
+		
+		nSlices = len(datasets)
+		orientations = []
+		positions = []
+		rows = []
+		cols = []
+		for ds in datasets:
+			orientations.append(ds.ImageOrientationPatient)
+			positions.append(ds.ImagePositionPatient)
+			rows.append(ds.Rows)
+			cols.append(ds.Columns)
+		
+		# Less lazy checks to make sure you actually have a single stack of data
+		if len(np.unique(orientations))>1:
+			print "Slice orientations not consistent"
+			return
+		if len(np.unique(positions))<len(datasets):
+			print "Some duplicated slice positions"
+			return
+		if len(np.unique(rows))>1 or len(np.unique(cols))>1:
+			print "Inconsistent matrix sizes"
+			return
+		
+		# Sort images based on slice position
+		# TRA = 1,0,0,0,-1,0
+		# SAG = 0,-1,0,0,0,-1
+		# COR = 1,0,0,0,0,-1
+		
+		xdir = np.argmax(np.absolute(orientations[0][0:3]))
+		ydir = np.argmax(np.absolute(orientations[0][3:6]))
+		
+		if not xdir==0 and not ydir==0:
+			# X is missing direction, so sort based on X position
+			sort_axis=0
+		elif not xdir==1 and not ydir==1:
+			# Y is missing direction, so sort based on Y position
+			sort_axis=1
+		elif not xdir==2 and not ydir==2:
+			# Z is missing direction, so sort based on Z position
+			sort_axis=2
+		else:
+			print "Perfectly oblique slices. Too confused!"
+			return None
+		
+		ds_sorted = sorted(datasets, key=lambda x: x.ImagePositionPatient[sort_axis], reverse=True)
+		
+		# Create empty pixel array
+		px = np.zeros((nSlices,rows[0],cols[0])).astype(np.float64)
+		
+		# Populate pixel array with slice data
+		for i in range(len(ds_sorted)):
+			px[i] = ds_sorted[i].pixel_array().astype(np.float64)
+		# Store px as an attribute of the object
+		self.px = px
+		
+		# Get pixel spacing
+		xspc = ds_sorted[0].PixelSpacing[0]
+		yspc = ds_sorted[0].PixelSpacing[1]
+		zspc = ds_sorted[0].SliceThickness + ds_sorted[0].SpacingBetweenSlices
+		self.spacing = (xspc,yspc,zspc)
+		
+		# Get origin
+		self.origin = ds_sorted[0].ImagePositionPatient
+		ds0 = ds_sorted[0]
+		xvector = ds0.ImageOrientationPatient[0:3]
+		yvector = ds0.ImageOrientationPatient[3:6]
+		
+		
 		return
