@@ -9,6 +9,7 @@ from subprocess import call
 import cPickle as pickle
 import numpy as np
 import sys
+from PIL import Image
 
 def recursive_file_finder(path):
 	pathlist = []
@@ -242,10 +243,13 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 					#~ path = outpath
 					ds = dicom.read_file(outpath)
 				
-			
-			pxfloat=pixel.get_px_array(ds,enhanced,i,bitdepth=8)
-			if pxfloat is None:
-				continue
+			if not "SPECTROSCOPY" in mode.upper():
+				pxfloat=pixel.get_px_array(ds,enhanced,i,bitdepth=8)
+				if pxfloat is None:
+					continue
+			else:
+				mrs_image =  resource_filename('mippy','resources/mrs.png')
+				pxfloat = numpy.asarray(Image.open(mrs_image)).astype(np.float64)
 			
 			# Append the information to the "tag list" object
 			tags.append(dict([('date',date),('time',time),('name',name),('studyuid',study_uid),
