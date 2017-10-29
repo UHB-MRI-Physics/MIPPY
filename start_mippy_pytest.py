@@ -19,19 +19,19 @@ from ttk import *
 
 if __name__=='__main__':
         #~ # Set up logfile in logs directory
-        debug=False
+        #~ debug=False
         #~ print sys.path
-        try:
+        #~ try:
                 #~ print sys.argv[1]
-                if sys.argv[1]=='debug':
-                        debug=True
-                else:
-                        debug=False
-        except:
-                debug=False
-        if not debug:
-                from mippy.mlogging import setup_logging
-		setup_logging()
+                #~ if sys.argv[1]=='debug':
+                        #~ debug=True
+                #~ else:
+                        #~ debug=False
+        #~ except:
+                #~ debug=False
+        #~ if not debug:
+                #~ from mippy.mlogging import setup_logging
+		#~ setup_logging()
 	
 	
 	

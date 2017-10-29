@@ -84,6 +84,7 @@ def get_dataset(info,tempdir=None):
 
 def collect_dicomdir_info(path,tempdir=None,force_read=False):
 	tags=[]
+	ima_mrs_uid = '1.3.12.2.1107.5.9.1'
 	# Variables to contain path to dcmdjpeg for compressed DICOM
 	dcmdjpeg = None
 	# This automatically excludes Philips "XX_" files, but only based on name.  If they've been renamed they
@@ -243,13 +244,15 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 					#~ path = outpath
 					ds = dicom.read_file(outpath)
 				
-			if not "SPECTROSCOPY" in mode.upper():
+			if not ("SPECTROSCOPY" in mode.upper() or ima_mrs_uid in mode.upper()):
 				pxfloat=pixel.get_px_array(ds,enhanced,i,bitdepth=8)
 				if pxfloat is None:
 					continue
 			else:
 				mrs_image =  resource_filename('mippy','resources/mrs.png')
-				pxfloat = numpy.asarray(Image.open(mrs_image)).astype(np.float64)
+				pxfloat = np.asarray(Image.open(mrs_image)).astype(np.float64)
+				pxfloat = np.mean(pxfloat,axis=2)
+				print np.shape(pxfloat)
 			
 			# Append the information to the "tag list" object
 			tags.append(dict([('date',date),('time',time),('name',name),('studyuid',study_uid),
@@ -257,6 +260,7 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 					('seriesdesc',seriesdesc),('instance',i),('instanceuid',instance_uid),
 					('path',path),('enhanced',enhanced),('compressed',compressed),
 					('px_array',pxfloat)]))
+			#~ print tags[-1]['seriesdesc'],tags[-1]['instance']
 		# Assuming all this has worked, serialise the dataset (ds) for later use, with the instance UID
 		# as the file name
 		if not enhanced:
