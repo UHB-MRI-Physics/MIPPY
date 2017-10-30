@@ -11,6 +11,8 @@ import numpy as np
 import sys
 from PIL import Image
 
+from ..viewing import get_overlay
+
 def recursive_file_finder(path):
 	pathlist = []
 	for root,directories,files in os.walk(path):
@@ -196,7 +198,7 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 				instance_uid = ds.SOPInstanceUID
 			else:
 				# Append instance UID with the frame number to give unique reference to each slice
-				instance_uid = ds.SOPInstanceUID+"_"+str(i).zfill(3)
+				instance_uid = ds.SOPInstanceUID+"_"+str(i).zfill(4)
 		
 			if compressed:
 				# Check if temp file already exists for that InstanceUID. If so, read that file. If not, 
@@ -248,11 +250,18 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 				pxfloat=pixel.get_px_array(ds,enhanced,i,bitdepth=8)
 				if pxfloat is None:
 					continue
+				try:
+					overlay = get_overlay(ds)
+					pxfloat[np.where(overlay>0)]=255
+					#~ pxfloat += overlay
+				except:
+					raise
 			else:
 				mrs_image =  resource_filename('mippy','resources/mrs.png')
 				pxfloat = np.asarray(Image.open(mrs_image)).astype(np.float64)
 				pxfloat = np.mean(pxfloat,axis=2)
-				print np.shape(pxfloat)
+				series_uid = series_uid+'.RAW'
+				seriesdesc = '<MRS> '+seriesdesc
 			
 			# Append the information to the "tag list" object
 			tags.append(dict([('date',date),('time',time),('name',name),('studyuid',study_uid),

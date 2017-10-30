@@ -1,7 +1,7 @@
 # This is necessary until MIPPY is installed in Python site-packages
 import sys
 import os
-sys.path.append(r'K:\PROGRAMMING\MIPPY')
+sys.path.insert(0,r'K:\PROGRAMMING\MIPPY')
 
 ###########################################
 # Use built in logging feature

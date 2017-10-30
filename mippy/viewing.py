@@ -127,6 +127,13 @@ def bits_to_ndarray(bits, shape):
 
 	return abits.reshape(shape)
 
+def get_overlay(ds):
+	"""
+	Expects DICOM dataset
+	"""
+	overlay = bits_to_ndarray(ds[0x6000,0x3000].value, shape=(ds.Rows,ds.Columns))*255
+	return overlay
+
 def px_bytes_to_array(byte_array,rows,cols,bitdepth=16,mode='littleendian',rs=1,ri=0,ss=None):
 	if bitdepth==16:
 		if mode=='littleendian':
@@ -1045,9 +1052,10 @@ class MIPPYImage():
 			self.xscale = 1
 			self.yscale = 1
 		try:
-			self.overlay = Image.fromarray(bits_to_ndarray(ds[0x6000,0x3000].value, shape=(self.rows,self.columns))*255)
+			self.overlay = Image.fromarray(get_overlay(ds),'L')
 		except:
 			self.overlay = None
+			raise
 		#~ self.px_8bit = np.power(2,8)*(((self.px_float)-np.amin(self.px_float))/(np.amax(self.px_float-np.amin(self.px_float))))
 		#~ self.px_view = self.px_8bit
 		#~ self.image = Image.fromarray(self.px_view)
