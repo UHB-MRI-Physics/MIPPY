@@ -254,6 +254,8 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 					overlay = get_overlay(ds)
 					pxfloat[np.where(overlay>0)]=255
 					#~ pxfloat += overlay
+				except KeyError:
+					pass
 				except:
 					raise
 			else:

@@ -1023,8 +1023,12 @@ class MIPPYImage():
 		self.px_float = generate_px_float(pixels, self.rs, self.ri, self.ss)
 		self.rangemax = generate_px_float(np.power(2,bitdepth), self.rs, self.ri, self.ss)
 		self.rangemin = generate_px_float(0,self.rs,self.ri,self.ss)
-		self.image_position = np.array(ds.ImagePositionPatient)
-		self.image_orientation = np.array(ds.ImageOrientationPatient).reshape((2,3))
+		try:
+			self.image_position = np.array(ds.ImagePositionPatient)
+			self.image_orientation = np.array(ds.ImageOrientationPatient).reshape((2,3))
+		except:
+			self.image_position = None
+			self.image_orientation = None
 		
 		# Change this tag with rotations
 		pe_direction = ds.InPlanePhaseEncodingDirection
