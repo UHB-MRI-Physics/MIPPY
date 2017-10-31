@@ -41,6 +41,7 @@ from . import viewing as mview
 from . import mdicom
 from mdicom.reading import collect_dicomdir_info
 from mdicom.reading import get_dataset
+from mdicom.reading import compare_dicom
 from mdicom.mrenhanced import get_frame_ds
 from mdicom.io import save_temp_ds
 from . import fileio
@@ -647,9 +648,9 @@ class MIPPYMain(Frame):
 						if tag['seriesuid']==previous_tag['seriesuid']:
 							new_series = False
 						else:
-							True
+							new_series = True
 					else:
-						True
+						new_series = True
 					if tag['instanceuid'] in self.active_uids:
 						if not tag['path'] in self.datasets_to_pass:
 							if new_series:
@@ -718,7 +719,7 @@ class MIPPYMain(Frame):
 		else:
 			dcm_compare.text.insert(END,'DIFFERENCES IN DICOM HEADER (Some tags ignored)\n')
 			for row in diffs:
-				print row
+				#~ print row
 				dcm_compare.text.insert(END,'\n'+row[0]+':\n')
 				dcm_compare.text.insert(END,'1: '+row[1]+'\n','highlight')
 				dcm_compare.text.insert(END,'2: '+row[2]+'\n','highlight')
