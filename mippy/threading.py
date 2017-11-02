@@ -16,7 +16,8 @@ def multithread(func,input,progressbar=None,threads=None):
 			progressbar(progress)
 		#~ print("num left: {}".format(result._number_left))
 		time.sleep(0.1)
-	progressbar(0.)
+	if not progressbar is None:
+		progressbar(0.)
 	pool.close()
 	pool.join()
 	return result.get()

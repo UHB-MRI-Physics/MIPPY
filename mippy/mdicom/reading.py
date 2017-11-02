@@ -12,6 +12,10 @@ import sys
 from PIL import Image
 
 from ..viewing import get_overlay
+from ..threading import multithread
+from functools import partial
+from mrenhanced import get_frame_ds
+import itertools
 
 def recursive_file_finder(path):
 	pathlist = []
@@ -326,3 +330,58 @@ def compare_dicom(ds1,ds2,diffs=None,num=None,name=''):
 			continue
 	
 	return diffs
+
+def load_images_from_uids(list_of_tags,uids_to_match,tempdir,multiprocess=False):
+	datasets_to_pass = []
+	dcm_info = []
+	previous_tag = None
+	open_file = None
+	if not multiprocess or ('win' in sys.platform and not 'darwin' in sys.platform and len(uids_to_match)<25):
+		for tag in list_of_tags:
+			if tag['instanceuid'] in uids_to_match or tag['seriesuid'] in uids_to_match:
+				# Check to see if new series
+				if previous_tag:
+					if tag['seriesuid']==previous_tag['seriesuid']:
+						new_series = False
+					else:
+						new_series = True
+				else:
+					new_series = True
+				# First, check if dataset is already in temp files
+				temppath = os.path.join(tempdir,tag['instanceuid']+'.mds')
+				if os.path.exists(temppath):
+					#~ print "TEMP FILE FOUND",tag['instanceuid']
+					with open(temppath,'rb') as tempfile:
+						if new_series:
+							datasets_to_pass.append([pickle.load(tempfile)])
+						else:
+							datasets_to_pass[-1].append(pickle.load(tempfile))
+						tempfile.close()
+				else:
+					if not tag['path']==open_file:
+						open_ds = dicom.read_file(tag['path'])
+						open_file = tag['path']
+						#~ gc.collect()
+					if not tag['enhanced']:
+						if new_series:
+							datasets_to_pass.append([open_ds])
+						else:
+							datasets_to_pass[-1].append(open_ds)
+					else:
+						split_ds = get_frame_ds(tag['instance'],open_ds)
+						if new_series:
+							datasets_to_pass.append([split_ds])
+						else:
+							datasets_to_pass[-1].append(split_ds)
+						save_temp_ds(split_ds,tempdir,tag['instanceuid']+'.mds')
+				previous_tag = tag
+	else:
+		for tag in list_of_tags:
+			if tag['instanceuid'] in uids_to_match:
+				dcm_info.append((tag['instanceuid'],tag['path'],tag['instance']))
+		f = partial(get_dataset,tempdir=tempdir)
+		datasets_to_pass = multithread(f,dcm_info)
+		# Group by series, to be flattened later if 1D list required
+		datasets_to_pass = [list(g) for k,g, in itertools.groupby(datasets_to_pass, lambda ds: ds.SeriesInstanceUID)]
+	
+	return datasets_to_pass

@@ -131,7 +131,12 @@ def get_overlay(ds):
 	"""
 	Expects DICOM dataset
 	"""
-	overlay = bits_to_ndarray(ds[0x6000,0x3000].value, shape=(ds.Rows,ds.Columns))*255
+	try:
+		overlay = bits_to_ndarray(ds[0x6000,0x3000].value, shape=(ds.Rows,ds.Columns))*255
+	except KeyError:
+		return None
+	except:
+		raise
 	return overlay
 
 def px_bytes_to_array(byte_array,rows,cols,bitdepth=16,mode='littleendian',rs=1,ri=0,ss=None):
@@ -1031,7 +1036,10 @@ class MIPPYImage():
 			self.image_orientation = None
 		
 		# Change this tag with rotations
-		pe_direction = ds.InPlanePhaseEncodingDirection
+		try:
+			pe_direction = ds.InPlanePhaseEncodingDirection
+		except AttributeError:
+			pe_direction='NONE'
 		if 'ROW' in pe_direction.upper():
 			self.pe_direction='ROW'
 		elif 'COL' in pe_direction.upper():
@@ -1059,7 +1067,7 @@ class MIPPYImage():
 			self.overlay = Image.fromarray(get_overlay(ds),'L')
 		except:
 			self.overlay = None
-			raise
+			#~ raise
 		#~ self.px_8bit = np.power(2,8)*(((self.px_float)-np.amin(self.px_float))/(np.amax(self.px_float-np.amin(self.px_float))))
 		#~ self.px_view = self.px_8bit
 		#~ self.image = Image.fromarray(self.px_view)
