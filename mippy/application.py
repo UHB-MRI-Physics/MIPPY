@@ -712,6 +712,9 @@ class MIPPYMain(Frame):
 		for tag in self.sorted_list:
 			if tag['instanceuid'] in self.active_uids:
 				dicoms.append(dicom.read_file(tag['path']))
+		for ds in dicoms:
+			if 'SpectroscopyData' in dir(ds):
+				ds.SpectroscopyData = 0
 		diffs = compare_dicom(*dicoms)
 		dcm_compare = Toplevel(self.master)
 		dcm_compare.text = Text(dcm_compare,width=120,height=30)
