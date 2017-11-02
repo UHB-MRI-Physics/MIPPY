@@ -689,7 +689,10 @@ class MIPPYMain(Frame):
 			if tag['instanceuid'] in self.active_uids:
 				dcm_view = Toplevel(self.master)
 				dcm_view.text = Text(dcm_view,width=120,height=30)
-				dcm_view.text.insert(END,str(dicom.read_file(tag['path'])))
+				ds = dicom.read_file(tag['path'])
+				if 'SpectroscopyData' in dir(ds):
+					ds.SpectroscopyData=0
+				dcm_view.text.insert(END,str(ds))
 				dcm_view.text.config(state='disabled')
 				dcm_view.text.see('1.0')
 				dcm_view.text.pack()

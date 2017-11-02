@@ -1,7 +1,4 @@
-# This is necessary until MIPPY is installed in Python site-packages
-import sys
-import os
-sys.path.append(os.getcwd())
+
 
 ###########################################
 # Use built in logging feature
@@ -11,13 +8,16 @@ sys.path.append(os.getcwd())
 
 
 #~ from multiprocessing import freeze_support
-from Tkinter import *
-from ttk import *
+
 
 #~ if sys.argv[1]=="debug":
 	#~ pass # for now
 
 if __name__=='__main__':
+	#~ import sys
+	#~ import os
+	from Tkinter import *
+	from ttk import *
         #~ # Set up logfile in logs directory
         #~ debug=False
         #~ print sys.path
