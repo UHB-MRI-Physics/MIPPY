@@ -1,5 +1,19 @@
+﻿v0.22.0
+03/11/2017 @ 16:51
+
+- Created misc.py for miscellaneous functions
+- Moved image loading from application.py to mdicom module
+- Stripped spectroscopy FID from compare_header and
+  view_header tools
+- Fixed bug in compare_headers
+- Disabled logging and windowless startup
+- Fixed errors displaying image overlays
+- Added support for MRS data
+
+============================================================
+
 v0.21.12
-03410/2017 @ 09:39
+04/10/2017 @ 09:39
 
 - Bugfixing again. Wasn’t running chmod due to error in
   logic!
