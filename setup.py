@@ -11,7 +11,7 @@ setup(	name='MIPPY',
 		description='Meodular Image Processing in Python',
 		author='Robert Flintham',
 		author_email='robert.flintham@uhb.nhs.uk',
-		install_requires=['numpy','scipy','pydicom','pillow'],
+		install_requires=['numpy','scipy','pydicom','pillow','nibabel'],
 		license='BSD-3-Clause',
 		classifiers=[
 			'Development Status :: 3 - Alpha',
