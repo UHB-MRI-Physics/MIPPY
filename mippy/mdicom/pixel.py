@@ -73,3 +73,21 @@ def generate_px_float(pixels,rs,ri,ss=None):
 		return (pixels*rs+ri)/(rs*ss)
 	else:
 		return (pixels*rs+ri)
+
+def get_voxel_location(coords,slice_location,slice_orientation,pxspc_x,pxspc_y):
+	# All inputs are tuples of length 3 except spacings
+	p = slice_location
+	q = slice_orientation
+	x = pxspc_x
+	y = pxspc_y
+	coord_arr = np.array([coords[0],coords[1],0.,1.])
+	trans_arr = np.array(
+				[[q[0]*x,q[1]*x,q[2]*x,0.],
+				[q[3]*y,q[4]*y,q[5]*y,0.],
+				[0.,0.,0.,0.,],
+				[p[0],p[1],p[2],1.]]
+				)
+	result = np.dot(trans_arr,coord_arr)
+	return tuple(result[0:3])
+	
+	
