@@ -1209,7 +1209,7 @@ class MIPPYImage():
 		return
 
 	def apply_overlay(self):
-		if self.overlay:
+		if not self.overlay is None:
 			self.image.paste(self.overlay,box=(0,0),mask=self.overlay)
 		return
 
