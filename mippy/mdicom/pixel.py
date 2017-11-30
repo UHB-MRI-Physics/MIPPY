@@ -82,11 +82,11 @@ def get_voxel_location(coords,slice_location,slice_orientation,pxspc_x,pxspc_y,s
 	y = pxspc_y
 	if len(coords)>2:
 		coord_arr = np.array([coords[0],coords[1],coords[2],1.])
-		q2 = np.cross(q[0:3],q[3:6])
+		#~ q2 = np.cross(q[0:3],q[3:6])
 		z = slcspc
-		trans_arr = np.array([	[	q[0]*x, q[3]*y, q2[0]*z, p[0]	],
-							[	q[1]*x, q[4]*y, q2[1]*z, p[1]	],
-							[	q[2]*x, q[5]*y, q2[2]*z, p[2]	],
+		trans_arr = np.array([	[	q[0]*x, q[3]*y, q[6]*z, p[0]	],
+							[	q[1]*x, q[4]*y, q[7]*z, p[1]	],
+							[	q[2]*x, q[5]*y, q[8]*z, p[2]	],
 							[	0., 0., 0., 1.				]])
 	else:
 		coord_arr = np.array([coords[0],coords[1],0.,1.])
