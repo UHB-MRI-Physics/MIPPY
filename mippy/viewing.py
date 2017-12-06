@@ -391,7 +391,9 @@ class MIPPYCanvas(Canvas):
 		self.master = master
 		self.zoom_factor = 1
 		self.roi_list = []
-		self.masks = None
+		self.roi_list_2d = []
+		self.masks = []
+		self.masks_2d = []
 		if use_masks==True:
 			self.use_masks=True
 		else:
@@ -472,9 +474,18 @@ class MIPPYCanvas(Canvas):
 			self.active = num
 			self.active_str.set(str(num)+"/"+str(len(self.images)))
 			self.update_scrollbar((num-1.)/len(self.images))
+			#~ print "Redrawing image"
 		self.delete('image')
 		self.create_image((0,0),image=self.images[self.active-1].photoimage,anchor='nw',tags='image')
 		self.tag_lower('image')
+		# Get roi_list for this slice
+		#~ print "Selecting ROIs"
+		self.roi_list = self.roi_list_2d[self.active-1]
+		self.masks = self.masks_2d[self.active-1]
+		#~ print len(self.roi_list)
+		#~ print len(self.roi_list_2d)
+		#~ print "Redrawing ROIs"
+		self.redraw_rois()
 	
 	def quick_redraw_image(self):
 		try:
@@ -489,7 +500,7 @@ class MIPPYCanvas(Canvas):
 		Returns a binary mask of all ROIs
 		"""
 		if self.roi_list == []:
-			self.masks = None
+			self.masks = []
 			return
 		width = self.get_active_image().columns
 		height = self.get_active_image().rows
@@ -515,7 +526,7 @@ class MIPPYCanvas(Canvas):
 		im = self.get_active_image()
 		if len(rois)==0:
 			rois = range(len(self.roi_list))
-		if self.masks is None:
+		if len(self.masks)==0:
 			px = []
 			for y in range(im.rows):
 				for x in range(im.columns):
@@ -633,7 +644,7 @@ class MIPPYCanvas(Canvas):
 		if not 'roi' in tags:
 			tags.append('roi')
 		self.draw_roi(coords,tags=tags,color=color)
-		self.add_roi(coords,tags)
+		self.add_roi(coords,tags,color=color)
 #		print "ROI should be on image now..."
 		return
 	
@@ -647,9 +658,10 @@ class MIPPYCanvas(Canvas):
 		return
 
 	def redraw_rois(self,color='yellow'):
+		# color option is redundant, I think...
 		self.delete('roi')
 		for roi in self.roi_list:
-			self.draw_roi(roi.coords,roi.tags,color=color)
+			self.draw_roi(roi.coords,roi.tags,color=roi.color)
 		return
 
 	def roi_rectangle(self,x_start,y_start,width,height,tags=[],system='canvas',color='yellow'):
@@ -695,6 +707,10 @@ class MIPPYCanvas(Canvas):
 	def load_images(self,image_list):
 		self.images = []
 		self.delete('all')
+		self.roi_list = []
+		self.roi_list_2d = []
+		self.masks = []
+		self.masks_2d = []
 		n=0
 		
 		if len(image_list)>500:
@@ -725,7 +741,10 @@ class MIPPYCanvas(Canvas):
 				#~ self.images[i].zoom(self.zoom_factor,antialias=self.antialias)
 			#~ print "Displaying"
 			self.images[i].wl_and_display(window=self.window,level=self.level,zoom=self.zoom_factor,antialias=self.antialias)
+			self.roi_list_2d.append([])
+			self.masks_2d.append([])
 		self.configure_scrollbar()
+		
 		self.show_image(1)
 
 		#print "canvas width,height: %s,%s" %(self.width,self.height)
@@ -913,14 +932,16 @@ class MIPPYCanvas(Canvas):
 		self.show_image(self.active)
 
 
-	def add_roi(self,coords,tags=['roi'],roi_type=None):
-		self.roi_list.append(ROI(coords,tags,roi_type))
+	def add_roi(self,coords,tags=['roi'],roi_type=None,color='yellow'):
+		self.roi_list.append(ROI(coords,tags,roi_type,color=color))
+		# Update 2D ROI list for this slice
+		self.roi_list_2d[self.active-1] = self.roi_list
 		if self.use_masks:
 			self.update_roi_masks()
 
 	def delete_rois(self):
 		self.roi_list = []
-		self.masks = None
+		self.masks = []
 		gc.collect()
 		self.delete('roi')
 
