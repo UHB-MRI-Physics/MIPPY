@@ -281,12 +281,13 @@ def get_ellipse_coords(center,a,b,n=128):
 ########################################
 
 class ROI():
-	def __init__(self,coords,tags=[],roi_type=None):
+	def __init__(self,coords,tags=[],roi_type=None,color='yellow'):
 		"""
 		Expecting a string of 2- or 3-tuples to define bounding coordinates.
 		Type of ROI will be inferred from number of points.
 		"""
 		self.coords = coords
+		self.color = color
 		if not roi_type:
 			if len(coords)==1:
 				self.roi_type = "point"
