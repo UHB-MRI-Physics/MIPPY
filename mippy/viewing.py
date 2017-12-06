@@ -648,13 +648,14 @@ class MIPPYCanvas(Canvas):
 #		print "ROI should be on image now..."
 		return
 	
-	def draw_roi(self,coords,tags,color='yellow'):
-		for i in range(len(coords)):
-			j = i+1
-			if j==len(coords):
-				j=0
-			tags.append('roi')
-			self.create_line((coords[i][0],coords[i][1],coords[j][0],coords[j][1]),fill=color,width=1,tags=tags)
+	def draw_roi(self,coords,tags,color='yellow',roitype='lines',stipple=False):
+		if roitype='lines':
+			for i in range(len(coords)):
+				j = i+1
+				if j==len(coords):
+					j=0
+				tags.append('roi')
+				self.create_line((coords[i][0],coords[i][1],coords[j][0],coords[j][1]),fill=color,width=1,tags=tags)
 		return
 
 	def redraw_rois(self,color='yellow'):
