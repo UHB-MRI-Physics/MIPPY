@@ -743,8 +743,9 @@ class MIPPYCanvas(Canvas):
 				#~ self.images[i].zoom(self.zoom_factor,antialias=self.antialias)
 			#~ print "Displaying"
 			self.images[i].wl_and_display(window=self.window,level=self.level,zoom=self.zoom_factor,antialias=self.antialias)
-			self.roi_list_2d.append([])
-			self.masks_2d.append([])
+			if not keep_rois:
+				self.roi_list_2d.append([])
+				self.masks_2d.append([])
 		self.configure_scrollbar()
 		
 		self.show_image(1)

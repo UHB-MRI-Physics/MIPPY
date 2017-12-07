@@ -10,6 +10,7 @@ import cPickle as pickle
 import numpy as np
 import sys
 from PIL import Image
+import gc
 
 from ..viewing import get_overlay
 from ..threading import multithread
@@ -379,6 +380,7 @@ def load_images_from_uids(list_of_tags,uids_to_match,tempdir,multiprocess=False)
 		for tag in list_of_tags:
 			if tag['instanceuid'] in uids_to_match:
 				dcm_info.append((tag['instanceuid'],tag['path'],tag['instance']))
+		gc.collect()
 		f = partial(get_dataset,tempdir=tempdir)
 		datasets_to_pass = multithread(f,dcm_info)
 		# Group by series, to be flattened later if 1D list required
