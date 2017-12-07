@@ -708,7 +708,9 @@ class MIPPYCanvas(Canvas):
 	def load_images(self,image_list,keep_rois=False):
 		self.images = []
 		self.delete('all')
-		if not keep_rois:
+		if not keep_rois or not len(self.roi_mask)==len(image_list):
+			# Will replace ROIs no matter what if you load a
+			# different number of images
 			self.roi_list_2d = []
 			self.masks_2d = []
 		self.roi_list = []
@@ -743,7 +745,7 @@ class MIPPYCanvas(Canvas):
 				#~ self.images[i].zoom(self.zoom_factor,antialias=self.antialias)
 			#~ print "Displaying"
 			self.images[i].wl_and_display(window=self.window,level=self.level,zoom=self.zoom_factor,antialias=self.antialias)
-			if not keep_rois:
+			if len(self.roi_list_2d)==i:
 				self.roi_list_2d.append([])
 				self.masks_2d.append([])
 		self.configure_scrollbar()
