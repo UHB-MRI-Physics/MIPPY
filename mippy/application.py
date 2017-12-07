@@ -180,9 +180,9 @@ class MIPPYMain(Frame):
 		self.helpmenu = Menu(self.menubar, tearoff=0)
 		self.helpmenu.add_command(label="Open the wiki",command=lambda:self.load_wiki())
 		self.helpmenu.add_command(label="About MIPPY",command=lambda:self.display_version_info())
-		self.helpmenu.add_command(label="View changelog",command=lambda:self.display_changelog())
+		#~ self.helpmenu.add_command(label="View changelog",command=lambda:self.display_changelog())
 		self.helpmenu.add_command(label="Report issue",command=lambda:self.report_issue())
-		self.helpmenu.add_command(label="View current log file",command=lambda:self.show_log())
+		#~ self.helpmenu.add_command(label="View current log file",command=lambda:self.show_log())
 		# Add menus to menubar and display menubar in window
 		self.menubar.add_cascade(label="File",menu=self.filemenu)
 		self.menubar.add_cascade(label="Modules",menu=self.modulemenu)
@@ -545,12 +545,16 @@ class MIPPYMain(Frame):
 	def display_version_info(self):
 		print "Display version info"
 		info = ""
-		with open('docs/version.info','r') as infofile:
+		verpath = resource_filename('mippy','resources/version.info')
+		with open(verpath,'r') as infofile:
 			info = infofile.read()
 		tkMessageBox.showinfo("MIPPY: Version info",info)
 		return
 	
 	def display_changelog(self):
+		"""
+		This has been removed for the time being.
+		"""
 		print "Display changelog"
 		info = ""
 		with open('docs/changelog.info','r') as infofile:

@@ -649,7 +649,7 @@ class MIPPYCanvas(Canvas):
 		return
 	
 	def draw_roi(self,coords,tags,color='yellow',roitype='lines',stipple=False):
-		if roitype='lines':
+		if roitype=='lines':
 			for i in range(len(coords)):
 				j = i+1
 				if j==len(coords):
@@ -705,13 +705,14 @@ class MIPPYCanvas(Canvas):
 		return
 
 
-	def load_images(self,image_list):
+	def load_images(self,image_list,keep_rois=False):
 		self.images = []
 		self.delete('all')
+		if not keep_rois:
+			self.roi_list_2d = []
+			self.masks_2d = []
 		self.roi_list = []
-		self.roi_list_2d = []
 		self.masks = []
-		self.masks_2d = []
 		n=0
 		
 		if len(image_list)>500:
