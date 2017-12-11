@@ -708,7 +708,7 @@ class MIPPYCanvas(Canvas):
 	def load_images(self,image_list,keep_rois=False):
 		self.images = []
 		self.delete('all')
-		if not keep_rois or not len(self.roi_mask)==len(image_list):
+		if not keep_rois or not len(self.roi_list_2d)==len(image_list):
 			# Will replace ROIs no matter what if you load a
 			# different number of images
 			self.roi_list_2d = []
