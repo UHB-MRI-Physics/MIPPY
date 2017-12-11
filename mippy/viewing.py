@@ -504,7 +504,7 @@ class MIPPYCanvas(Canvas):
 			return
 		width = self.get_active_image().columns
 		height = self.get_active_image().rows
-
+		
 		mask = np.zeros((len(self.roi_list),height,width))
 
 		for y in range(height):
@@ -513,6 +513,7 @@ class MIPPYCanvas(Canvas):
 					if self.roi_list[i].contains((x*self.zoom_factor,y*self.zoom_factor)):
 						mask[i,y,x]=1
 		self.masks = mask
+		self.masks_2d[self.active-1]=mask
 
 		return
 
@@ -527,6 +528,7 @@ class MIPPYCanvas(Canvas):
 		if len(rois)==0:
 			rois = range(len(self.roi_list))
 		if len(self.masks)==0:
+			#~ print "NOT USING MASKS!"
 			px = []
 			for y in range(im.rows):
 				for x in range(im.columns):
@@ -541,7 +543,7 @@ class MIPPYCanvas(Canvas):
 						j+=1
 			return px
 		else:
-		
+			#~ print "USING MASKS!"
 			px = []
 			pxflat = im.px_float.flatten().tolist()
 			for i in rois:
