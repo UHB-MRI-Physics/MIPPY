@@ -657,7 +657,35 @@ class MIPPYCanvas(Canvas):
 				if j==len(coords):
 					j=0
 				tags.append('roi')
-				self.create_line((coords[i][0],coords[i][1],coords[j][0],coords[j][1]),fill=color,width=1,tags=tags)
+				if not 'polygon' in tags:
+					#~ print "LINES"
+					if not 'dash' in tags:
+						self.create_line((coords[i][0],coords[i][1],coords[j][0],coords[j][1]),fill=color,width=1,tags=tags)
+					else:
+						if 'dash42' in tags:
+							self.create_line((coords[i][0],coords[i][1],coords[j][0],coords[j][1]),fill=color,width=1,tags=tags,dash=(4,2))
+						elif 'dash44' in tags:
+							self.create_line((coords[i][0],coords[i][1],coords[j][0],coords[j][1]),fill=color,width=1,tags=tags,dash=(4,2))
+						elif 'dash22' in tags:
+							self.create_line((coords[i][0],coords[i][1],coords[j][0],coords[j][1]),fill=color,width=1,tags=tags,dash=(2,2))
+						else:
+							print "Dash/gap length not specified. Use the tag 'dashAB' where A is dash length and B is gap length."
+				elif 'polygon' in tags:
+					#~ print "POLYGON"
+					coords = np.array(coords).flatten()
+					if 'stipple' in tags:
+						if 'gray25' in tags:
+							self.create_polygon(*coords,fill=color,width=1,stipple='gray25',tags=tags,outline=color)
+						elif 'gray12' in tags:
+							self.create_polygon(*coords,fill=color,width=1,stipple='gray12',tags=tags,outline=color)
+						elif 'gray50' in tags:
+							self.create_polygon(*coords,fill=color,width=1,stipple='gray50',tags=tags,outline=color)
+						elif 'gray75' in tags:
+							self.create_polygon(*coords,fill=color,width=1,stipple='gray75',tags=tags,outline=color)
+						else:
+							print "Stipple type not specified. Add a stipple type as a tag. See tkinter create_rectangle docs for details"
+					else:
+						self.create_polygon(*coords,fill=color,width=1,tags=tags,outline=color)
 		return
 
 	def redraw_rois(self,color='yellow'):
