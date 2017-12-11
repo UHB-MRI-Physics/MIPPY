@@ -34,11 +34,6 @@ def display_results(results,master_window):
 	"""
 	timestamp = str(datetime.now()).replace(" ","_").replace(":","")
 
-#	if not name:
-#		fname = "RESULTS_"+timestamp+".csv"
-#	else:
-#		fname = "RESULTS_"+timestamp+"_"+name+".csv"
-
 	result_header = []
 	result_values = []
 	for key,value in results.items():
@@ -50,23 +45,6 @@ def display_results(results,master_window):
 		lines = np.shape(result_array)[1]
 	except IndexError:
 		result_array = np.reshape(result_array,(1,np.shape(result_array)[0]))
-#	if not directory:
-#		current_dir = os.getcwd()
-#		outputdir = os.path.join(current_dir,"Results")
-#		if not os.path.exists(outputdir):
-#			os.makedirs(outputdir)
-#	else:
-#		outputdir = directory
-#		if not os.path.exists(outputdir):
-#			os.makedirs(outputdir)
-#	outpath = os.path.join(outputdir,fname)
-#	with open(outpath,'wb') as csvfile:
-#		csvwriter = csv.writer(csvfile,delimiter=',')
-#		csvwriter.writerow(result_header)
-#		for row in result_array:
-#			csvwriter.writerow(row)
-#
-#	tkMessageBox.showinfo("INFO","Results saved to:\n"+outpath)
 
 	popup = Toplevel(master_window)
 	popup.title = 'Results'
@@ -115,9 +93,6 @@ def quick_display(im_array,master_window):
 	win.imcanvas.load_images(im_array)
 	return
 
-#~ def generate_px_float(pixels,rs,ri,ss):
-	#~ return (pixels*rs+ri)/(rs*ss)
-
 def bits_to_ndarray(bits, shape):
 	abytes = np.frombuffer(bits, dtype=np.uint8)
 	abits = np.zeros(8*len(abytes), np.uint8)
@@ -148,12 +123,8 @@ def px_bytes_to_array(byte_array,rows,cols,bitdepth=16,mode='littleendian',rs=1,
 	elif bitdepth==8:
 		this_dtype = np.dytpe('u1')
 	abytes = np.frombuffer(byte_array, dtype=this_dtype)
-#	print np.mean(abytes)
-#	print np.shape(abytes)
-#	print abytes
 	abytes = abytes.reshape((cols,rows))
 	px_float = generate_px_float(abytes,rs,ri,ss)
-#	print np.mean(px_float)
 	return px_float
 
 def generate_px_float(pixels,rs,ri,ss=None):
@@ -225,11 +196,9 @@ def wn_PnPoly(point,coords):
 	y=1
 	wn = 0
 	n = len(coords)
-	#~ print "n =",n
 	for i in range(n):
 		if i==n-1: j=0
 		else: j=i+1
-		#~ print i,j
 		if coords[i][y]<=point[y]:
 			if coords[j][y]>point[y]:		# upward crossing
 				if isLeft(coords[i],coords[j],point)>0:
@@ -266,7 +235,6 @@ def get_ellipse_coords(center,a,b,n=128):
 		angle = (float(i)/float(n))*np.pi
 		x0 = 100.*np.sin(angle)
 		y0 = 100.*np.cos(angle)
-		#~ print str((x0,y0))
 		xpos = (a*b*x0)/np.sqrt(a**2 * y0**2 + b**2 * x0**2)
 		xneg = -xpos
 		ypos = (a*b*y0)/np.sqrt(a**2 * y0**2 + b**2 * x0**2)
@@ -320,21 +288,15 @@ class ROI():
 			return False
 		wn = wn_PnPoly(point,self.coords)
 		if wn==0:
-			#~ print "OUTSIDE: ",wn
 			return False
 		else:
-			#~ print "INSIDE: ",wn
 			return True
 
 	def update(self,xmove,ymove):
 		for i in range(len(self.coords)):
 			self.coords[i]=(self.coords[i][0]+xmove,self.coords[i][1]+ymove)
 		self.bbox=(self.bbox[0]+xmove,self.bbox[1]+ymove,self.bbox[2]+xmove,self.bbox[3]+ymove)
-		#~ self.generate_mask()
 		return
-
-	#~ def generate_mask(self):
-		#~ pass
 
 class ImageFlipper(Frame):
 	def __init__(self,master,canvas):
@@ -427,7 +389,6 @@ class MIPPYCanvas(Canvas):
 		self.drawing_enabled = drawing_enabled
 		self.width=width
 		self.height=height
-		#~ self.zoom_factor=None
 		self.pixel_array=None
 		self.img_scrollbar=None
 		self.antialias = antialias
@@ -474,17 +435,11 @@ class MIPPYCanvas(Canvas):
 			self.active = num
 			self.active_str.set(str(num)+"/"+str(len(self.images)))
 			self.update_scrollbar((num-1.)/len(self.images))
-			#~ print "Redrawing image"
 		self.delete('image')
 		self.create_image((0,0),image=self.images[self.active-1].photoimage,anchor='nw',tags='image')
 		self.tag_lower('image')
-		# Get roi_list for this slice
-		#~ print "Selecting ROIs"
 		self.roi_list = self.roi_list_2d[self.active-1]
 		self.masks = self.masks_2d[self.active-1]
-		#~ print len(self.roi_list)
-		#~ print len(self.roi_list_2d)
-		#~ print "Redrawing ROIs"
 		self.redraw_rois()
 	
 	def quick_redraw_image(self):
@@ -523,12 +478,10 @@ class MIPPYCanvas(Canvas):
 		Returns a LIST of pixel values from an ROI.
 		ROIS must be a list of ROI numbers.
 		"""
-		#~ px = []
 		im = self.get_active_image()
 		if len(rois)==0:
 			rois = range(len(self.roi_list))
 		if len(self.masks)==0:
-			#~ print "NOT USING MASKS!"
 			px = []
 			for y in range(im.rows):
 				for x in range(im.columns):
@@ -543,7 +496,6 @@ class MIPPYCanvas(Canvas):
 						j+=1
 			return px
 		else:
-			#~ print "USING MASKS!"
 			px = []
 			pxflat = im.px_float.flatten().tolist()
 			for i in rois:
@@ -560,7 +512,6 @@ class MIPPYCanvas(Canvas):
 			return None
 		px_list = self.get_roi_pixels(rois=rois,tags=tags)
 		for i in range(len(px_list)):
-			#~ print len(px_list[i])
 			if len(px_list[i])==0:
 				px_list[i]=[0.,0.,0.]
 		stats = {
@@ -572,7 +523,6 @@ class MIPPYCanvas(Canvas):
 				'skewness':		map(sps.skew,px_list),
 				'kurtosis':		map(sps.kurtosis,px_list),
 				'cov':		map(sps.variation,px_list),
-#							'histogram':	sps.cumfreq(px),
 				'sum':		map(np.sum,px_list),
 				'area_px':		map(len,px_list)
 				}
@@ -637,55 +587,55 @@ class MIPPYCanvas(Canvas):
 		elif not system=='canvas':
 			print "Invalid coordinate system specified"
 			return
-		#~ for i in range(len(coords)):
-			#~ j = i+1
-			#~ if j==len(coords):
-				#~ j=0
-			#~ tags.append('roi')
-			#~ self.create_line((coords[i][0],coords[i][1],coords[j][0],coords[j][1]),fill=color,width=1,tags=tags)
 		if not 'roi' in tags:
 			tags.append('roi')
 		self.draw_roi(coords,tags=tags,color=color)
 		self.add_roi(coords,tags,color=color)
-#		print "ROI should be on image now..."
 		return
 	
-	def draw_roi(self,coords,tags,color='yellow',roitype='lines',stipple=False):
-		if roitype=='lines':
+	def draw_roi(self,coords,tags,color='yellow'):
+		if not 'roi' in tags:
+			tags.append('roi')
+		
+		if not 'polygon' in tags:
 			for i in range(len(coords)):
 				j = i+1
 				if j==len(coords):
 					j=0
-				tags.append('roi')
-				if not 'polygon' in tags:
-					#~ print "LINES"
-					if not 'dash' in tags:
-						self.create_line((coords[i][0],coords[i][1],coords[j][0],coords[j][1]),fill=color,width=1,tags=tags)
+				if not 'dash' in tags:
+					self.create_line((coords[i][0],coords[i][1],coords[j][0],coords[j][1]),fill=color,width=1,tags=tags)
+				else:
+					if 'dash42' in tags:
+						self.create_line((coords[i][0],coords[i][1],coords[j][0],coords[j][1]),fill=color,width=1,tags=tags,dash=(4,2))
+					elif 'dash44' in tags:
+						self.create_line((coords[i][0],coords[i][1],coords[j][0],coords[j][1]),fill=color,width=1,tags=tags,dash=(4,2))
+					elif 'dash22' in tags:
+						self.create_line((coords[i][0],coords[i][1],coords[j][0],coords[j][1]),fill=color,width=1,tags=tags,dash=(2,2))
 					else:
-						if 'dash42' in tags:
-							self.create_line((coords[i][0],coords[i][1],coords[j][0],coords[j][1]),fill=color,width=1,tags=tags,dash=(4,2))
-						elif 'dash44' in tags:
-							self.create_line((coords[i][0],coords[i][1],coords[j][0],coords[j][1]),fill=color,width=1,tags=tags,dash=(4,2))
-						elif 'dash22' in tags:
-							self.create_line((coords[i][0],coords[i][1],coords[j][0],coords[j][1]),fill=color,width=1,tags=tags,dash=(2,2))
-						else:
-							print "Dash/gap length not specified. Use the tag 'dashAB' where A is dash length and B is gap length."
-				elif 'polygon' in tags:
-					#~ print "POLYGON"
-					coords = np.array(coords).flatten()
-					if 'stipple' in tags:
-						if 'gray25' in tags:
-							self.create_polygon(*coords,fill=color,width=1,stipple='gray25',tags=tags,outline=color)
-						elif 'gray12' in tags:
-							self.create_polygon(*coords,fill=color,width=1,stipple='gray12',tags=tags,outline=color)
-						elif 'gray50' in tags:
-							self.create_polygon(*coords,fill=color,width=1,stipple='gray50',tags=tags,outline=color)
-						elif 'gray75' in tags:
-							self.create_polygon(*coords,fill=color,width=1,stipple='gray75',tags=tags,outline=color)
-						else:
-							print "Stipple type not specified. Add a stipple type as a tag. See tkinter create_rectangle docs for details"
-					else:
-						self.create_polygon(*coords,fill=color,width=1,tags=tags,outline=color)
+						print "Dash/gap length not specified. Use the tag 'dashAB' where A is dash length and B is gap length."
+						return
+			return
+		elif 'polygon' in tags:
+			coords = np.array(coords).flatten()
+			if 'stipple' in tags:
+				if 'gray25' in tags:
+					self.create_polygon(*coords,fill=color,width=1,stipple='gray25',tags=tags,outline=color)
+					return
+				elif 'gray12' in tags:
+					self.create_polygon(*coords,fill=color,width=1,stipple='gray12',tags=tags,outline=color)
+					return
+				elif 'gray50' in tags:
+					self.create_polygon(*coords,fill=color,width=1,stipple='gray50',tags=tags,outline=color)
+					return
+				elif 'gray75' in tags:
+					self.create_polygon(*coords,fill=color,width=1,stipple='gray75',tags=tags,outline=color)
+					return
+				else:
+					print "Stipple type not specified. Add a stipple type as a tag. See tkinter create_rectangle docs for details"
+					return
+			else:
+				self.create_polygon(*coords,fill=color,width=1,tags=tags,outline=color)
+				return
 		return
 
 	def redraw_rois(self,color='yellow'):
@@ -708,7 +658,6 @@ class MIPPYCanvas(Canvas):
 		elif not system=='canvas':
 			print "Invalid coordinate system specified"
 			return
-		#~ print x1,y1,x2,y2
 		self.new_roi([(x1,y1),(x2,y1),(x2,y2),(x1,y2)],tags=tags,color=color)
 		return
 	
@@ -743,6 +692,7 @@ class MIPPYCanvas(Canvas):
 			# different number of images
 			self.roi_list_2d = []
 			self.masks_2d = []
+			
 		self.roi_list = []
 		self.masks = []
 		n=0
@@ -751,15 +701,16 @@ class MIPPYCanvas(Canvas):
 			print "More than 500 images - cannot be loaded to canvas."
 			print "Loading first 500 only..."
 			image_list = image_list[0:100]
-		#print "Generating MIPPYImage objects"
+			
 		for ref in image_list:
 			self.progress(45.*n/len(image_list)+10)
 			self.images.append(MIPPYImage(ref))
+			if not keep_rois or not len(self.roi_list_2d)==len(image_list):
+				self.roi_list_2d.append([])
+				self.masks_2d.append([])
 			n+=1
 
 		self.global_min,self.global_max = get_global_min_and_max(self.images)
-		#~ self.global_rangemin = self.images[0].rangemin
-		#~ self.global_rangemax = self.images[0].rangemax
 		self.fullrange = self.global_max-self.global_min
 		self.default_window = self.global_max-self.global_min
 		self.default_level = self.global_min + self.default_window/2
@@ -767,26 +718,13 @@ class MIPPYCanvas(Canvas):
 		self.window = self.default_window
 		self.zoom_factor = np.min([float(self.width)/float(self.images[0].columns),float(self.height)/float(self.images[0].rows)])
 
-		#print "Generating PILLOW images"
 		for i in range(len(self.images)):
 			self.progress(45.*i/len(self.images)+55)
-			#~ if not self.zoom_factor==1.:
-				#~ print "Zooming"
-				#~ self.images[i].zoom(self.zoom_factor,antialias=self.antialias)
-			#~ print "Displaying"
 			self.images[i].wl_and_display(window=self.window,level=self.level,zoom=self.zoom_factor,antialias=self.antialias)
-			if len(self.roi_list_2d)==i:
-				self.roi_list_2d.append([])
-				self.masks_2d.append([])
+		
 		self.configure_scrollbar()
 		
 		self.show_image(1)
-
-		#print "canvas width,height: %s,%s" %(self.width,self.height)
-		#print "image width,height: %s,%s" %(self.get_active_image().columns,self.get_active_image().rows)
-		#print "zoom: %s" %(self.zoom_factor)
-
-		#~ self.pixel_array = np.array(a.px_float for a in self.images)
 
 		self.progress(0.)
 		return
@@ -823,8 +761,6 @@ class MIPPYCanvas(Canvas):
 		self.ymouse = event.y
 		self.tempx = event.x
 		self.tempy = event.y
-		#~ print self.xmouse
-		#~ print self.ymouse
 		moving = False
 		for roi in self.roi_list:
 			if roi.contains((self.xmouse,self.ymouse)):
@@ -876,17 +812,12 @@ class MIPPYCanvas(Canvas):
 				# http://mathworld.wolfram.com/Ellipse-LineIntersection.html
 				# get points in circle by incrementally adding rays from centre
 				# and getting intersections with ellipse
-				#~ print self.bbox('roi')
 				bbox = self.bbox('roi')
 				a = (bbox[2]-bbox[0])/2
 				b = (bbox[3]-bbox[1])/2
 				c = (bbox[0]+a,bbox[1]+b)
 				self.add_roi(get_ellipse_coords(c,a,b,n=2*max([a,b])))
 				coords = self.roi_list[0].coords
-				#~ for i in range(len(coords)):
-					#~ if i==len(coords)-1: j=0
-					#~ else: j=i+1
-					#~ self.create_line((coords[i][0],coords[i][1],coords[j][0],coords[j][1]),fill='red',width=1,tag='roi')
 			elif self.roi_mode=='line':
 				self.add_roi([(self.xmouse,self.ymouse),(event.x,event.y)])
 			else:
@@ -969,7 +900,6 @@ class MIPPYCanvas(Canvas):
 
 	def add_roi(self,coords,tags=['roi'],roi_type=None,color='yellow'):
 		self.roi_list.append(ROI(coords,tags,roi_type,color=color))
-		# Update 2D ROI list for this slice
 		self.roi_list_2d[self.active-1] = self.roi_list
 		if self.use_masks:
 			self.update_roi_masks()
@@ -1124,11 +1054,6 @@ class MIPPYImage():
 			self.overlay = Image.fromarray(get_overlay(ds),'L')
 		except:
 			self.overlay = None
-			#~ raise
-		#~ self.px_8bit = np.power(2,8)*(((self.px_float)-np.amin(self.px_float))/(np.amax(self.px_float-np.amin(self.px_float))))
-		#~ self.px_view = self.px_8bit
-		#~ self.image = Image.fromarray(self.px_view)
-		#~ self.photoimage = ImageTk.PhotoImage(image)
 		self.image = None
 		self.photoimage = None
 		self.wl_and_display()
@@ -1140,10 +1065,6 @@ class MIPPYImage():
 		self.px_float = pixel_array.astype(np.float64)
 		self.rangemax = np.amax(pixel_array)
 		self.rangemin = np.amin(pixel_array)
-#		print "Max",self.rangemax
-#		print "Min",self.rangemin
-#		self.rangemax = np.ones(np.shape(pixel_array)).astype(np.float64)*maxval
-#		self.rangemin = np.ones(np.shape(pixel_array)).astype(np.float64)*minval
 		self.xscale=1
 		self.yscale=1
 		self.overlay=None
@@ -1220,31 +1141,17 @@ class MIPPYImage():
 
 		if self.level-self.rangemin<self.window/2:
 			self.window=2*(self.level-self.rangemin)
-		#~ start = time.time()
 		windowed_px = np.clip(self.px_float,self.level-self.window/2,self.level+self.window/2-1)
 		px_view = np.clip(((windowed_px-np.min(windowed_px))/self.window * 256.),0.,255.).astype(np.uint8)
-		#~ end = time.time()
-		#~ time1 = end-start
 		
-		#~ start = time.time()
 		self.image = Image.fromarray(px_view, mode='L')
-		#~ end = time.time()
-		#~ time2 = end-start
 		
 		self.apply_overlay()
-		
-		#~ start = time.time()
 		if not size==self.image.size:
 			self.resize(size[0],size[1],resampling)
-		#~ end = time.time()
-		#~ time3 = end-start
 		
-		#~ start = time.time()
 		self.set_display_image()
-		#~ end = time.time()
-		#~ time4 = end-start
 		
-		#~ print time1,time2,time3,time4
 		return
 
 	def resize(self,dim1=256,dim2=256,antialias=True):
@@ -1272,7 +1179,6 @@ class MIPPYImage():
 
 	def set_display_image(self):
 		self.photoimage = ImageTk.PhotoImage(self.image)
-		#~ gc.collect()
 		return
 
 class Image3D():
