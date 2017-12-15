@@ -28,7 +28,7 @@ def save_results(results,name=None,directory=None):
 	else:
 		fname = "RESULTS_"+timestamp+"_"+name+".txt"
 	
-	if not directory:
+	if directory is None:
 		current_dir = os.getcwd()
 		outputdir = os.path.join(current_dir,"Results")
 		if not os.path.exists(outputdir):
