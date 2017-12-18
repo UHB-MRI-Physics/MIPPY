@@ -441,11 +441,17 @@ class MIPPYCanvas(Canvas):
 		self.roi_list = self.roi_list_2d[self.active-1]
 		self.masks = self.masks_2d[self.active-1]
 		self.redraw_rois()
+		self.tag_raise('layer5')
+		self.tag_raise('layer4')
+		self.tag_raise('layer3')
+		self.tag_raise('layer2')
+		self.tag_raise('layer1')
 	
 	def quick_redraw_image(self):
 		try:
 			self.delete('image')
 			self.create_image((0,0),image=self.images[self.active-1].photoimage,anchor='nw',tags='image')
+			self.tag_lower('image')
 		except:
 			pass
 		
