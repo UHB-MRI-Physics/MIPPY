@@ -1068,6 +1068,11 @@ class MIPPYImage():
 		return
 
 	def construct_from_array(self,pixel_array):
+		if len(np.shape(pixel_array))>2:
+			# Assume RGB?
+			print np.shape(pixel_array)
+			pixel_array = np.mean(pixel_array,axis=0)
+			print np.shape(pixel_array)
 		self.px_float = pixel_array.astype(np.float64)
 		self.rangemax = np.amax(pixel_array)
 		self.rangemin = np.amin(pixel_array)
