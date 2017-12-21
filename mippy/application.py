@@ -403,12 +403,26 @@ class MIPPYMain(Frame):
 		self.dicomdir = tkFileDialog.askdirectory(parent=self,initialdir=r"M:",title="Select image directory")
 		if not self.dicomdir:
 			return
-		ask_recursive = tkMessageBox.askyesno("Search recursively?","Do you want to include all subdirectories?")
+		self.ask_recursive = tkMessageBox.askyesno("Search recursively?","Do you want to include all subdirectories?")
 
 		#~ self.path_list = []
 		self.active_series = None
+		
+		# Check for appropriate mippydb object in the chosen directory
+		if self.ask_recursive:
+			self.mippydbpath = os.path.join(self.dicomdir,"mippydb_r")
+		else:
+			self.mippydbpath = os.path.join(self.dicomdir,"mippydb")
+		if os.path.exists(self.mippydbpath):
+			ask_use_mippydb = tkMessageBox.askyesno("Load existing MIPPYDB?","MIPPYDB file found. Load the existing DICOM tree?")
+			if ask_use_mippydb:
+				with open(self.mippydbpath,'rb') as fileobj:
+					self.sorted_list = pickle.load(fileobj)
+				self.tag_list = self.sorted_list	# Shouldn't need this really...
+				self.build_dicom_tree()
+				return
 
-		self.path_list = fileio.list_all_files(self.dicomdir,recursive=ask_recursive)
+		self.path_list = fileio.list_all_files(self.dicomdir,recursive=self.ask_recursive)
 
 		self.filter_dicom_files()
 		self.build_dicom_tree()
@@ -431,14 +445,22 @@ class MIPPYMain(Frame):
 					for row in tags:
 						self.tag_list.append(row)
 			self.progress(0.)
-		return
-
-	def build_dicom_tree(self):
-		print "function_started"
 		# This should sort the list into your initial order for the tree - maybe implement a more customised sort if necessary?
 		from operator import itemgetter
 		self.sorted_list = sorted(self.tag_list, key=itemgetter('name','date','time','studyuid','series','seriesuid','instance','instanceuid'))
+		
+		# Uncomment this block to enable mippydb objects in image directory
+		#~ if self.ask_recursive:
+			#~ self.mippydbpath = os.path.join(self.dicomdir,"mippydb_r")
+		#~ else:
+			#~ self.mippydbpath = os.path.join(self.dicomdir,"mippydb")
+		#~ with open(self.mippydbpath,'wb') as fileobj:
+			#~ pickle.dump(self.sorted_list,fileobj,-1)
 
+		return
+
+	def build_dicom_tree(self):
+		#~ print "function_started"
 		#~ i=0
 		print self.dirframe.dicomtree.get_children()
 		try:
