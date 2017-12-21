@@ -374,7 +374,7 @@ def load_images_from_uids(list_of_tags,uids_to_match,tempdir,multiprocess=False)
 							datasets_to_pass.append([split_ds])
 						else:
 							datasets_to_pass[-1].append(split_ds)
-						save_temp_ds(split_ds,tempdir,tag['instanceuid']+'.mds')
+						io.save_temp_ds(split_ds,tempdir,tag['instanceuid']+'.mds')
 				previous_tag = tag
 	else:
 		for tag in list_of_tags:
