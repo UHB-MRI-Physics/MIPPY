@@ -9,6 +9,7 @@ from datetime import datetime
 import scipy.ndimage.interpolation as spim
 import gc
 import time
+import sys
 
 ########################################
 ########################################
@@ -93,21 +94,18 @@ def quick_display(im_array,master_window):
 	win.imcanvas.load_images(im_array)
 	return
 
-def bits_to_ndarray(bits, shape):
-	abytes = np.frombuffer(bits, dtype=np.uint8)
-	abits = np.zeros(8*len(abytes), np.uint8)
-
-	for n in range(8):
-		abits[n::8] = (abytes & (2 ** n)) !=0
-
-	return abits.reshape(shape)
-
 def get_overlay(ds):
 	"""
 	Expects DICOM dataset
 	"""
 	try:
-		overlay = bits_to_ndarray(ds[0x6000,0x3000].value, shape=(ds.Rows,ds.Columns))*255
+		bits = ds[0x6000,0x3000].value
+		#~ print "OVERLAY LENGTH",len(bits)
+		#~ print "EXPECTED LENGTH",ds.Rows*ds.Columns
+		#~ if len(bits)>ds.Rows*ds.Columns:
+			#~ bits = bits[0:ds.Rows*ds.Columns]
+			#~ print "NEW OVERLAY LENGTH",len(bits)
+		overlay = bits_to_ndarray(bits, shape=(ds.Rows,ds.Columns))*255
 	except KeyError:
 		return None
 	except:
@@ -147,7 +145,16 @@ def get_global_min_and_max(image_list):
 			min = newmin
 		if newmax > max:
 			max = newmax
-	return min,max
+	return float(min),float(max)
+
+#~ def bits_to_ndarray(bits, shape):
+	#~ abytes = np.frombuffer(bits, dtype=np.uint8)
+	#~ abits = np.zeros(8*len(abytes), np.uint8)
+
+	#~ for n in range(8):
+		#~ abits[n::8] = (abytes & (2 ** n)) !=0
+
+	#~ return abits.reshape(shape)
 
 def bits_to_ndarray(bits, shape):
 	abytes = np.frombuffer(bits, dtype=np.uint8)
@@ -155,6 +162,9 @@ def bits_to_ndarray(bits, shape):
 
 	for n in range(8):
 		abits[n::8] = (abytes & (2 ** n)) !=0
+	
+	if len(abits)>shape[0]*shape[1]:
+		abits = abits[0:shape[0]*shape[1]]
 
 	return abits.reshape(shape)
 
@@ -690,7 +700,7 @@ class MIPPYCanvas(Canvas):
 		return
 
 
-	def load_images(self,image_list,keep_rois=False):
+	def load_images(self,image_list,keep_rois=False,limitbitdepth=False):
 		self.images = []
 		self.delete('all')
 		if not keep_rois or not len(self.roi_list_2d)==len(image_list):
@@ -710,7 +720,7 @@ class MIPPYCanvas(Canvas):
 			
 		for ref in image_list:
 			self.progress(45.*n/len(image_list)+10)
-			self.images.append(MIPPYImage(ref))
+			self.images.append(MIPPYImage(ref,limitbitdepth=limitbitdepth))			# Included limitbitdepth to allow restriction to 8 bit int
 			if not keep_rois or not len(self.roi_list_2d)==len(image_list):
 				self.roi_list_2d.append([])
 				self.masks_2d.append([])
@@ -727,6 +737,10 @@ class MIPPYCanvas(Canvas):
 		for i in range(len(self.images)):
 			self.progress(45.*i/len(self.images)+55)
 			self.images[i].wl_and_display(window=self.window,level=self.level,zoom=self.zoom_factor,antialias=self.antialias)
+		
+		#~ from mippy.misc import deep_getsizeof,getsizeof
+		#~ print np.round(float(deep_getsizeof(self.images,set()))/1024./1024,3),"MB (deep_getsizeof)"
+		#~ print np.round(float(getsizeof(self.images))/1024./1024,3),"MB (pympler asizeof)"
 		
 		self.configure_scrollbar()
 		
@@ -982,7 +996,7 @@ class MIPPYImage():
 	I should type "actual" some more...
 	"""
 
-	def __init__(self,dicom_dataset,create_pillow=True):
+	def __init__(self,dicom_dataset,create_pillow=True,limitbitdepth=False):
 		
 		# Need some tags to describe the state of the image
 		# Use integers, increment as approrpriate and test with % function
@@ -1002,8 +1016,8 @@ class MIPPYImage():
 			print "ERROR GENERATING IMAGE: Constructor input type not understood"
 			return
 		bitdepth = int(ds.BitsStored)
-		pixels = ds.pixel_array.astype(np.float64)
 		# DO NOT KNOW IF PIXEL ARRAY ALREADY HANDLES RS AND RI
+		pixels = ds.pixel_array.astype(np.float64)
 		try:
 			self.rs = float(ds[0x28,0x1053].value)
 		except:
@@ -1021,6 +1035,13 @@ class MIPPYImage():
 		self.px_float = generate_px_float(pixels, self.rs, self.ri, self.ss)
 		self.rangemax = generate_px_float(np.power(2,bitdepth), self.rs, self.ri, self.ss)
 		self.rangemin = generate_px_float(0,self.rs,self.ri,self.ss)
+		if limitbitdepth:
+			# Added this to try and reduce memory burden on things like MRS reference images where
+			# multiple 3D datasets might be loaded
+			bitdepth_scale_factor = 1./np.max(self.px_float)*255.
+			self.px_float = np.round(self.px_float*bitdepth_scale_factor).astype(np.uint8)
+			self.rangemax = self.rangemax*bitdepth_scale_factor
+			self.rangemin = self.rangemin*bitdepth_scale_factor
 		try:
 			self.image_position = np.array(ds.ImagePositionPatient)
 			self.image_orientation = np.array(ds.ImageOrientationPatient).reshape((2,3))
@@ -1152,7 +1173,7 @@ class MIPPYImage():
 
 		if self.level-self.rangemin<self.window/2:
 			self.window=2*(self.level-self.rangemin)
-		windowed_px = np.clip(self.px_float,self.level-self.window/2,self.level+self.window/2-1)
+		windowed_px = np.clip(self.px_float,self.level-self.window/2,self.level+self.window/2-1).astype(np.float64)
 		px_view = np.clip(((windowed_px-np.min(windowed_px))/self.window * 256.),0.,255.).astype(np.uint8)
 		
 		self.image = Image.fromarray(px_view, mode='L')

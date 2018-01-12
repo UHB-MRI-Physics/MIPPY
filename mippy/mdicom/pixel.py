@@ -98,7 +98,7 @@ def get_voxel_location(coords,slice_location,slice_orientation,pxspc_x,pxspc_y,s
 	return tuple(result[0:3])
 
 def get_img_coords(coords,slice_location,slice_orientation,pxspc_x,pxspc_y,slcspc=None):
-	# Performs the inverse of get_voxel_location, returning the x,y coordinates in the image space
+	# Performs the inverse of get_voxel_location, returning the x,y,z coordinates in the image space
 	# of a point (x,y,z) in patient space
 	p = slice_location
 	q = slice_orientation
@@ -106,7 +106,9 @@ def get_img_coords(coords,slice_location,slice_orientation,pxspc_x,pxspc_y,slcsp
 	y = pxspc_y
 	if len(coords)>2:
 		coord_arr = np.array([coords[0],coords[1],coords[2],1.])
-		#~ q2 = np.cross(q[0:3],q[3:6])
+		if len(q)==6:
+			q2 = np.cross(q[0:3],q[3:6])
+			q = np.concatenate((q,q2))
 		z = slcspc
 		trans_arr = np.array([	[	q[0]*x, q[3]*y, q[6]*z, p[0]	],
 							[	q[1]*x, q[4]*y, q[7]*z, p[1]	],
@@ -122,7 +124,8 @@ def get_img_coords(coords,slice_location,slice_orientation,pxspc_x,pxspc_y,slcsp
 	inverse_trans_array = np.linalg.inv(trans_arr)
 	result = np.matmul(inverse_trans_array,coord_arr)
 	return tuple(result[0:3])
-	
+
+# TEST FUNCTION, ONLY RUNS IF FILE IS CALLED DIRECTLY
 if __name__ == '__main__':
 	orient = [1,0,0,0,-1,0]
 	position = [-3.8,-20.4,120.8]

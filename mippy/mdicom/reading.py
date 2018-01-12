@@ -251,6 +251,7 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 					#~ path = outpath
 					ds = dicom.read_file(outpath)
 				
+			print name,"/",date,"/",seriesdesc,"/",i
 			if not ("SPECTROSCOPY" in mode.upper() or ima_mrs_uid in mode.upper()):
 				pxfloat=pixel.get_px_array(ds,enhanced,i,bitdepth=8)
 				if pxfloat is None:
