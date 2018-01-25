@@ -176,6 +176,7 @@ class MIPPYMain(Frame):
 		self.imagemenu = Menu(self.menubar,tearoff=0)
 		self.imagemenu.add_command(label="View DICOM header", command=lambda:self.view_header())
 		self.imagemenu.add_command(label="Compare DICOM headers", command=lambda:self.compare_headers())
+		self.imagemenu.add_command(label="Export DICOM files", command=lambda:self.export_dicom())
 		# Create and populate "Help" menu
 		self.helpmenu = Menu(self.menubar, tearoff=0)
 		self.helpmenu.add_command(label="Open the wiki",command=lambda:self.load_wiki())
@@ -758,6 +759,24 @@ class MIPPYMain(Frame):
 				dcm_compare.text.insert(END,'2: '+row[2]+'\n','highlight')
 		dcm_compare.text.config(state='disabled')
 		dcm_compare.text.pack()
+	
+	def export_dicom(self):
+		outdir = os.path.join(self.root_dir,"EXPORT")
+		if not hasattr(self, 'active_uids'):
+			tkMessageBox.showerror('ERROR','No images selected.')
+			return
+		if len(self.active_uids)<1:
+			tkMessageBox.showerror('ERROR','No images selected.')
+			return
+		i=0
+		for tag in self.sorted_list:
+			if tag['instanceuid'] in self.active_uids:
+				fileio.export_dicom_file(load_images_from_uids([tag],self.active_uids,self.tempdir,multiprocess=False)[0][0],outdir)
+				i+=1
+				self.progress(float(i)/float(len(self.active_uids))*100.)
+		self.progress(0.)
+		tkMessageBox.showinfo('EXPORT FINISHED','Images have finished exporting to:\n'+outdir)
+		return
 	
 	def show_log(self):
 		logwin = Toplevel()

@@ -41,3 +41,31 @@ def save_results(results,name=None,directory=None):
 	with open(outpath,'w') as txtfile:
 		txtfile.write(results)
 	return
+
+def export_dicom_file(ds,outdir):
+	"""
+	Export a DICOM dataset to the disk drive.
+	At some point this will be customisable!
+	"""
+	dir1 = ds.PatientName.replace('^','__')+"_"+remove_invalid_characters(ds.PatientID)
+	dir2 = ds.StudyDate+"_"+ds.StudyTime
+	dir3 = str(ds.SeriesNumber).zfill(4)+"_"+remove_invalid_characters(str(ds.SeriesDescription))
+	
+	#~ fname1 = str(ds.ImageType).replace('/','-').strip()+"_"
+	fname1 = ''.join(str(i)+"_" for i in ds.ImageType)
+	fname2 = str(ds.InstanceNumber).zfill(5)
+	
+	fext = '.DCM'
+	
+	outdirfull = os.path.join(outdir,dir1,dir2,dir3)
+	if not os.path.exists(outdirfull):
+		os.makedirs(outdirfull)
+	
+	ds.save_as(os.path.join(outdirfull,fname1+fname2+fext))
+	return
+	
+def remove_invalid_characters(value):
+	deletechars = '\/:*?"<>|'
+	for c in deletechars:
+		value = value.replace(c,'')
+	return value
