@@ -433,7 +433,8 @@ class MIPPYMain(Frame):
 	def filter_dicom_files(self):
 		self.tag_list = []
 		
-		if self.multiprocess and not ('win' in sys.platform and len(self.path_list)<20):
+		if self.multiprocess and not (('win' in sys.platform and not 'darwin' in sys.platform)
+								and len(self.path_list)<20):
 			f = partial(collect_dicomdir_info,tempdir=self.tempdir)
 			self.tag_list = multithread(f,self.path_list,progressbar=self.progress)
 			self.tag_list = [item for sublist in self.tag_list for item in sublist]
