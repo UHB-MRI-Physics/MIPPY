@@ -139,6 +139,9 @@ class MIPPYMain(Frame):
 		else:
 			self.moduledir = None
 		
+		# Create variable for export directory
+		self.exportdir = None
+		
 		# Check status of DCMDJPEG for mac or unix, and set
 		# executable if necessary
 		
@@ -767,21 +770,26 @@ class MIPPYMain(Frame):
 		dcm_compare.text.pack()
 	
 	def export_dicom(self):
-		outdir = os.path.join(self.root_dir,"EXPORT")
+		
+		#~ outdir = os.path.join(self.root_dir,"EXPORT")
 		if not hasattr(self, 'active_uids'):
 			tkMessageBox.showerror('ERROR','No images selected.')
 			return
 		if len(self.active_uids)<1:
 			tkMessageBox.showerror('ERROR','No images selected.')
 			return
+		self.exportdir = tkFileDialog.askdirectory(parent=self,initialdir=r"M:",title="Select export directory")
+		if self.exportdir is None:
+			return
 		i=0
 		for tag in self.sorted_list:
 			if tag['instanceuid'] in self.active_uids:
-				fileio.export_dicom_file(load_images_from_uids([tag],self.active_uids,self.tempdir,multiprocess=False)[0][0],outdir)
+				fileio.export_dicom_file(load_images_from_uids([tag],self.active_uids,self.tempdir,multiprocess=False)[0][0],self.exportdir)
 				i+=1
 				self.progress(float(i)/float(len(self.active_uids))*100.)
 		self.progress(0.)
-		tkMessageBox.showinfo('EXPORT FINISHED','Images have finished exporting to:\n'+outdir)
+		tkMessageBox.showinfo('EXPORT FINISHED','Images have finished exporting to:\n'+self.exportdir)
+		self.exportdir = None		
 		return
 	
 	def show_log(self):

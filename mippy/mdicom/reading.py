@@ -246,15 +246,19 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 						#~ print "UNSUPPORTED OPERATING SYSTEM"
 						#~ print str(sys.platform)
 					#~ command = [dcmdjpeg,'\"'+path+'\"','\"'+outpath+'\"']
-					command = [dcmdjpeg,path,outpath]
+					command = [dcmdjpeg,'-v',path,outpath]
 					call(command, shell=False)
 					#~ path = outpath
+					#~ print ds.file_meta.TransferSyntaxUID
+					del(ds)
 					ds = dicom.read_file(outpath)
+					#~ print ds.file_meta.TransferSyntaxUID
 				
 			print name,"/",date,"/",seriesdesc,"/",i
 			if not ("SPECTROSCOPY" in mode.upper() or ima_mrs_uid in mode.upper()):
 				pxfloat=pixel.get_px_array(ds,enhanced,i,bitdepth=8)
 				if pxfloat is None:
+					print "ERROR: Couldn't read pixel data"
 					continue
 				try:
 					overlay = get_overlay(ds)
@@ -277,6 +281,8 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 					('seriesdesc',seriesdesc),('instance',i),('instanceuid',instance_uid),
 					('path',path),('enhanced',enhanced),('compressed',compressed),
 					('px_array',pxfloat)]))
+			#~ print tags[-1]
+			#~ print "ARGH!"
 			#~ print tags[-1]['seriesdesc'],tags[-1]['instance']
 		# Assuming all this has worked, serialise the dataset (ds) for later use, with the instance UID
 		# as the file name

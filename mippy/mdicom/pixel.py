@@ -3,6 +3,8 @@ import numpy as np
 def get_px_array(ds,enhanced=False,instance=None,bitdepth=None):
 	if 'JPEG' in str(ds.file_meta[0x2,0x10].value):
 		compressed = True
+		print "DATA IS JPEG COMPRESSED - UNABLE TO PRODUCE PIXEL ARRAY"
+		return None
 	else:
 		compressed = False
 	try:
@@ -29,7 +31,8 @@ def get_px_array(ds,enhanced=False,instance=None,bitdepth=None):
 		else:
 			px_float = generate_px_float(ds.pixel_array.astype(np.float64),rs,ri,ss)
 	except:
-		return None
+		raise
+		#~ return None
 	if not bitdepth is None:
 		# Rescale float to unsigned integer bitdepth specified
 		# Useful for preview purposes to save memory!!!
@@ -69,7 +72,7 @@ def px_bytes_to_array(byte_array,rows,cols,bitdepth=16,mode='littleendian',rs=1,
 	return px_float
 
 def generate_px_float(pixels,rs,ri,ss=None):
-	if ss:
+	if not ss is None:
 		return (pixels*rs+ri)/(rs*ss)
 	else:
 		return (pixels*rs+ri)

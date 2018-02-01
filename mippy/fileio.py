@@ -54,7 +54,8 @@ def export_dicom_file(ds,outdir):
 	
 	#~ fname1 = str(ds.ImageType).replace('/','-').strip()+"_"
 	fname1 = ''.join(str(i)+"_" for i in ds.ImageType)
-	fname2 = str(ds.InstanceNumber).zfill(5)
+	fname2 = str(ds.SeriesNumber).zfill(4)+"_"
+	fname3 = str(ds.InstanceNumber).zfill(5)
 	
 	fext = '.DCM'
 	
@@ -62,7 +63,7 @@ def export_dicom_file(ds,outdir):
 	if not os.path.exists(outdirfull):
 		os.makedirs(outdirfull)
 	
-	ds.save_as(os.path.join(outdirfull,fname1+fname2+fext))
+	ds.save_as(os.path.join(outdirfull,fname1+fname2+fname3+fext))
 	return
 	
 def remove_invalid_characters(value):
