@@ -177,6 +177,10 @@ class MIPPYMain(Frame):
 		self.imagemenu.add_command(label="View DICOM header", command=lambda:self.view_header())
 		self.imagemenu.add_command(label="Compare DICOM headers", command=lambda:self.compare_headers())
 		self.imagemenu.add_command(label="Export DICOM files", command=lambda:self.export_dicom())
+		# Create and populate "Options" menu
+		self.optionsmenu = Menu(self.menubar,tearoff=0)
+		self.optionsmenu.add_command(label="Enable multiprocessing", command=lambda:self.enable_multiprocessing())
+		self.optionsmenu.add_command(label="Disable multiprocessing", command=lambda:self.disable_multiprocessing())
 		# Create and populate "Help" menu
 		self.helpmenu = Menu(self.menubar, tearoff=0)
 		self.helpmenu.add_command(label="Open the wiki",command=lambda:self.load_wiki())
@@ -188,6 +192,7 @@ class MIPPYMain(Frame):
 		self.menubar.add_cascade(label="File",menu=self.filemenu)
 		self.menubar.add_cascade(label="Modules",menu=self.modulemenu)
 		self.menubar.add_cascade(label="Image",menu=self.imagemenu)
+		self.menubar.add_cascade(label="Options",menu=self.optionsmenu)
 		self.menubar.add_cascade(label="Help",menu=self.helpmenu)
 		self.master.config(menu=self.menubar)
 
@@ -787,6 +792,16 @@ class MIPPYMain(Frame):
 			for row in text:
 				logtext.insert(END,row+'\n')
 		logtext.pack()
+	
+	def enable_multiprocessing(self):
+		self.multiprocess = True
+		tkMessageBox.showinfo("INFO","Multiprocessing enabled")
+		return
+	
+	def disable_multiprocessing(self):
+		self.multiprocess = False
+		tkMessageBox.showinfo("INFO","Multiprocessing disabled")
+		return
 
 #########################################################
 
