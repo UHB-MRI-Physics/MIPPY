@@ -208,37 +208,43 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 			
 			"""
 			Disabled to test Python's built-in JPEG module
+			Reenabled!!!
 			"""
-			#~ if compressed:
-				#~ # Check if temp file already exists for that InstanceUID. If so, read that file. If not, 
-				#~ # uncompress the file and replace ds. Dataset will get saved as temp file at the end of this
-				#~ # function.
-				#~ temppath = os.path.join(tempdir,instance_uid+'.mds')
-				#~ if os.path.exists(temppath):
-					#~ print seriesdesc+' '+str(i).zfill(3)
-					#~ print "    COMPRESSED DICOM - Temp file found"
-					#~ with open(temppath,'rb') as tempfile:
-						#~ ds = pickle.load(tempfile)
-					#~ tempfile.close()
-				#~ else:
-					#~ if dcmdjpeg is None:
-						#~ if 'darwin' in sys.platform:
-							#~ dcmdjpeg = os.path.join(tempdir,"dcmdjpeg_mac")
-						#~ elif 'linux' in sys.platform:
-							#~ dcmdjpeg = os.path.join(tempdir,"dcmdjpeg_linux")
-						#~ elif 'win' in sys.platform:
-							#~ dcmdjpeg = os.path.join(tempdir,"dcmdjpeg_win.exe")
-						#~ else:
-							#~ print "UNSUPPORTED OPERATING SYSTEM"
-							#~ print str(sys.platform)
-					#~ # Uncompress the file
-					#~ outpath=os.path.join(tempdir,'UNCOMP_'+instance_uid+'.DCM')
-					#~ print seriesdesc+' '+str(i).zfill(3)
-					#~ print "    COMPRESSED DICOM - Uncompressing"
-					#~ command = [dcmdjpeg,'-v',path,outpath]
-					#~ call(command, shell=False)
-					#~ del(ds)
-					#~ ds = dicom.read_file(outpath)
+			if compressed:
+				# Check if temp file already exists for that InstanceUID. If so, read that file. If not, 
+				# uncompress the file and replace ds. Dataset will get saved as temp file at the end of this
+				# function.
+				temppath = os.path.join(tempdir,instance_uid+'.mds')
+				if os.path.exists(temppath):
+					print seriesdesc+' '+str(i).zfill(3)
+					print "    COMPRESSED DICOM - Temp file found"
+					with open(temppath,'rb') as tempfile:
+						ds = pickle.load(tempfile)
+					tempfile.close()
+				else:
+					if dcmdjpeg is None:
+						if 'darwin' in sys.platform:
+							dcmdjpeg = os.path.join(tempdir,"dcmdjpeg_mac")
+						elif 'linux' in sys.platform:
+							dcmdjpeg = os.path.join(tempdir,"dcmdjpeg_linux")
+						elif 'win' in sys.platform:
+							dcmdjpeg = os.path.join(tempdir,"dcmdjpeg_win.exe")
+						else:
+							print "UNSUPPORTED OPERATING SYSTEM"
+							print str(sys.platform)
+					# Uncompress the file
+					outpath=os.path.join(tempdir,'UNCOMP_'+instance_uid+'.DCM')
+					print seriesdesc+' '+str(i).zfill(3)
+					print "    COMPRESSED DICOM - Uncompressing"
+					command = [dcmdjpeg,'-v',path,outpath]
+					call(command, shell=False)
+					del(ds)
+					ds = dicom.read_file(outpath)
+					# Fix for incorrect JPEG UID in file_meta
+					if 'JPEG' in str(ds.file_meta.TransferSyntaxUID):
+						ds.file_meta.TransferSyntaxUID = '1.2.840.10008.1.2.1'
+						ds.is_little_endian = True
+						ds.is_implicit_VR = False
 				
 			print name,"/",date,"/",seriesdesc,"/",i
 			if not ("SPECTROSCOPY" in mode.upper() or ima_mrs_uid in mode.upper()):
