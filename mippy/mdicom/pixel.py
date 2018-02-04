@@ -1,10 +1,14 @@
 import numpy as np
+from PIL import Image
+import StringIO
+import binascii
 
 def get_px_array(ds,enhanced=False,instance=None,bitdepth=None):
 	if 'JPEG' in str(ds.file_meta[0x2,0x10].value):
 		compressed = True
-		print "DATA IS JPEG COMPRESSED - UNABLE TO PRODUCE PIXEL ARRAY"
-		return None
+		#~ print "DATA IS JPEG COMPRESSED - UNABLE TO PRODUCE PIXEL ARRAY"
+		print "Data is JPEG compressed. Uncompressing within MIPPY"
+		#~ return None
 	else:
 		compressed = False
 	try:
@@ -19,17 +23,37 @@ def get_px_array(ds,enhanced=False,instance=None,bitdepth=None):
 		ss = float(ds[0x2005,0x100E].value)
 	except:
 		ss = None
+	if compressed:
+		# Grab raw pixel array
+		#~ pixel_data_unpacked = binascii.unhexlify(ds.PixelData)
+		pixel_data_unpacked = ds.PixelData
 	try:
-		if enhanced:
-			if not instance:
-				print "PREVIEW ERROR: Instance/frame number not specified"
-				return None
-			rows = int(ds.Rows)
-			cols = int(ds.Columns)
-			px_bytes = ds.PixelData[(instance-1)*(rows*cols*2):(instance)*(rows*cols*2)]
-			px_float = px_bytes_to_array(px_bytes,rows,cols,rs=rs,ri=ri,ss=ss)
+		if not compressed:
+			if enhanced:
+				if not instance:
+					print "PREVIEW ERROR: Instance/frame number not specified"
+					return None
+				rows = int(ds.Rows)
+				cols = int(ds.Columns)
+				px_bytes = ds.PixelData[(instance-1)*(rows*cols*2):(instance)*(rows*cols*2)]
+				px_float = px_bytes_to_array(px_bytes,rows,cols,rs=rs,ri=ri,ss=ss)
+			else:
+				px_float = generate_px_float(ds.pixel_array.astype(np.float64),rs,ri,ss)
 		else:
-			px_float = generate_px_float(ds.pixel_array.astype(np.float64),rs,ri,ss)
+			if enhanced:
+				if not instance:
+					print "PREVIEW ERROR: Instance/frame number not specified"
+					return None
+				rows = int(ds.Rows)
+				cols = int(ds.Columns)
+				px_bytes = pixel_data_unpacked[0][(instance-1)*(rows*cols*2):(instance)*(rows*cols*2)]
+				px_stream = StringIO.StringIO(px_bytes)
+				px_float = generate_px_float(np.array(Image.open(px_stream)).astype(np.float64),rs=rs,ri=ri,ss=ss)
+			else:
+				rows = int(ds.Rows)
+				cols = int(ds.Columns)
+				px_stream = StringIO.StringIO(pixel_data_unpacked)
+				px_float = generate_px_float(np.array(Image.open(px_stream)).astype(np.float64),rs=rs,ri=ri,ss=ss)
 	except:
 		raise
 		#~ return None

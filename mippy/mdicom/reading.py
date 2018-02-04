@@ -204,55 +204,41 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 			else:
 				# Append instance UID with the frame number to give unique reference to each slice
 				instance_uid = ds.SOPInstanceUID+"_"+str(i).zfill(4)
-		
-			if compressed:
-				# Check if temp file already exists for that InstanceUID. If so, read that file. If not, 
-				# uncompress the file and replace ds. Dataset will get saved as temp file at the end of this
-				# function.
-				temppath = os.path.join(tempdir,instance_uid+'.mds')
-				if os.path.exists(temppath):
-					print seriesdesc+' '+str(i).zfill(3)
-					print "    COMPRESSED DICOM - Temp file found"
-					with open(temppath,'rb') as tempfile:
-						ds = pickle.load(tempfile)
-					tempfile.close()
-				else:
-					# Set path to dcmdjpeg if necessary
-					if dcmdjpeg is None:
-						if 'darwin' in sys.platform:
-							#~ dcmdjpeg= resource_filename('mippy','resources/dcmdjpeg_mac')
-							dcmdjpeg = os.path.join(tempdir,"dcmdjpeg_mac")
-						elif 'linux' in sys.platform:
-							#~ dcmdjpeg=resource_filename('mippy','resources/dcmdjpeg_linux')
-							dcmdjpeg = os.path.join(tempdir,"dcmdjpeg_linux")
-						elif 'win' in sys.platform:
-							#~ dcmdjpeg=resource_filename('mippy','resources\dcmdjpeg_win.exe')
-							dcmdjpeg = os.path.join(tempdir,"dcmdjpeg_win.exe")
-						else:
-							print "UNSUPPORTED OPERATING SYSTEM"
-							print str(sys.platform)
-					# Uncompress the file
-					outpath=os.path.join(tempdir,'UNCOMP_'+instance_uid+'.DCM')
-					print seriesdesc+' '+str(i).zfill(3)
-					print "    COMPRESSED DICOM - Uncompressing"
-					#~ if 'darwin' in sys.platform:
-						#~ #dcmdjpeg=os.path.join(os.getcwd(),'lib','dcmdjpeg_mac')
-						#~ dcmdjpeg=r'./lib/dcmdjpeg_mac'
-					#~ elif 'linux' in sys.platform:
-						#~ dcmdjpeg=r'./lib/dcmdjpeg_linux'
-					#~ elif 'win' in sys.platform:
-						#~ dcmdjpeg=r'lib\dcmdjpeg_win.exe'
-					#~ else:
-						#~ print "UNSUPPORTED OPERATING SYSTEM"
-						#~ print str(sys.platform)
-					#~ command = [dcmdjpeg,'\"'+path+'\"','\"'+outpath+'\"']
-					command = [dcmdjpeg,'-v',path,outpath]
-					call(command, shell=False)
-					#~ path = outpath
-					#~ print ds.file_meta.TransferSyntaxUID
-					del(ds)
-					ds = dicom.read_file(outpath)
-					#~ print ds.file_meta.TransferSyntaxUID
+			
+			
+			"""
+			Disabled to test Python's built-in JPEG module
+			"""
+			#~ if compressed:
+				#~ # Check if temp file already exists for that InstanceUID. If so, read that file. If not, 
+				#~ # uncompress the file and replace ds. Dataset will get saved as temp file at the end of this
+				#~ # function.
+				#~ temppath = os.path.join(tempdir,instance_uid+'.mds')
+				#~ if os.path.exists(temppath):
+					#~ print seriesdesc+' '+str(i).zfill(3)
+					#~ print "    COMPRESSED DICOM - Temp file found"
+					#~ with open(temppath,'rb') as tempfile:
+						#~ ds = pickle.load(tempfile)
+					#~ tempfile.close()
+				#~ else:
+					#~ if dcmdjpeg is None:
+						#~ if 'darwin' in sys.platform:
+							#~ dcmdjpeg = os.path.join(tempdir,"dcmdjpeg_mac")
+						#~ elif 'linux' in sys.platform:
+							#~ dcmdjpeg = os.path.join(tempdir,"dcmdjpeg_linux")
+						#~ elif 'win' in sys.platform:
+							#~ dcmdjpeg = os.path.join(tempdir,"dcmdjpeg_win.exe")
+						#~ else:
+							#~ print "UNSUPPORTED OPERATING SYSTEM"
+							#~ print str(sys.platform)
+					#~ # Uncompress the file
+					#~ outpath=os.path.join(tempdir,'UNCOMP_'+instance_uid+'.DCM')
+					#~ print seriesdesc+' '+str(i).zfill(3)
+					#~ print "    COMPRESSED DICOM - Uncompressing"
+					#~ command = [dcmdjpeg,'-v',path,outpath]
+					#~ call(command, shell=False)
+					#~ del(ds)
+					#~ ds = dicom.read_file(outpath)
 				
 			print name,"/",date,"/",seriesdesc,"/",i
 			if not ("SPECTROSCOPY" in mode.upper() or ima_mrs_uid in mode.upper()):
@@ -281,9 +267,6 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 					('seriesdesc',seriesdesc),('instance',i),('instanceuid',instance_uid),
 					('path',path),('enhanced',enhanced),('compressed',compressed),
 					('px_array',pxfloat)]))
-			#~ print tags[-1]
-			#~ print "ARGH!"
-			#~ print tags[-1]['seriesdesc'],tags[-1]['instance']
 		# Assuming all this has worked, serialise the dataset (ds) for later use, with the instance UID
 		# as the file name
 		if not enhanced:
