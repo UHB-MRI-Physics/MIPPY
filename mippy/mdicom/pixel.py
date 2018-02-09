@@ -148,6 +148,16 @@ def get_img_coords(coords,slice_location,slice_orientation,pxspc_x,pxspc_y,slcsp
 							[	q[2]*x, q[5]*y, 0., p[2]	],
 							[	0., 0., 0., 1.			]])
 	
+	if np.linalg.det(trans_arr)==0:
+		# No rotation required, use simple scaling as cannot calculate inverse
+		i = (coords[0]-p[0])/x
+		j = (coords[1]-p[1])/y
+		if len(coords)>2:
+			k = (coords[2]-p[3])/z
+		else:
+			k=0.
+		return tuple([i,j,k])
+	
 	inverse_trans_array = np.linalg.inv(trans_arr)
 	result = np.matmul(inverse_trans_array,coord_arr)
 	return tuple(result[0:3])
