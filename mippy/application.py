@@ -32,7 +32,7 @@ import itertools
 from functools import partial
 import stat
 import dicom
-#~ import gc
+import gc
 #~ from multiprocessing import freeze_support
 #~ print "Imports finished!"
 
@@ -502,6 +502,9 @@ class MIPPYMain(Frame):
 		if repeats_found:
 			tkMessageBox.showwarning("WARNING",str(n_repeats)+" repeat image UID's found and ignored.")
 		self.dirframe.dicomtree.update()
+		
+		# Run garbage collect to clear anything left in memory unnecessarily
+		gc.collect()
 
 		# Save DICOM tree as a snapshot to be opened again at a later time
 
@@ -599,6 +602,8 @@ class MIPPYMain(Frame):
 		info_view.text.pack()
 
 	def load_selected_module(self):
+		# Run a garbage collect to clear anything left over from previous module loading
+		gc.collect()
 		try:
 			
 			moduledir = self.moduleframe.moduletree.selection()[0]
