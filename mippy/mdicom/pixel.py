@@ -6,9 +6,9 @@ import binascii
 def get_px_array(ds,enhanced=False,instance=None,bitdepth=None):
 	if 'JPEG' in str(ds.file_meta[0x2,0x10].value):
 		compressed = True
-		#~ print "DATA IS JPEG COMPRESSED - UNABLE TO PRODUCE PIXEL ARRAY"
-		print "Data is JPEG compressed. Uncompressing within MIPPY"
-		#~ return None
+		print "DATA IS JPEG COMPRESSED - UNABLE TO PRODUCE PIXEL ARRAY"
+		#~ print "Data is JPEG compressed. Uncompressing within MIPPY"
+		return None
 	else:
 		compressed = False
 	try:
@@ -39,21 +39,21 @@ def get_px_array(ds,enhanced=False,instance=None,bitdepth=None):
 				px_float = px_bytes_to_array(px_bytes,rows,cols,rs=rs,ri=ri,ss=ss)
 			else:
 				px_float = generate_px_float(ds.pixel_array.astype(np.float64),rs,ri,ss)
-		else:
-			if enhanced:
-				if not instance:
-					print "PREVIEW ERROR: Instance/frame number not specified"
-					return None
-				rows = int(ds.Rows)
-				cols = int(ds.Columns)
-				px_bytes = pixel_data_unpacked[0][(instance-1)*(rows*cols*2):(instance)*(rows*cols*2)]
-				px_stream = StringIO.StringIO(px_bytes)
-				px_float = generate_px_float(np.array(Image.open(px_stream)).astype(np.float64),rs=rs,ri=ri,ss=ss)
-			else:
-				rows = int(ds.Rows)
-				cols = int(ds.Columns)
-				px_stream = StringIO.StringIO(pixel_data_unpacked)
-				px_float = generate_px_float(np.array(Image.open(px_stream)).astype(np.float64),rs=rs,ri=ri,ss=ss)
+		#~ else:
+			#~ if enhanced:
+				#~ if not instance:
+					#~ print "PREVIEW ERROR: Instance/frame number not specified"
+					#~ return None
+				#~ rows = int(ds.Rows)
+				#~ cols = int(ds.Columns)
+				#~ px_bytes = pixel_data_unpacked[0][(instance-1)*(rows*cols*2):(instance)*(rows*cols*2)]
+				#~ px_stream = StringIO.StringIO(px_bytes)
+				#~ px_float = generate_px_float(np.array(Image.open(px_stream)).astype(np.float64),rs=rs,ri=ri,ss=ss)
+			#~ else:
+				#~ rows = int(ds.Rows)
+				#~ cols = int(ds.Columns)
+				#~ px_stream = StringIO.StringIO(pixel_data_unpacked)
+				#~ px_float = generate_px_float(np.array(Image.open(px_stream)).astype(np.float64),rs=rs,ri=ri,ss=ss)
 	except:
 		raise
 		#~ return None
@@ -147,6 +147,16 @@ def get_img_coords(coords,slice_location,slice_orientation,pxspc_x,pxspc_y,slcsp
 							[	q[1]*x, q[4]*y, 0., p[1]	],
 							[	q[2]*x, q[5]*y, 0., p[2]	],
 							[	0., 0., 0., 1.			]])
+	
+	if np.linalg.det(trans_arr)==0:
+		# No rotation required, use simple scaling as cannot calculate inverse
+		i = (coords[0]-p[0])/x
+		j = (coords[1]-p[1])/y
+		if len(coords)>2:
+			k = (coords[2]-p[3])/z
+		else:
+			k=0.
+		return tuple([i,j,k])
 	
 	inverse_trans_array = np.linalg.inv(trans_arr)
 	result = np.matmul(inverse_trans_array,coord_arr)
