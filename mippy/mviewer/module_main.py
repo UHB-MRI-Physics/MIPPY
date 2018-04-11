@@ -91,6 +91,9 @@ def execute(master_window,dicomdir,images):
 	window.zoomoutbutton.grid(row=8,column=0,sticky='nsew')
 
 	window.imcanvas.load_images(images)
+	
+	window.rowconfigure(0,weight=1)
+	window.columnconfigure(0,weight=1)
 
 	return
 

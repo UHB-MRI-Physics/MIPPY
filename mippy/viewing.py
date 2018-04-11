@@ -386,6 +386,7 @@ class MIPPYCanvas(Canvas):
 			self.bind('<B2-Motion>',self.right_drag)
 			self.bind('<ButtonRelease-2>',self.right_release)
 			self.bind('<Double-Button-2>',self.right_double)
+		self.bind('<Configure>', self.reconfigure)
 		self.drawing_roi = False
 		self.xmouse = None
 		self.ymouse = None
@@ -403,6 +404,36 @@ class MIPPYCanvas(Canvas):
 		self.img_scrollbar=None
 		self.antialias = antialias
 		self.autostats = autostats
+	
+	def reconfigure(self,event):
+		if not self.images == []:
+			# Already images loaded. Recalculate zoom factor and redraw
+			print self.width, self.height, event.width, event.height
+			self.width = event.width-4
+			self.height = event.height-4
+			oldzoom = self.zoom_factor
+			self.zoom_factor = np.min([float(self.width)/float(self.images[0].columns),float(self.height)/float(self.images[0].rows)])
+			print self.zoom_factor
+			for image in self.images:
+				image.wl_and_display(window=self.window,level=self.level,antialias=self.antialias,zoom=self.zoom_factor)
+			self.rescale_rois(oldzoom,self.zoom_factor)
+			self.show_image()
+			self.redraw_rois()
+			return
+		else:
+			# No images loaded, shouldn't need to do anything...?
+			pass
+	
+	def rescale_rois(self,oldzoom,newzoom):
+		if self.roi_list_2d == []:
+			return
+		else:
+			for im in range(len(self.images)):
+				for r in range(len(self.roi_list_2d[im])):
+					self.roi_list_2d[im][r].coords = self.canvas_coords(self.image_coords(self.roi_list_2d[im][r].coords,zoom=oldzoom),
+                                                                                            zoom=newzoom)
+			self.update_roi_masks()
+			return
 
 	def configure_scrollbar(self):
 		if self.img_scrollbar:
@@ -953,16 +984,20 @@ class MIPPYCanvas(Canvas):
 		self.drawing_enabled=True
 		self.roi_mode='line'
 
-	def canvas_coords(self,image_coords):
+	def canvas_coords(self,image_coords,zoom=None):
+                if zoom is None:
+                        zoom = self.zoom_factor
 		new_coords = []
 		for thing in image_coords:
-			new_coords.append((thing[0]*self.zoom_factor,thing[1]*self.zoom_factor))
+			new_coords.append((thing[0]*zoom,thing[1]*zoom))
 		return new_coords
 
-	def image_coords(self,canvas_coords):
+	def image_coords(self,canvas_coords,zoom=None):
+                if zoom is None:
+                        zoom = self.zoom_factor
 		new_coords = []
 		for thing in canvas_coords:
-			new_coords.append((thing[0]/self.zoom_factor,thing[1]/self.zoom_factor))
+			new_coords.append((thing[0]/zoom,thing[1]/zoom))
 		return new_coords
 
 
