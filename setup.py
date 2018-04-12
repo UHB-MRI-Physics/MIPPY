@@ -7,11 +7,11 @@ from os import path
 here = path.abspath(path.dirname(__file__))
 
 setup(	name='MIPPY',
-		version='1.0.12',
+		version='1.1.0',
 		description='Modular Image Processing in Python',
 		author='Robert Flintham',
 		author_email='robert.flintham@uhb.nhs.uk',
-		install_requires=['numpy','scipy','pydicom','pillow','nibabel','matplotlib'],
+		install_requires=['numpy','scipy','dicom','pillow','nibabel','matplotlib'],
 		license='BSD-3-Clause',
 		classifiers=[
 			'Development Status :: 1 - Alpha',
