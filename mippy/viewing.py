@@ -430,8 +430,8 @@ class MIPPYCanvas(Canvas):
 					self.roi_list_2d[im][r].coords = self.canvas_coords(self.image_coords(self.roi_list_2d[im][r].coords,zoom=oldzoom),
                                                                                             zoom=newzoom)
 			self.redraw_rois()
-			self.roi_list = self.roi_list_2d[self.active]
-			self.update_roi_masks()
+			self.roi_list = self.roi_list_2d[self.active-1]
+			#self.update_all_roi_masks()
 			return
 
 	def configure_scrollbar(self):
@@ -517,6 +517,30 @@ class MIPPYCanvas(Canvas):
 		self.masks_2d[self.active-1]=mask
 
 		return
+
+	def update_all_roi_masks(self):
+                """
+                Same idea as update_roi_masks, but cycles through all images
+                """
+                i=-1
+                for roilist in self.roi_list_2d:
+                        i+=1
+                        if roilist==[]:
+                                continue
+                        else:
+                                print str(len(roilist))+" ROIs found on image "+str(i+1)
+                                height = self.images[i].rows
+                                width = self.images[i].columns
+                                print width,height
+                                mask = np.zeros((len(roilist),height,width))
+                                for y in range(height):
+                                        for x in range(width):
+                                                for r in range(len(roilist)):
+                                                        if roilist[r].contains((x*self.zoom_factor,y*self.zoom_factor)):
+                                                                mask[r,y,x]=1
+                                self.masks_2d[i]=mask
+                                self.masks = self.masks_2d[self.active-1]
+                return
 
 
 	def get_roi_pixels(self,rois=[],tags=[]):
