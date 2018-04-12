@@ -38,6 +38,7 @@ def execute(master_window,dicomdir,images):
 
 
 
+
 	# Create all GUI elements
 	window = Toplevel(master = master_window)
 	# Create canvas
@@ -62,10 +63,10 @@ def execute(master_window,dicomdir,images):
 	window.roi_ellipse_button = Button(window.toolbar,text="Draw elliptical ROI",command=lambda:window.imcanvas.draw_ellipse_roi(),image=window.roi_el_im)
 	window.roi_polygon_button = Button(window.toolbar,text="Draw freehand ROI", command=lambda:window.imcanvas.draw_freehand_roi(),image=window.roi_fr_im)
 	window.roi_line_button = Button(window.toolbar,text="Draw line",command=lambda:window.imcanvas.draw_line_roi(),image=window.roi_li_im)
-	window.roi_square_button.config(width=54)
-	window.roi_ellipse_button.config(width=54)
-	window.roi_polygon_button.config(width=54)
-	window.roi_line_button.config(width=54)
+	window.roi_square_button.config(pad=2)
+	window.roi_ellipse_button.config(pad=2)
+	window.roi_polygon_button.config(pad=2)
+	window.roi_line_button.config(pad=2)
 	#~ window.scrollbutton = Button(window, text="SLICE + / -")
 	window.imcanvas.img_scrollbar = Scrollbar(window,orient='horizontal')
 	window.imcanvas.configure_scrollbar()
@@ -84,7 +85,7 @@ def execute(master_window,dicomdir,images):
 	window.roi_polygon_button.grid(row=2,column=0)
 	window.roi_line_button.grid(row=3,column=0)
 	window.imcanvas.grid(row=0,column=0,columnspan=1,rowspan=6,sticky='nsew')
-	window.toolbar.grid(row=0,column=1)
+	window.toolbar.grid(row=0,column=1,sticky='nsew')
 	#~ window.scrollbutton.grid(row=7,column=0,sticky='nsew')
 	window.imcanvas.img_scrollbar.grid(row=6,column=0,sticky='ew')
 	window.statsbutton.grid(row=3,column=1,sticky='ew')
