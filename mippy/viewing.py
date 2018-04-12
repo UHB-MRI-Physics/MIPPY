@@ -408,17 +408,14 @@ class MIPPYCanvas(Canvas):
 	def reconfigure(self,event):
 		if not self.images == []:
 			# Already images loaded. Recalculate zoom factor and redraw
-			print self.width, self.height, event.width, event.height
 			self.width = event.width-4
 			self.height = event.height-4
 			oldzoom = self.zoom_factor
 			self.zoom_factor = np.min([float(self.width)/float(self.images[0].columns),float(self.height)/float(self.images[0].rows)])
-			print self.zoom_factor
 			for image in self.images:
 				image.wl_and_display(window=self.window,level=self.level,antialias=self.antialias,zoom=self.zoom_factor)
 			self.rescale_rois(oldzoom,self.zoom_factor)
 			self.show_image()
-			self.redraw_rois()
 			return
 		else:
 			# No images loaded, shouldn't need to do anything...?
@@ -432,6 +429,8 @@ class MIPPYCanvas(Canvas):
 				for r in range(len(self.roi_list_2d[im])):
 					self.roi_list_2d[im][r].coords = self.canvas_coords(self.image_coords(self.roi_list_2d[im][r].coords,zoom=oldzoom),
                                                                                             zoom=newzoom)
+			self.redraw_rois()
+			self.roi_list = self.roi_list_2d[self.active]
 			self.update_roi_masks()
 			return
 
