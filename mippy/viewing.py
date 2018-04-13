@@ -293,8 +293,12 @@ class ROI():
 
 	def contains(self,point):
 		# This bounding box thing is a problem
-		if (not self.bbox[0]<=point[0]<=self.bbox[2]
-			or not self.bbox[1]<=point[1]<=self.bbox[3]):
+		arr_co=np.array(self.coords)
+		if (not np.amin(arr_co[:,0])<=point[0]<=np.amax(arr_co[:,0])
+			or not np.amin(arr_co[:,1])<=point[1]<=np.amax(arr_co[:,1])):
+		#~ self.bbox=(np.amin(arr_co[:,0]),np.amin(arr_co[:,1]),np.amax(arr_co[:,0]),np.amax(arr_co[:,1]))
+		#~ if (not self.bbox[0]<=point[0]<=self.bbox[2]
+			#~ or not self.bbox[1]<=point[1]<=self.bbox[3]):
 			return False
 		wn = wn_PnPoly(point,self.coords)
 		if wn==0:
@@ -359,7 +363,7 @@ class ImageFlipper(Frame):
 
 class MIPPYCanvas(Canvas):
 	def __init__(self,master,width=256,height=256,bd=0,drawing_enabled=False,autostats=False,antialias=True,use_masks=True):
-		Canvas.__init__(self,master,width=width,height=height,bd=bd,bg='black')
+		Canvas.__init__(self,master,width=width,height=height,bd=bd,bg='#444444')
 		self.master = master
 		self.zoom_factor = 1
 		self.roi_list = []
@@ -569,6 +573,8 @@ class MIPPYCanvas(Canvas):
 			px = []
 			pxflat = im.px_float.flatten().tolist()
 			for i in rois:
+				if len(tags)>0 and not any([tag in self.roi_list[i].tags for tag in tags]):
+					continue
 				maskflat = self.masks[i,:,:].flatten().tolist()
 				pxlist = [pxflat[ind] for ind,val in enumerate(maskflat) if val>0]
 				px.append(pxlist)
@@ -649,7 +655,7 @@ class MIPPYCanvas(Canvas):
 				profiles[i] = spim.map_coordinates(self.get_active_image().px_float,np.vstack((y_arr,x_arr)),order=intorder,prefilter=False)
 			profile = np.mean(profiles,axis=0)
 
-		return profile, np.array(range(length_int))
+		return profile, np.array(range(length_int))*resolution
 
 	def new_roi(self,coords,tags=[],system='canvas',color='yellow'):
 		if system=='image':
