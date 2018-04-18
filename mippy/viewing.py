@@ -302,13 +302,17 @@ class ROI():
         self.tags = tags
 
     def contains(self, point):
-        # This bounding box thing is a problem
+        # Check whether or not the point is within the extreme bounds of the ROI
+        # coordinates first...
+        # Could do with a faster way of doing this. Originally used self.bbox
+        # stored as an attribute, but had trouble updating dynamically with
+        # a resizing canvas
         arr_co = np.array(self.coords)
-        if (not np.amin(arr_co[:, 0]) <= point[0] <= np.amax(arr_co[:, 0])
-                or not np.amin(arr_co[:, 1]) <= point[1] <= np.amax(arr_co[:, 1])):
-            # ~ self.bbox=(np.amin(arr_co[:,0]),np.amin(arr_co[:,1]),np.amax(arr_co[:,0]),np.amax(arr_co[:,1]))
-            # ~ if (not self.bbox[0]<=point[0]<=self.bbox[2]
-            # ~ or not self.bbox[1]<=point[1]<=self.bbox[3]):
+##        if (not np.amin(arr_co[:, 0]) <= point[0] <= np.amax(arr_co[:, 0])
+##                or not np.amin(arr_co[:, 1]) <= point[1] <= np.amax(arr_co[:, 1])):
+##            return False
+        if (not self.bbox[0]<=point[0]<=self.bbox[2]
+            or not self.bbox[1]<=self.bbox[3]):
             return False
         wn = wn_PnPoly(point, self.coords)
         if wn == 0:
@@ -316,10 +320,15 @@ class ROI():
         else:
             return True
 
-    def update(self, xmove, ymove):
-        for i in range(len(self.coords)):
-            self.coords[i] = (self.coords[i][0] + xmove, self.coords[i][1] + ymove)
-        self.bbox = (self.bbox[0] + xmove, self.bbox[1] + ymove, self.bbox[2] + xmove, self.bbox[3] + ymove)
+    def update(self, xmove=0, ymove=0):
+        if not (xmove==0 and ymove==0):
+            for i in range(len(self.coords)):
+                self.coords[i] = (self.coords[i][0] + xmove, self.coords[i][1] + ymove)
+            self.bbox = (self.bbox[0] + xmove, self.bbox[1] + ymove, self.bbox[2] + xmove, self.bbox[3] + ymove)
+            return
+        else:
+            arr_co = np.array(self.coords)
+            self.bbox = (np.amin(arr_co[:, 0]), np.amin(arr_co[:, 1]), np.amax(arr_co[:, 0]), np.amax(arr_co[:, 1]))
         return
 
 
@@ -445,6 +454,8 @@ class MIPPYCanvas(Canvas):
                 self.roi_list_2d[im][r].coords = self.canvas_coords(
                     self.image_coords(self.roi_list_2d[im][r].coords, zoom=oldzoom),
                     zoom=newzoom)
+
+                self.roi_list_2d[im][r].update()   # Run update method to update roi.bbox
         self.redraw_rois()
         self.roi_list = self.roi_list_2d[self.active - 1]
         # self.update_all_roi_masks()

@@ -580,9 +580,20 @@ class MIPPYMain(Frame):
 	def display_version_info(self):
 		print "Display version info"
 		info = ""
-		verpath = resource_filename('mippy','resources/version.info')
-		with open(verpath,'r') as infofile:
-			info = infofile.read()
+##		verpath = resource_filename('mippy','resources/version.info')
+##		with open(verpath,'r') as infofile:
+##			info = infofile.read()
+		import mippy
+		version = mippy.__version__
+		if 'b' in version:
+                        testing = '(BETA TESTING VERSION)'
+                elif 'a' in version:
+                        testing = '(ALPHA TESTING VERSION)'
+                elif 'rc' in version:
+                        testing = '(Release candidate version)'
+                else:
+                        testing=''
+		info = 'Version '+version+'\n'+testing
 		tkMessageBox.showinfo("MIPPY: Version info",info)
 		return
 	
