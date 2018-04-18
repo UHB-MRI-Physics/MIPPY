@@ -307,7 +307,7 @@ class ROI():
         # Could do with a faster way of doing this. Originally used self.bbox
         # stored as an attribute, but had trouble updating dynamically with
         # a resizing canvas
-        arr_co = np.array(self.coords)
+##        arr_co = np.array(self.coords)
 ##        if (not np.amin(arr_co[:, 0]) <= point[0] <= np.amax(arr_co[:, 0])
 ##                or not np.amin(arr_co[:, 1]) <= point[1] <= np.amax(arr_co[:, 1])):
 ##            return False
