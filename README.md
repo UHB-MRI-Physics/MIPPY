@@ -1,4 +1,5 @@
 README v0.0 / 28 JUNE 2015
+(TEST EDIT)
 
 # MIPPY: Modular Image Processing in Python
 
