@@ -1,4 +1,4 @@
-import dicom
+import pydicom
 import numpy as np
 from tkinter import *
 from tkinter.ttk import *
@@ -247,6 +247,8 @@ def get_ellipse_coords(center, a, b, n=128):
     """
     coords_pos = []
     coords_neg = []
+
+    n = int(np.round(n,0))
 
     for i in range(n):
         """
@@ -537,6 +539,12 @@ class MIPPYCanvas(Canvas):
         for y in range(height):
             for x in range(width):
                 for i in range(len(self.roi_list)):
+                    minx = self.roi_list[i].bbox[0]
+                    maxx = self.roi_list[i].bbox[2]
+                    miny = self.roi_list[i].bbox[1]
+                    maxy = self.roi_list[i].bbox[3]
+                    if not minx <= x <= maxx or not miny <= y <= maxy:
+                        continue
                     if self.roi_list[i].contains((x * self.zoom_factor, y * self.zoom_factor)):
                         mask[i, y, x] = 1
         self.masks = mask
@@ -932,6 +940,7 @@ class MIPPYCanvas(Canvas):
             elif self.roi_mode == 'line':
                 self.add_roi([(self.xmouse, self.ymouse), (event.x, event.y)])
             else:
+                # Freehand
                 self.create_line((self.tempx, self.tempy, self.xmouse, self.ymouse), fill='yellow', width=1, tags='roi')
                 if len(self.tempcoords) > 1:
                     self.add_roi(self.tempcoords)
@@ -1099,8 +1108,8 @@ class MIPPYImage():
         self.rotations = 0
 
         if type(dicom_dataset) is str or type(dicom_dataset) is str:
-            ds = dicom.read_file(dicom_dataset)
-        elif type(dicom_dataset) is dicom.dataset.FileDataset:
+            ds = pydicom.dcmread(dicom_dataset)
+        elif type(dicom_dataset) is pydicom.dataset.FileDataset:
             ds = dicom_dataset
         elif type(dicom_dataset) is np.ndarray:
             self.construct_from_array(dicom_dataset)

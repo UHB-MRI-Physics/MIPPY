@@ -39,16 +39,16 @@ def test_version():
 # Test version numbering before running setup
 test_version()
 
-setup(	name='MIPPY',
-		version=get_version(),
-		description='Modular Image Processing in Python',
-		author='Robert Flintham',
-		author_email='robert.flintham@uhb.nhs.uk',
-		install_requires=['numpy','scipy','dicom','pillow','nibabel','matplotlib'],
-		license='BSD-3-Clause',
-		classifiers=[
-			'Programming Language :: Python :: 2.7',
-			],
-		packages=['mippy','mippy.mdicom','mippy.mviewer'],
-		package_data={'':['resources/*','mviewer/config']}
-	)
+setup(        name='MIPPY',
+                version=get_version(),
+                description='Modular Image Processing in Python',
+                author='Robert Flintham',
+                author_email='robert.flintham@uhb.nhs.uk',
+                install_requires=['numpy','scipy','dicom','pillow','nibabel','matplotlib'],
+                license='BSD-3-Clause',
+                classifiers=[
+                        'Programming Language :: Python :: 2.7',
+                        ],
+                packages=['mippy','mippy.mdicom','mippy.mviewer'],
+                package_data={'':['resources/*','mviewer/config']}
+        )
