@@ -30,7 +30,7 @@ def test_version():
             code_changed = True
             break
     if code_changed:
-        print("CANNOT COMPILE - VERSION NUMBER OUTDATED")
+        print "CANNOT COMPILE - VERSION NUMBER OUTDATED"
         import sys
         sys.exit()
     return

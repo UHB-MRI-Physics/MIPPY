@@ -16,8 +16,8 @@
 if __name__=='__main__':
 	#~ import sys
 	#~ import os
-	from tkinter import *
-	from tkinter.ttk import *
+	from Tkinter import *
+	from ttk import *
         #~ # Set up logfile in logs directory
         #~ debug=False
         #~ print sys.path

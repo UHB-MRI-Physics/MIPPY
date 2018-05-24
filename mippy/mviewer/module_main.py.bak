@@ -1,6 +1,6 @@
-from tkinter import *
-from tkinter.ttk import *
-import tkinter.messagebox
+from Tkinter import *
+from ttk import *
+import tkMessageBox
 from mippy.viewing import *
 import os
 from PIL import Image,ImageTk
@@ -30,9 +30,9 @@ def flatten_series():
 
 
 def execute(master_window,dicomdir,images):
-	print("Module loaded...")
-	print("Received "+str(len(images))+" image datasets.")
-	print(os.getcwd())
+	print "Module loaded..."
+	print "Received "+str(len(images))+" image datasets."
+	print os.getcwd()
 	#~ icondir = os.path.join(os.getcwd(),'source','images')
 
 
@@ -113,7 +113,7 @@ def get_stats(window):
 #	area = len(px)*canvas.get_active_image().xscale*canvas.get_active_image().yscale
 #	tkMessageBox.showinfo('ROI STATS','Mean: %s\nStandard Deviation %s\nArea: %s' %(np.round(mean,2),np.round(std,2),np.round(area,2)))
 	results = window.imcanvas.get_roi_statistics()
-	tkinter.messagebox.showinfo('ROI STATS',results)
+	tkMessageBox.showinfo('ROI STATS',results)
 
 #	display_results(results,window)
 
@@ -122,11 +122,11 @@ def get_profile(window):
 #		print "Only a line ROI can be used to generate profiles"
 #		return
 	profile,scale = window.imcanvas.get_profile()
-	print(profile)
+	print profile
 	return
 def get_vert_profile(window):
 	profile,scale = window.imcanvas.get_profile(direction='vertical')
-	print(profile)
+	print profile
 	return
 
 def zoom_in(window):

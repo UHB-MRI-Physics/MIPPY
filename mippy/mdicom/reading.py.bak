@@ -6,7 +6,7 @@ from . import io
 from . import pixel
 from pkg_resources import resource_filename
 from subprocess import call
-import pickle as pickle
+import cPickle as pickle
 import numpy as np
 import sys
 from PIL import Image
@@ -15,7 +15,7 @@ import gc
 from ..viewing import get_overlay
 from ..threading import multithread
 from functools import partial
-from .mrenhanced import get_frame_ds
+from mrenhanced import get_frame_ds
 import itertools
 
 def recursive_file_finder(path):
@@ -67,25 +67,25 @@ def get_dataset(info,tempdir=None):
 	if not uid is None:
 		temppath = os.path.join(tempdir,str(uid)+'.mds')
 		if os.path.exists(temppath):
-			print("TEMP FILE FOUND: "+str(uid))
+			print "TEMP FILE FOUND: "+str(uid)
 			with open(temppath,'rb') as tempfile:
 				ds = pickle.load(tempfile)
 			return ds
 		elif not filepath is None:
 			ds = dicom.read_file(filepath)
 			if not 'ENHANCED' in str(ds.SOPClassUID).upper():
-				print("SINGLE DICOM FILE FOUND")
+				print "SINGLE DICOM FILE FOUND"
 				io.save_temp_ds(ds,tempdir,str(ds.SOPInstanceUID)+'.mds')
 				return ds
 			else:
 				if not instance is None:
-					from .mrenhanced import get_frame_ds
+					from mrenhanced import get_frame_ds
 					ds_split = get_frame_ds(instance,ds)
 					io.save_temp_ds(ds_split,tempdir,str(ds.SOPInstanceUID)+"_"+str(i).zfill(3)+'.mds')
 					return ds_split
 	
 	# If it's got this far, cannot find file or not enough info
-	print("CANNOT FIND FILE")
+	print "CANNOT FIND FILE"
 	return None
 
 
@@ -108,7 +108,7 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 		# Removed this garbage collection call to try speed up directory reading
 		#~ gc.collect()
 	except Exception:
-		print(path+'\n...is not a valid DICOM file and is being ignored.')
+		print path+'\n...is not a valid DICOM file and is being ignored.'
 		return tags
 	if ds:
 		#~ print path
@@ -185,15 +185,15 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 		
 		if enhanced:
 			# Set "instance" array to match number of frames
-			instance = np.array(list(range(frames)))+1
+			instance = np.array(range(frames))+1
 		else:
 			# Or if not enhanced/multi-frame, just create a single element list so that the code
 			# below still works
 			try:
 				instance = [ds.InstanceNumber]
 			except AttributeError:
-				print("INSTANCE NUMBER TAG DOESN'T EXIST")
-				print(path)
+				print "INSTANCE NUMBER TAG DOESN'T EXIST"
+				print path
 				raise
 		
 		instance_uid = 'UNKNOWN'
@@ -216,8 +216,8 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 				# function.
 				temppath = os.path.join(tempdir,instance_uid+'.mds')
 				if os.path.exists(temppath):
-					print(seriesdesc+' '+str(i).zfill(3))
-					print("    COMPRESSED DICOM - Temp file found")
+					print seriesdesc+' '+str(i).zfill(3)
+					print "    COMPRESSED DICOM - Temp file found"
 					with open(temppath,'rb') as tempfile:
 						ds = pickle.load(tempfile)
 					tempfile.close()
@@ -230,12 +230,12 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 						elif 'win' in sys.platform:
 							dcmdjpeg = os.path.join(tempdir,"dcmdjpeg_win.exe")
 						else:
-							print("UNSUPPORTED OPERATING SYSTEM")
-							print(str(sys.platform))
+							print "UNSUPPORTED OPERATING SYSTEM"
+							print str(sys.platform)
 					# Uncompress the file
 					outpath=os.path.join(tempdir,'UNCOMP_'+instance_uid+'.DCM')
-					print(seriesdesc+' '+str(i).zfill(3))
-					print("    COMPRESSED DICOM - Uncompressing")
+					print seriesdesc+' '+str(i).zfill(3)
+					print "    COMPRESSED DICOM - Uncompressing"
 					command = [dcmdjpeg,'-v',path,outpath]
 					call(command, shell=False)
 					del(ds)
@@ -246,11 +246,11 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 						ds.is_little_endian = True
 						ds.is_implicit_VR = False
 				
-			print(name,"/",date,"/",seriesdesc,"/",i)
+			print name,"/",date,"/",seriesdesc,"/",i
 			if not ("SPECTROSCOPY" in mode.upper() or ima_mrs_uid in mode.upper()):
 				pxfloat=pixel.get_px_array(ds,enhanced,i,bitdepth=8)
 				if pxfloat is None:
-					print("ERROR: Couldn't read pixel data")
+					print "ERROR: Couldn't read pixel data"
 					continue
 				try:
 					overlay = get_overlay(ds)

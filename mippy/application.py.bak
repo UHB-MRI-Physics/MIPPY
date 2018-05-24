@@ -14,10 +14,10 @@ all do.
 #~ print "Importing system modules"
 from pkg_resources import resource_filename
 import os
-import tkinter.messagebox
-import tkinter.filedialog
-from tkinter import *
-from tkinter.ttk import *
+import tkMessageBox
+import tkFileDialog
+from Tkinter import *
+from ttk import *
 #~ import ScrolledText
 from datetime import datetime
 import sys
@@ -27,7 +27,7 @@ import webbrowser
 import shutil
 import importlib
 import getpass
-import pickle as pickle
+import cPickle as pickle
 import itertools
 from functools import partial
 import stat
@@ -39,15 +39,14 @@ import gc
 #~ print "Importing MIPPY code"
 from . import viewing as mview
 from . import mdicom
-from .mdicom.reading import collect_dicomdir_info
-from .mdicom.reading import get_dataset
-from .mdicom.reading import compare_dicom
-from .mdicom.reading import load_images_from_uids
-from .mdicom.mrenhanced import get_frame_ds
-from .mdicom.io import save_temp_ds
+from mdicom.reading import collect_dicomdir_info
+from mdicom.reading import get_dataset
+from mdicom.reading import compare_dicom
+from mdicom.reading import load_images_from_uids
+from mdicom.mrenhanced import get_frame_ds
+from mdicom.io import save_temp_ds
 from . import fileio
 from .threading import multithread
-import imp
 #~ print "Done!"
 
 
@@ -127,7 +126,7 @@ class MIPPYMain(Frame):
 			sys_temp  = os.getenv("TEMP",r'C:\TEMP')
 			self.tempdir = os.path.join(sys_temp,"MIPPY_temp_"+self.user)
 		else:
-			tkinter.messagebox.showerror('ERROR', 'Unsupported operating system, please contact the developers.')
+			tkMessageBox.showerror('ERROR', 'Unsupported operating system, please contact the developers.')
 			sys.exit()
 		if not os.path.exists(self.tempdir):
 			os.makedirs(self.tempdir)
@@ -337,11 +336,11 @@ class MIPPYMain(Frame):
 #		if tkMessageBox.askokcancel("Quit?", "Are you sure you want to exit?"):
 #			self.master.destroy()
 			#~ sys.exit()
-		mbox = tkinter.messagebox.Message(
+		mbox = tkMessageBox.Message(
 			title='Delete temporary files?',
 			message='Would you like to delete all MIPPY temp files?',
-			icon=tkinter.messagebox.QUESTION,
-			type=tkinter.messagebox.YESNOCANCEL,
+			icon=tkMessageBox.QUESTION,
+			type=tkMessageBox.YESNOCANCEL,
 			master = self)
 		reply = mbox.show()
 		if reply=='yes':
@@ -406,14 +405,14 @@ class MIPPYMain(Frame):
 
 
 	def module_window_click(self,event):
-		print("You clicked on the module window.")
+		print "You clicked on the module window."
 
 	def load_image_directory(self):
-		print("Load image directory")
-		self.dicomdir = tkinter.filedialog.askdirectory(parent=self,initialdir=r"M:",title="Select image directory")
+		print "Load image directory"
+		self.dicomdir = tkFileDialog.askdirectory(parent=self,initialdir=r"M:",title="Select image directory")
 		if not self.dicomdir:
 			return
-		self.ask_recursive = tkinter.messagebox.askyesno("Search recursively?","Do you want to include all subdirectories?")
+		self.ask_recursive = tkMessageBox.askyesno("Search recursively?","Do you want to include all subdirectories?")
 
 		#~ self.path_list = []
 		self.active_series = None
@@ -424,7 +423,7 @@ class MIPPYMain(Frame):
 		else:
 			self.mippydbpath = os.path.join(self.dicomdir,"mippydb")
 		if os.path.exists(self.mippydbpath):
-			ask_use_mippydb = tkinter.messagebox.askyesno("Load existing MIPPYDB?","MIPPYDB file found. Load the existing DICOM tree?")
+			ask_use_mippydb = tkMessageBox.askyesno("Load existing MIPPYDB?","MIPPYDB file found. Load the existing DICOM tree?")
 			if ask_use_mippydb:
 				with open(self.mippydbpath,'rb') as fileobj:
 					self.sorted_list = pickle.load(fileobj)
@@ -473,13 +472,13 @@ class MIPPYMain(Frame):
 	def build_dicom_tree(self):
 		#~ print "function_started"
 		#~ i=0
-		print(self.dirframe.dicomtree.get_children())
+		print self.dirframe.dicomtree.get_children()
 		try:
 			for item in self.dirframe.dicomtree.get_children():
 				self.dirframe.dicomtree.delete(item)
-			print("Existing tree cleared")
+			print "Existing tree cleared"
 		except Exception:
-			print("New tree created")
+			print "New tree created"
 			pass
 		repeats_found = False
 		n_repeats = 0
@@ -501,7 +500,7 @@ class MIPPYMain(Frame):
 				repeats_found = True
 				n_repeats+=1
 		if repeats_found:
-			tkinter.messagebox.showwarning("WARNING",str(n_repeats)+" repeat image UID's found and ignored.")
+			tkMessageBox.showwarning("WARNING",str(n_repeats)+" repeat image UID's found and ignored.")
 		self.dirframe.dicomtree.update()
 		
 		# Run garbage collect to clear anything left in memory unnecessarily
@@ -514,10 +513,10 @@ class MIPPYMain(Frame):
 		return
 	
 	def select_modules_directory(self):
-		print("Load module directory")
+		print "Load module directory"
 		if self.moduledir in sys.path:
 			sys.path.remove(self.moduledir)
-		self.moduledir = tkinter.filedialog.askdirectory(parent=self,initialdir=self.root_dir,title="Select module directory")
+		self.moduledir = tkFileDialog.askdirectory(parent=self,initialdir=self.root_dir,title="Select module directory")
 		if not self.moduledir:
 			return
 		sys.path.append(self.moduledir)
@@ -551,9 +550,9 @@ class MIPPYMain(Frame):
 		try:
 			for item in self.moduleframe.moduletree.get_children():
 				self.moduleframe.moduletree.delete(item)
-			print("Existing module tree cleared")
+			print "Existing module tree cleared"
 		except Exception:
-			print("New module tree created")
+			print "New module tree created"
 			pass
 		for module in self.module_list:
 			self.moduleframe.moduletree.insert('','end',module['dirname'],
@@ -567,19 +566,19 @@ class MIPPYMain(Frame):
 		return
 
 	def load_wiki(self):
-		print("Load wiki")
+		print "Load wiki"
 		webbrowser.open_new('http://tree.taiga.io/project/robflintham-mippy/wiki/home')
 		return
 	
 	def report_issue(self):
-		print("Report issue (email)")
-		tkinter.messagebox.showinfo("Issue reporting",'Please include the title of your issue in the subject, and a description in the body of the email.\n\n'+
+		print "Report issue (email)"
+		tkMessageBox.showinfo("Issue reporting",'Please include the title of your issue in the subject, and a description in the body of the email.\n\n'+
 							'Where possible, please attach the appropriate log file from MIPPY/logs. Log files are date/time stamped.')
 		webbrowser.open_new('mailto:incoming+rbf906/mippy+DLf59wdUc6H5qfE6Tbiw@gitlab.com;robert.flintham@uhb.nhs.uk')
 		return
 
 	def display_version_info(self):
-		print("Display version info")
+		print "Display version info"
 		info = ""
 ##		verpath = resource_filename('mippy','resources/version.info')
 ##		with open(verpath,'r') as infofile:
@@ -595,14 +594,14 @@ class MIPPYMain(Frame):
                 else:
                         testing=''
 		info = 'Version '+version+'\n'+testing
-		tkinter.messagebox.showinfo("MIPPY: Version info",info)
+		tkMessageBox.showinfo("MIPPY: Version info",info)
 		return
 	
 	def display_changelog(self):
 		"""
 		This has been removed for the time being.
 		"""
-		print("Display changelog")
+		print "Display changelog"
 		info = ""
 		with open('docs/changelog.info','r') as infofile:
 			info = infofile.read()
@@ -624,7 +623,7 @@ class MIPPYMain(Frame):
 				active_module = importlib.import_module(module_name)
 			else:
 				active_module = importlib.import_module(module_name)
-				imp.reload(active_module)
+				reload(active_module)
 			preload_dicom = active_module.preload_dicom()
 			try:
 				flatten_list = active_module.flatten_series()
@@ -639,7 +638,7 @@ class MIPPYMain(Frame):
 						"or return True if you require all\n"+
 						"images in a single 1D list.\n"+
 						"======================================\n\n")
-				print(message)
+				print message
 				flatten_list = True
 			if preload_dicom:
 				# Attempted to make this section discrete function for use in modules etc
@@ -719,8 +718,8 @@ class MIPPYMain(Frame):
 			active_module.execute(self.master,self.dicomdir,self.datasets_to_pass)
 		except:
 			raise
-			print("Did you select a module?")
-			print("Bet you didn't.")
+			print "Did you select a module?"
+			print "Bet you didn't."
 		return
 	
 	
@@ -731,13 +730,13 @@ class MIPPYMain(Frame):
 			
 	def view_header(self):
 		if not hasattr(self, 'active_uids'):
-			tkinter.messagebox.showerror('ERROR','No image selected.')
+			tkMessageBox.showerror('ERROR','No image selected.')
 			return			
 		if len(self.active_uids)>1:
-			tkinter.messagebox.showerror('ERROR','You can only view header for a single image/slice at a time.')
+			tkMessageBox.showerror('ERROR','You can only view header for a single image/slice at a time.')
 			return
 		if len(self.active_uids)<1:
-			tkinter.messagebox.showerror('ERROR','No image selected.')
+			tkMessageBox.showerror('ERROR','No image selected.')
 			return
 		for tag in self.sorted_list:
 			if tag['instanceuid'] in self.active_uids:
@@ -754,13 +753,13 @@ class MIPPYMain(Frame):
 		
 	def compare_headers(self):
 		if not hasattr(self, 'active_uids'):
-			tkinter.messagebox.showerror('ERROR','No image selected.')
+			tkMessageBox.showerror('ERROR','No image selected.')
 			return
 		if len(self.active_uids)<1:
-			tkinter.messagebox.showerror('ERROR','No image selected.')
+			tkMessageBox.showerror('ERROR','No image selected.')
 			return
 		if not len(self.active_uids)==2:
-			tkinter.messagebox.showerror('ERROR','You can only compare headers for 2 single images/slices at a time.')
+			tkMessageBox.showerror('ERROR','You can only compare headers for 2 single images/slices at a time.')
 			return
 		dicoms = []
 		for tag in self.sorted_list:
@@ -790,12 +789,12 @@ class MIPPYMain(Frame):
 		
 		#~ outdir = os.path.join(self.root_dir,"EXPORT")
 		if not hasattr(self, 'active_uids'):
-			tkinter.messagebox.showerror('ERROR','No images selected.')
+			tkMessageBox.showerror('ERROR','No images selected.')
 			return
 		if len(self.active_uids)<1:
-			tkinter.messagebox.showerror('ERROR','No images selected.')
+			tkMessageBox.showerror('ERROR','No images selected.')
 			return
-		self.exportdir = tkinter.filedialog.askdirectory(parent=self,initialdir=r"M:",title="Select export directory")
+		self.exportdir = tkFileDialog.askdirectory(parent=self,initialdir=r"M:",title="Select export directory")
 		if self.exportdir is None:
 			return
 		i=0
@@ -805,7 +804,7 @@ class MIPPYMain(Frame):
 				i+=1
 				self.progress(float(i)/float(len(self.active_uids))*100.)
 		self.progress(0.)
-		tkinter.messagebox.showinfo('EXPORT FINISHED','Images have finished exporting to:\n'+self.exportdir)
+		tkMessageBox.showinfo('EXPORT FINISHED','Images have finished exporting to:\n'+self.exportdir)
 		self.exportdir = None		
 		return
 	
@@ -820,12 +819,12 @@ class MIPPYMain(Frame):
 	
 	def enable_multiprocessing(self):
 		self.multiprocess = True
-		tkinter.messagebox.showinfo("INFO","Multiprocessing enabled")
+		tkMessageBox.showinfo("INFO","Multiprocessing enabled")
 		return
 	
 	def disable_multiprocessing(self):
 		self.multiprocess = False
-		tkinter.messagebox.showinfo("INFO","Multiprocessing disabled")
+		tkMessageBox.showinfo("INFO","Multiprocessing disabled")
 		return
 
 #########################################################

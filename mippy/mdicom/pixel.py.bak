@@ -1,12 +1,12 @@
 import numpy as np
 from PIL import Image
-import io
+import StringIO
 import binascii
 
 def get_px_array(ds,enhanced=False,instance=None,bitdepth=None):
 	if 'JPEG' in str(ds.file_meta[0x2,0x10].value):
 		compressed = True
-		print("DATA IS JPEG COMPRESSED - UNABLE TO PRODUCE PIXEL ARRAY")
+		print "DATA IS JPEG COMPRESSED - UNABLE TO PRODUCE PIXEL ARRAY"
 		#~ print "Data is JPEG compressed. Uncompressing within MIPPY"
 		return None
 	else:
@@ -31,7 +31,7 @@ def get_px_array(ds,enhanced=False,instance=None,bitdepth=None):
 		if not compressed:
 			if enhanced:
 				if not instance:
-					print("PREVIEW ERROR: Instance/frame number not specified")
+					print "PREVIEW ERROR: Instance/frame number not specified"
 					return None
 				rows = int(ds.Rows)
 				cols = int(ds.Columns)
@@ -61,7 +61,7 @@ def get_px_array(ds,enhanced=False,instance=None,bitdepth=None):
 		# Rescale float to unsigned integer bitdepth specified
 		# Useful for preview purposes to save memory!!!
 		if not (bitdepth==8 or bitdepth==16 or bitdepth==32):
-			print("Unsupported bitdepth - please use 8, 16, 32 (arrays are 64-bit by default)")
+			print "Unsupported bitdepth - please use 8, 16, 32 (arrays are 64-bit by default)"
 			return None
 		min = np.min(px_float)
 		max = np.max(px_float)
@@ -170,5 +170,5 @@ if __name__ == '__main__':
 	yspc = 0.94
 	im_coords = [100,70]
 	pt_coords = get_voxel_location(im_coords,position,orient,xspc,yspc)
-	print(pt_coords)
+	print pt_coords
 	

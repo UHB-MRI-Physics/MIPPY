@@ -1,4 +1,4 @@
-
+# This is necessary until MIPPY is installed in Python site-packages
 
 ###########################################
 # Use built in logging feature
@@ -9,15 +9,18 @@
 
 #~ from multiprocessing import freeze_support
 
-
 #~ if sys.argv[1]=="debug":
 	#~ pass # for now
 
 if __name__=='__main__':
-	#~ import sys
-	#~ import os
-	from tkinter import *
-	from tkinter.ttk import *
+	
+	from Tkinter import *
+	from ttk import *
+	import sys
+	import os
+	
+	# This means python will collect MIPPY from test version, not installed version
+	sys.path.insert(0,os.getcwd())
         #~ # Set up logfile in logs directory
         #~ debug=False
         #~ print sys.path

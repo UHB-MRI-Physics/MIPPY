@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-from .mdicom.reading import load_images_from_uids
+from mdicom.reading import load_images_from_uids
 
 def list_all_files(dirpath,recursive=False):
 	pathlist = []

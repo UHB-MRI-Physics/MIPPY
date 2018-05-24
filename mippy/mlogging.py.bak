@@ -1,7 +1,7 @@
 from datetime import datetime
 import os
-from . import logging
-from . import logging.handlers
+import logging
+import logging.handlers
 import sys
 
 class RedirectText(object):

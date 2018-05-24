@@ -14,8 +14,8 @@
 
 if __name__=='__main__':
 	
-	from Tkinter import *
-	from ttk import *
+	from tkinter import *
+	from tkinter.ttk import *
 	import sys
 	import os
 	
