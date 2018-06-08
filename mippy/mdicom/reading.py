@@ -98,7 +98,7 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 	# won't be picked up until the "try/except" below.
 	if os.path.split(path)[1].startswith("XX_"):
 		return tags
-#	print os.path.split(path)[1]
+	#~ print os.path.split(path)[1]
 	
 	# Remove any previous datasets just held as "ds" in memory
 	ds = None
@@ -140,8 +140,12 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 				# Some store "protocol name", which will do for now until I find something better
 				seriesdesc = ds.ProtocolName
 			except Exception:
-				# If all else fails, just use a generic string
-				seriesdesc = "Unknown Study Type"
+				try:
+					# Last attempt - try and read the sequence type at least!!
+					seriesdesc = ds.SequenceName
+				except Exception:
+					# If all else fails, just use a generic string
+					seriesdesc = "Unknown Series Type"
 		
 		if "PHOENIXZIPREPORT" in seriesdesc.upper():
 			# Ignore any phoenix zip report files from Siemens
@@ -154,6 +158,8 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 			pass
 		if "SOFTCOPY" in mode.upper() or "BASIC TEXT" in mode.upper():
 			# Can't remember why I have these, I think they're possible GE type files???
+			return tags
+		if "SR STORAGE" in mode.upper():
 			return tags
 		if mode.upper()=="ENHANCED MR IMAGE STORAGE":
 			# If enhanced file, record number of frames.  This is important for pulling the right imaging
