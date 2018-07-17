@@ -39,7 +39,7 @@ def save_results(results,name=None,directory=None):
                 if not os.path.exists(outputdir):
                         os.makedirs(outputdir)
         outpath = os.path.join(outputdir,fname)
-        with open(outpath,'wb') as txtfile:
+        with open(outpath,'w') as txtfile:
                 txtfile.write(results)
         return
 
@@ -48,7 +48,7 @@ def export_dicom_file(ds,outdir):
         Export a DICOM dataset to the disk drive.
         At some point this will be customisable!
         """
-        dir1 = ds.PatientName.replace('^','__')+"_"+remove_invalid_characters(ds.PatientID)
+        dir1 = str(ds.PatientName).replace('^','__')+"_"+remove_invalid_characters(ds.PatientID)
         dir2 = ds.StudyDate+"_"+ds.StudyTime
         dir3 = str(ds.SeriesNumber).zfill(4)+"_"+remove_invalid_characters(str(ds.SeriesDescription))
         

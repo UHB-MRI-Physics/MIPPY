@@ -1,5 +1,6 @@
 import copy
 from pydicom.tag import Tag
+import pydicom
 
 def get_frame_ds(frame,ds):
         # "frame" starts from 1, not 0.  Need to subtract 1 for correct indexing.
@@ -27,8 +28,15 @@ def get_frame_ds(frame,ds):
 #        print "    Replacing instance number"
         ds_new.InstanceNumber = frame
         ds_new.NumberOfFrames = 1
-        ds_new._character_set = ds._character_set
+        # print(ds_new._character_set)
+        # for i in range(len(ds_new._character_set)):
+        #         ds_new._character_set[i] = pydicom.charset.default_encoding
+        # print(ds_new._character_set)
+        # ds_new._character_set = ds._character_set
+        # ds_new._character_set = pydicom.charset.default_encoding
+        # ds_new = ds_new._replace(_character_set=pydicom.charset.default_encoding)
 #        print "    Returning split dataset"
+        print(ds_new)
         
         return ds_new
 

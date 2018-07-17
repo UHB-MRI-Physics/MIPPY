@@ -12,10 +12,12 @@ def get_version():
 
 def test_version():
     version = get_version()
+    print(version)
     import datetime
     import os
     # Get timestamp for __init__.pyc
-    version_time = datetime.datetime.fromtimestamp(os.path.getmtime(r'mippy\__init__.pyc'))
+    version_time = datetime.datetime.fromtimestamp(os.path.getmtime(r'mippy\__pycache__\__init__.cpython-36.pyc'))
+    print(version_time)
     other_times = []
     for root, dirs, files in os.walk('mippy'):
         for f in files:
@@ -28,6 +30,7 @@ def test_version():
 ##        print tstamp, version_time, tstamp>version_time
         if tstamp>version_time:
             code_changed = True
+            print(tstamp)
             break
     if code_changed:
         print("CANNOT COMPILE - VERSION NUMBER OUTDATED")
@@ -49,7 +52,8 @@ setup(        name='MIPPY',
                                   'pydicom>=1.0.2,<1.0.3',
                                   'pillow>=5.1.0,<5.1.1',
                                   'nibabel>=2.2.1,<2.2.2',
-                                  'matplotlib>=2.2.2,<2.2.3'],
+                                  'matplotlib>=2.2.2,<2.2.3',
+                                  'easygui'],
                 license='BSD-3-Clause',
                 classifiers=[
                         'Programming Language :: Python :: 3.6',

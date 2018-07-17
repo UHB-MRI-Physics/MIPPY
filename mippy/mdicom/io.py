@@ -15,6 +15,7 @@ def save_temp_ds(ds,tempdir,fname):
         temppath = os.path.join(tempdir,fname)
         #~ if not os.path.exists(temppath):
         with open(temppath,'wb') as tempfile:
-                pickle.dump(ds,tempfile,protocol=2)
+                pickle.dump(ds,tempfile,protocol=3)
+                #pickle.dump(ds,tempfile)
                 tempfile.close()
         return
