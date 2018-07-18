@@ -121,6 +121,7 @@ class MIPPYMain(Frame):
                 
                 self.user = getpass.getuser()
                 
+                # Set temp directory
                 if 'darwin' in sys.platform or 'linux' in sys.platform:
                         self.tempdir = '/tmp/MIPPY_temp_'+self.user                        
                 elif 'win' in sys.platform:
@@ -131,6 +132,18 @@ class MIPPYMain(Frame):
                         sys.exit()
                 if not os.path.exists(self.tempdir):
                         os.makedirs(self.tempdir)
+                
+                # Set persistent user directory
+                if 'darwin' in sys.platform or 'linux' in sys.platform:
+                    self.userdir = os.path.join('/home',self.user,'.mippy')
+                elif 'win' in sys.platform:
+                    sys_userdir = os.getenv('APPDATA',os.path.join('C:','Users',self.user))
+                    self.userdir = os.path.join(sys_userdir,'.mippy')
+                else:
+                    tkinter.messagebox.showerror('ERROR', 'Unsupported operating system, please contact the developers.')
+                    sys.exit()
+                if not os.path.exists(self.userdir):
+                    os.makedirs(self.userdir)
                 
                 # Set default module directory
                 if os.path.exists(os.path.join(self.root_dir, 'modules')):
@@ -410,9 +423,18 @@ class MIPPYMain(Frame):
 
         def load_image_directory(self):
                 print("Load image directory")
-                self.dicomdir = tkinter.filedialog.askdirectory(parent=self,initialdir=r"M:",title="Select image directory")
+                try:
+                    # Unpickle previous directory if available
+                    with open(os.path.join(self.userdir,'prevdir.cfg'),'rb') as cfg_file:
+                        prevdir = pickle.load(cfg_file)
+                    print("PREV DIRECTORY: {}".format(prevdir))
+                except:
+                    prevdir = r'M:'
+                self.dicomdir = tkinter.filedialog.askdirectory(parent=self,initialdir=prevdir,title="Select image directory")
                 if not self.dicomdir:
                         return
+                with open(os.path.join(self.userdir,'prevdir.cfg'),'wb') as cfg_file:
+                    pickle.dump(self.dicomdir,cfg_file)
                 self.ask_recursive = tkinter.messagebox.askyesno("Search recursively?","Do you want to include all subdirectories?")
 
                 #~ self.path_list = []
