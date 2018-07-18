@@ -45,7 +45,7 @@ def execute(master_window,dicomdir,images):
                 canvas_size=320
         else:
                 canvas_size=512
-        window.imcanvas = MIPPYCanvas(window,bd=0,width=canvas_size,height=canvas_size,drawing_enabled=False)
+        window.imcanvas = MIPPYCanvas(window,bd=0,width=canvas_size,height=canvas_size,drawing_enabled=True)
         # Open icons for button
         sq_im = resource_filename('mippy','resources/square_roi.png')
         el_im = resource_filename('mippy','resources/ellipse_roi.png')

@@ -298,7 +298,7 @@ class ROI():
         else:
             self.roi_type = roi_type
         arr_co = np.array(self.coords)
-        self.bbox = (np.amin(arr_co[:, 0]), np.amin(arr_co[:, 1]), np.amax(arr_co[:, 0]), np.amax(arr_co[:, 1]))
+        self.bbox = (np.min(arr_co[:, 0]), np.min(arr_co[:, 1]), np.max(arr_co[:, 0]), np.max(arr_co[:, 1]))
         if not 'roi' in tags:
             tags.append('roi')
         self.tags = tags
@@ -314,7 +314,7 @@ class ROI():
 ##                or not np.amin(arr_co[:, 1]) <= point[1] <= np.amax(arr_co[:, 1])):
 ##            return False
         if (not self.bbox[0]<=point[0]<=self.bbox[2]
-            or not self.bbox[1]<=self.bbox[3]):
+            or not self.bbox[1]<=point[1]<=self.bbox[3]):
             return False
         wn = wn_PnPoly(point, self.coords)
         if wn == 0:
@@ -539,10 +539,11 @@ class MIPPYCanvas(Canvas):
         for y in range(height):
             for x in range(width):
                 for i in range(len(self.roi_list)):
-                    minx = self.roi_list[i].bbox[0]
-                    maxx = self.roi_list[i].bbox[2]
-                    miny = self.roi_list[i].bbox[1]
-                    maxy = self.roi_list[i].bbox[3]
+                    minx = self.roi_list[i].bbox[0]/self.zoom_factor
+                    maxx = self.roi_list[i].bbox[2]/self.zoom_factor
+                    miny = self.roi_list[i].bbox[1]/self.zoom_factor
+                    maxy = self.roi_list[i].bbox[3]/self.zoom_factor
+                    #print("{} {} {} {} {} {}".format(x,y,minx,maxx,miny,maxy))
                     if not minx <= x <= maxx or not miny <= y <= maxy:
                         continue
                     if self.roi_list[i].contains((x * self.zoom_factor, y * self.zoom_factor)):
@@ -605,6 +606,7 @@ class MIPPYCanvas(Canvas):
                 if len(tags) > 0 and not any([tag in self.roi_list[i].tags for tag in tags]):
                     continue
                 maskflat = self.masks[i, :, :].flatten().tolist()
+                print("Pixels in mask = {}".format(np.sum(maskflat)))
                 pxlist = [pxflat[ind] for ind, val in enumerate(maskflat) if val > 0]
                 px.append(pxlist)
 
@@ -1019,6 +1021,9 @@ class MIPPYCanvas(Canvas):
 
     def add_roi(self, coords, tags=['roi'], roi_type=None, color='yellow'):
         self.roi_list.append(ROI(coords, tags, roi_type, color=color))
+        bbox = self.roi_list[-1].bbox
+        # DEBUGGING: This line was to draw location of bounding box
+        # self.create_rectangle((bbox[0],bbox[1],bbox[2],bbox[3]),outline='cyan',tags='roi')
         self.roi_list_2d[self.active - 1] = self.roi_list
         if self.use_masks:
             self.update_roi_masks()

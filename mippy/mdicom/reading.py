@@ -371,7 +371,10 @@ def load_images_from_uids(list_of_tags,uids_to_match,tempdir,multiprocess=False)
                                                         datasets_to_pass.append([split_ds])
                                                 else:
                                                         datasets_to_pass[-1].append(split_ds)
-                                                io.save_temp_ds(split_ds,tempdir,tag['instanceuid']+'.mds')
+                                                
+                                                # Removed instruction to save temp ds in MIPPY 2.0 due to problems with pickling
+                                                # the new dataset object.  Can only pickle if loaded from disk??
+                                                # io.save_temp_ds(split_ds,tempdir,tag['instanceuid']+'.mds')
                                 previous_tag = tag
         else:
                 for tag in list_of_tags:
