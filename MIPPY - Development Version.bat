@@ -1,2 +1,2 @@
-python3 start_mippy_test.py
+python start_mippy_test.py
 pause
