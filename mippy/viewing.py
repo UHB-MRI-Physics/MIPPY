@@ -10,6 +10,8 @@ import scipy.ndimage.interpolation as spim
 import gc
 import time
 import sys
+import pickle
+import os
 
 ########################################
 ########################################
@@ -1033,6 +1035,42 @@ class MIPPYCanvas(Canvas):
         self.masks = []
         gc.collect()
         self.delete('roi')
+       
+    def save_rois(self,savepath=None):
+        """
+        Saves all ROIs from the current active image only.
+        If you want to save all ROIs across all slices, loop the function
+        yourself.
+        """
+        if savepath is None:
+            from tkinter import filedialog
+            savepath = tkFileDialog.asksaveasfilename(filetypes=(("MIPPY ROI set","*.roiset")),
+                                                        defaultextension=".roiset",parent=self.master)
+        if savepath is None:
+            return
+        if not os.path.exists(os.path.split(savepath)[0]):
+            os.makedirs(os.path.split(savepath)[0])
+        with open(savepath,'wb') as f:
+            pickle.dump(self.roi_list,f)
+        return
+       
+    def load_rois(self,loadpath=None):
+        """
+        Loads ROIs from a .roiset file
+        """
+        if loadpath is None:
+            from tkinter import filedialog
+            loadpath = tkFileDialog.askopenfilename(filetypes=(("MIPPY ROI set","*.roiset")),title="Select ROI set",
+                                                    parent = self.master)
+        if loadpath is None:
+            return
+        with open(loadpath,'rb') as f:
+            self.roi_list = pickle.load(f)
+        if self.use_masks:
+            self.update_roi_masks()
+        self.roi_list_2d[self.active-1] = self.roi_list
+        self.quick_redraw_image()
+        return
 
     def progress(self, percentage):
         try:

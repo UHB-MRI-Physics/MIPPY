@@ -15,7 +15,7 @@ def find_object_geometry(image,subpixel=True):
         shape_px = np.shape(px)
         px_binary = np.zeros(shape_px).astype(np.float64)
         # Make binary
-        threshold = 0.05*np.mean(px[np.where(px>np.percentile(px,75))])
+        threshold = 0.1*np.mean(px[np.where(px>np.percentile(px,75))])
         px_binary[np.where(px>threshold)] = 1.
         #~ np.savetxt(r"K:\binarypx.txt",px_binary)
         xc=float(shape_px[1]/2)
