@@ -2,9 +2,15 @@ import numpy as np
 from scipy.signal import convolve2d
 from scipy.ndimage.measurements import center_of_mass
 from scipy.optimize import minimize
+from scipy.ndimage import convolve, gaussian_filter
 
 
 def find_object_geometry(image,subpixel=True):
+        edges = edge_detect_2d(image.px_float)
+        xmin,xmax,ymin,ymax,xc,yc = get_bounding_box(edges)
+        return xc,yc,(xmax-xmin)/2,(ymax-ymin)/2
+
+def find_object_geometry_old(image,subpixel=True):
         """
         Takes a MIPPY image and finds the best fit of an ellipse or rectangle to the
         object in the image.
@@ -144,3 +150,104 @@ def object_fit_rectangle(geo,px_binary):
 def get_inverse_sum(c,arr,size=3):
         # c is center in [x,y] format
         return abs(1/np.sum(arr[c[1]-size:c[1]+size,c[0]-size:c[0]+size]))
+
+def edge_detect_2d(im,blur=5,highThreshold=91,lowThreshold=31,ignore_edges=8):
+        """
+        Implementation of a canny edge fiter.
+        Input a numpy array of pixel values for an image, get an array of
+        pixel values back for the edge-filtered image.
+        Based on rosettacode.org/wiki/Canny_edge_detector#Python
+        """
+        
+        if ignore_edges>0:
+                im[0:ignore_edges,:]=0
+                im[-ignore_edges:0,:]=0
+                im[:,0:ignore_edges]=0
+                im[:,-ignore_edges:0]=0
+        
+        # Gaussian blur to remove noise
+        im2 = gaussian_filter(im,blur)
+        
+        # Use sobel filters to get horizontal and vertical gradients
+        im3h = convolve(im2,[[-1,0,1],[-2,0,2],[-1,0,1]])
+        im3v = convolve(im2,[[1,2,1],[0,0,0],[-1,-2,-1]])
+        
+        #Get gradient and direction
+        grad = np.power(np.power(im3h, 2.0) + np.power(im3v, 2.0), 0.5)
+        theta = np.arctan2(im3v, im3h)
+        thetaQ = (np.round(theta * (5.0 / np.pi)) + 5) % 5 #Quantize direction
+        
+        #Non-maximum suppression
+        gradSup = grad.copy()
+        for r in range(im.shape[0]):
+                for c in range(im.shape[1]):
+                        #Suppress pixels at the image edge
+                        if r == 0 or r == im.shape[0]-1 or c == 0 or c == im.shape[1] - 1:
+                                gradSup[r, c] = 0
+                                continue
+                        tq = thetaQ[r, c] % 4
+ 
+                        if tq == 0: #0 is E-W (horizontal)
+                                if grad[r, c] <= grad[r, c-1] or grad[r, c] <= grad[r, c+1]:
+                                        gradSup[r, c] = 0
+                        if tq == 1: #1 is NE-SW
+                                if grad[r, c] <= grad[r-1, c+1] or grad[r, c] <= grad[r+1, c-1]:
+                                        gradSup[r, c] = 0
+                        if tq == 2: #2 is N-S (vertical)
+                                if grad[r, c] <= grad[r-1, c] or grad[r, c] <= grad[r+1, c]:
+                                        gradSup[r, c] = 0
+                        if tq == 3: #3 is NW-SE
+                                if grad[r, c] <= grad[r-1, c-1] or grad[r, c] <= grad[r+1, c+1]:
+                                        gradSup[r, c] = 0
+ 
+        #Double threshold
+        strongEdges = (gradSup > highThreshold)
+ 
+        #Strong has value 2, weak has value 1
+        thresholdedEdges = np.array(strongEdges, dtype=np.uint8) + (gradSup > lowThreshold)
+ 
+        #Tracing edges with hysteresis	
+        #Find weak edge pixels near strong edge pixels
+        finalEdges = strongEdges.copy()
+        currentPixels = []
+        for r in range(1, im.shape[0]-1):
+                for c in range(1, im.shape[1]-1):	
+                        if thresholdedEdges[r, c] != 1:
+                                continue #Not a weak pixel
+ 
+                        #Get 3x3 patch	
+                        localPatch = thresholdedEdges[r-1:r+2,c-1:c+2]
+                        patchMax = localPatch.max()
+                        if patchMax == 2:
+                                currentPixels.append((r, c))
+                                finalEdges[r, c] = 1
+ 
+        #Extend strong edges based on current pixels
+        while len(currentPixels) > 0:
+                newPix = []
+                for r, c in currentPixels:
+                        for dr in range(-1, 2):
+                                for dc in range(-1, 2):
+                                        if dr == 0 and dc == 0: continue
+                                        r2 = r+dr
+                                        c2 = c+dc
+                                        if thresholdedEdges[r2, c2] == 1 and finalEdges[r2, c2] == 0:
+                                                #Copy this weak pixel to final result
+                                                newPix.append((r2, c2))
+                                                finalEdges[r2, c2] = 1
+                currentPixels = newPix
+        finalEdges = finalEdges.astype(np.float32)
+        print(np.min(finalEdges),np.max(finalEdges))
+        return finalEdges
+
+def get_bounding_box(im):
+        """
+        Return the bounding box of non-zero image pixels
+        """
+        rows = np.any(im, axis=1)
+        cols = np.any(im, axis=0)
+        rmin, rmax = np.where(rows)[0][[0, -1]]
+        cmin, cmax = np.where(cols)[0][[0, -1]]
+
+        #~ return rmin, rmax, cmin, cmax, (rmax-rmin)/2+rmin, (cmax-cmin)/2+cmin
+        return cmin, cmax, rmin, rmax, (cmax-cmin)/2+cmin, (rmax-rmin)/2+rmin
