@@ -22,12 +22,13 @@ def save_results(results,name=None,directory=None):
         Standardised way of saving results in TXT files. Not sure what
         to do with them afterwards yet...
         """
-        timestamp = str(datetime.now()).replace(" ","_").replace(":","")
+        timestamp = str(datetime.now()).replace(" ","_").replace(":","")[0:21]
+        # Truncates at milisecond level
         
         if not name:
                 fname = "RESULTS_"+timestamp+".txt"
         else:
-                fname = "RESULTS_"+timestamp+"_"+name+".txt"
+                fname = name+"_"+timestamp+".txt"
         
         if directory is None:
                 current_dir = os.getcwd()
