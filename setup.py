@@ -5,16 +5,6 @@ import sys
 
 here = path.abspath(path.dirname(__file__))
 
-### THESE FUNCTIONS USED TO DETECT IF THIS IS
-### BEING RUN FROM WITHIN PYTEST
-
-def pytest_configure(config):
-    import sys
-    sys._called_from_test = True
-
-def pytest_unconfigure(config):
-    import sys  # This was missing from the manual
-    del sys._called_from_test
 
 
     
@@ -24,7 +14,7 @@ def get_version():
     import mippy
     return mippy.__version__
 
-def test_version():
+def check_version():
     version = get_version()
     print(version)
     import datetime
@@ -55,8 +45,15 @@ def test_version():
 
 # Test version numbering before running setup
 # Only if not run by pytest
-if not hasattr(sys, '_called_from_test'):
-    test_version()
+try:
+    if sys.argv[2]=='bdist_wheel':
+        do_check_version = True
+    else:
+        do_check_version = False
+except:
+    raise
+if do_check_version:
+    check_version()
 
 setup(        name='MIPPY',
                 version=get_version(),
