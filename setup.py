@@ -45,7 +45,6 @@ def check_version():
 
 # Test version numbering before running setup
 # Only if not run by pytest
-print('sys.argv: '+str(sys.argv))
 try:
     if sys.argv[2]=='bdist_wheel':
         do_check_version = True
@@ -54,6 +53,7 @@ try:
 except:
     do_check_version = False
 if do_check_version:
+    # This should only work if running bdist_wheel locally
     check_version()
 
 setup(        name='MIPPY',
