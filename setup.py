@@ -45,13 +45,14 @@ def check_version():
 
 # Test version numbering before running setup
 # Only if not run by pytest
+print('sys.argv: '+str(sys.argv))
 try:
     if sys.argv[2]=='bdist_wheel':
         do_check_version = True
     else:
         do_check_version = False
 except:
-    raise
+    do_check_version = False
 if do_check_version:
     check_version()
 
