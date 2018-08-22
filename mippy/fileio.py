@@ -68,7 +68,7 @@ def export_dicom_file(ds,outdir):
         return
         
 def remove_invalid_characters(value):
-        deletechars = '\/:*?"<>|'
+        deletechars = '\\/:*?"<>|'
         for c in deletechars:
                 value = value.replace(c,'')
         return value
