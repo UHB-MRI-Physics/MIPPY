@@ -23,7 +23,7 @@ def check_version():
     version_time = datetime.datetime.fromtimestamp(os.path.getmtime(r'mippy\__pycache__\__init__.cpython-36.pyc'))
     print(version_time)
     other_times = []
-    for root, dirs, files in os.walk('mippy'):
+    for root, dirs, files in os.walk(os.get_cwd()):
         for f in files:
             fpath = os.path.join(root,f)
             lastdir = os.path.split(os.path.split(fpath)[0])[1]
