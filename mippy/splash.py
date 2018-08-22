@@ -4,8 +4,8 @@ This code is heavily based on code found online.
 -- Rob
 """
 
-from __future__ import with_statement   # <-- Python 2.5 ONLY
-import Tix
+   # <-- Python 2.5 ONLY
+import tkinter.tix
 import time
 from PIL import Image, ImageTk
 
@@ -32,10 +32,10 @@ class SplashScreen( object ):
       imgYPos = (scrnHt / 2) - (imgHt / 2)
 
       # Create the splash screen      
-      self._splash = Tix.Toplevel()
+      self._splash = tkinter.tix.Toplevel()
       self._splash.overrideredirect(1)
       self._splash.geometry( '+%d+%d' % (imgXPos, imgYPos) )
-      Tix.Label( self._splash, image=self._image, cursor='watch' ).pack( )
+      tkinter.tix.Label( self._splash, image=self._image, cursor='watch' ).pack( )
 
       # Force Tk to draw the splash screen outside of mainloop()
       self._splash.update( )

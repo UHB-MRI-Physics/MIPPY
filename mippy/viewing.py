@@ -1,7 +1,7 @@
-import dicom
+import pydicom
 import numpy as np
-from Tkinter import *
-from ttk import *
+from tkinter import *
+from tkinter.ttk import *
 from PIL import Image, ImageTk
 import platform
 import scipy.stats as sps
@@ -10,6 +10,8 @@ import scipy.ndimage.interpolation as spim
 import gc
 import time
 import sys
+import pickle
+import os
 
 ########################################
 ########################################
@@ -38,7 +40,7 @@ def display_results(results, master_window):
 
     result_header = []
     result_values = []
-    for key, value in results.items():
+    for key, value in list(results.items()):
         result_header.append(key)
         result_values.append(value)
     result_array = np.array(result_values, dtype=np.float64)  # There's a problem here but I'm not sure what it is...
@@ -52,7 +54,7 @@ def display_results(results, master_window):
     popup.title = 'Results'
     popup.holder = Frame(popup)
     popup.tree = Treeview(popup.holder)
-    popup.tree['columns'] = range(len(result_header))
+    popup.tree['columns'] = list(range(len(result_header)))
     for i, value in enumerate(result_header):
         popup.tree.heading(i, text=value)
         popup.tree.column(i, width=200, stretch=True)
@@ -248,6 +250,8 @@ def get_ellipse_coords(center, a, b, n=128):
     coords_pos = []
     coords_neg = []
 
+    n = int(np.round(n,0))
+
     for i in range(n):
         """
         Find point on line (x0,y0), then intersection with of ellipse with line
@@ -296,7 +300,7 @@ class ROI():
         else:
             self.roi_type = roi_type
         arr_co = np.array(self.coords)
-        self.bbox = (np.amin(arr_co[:, 0]), np.amin(arr_co[:, 1]), np.amax(arr_co[:, 0]), np.amax(arr_co[:, 1]))
+        self.bbox = (np.min(arr_co[:, 0]), np.min(arr_co[:, 1]), np.max(arr_co[:, 0]), np.max(arr_co[:, 1]))
         if not 'roi' in tags:
             tags.append('roi')
         self.tags = tags
@@ -312,7 +316,7 @@ class ROI():
 ##                or not np.amin(arr_co[:, 1]) <= point[1] <= np.amax(arr_co[:, 1])):
 ##            return False
         if (not self.bbox[0]<=point[0]<=self.bbox[2]
-            or not self.bbox[1]<=self.bbox[3]):
+            or not self.bbox[1]<=point[1]<=self.bbox[3]):
             return False
         wn = wn_PnPoly(point, self.coords)
         if wn == 0:
@@ -537,6 +541,13 @@ class MIPPYCanvas(Canvas):
         for y in range(height):
             for x in range(width):
                 for i in range(len(self.roi_list)):
+                    minx = self.roi_list[i].bbox[0]/self.zoom_factor
+                    maxx = self.roi_list[i].bbox[2]/self.zoom_factor
+                    miny = self.roi_list[i].bbox[1]/self.zoom_factor
+                    maxy = self.roi_list[i].bbox[3]/self.zoom_factor
+                    #print("{} {} {} {} {} {}".format(x,y,minx,maxx,miny,maxy))
+                    if not minx <= x <= maxx or not miny <= y <= maxy:
+                        continue
                     if self.roi_list[i].contains((x * self.zoom_factor, y * self.zoom_factor)):
                         mask[i, y, x] = 1
         self.masks = mask
@@ -554,10 +565,10 @@ class MIPPYCanvas(Canvas):
             if roilist == []:
                 continue
             else:
-                print str(len(roilist)) + " ROIs found on image " + str(i + 1)
+                print(str(len(roilist)) + " ROIs found on image " + str(i + 1))
                 height = self.images[i].rows
                 width = self.images[i].columns
-                print width, height
+                print(width, height)
                 mask = np.zeros((len(roilist), height, width))
                 for y in range(height):
                     for x in range(width):
@@ -575,7 +586,7 @@ class MIPPYCanvas(Canvas):
         """
         im = self.get_active_image()
         if len(rois) == 0:
-            rois = range(len(self.roi_list))
+            rois = list(range(len(self.roi_list)))
         if len(self.masks) == 0:
             px = []
             for y in range(im.rows):
@@ -597,6 +608,7 @@ class MIPPYCanvas(Canvas):
                 if len(tags) > 0 and not any([tag in self.roi_list[i].tags for tag in tags]):
                     continue
                 maskflat = self.masks[i, :, :].flatten().tolist()
+                print("Pixels in mask = {}".format(np.sum(maskflat)))
                 pxlist = [pxflat[ind] for ind, val in enumerate(maskflat) if val > 0]
                 px.append(pxlist)
 
@@ -612,16 +624,16 @@ class MIPPYCanvas(Canvas):
             if len(px_list[i]) == 0:
                 px_list[i] = [0., 0., 0.]
         stats = {
-            'mean': map(np.mean, px_list),
-            'std': map(np.std, px_list),
-            'min': map(np.min, px_list),
-            'max': map(np.max, px_list),
-            'mode': map(sps.mode, px_list),
-            'skewness': map(sps.skew, px_list),
-            'kurtosis': map(sps.kurtosis, px_list),
-            'cov': map(sps.variation, px_list),
-            'sum': map(np.sum, px_list),
-            'area_px': map(len, px_list)
+            'mean': list(map(np.mean, px_list)),
+            'std': list(map(np.std, px_list)),
+            'min': list(map(np.min, px_list)),
+            'max': list(map(np.max, px_list)),
+            'mode': list(map(sps.mode, px_list)),
+            'skewness': list(map(sps.skew, px_list)),
+            'kurtosis': list(map(sps.kurtosis, px_list)),
+            'cov': list(map(sps.variation, px_list)),
+            'sum': list(map(np.sum, px_list)),
+            'area_px': list(map(len, px_list))
         }
         return stats
 
@@ -629,7 +641,7 @@ class MIPPYCanvas(Canvas):
         """Returns a line profile from the image"""
 
         if not (self.roi_list[index].roi_type == 'line' or self.roi_list[index].roi_type == 'rectangle'):
-            print "Not a valid ROI type for profile.  Line or rectangle required."
+            print("Not a valid ROI type for profile.  Line or rectangle required.")
             return None
 
         roi = self.roi_list[index]
@@ -642,7 +654,7 @@ class MIPPYCanvas(Canvas):
         elif direction == 'vertical':
             profile_length = coords[3][1] - coords[0][1]
         else:
-            print "Profile direction not understood!"
+            print("Profile direction not understood!")
             return None
 
         length_int = int(np.round(profile_length / resolution, 0))
@@ -679,13 +691,13 @@ class MIPPYCanvas(Canvas):
                                                    order=intorder, prefilter=False)
             profile = np.mean(profiles, axis=0)
 
-        return profile, np.array(range(length_int)) * resolution
+        return profile, np.array(list(range(length_int))) * resolution
 
     def new_roi(self, coords, tags=[], system='canvas', color='yellow'):
         if system == 'image':
             coords = self.canvas_coords(coords)
         elif not system == 'canvas':
-            print "Invalid coordinate system specified"
+            print("Invalid coordinate system specified")
             return
         if not 'roi' in tags:
             tags.append('roi')
@@ -716,7 +728,7 @@ class MIPPYCanvas(Canvas):
                         self.create_line((coords[i][0], coords[i][1], coords[j][0], coords[j][1]), fill=color, width=1,
                                          tags=tags, dash=(2, 2))
                     else:
-                        print "Dash/gap length not specified. Use the tag 'dashAB' where A is dash length and B is gap length."
+                        print("Dash/gap length not specified. Use the tag 'dashAB' where A is dash length and B is gap length.")
                         return
             return
         elif 'polygon' in tags:
@@ -735,7 +747,7 @@ class MIPPYCanvas(Canvas):
                     self.create_polygon(*coords, fill=color, width=1, stipple='gray75', tags=tags, outline=color)
                     return
                 else:
-                    print "Stipple type not specified. Add a stipple type as a tag. See tkinter create_rectangle docs for details"
+                    print("Stipple type not specified. Add a stipple type as a tag. See tkinter create_rectangle docs for details")
                     return
             else:
                 self.create_polygon(*coords, fill=color, width=1, tags=tags, outline=color)
@@ -760,7 +772,7 @@ class MIPPYCanvas(Canvas):
             y1 = y1 * self.zoom_factor
             y2 = y2 * self.zoom_factor
         elif not system == 'canvas':
-            print "Invalid coordinate system specified"
+            print("Invalid coordinate system specified")
             return
         self.new_roi([(x1, y1), (x2, y1), (x2, y2), (x1, y2)], tags=tags, color=color)
         return
@@ -771,7 +783,7 @@ class MIPPYCanvas(Canvas):
             for i in range(len(coords)):
                 coords[i] = tuple(x * self.zoom_factor for x in coords[i])
         elif not system == 'canvas':
-            print "Invalid coordinate system specified"
+            print("Invalid coordinate system specified")
             return
         self.new_roi(coords, tags=tags, color=color)
         return
@@ -782,7 +794,7 @@ class MIPPYCanvas(Canvas):
             for i in range(len(coords)):
                 coords[i] = tuple(x * self.zoom_factor for x in coords[i])
         elif not system == 'canvas':
-            print "Invalid coordinate system specified"
+            print("Invalid coordinate system specified")
             return
         self.new_roi(coords, tags=tags, color=color)
         return
@@ -801,8 +813,8 @@ class MIPPYCanvas(Canvas):
         n = 0
 
         if len(image_list) > 500:
-            print "More than 500 images - cannot be loaded to canvas."
-            print "Loading first 500 only..."
+            print("More than 500 images - cannot be loaded to canvas.")
+            print("Loading first 500 only...")
             image_list = image_list[0:100]
 
         for ref in image_list:
@@ -932,6 +944,7 @@ class MIPPYCanvas(Canvas):
             elif self.roi_mode == 'line':
                 self.add_roi([(self.xmouse, self.ymouse), (event.x, event.y)])
             else:
+                # Freehand
                 self.create_line((self.tempx, self.tempy, self.xmouse, self.ymouse), fill='yellow', width=1, tags='roi')
                 if len(self.tempcoords) > 1:
                     self.add_roi(self.tempcoords)
@@ -947,7 +960,7 @@ class MIPPYCanvas(Canvas):
                     if self.use_masks:
                         self.update_roi_masks()
         if self.autostats == True:
-            print self.get_roi_statistics()
+            print(self.get_roi_statistics())
         self.tempcoords = []
         self.tempx = None
         self.tempy = None
@@ -1010,6 +1023,9 @@ class MIPPYCanvas(Canvas):
 
     def add_roi(self, coords, tags=['roi'], roi_type=None, color='yellow'):
         self.roi_list.append(ROI(coords, tags, roi_type, color=color))
+        bbox = self.roi_list[-1].bbox
+        # DEBUGGING: This line was to draw location of bounding box
+        # self.create_rectangle((bbox[0],bbox[1],bbox[2],bbox[3]),outline='cyan',tags='roi')
         self.roi_list_2d[self.active - 1] = self.roi_list
         if self.use_masks:
             self.update_roi_masks()
@@ -1019,6 +1035,42 @@ class MIPPYCanvas(Canvas):
         self.masks = []
         gc.collect()
         self.delete('roi')
+       
+    def save_rois(self,savepath=None):
+        """
+        Saves all ROIs from the current active image only.
+        If you want to save all ROIs across all slices, loop the function
+        yourself.
+        """
+        if savepath is None:
+            from tkinter import filedialog
+            savepath = tkFileDialog.asksaveasfilename(filetypes=(("MIPPY ROI set","*.roiset")),
+                                                        defaultextension=".roiset",parent=self.master)
+        if savepath is None:
+            return
+        if not os.path.exists(os.path.split(savepath)[0]):
+            os.makedirs(os.path.split(savepath)[0])
+        with open(savepath,'wb') as f:
+            pickle.dump(self.roi_list,f)
+        return
+       
+    def load_rois(self,loadpath=None):
+        """
+        Loads ROIs from a .roiset file
+        """
+        if loadpath is None:
+            from tkinter import filedialog
+            loadpath = tkFileDialog.askopenfilename(filetypes=(("MIPPY ROI set","*.roiset")),title="Select ROI set",
+                                                    parent = self.master)
+        if loadpath is None:
+            return
+        with open(loadpath,'rb') as f:
+            self.roi_list = pickle.load(f)
+        if self.use_masks:
+            self.update_roi_masks()
+        self.roi_list_2d[self.active-1] = self.roi_list
+        self.quick_redraw_image()
+        return
 
     def progress(self, percentage):
         try:
@@ -1098,15 +1150,15 @@ class MIPPYImage():
         # Describe 90 degrees clockwise as 1 rotation
         self.rotations = 0
 
-        if type(dicom_dataset) is str or type(dicom_dataset) is unicode:
-            ds = dicom.read_file(dicom_dataset)
-        elif type(dicom_dataset) is dicom.dataset.FileDataset:
+        if type(dicom_dataset) is str or type(dicom_dataset) is str:
+            ds = pydicom.dcmread(dicom_dataset)
+        elif type(dicom_dataset) is pydicom.dataset.FileDataset:
             ds = dicom_dataset
         elif type(dicom_dataset) is np.ndarray:
             self.construct_from_array(dicom_dataset)
             return
         else:
-            print "ERROR GENERATING IMAGE: Constructor input type not understood"
+            print("ERROR GENERATING IMAGE: Constructor input type not understood")
             return
         bitdepth = int(ds.BitsStored)
         # DO NOT KNOW IF PIXEL ARRAY ALREADY HANDLES RS AND RI
@@ -1161,7 +1213,7 @@ class MIPPYImage():
                 self.image_bandwidth = float(self.pixel_bandwidth) * float(self.rows) / 2
         except AttributeError:
             # Here because images from Toshiba ExcelART 1.5T MR scanner do not write pixel_bandwidth into the header. Which is annoying.
-            print "PIXEL BANDWIDTH NOT FOUND IN HEADER. REPLACED WITH A VALUE OF -1"
+            print("PIXEL BANDWIDTH NOT FOUND IN HEADER. REPLACED WITH A VALUE OF -1")
             self.pixel_bandwidth = -1
             self.image_bandwidth = -1
         try:
@@ -1183,9 +1235,9 @@ class MIPPYImage():
     def construct_from_array(self, pixel_array):
         if len(np.shape(pixel_array)) > 2:
             # Assume RGB?
-            print np.shape(pixel_array)
+            print(np.shape(pixel_array))
             pixel_array = np.mean(pixel_array, axis=0)
-            print np.shape(pixel_array)
+            print(np.shape(pixel_array))
         self.px_float = pixel_array.astype(np.float64)
         self.rangemax = np.amax(pixel_array)
         self.rangemin = np.amin(pixel_array)
@@ -1349,13 +1401,13 @@ class Image3D():
 
         # Less lazy checks to make sure you actually have a single stack of data
         if len(np.unique(orientations)) > 1:
-            print "Slice orientations not consistent"
+            print("Slice orientations not consistent")
             return
         if len(np.unique(positions)) < len(datasets):
-            print "Some duplicated slice positions"
+            print("Some duplicated slice positions")
             return
         if len(np.unique(rows)) > 1 or len(np.unique(cols)) > 1:
-            print "Inconsistent matrix sizes"
+            print("Inconsistent matrix sizes")
             return
 
         # Sort images based on slice position
@@ -1376,7 +1428,7 @@ class Image3D():
             # Z is missing direction, so sort based on Z position
             sort_axis = 2
         else:
-            print "Perfectly oblique slices. Too confused!"
+            print("Perfectly oblique slices. Too confused!")
             return None
 
         ds_sorted = sorted(datasets, key=lambda x: x.ImagePositionPatient[sort_axis], reverse=True)
