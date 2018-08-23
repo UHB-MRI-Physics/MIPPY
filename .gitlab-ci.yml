@@ -66,9 +66,6 @@ Push to PyPI:
     TWINE_USERNAME: $PYPI_USERNAME
     TWINE_PASSWORD: $PYPI_PASSWORD
   script:
-    - pip show twine
-    - echo $TWINE_USERNAME
-    - echo $TWINE_PASSWORD
     - twine upload dist/*
   only:
     - tags
