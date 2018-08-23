@@ -31,20 +31,17 @@ before_script:
   - virtualenv venv
   - source venv/bin/activate
   - python -m pip install pytest twine wheel
-  - python -m pip install -e .
+  - python -m pip install -r requirements.txt
 
-test-stage:
+test:
   stage: test
   script:
     - python -m pytest testing
 
-build-stage:
+build:
   stage: build
   script:
     - python setup.py bdist_wheel
-  ## an alternative approach is to install and run:
-  #- pip install dist/*
-  # run the command here
   artifacts:
     paths:
       - dist/*.whl
@@ -52,7 +49,7 @@ build-stage:
   only:
     - master
 
-deploy-staging-stage:
+deploy-staging:
   stage: deploy-staging
   variables:
     TWINE_USERNAME: $PYPI_USERNAME
@@ -64,7 +61,7 @@ deploy-staging-stage:
   only:
     - master
 
-deploy-production-stage:
+deploy-production:
   stage: deploy-production
   variables:
     TWINE_USERNAME: $PYPI_USERNAME
