@@ -53,11 +53,11 @@ build:
 deploy-staging:
   stage: deploy-staging
   variables:
-    TWINE_USERNAME: $PYPI_USERNAME
-    TWINE_PASSWORD: $PYPI_PASSWORD
+    TEST_TWINE_USERNAME: $TEST_PYPI_USERNAME
+    TEST_TWINE_PASSWORD: $TEST_PYPI_PASSWORD
     TEST_REPO_URL: https://test.pypi.org/legacy/
   script:
-  - twine upload -u $TWINE_USERNAME -p $TWINE_PASSWORD --repository-url $TEST_REPO_URL dist/*
+    - twine upload -u $TEST_TWINE_USERNAME -p $TEST_TWINE_PASSWORD --repository-url $TEST_REPO_URL dist/*
   only:
     - master
 
