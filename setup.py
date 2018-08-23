@@ -58,7 +58,10 @@ def check_version():
     
 # Determine version number from BUILD tags on gitlab??
 if os.environ.get('CI_COMMIT_TAG'):
-        version = os.environ['CI_COMMIT_TAG']
+		if os.environ['CI_COMMIT_TAG'].startswith('v'):
+			version = os.environ['CI_COMMIT_TAG'][1:]
+		else:
+			version = os.environ['CI_COMMIT_TAG']
 else:
         version = os.environ['CI_JOB_ID'] # Use job ID if no commmit tag provided
 
