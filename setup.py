@@ -2,6 +2,7 @@ from setuptools import setup, find_packages
 from codecs import open
 from os import path
 import sys
+import os
 
 here = path.abspath(path.dirname(__file__))
 
@@ -42,7 +43,6 @@ def check_version():
         sys.exit()
     return
 
-
 # Test version numbering before running setup
 # Only if not run by pytest
 #~ try:
@@ -55,12 +55,18 @@ def check_version():
 #~ if do_check_version:
     #~ # This should only work if running bdist_wheel locally
     #~ check_version()
+    
+# Determine version number from BUILD tags on gitlab??
+if os.environ.get('CI_COMMIT_TAG'):
+        version = os.environ['CI_COMMIT_TAG']
+else:
+        version = os.environ['CI_JOB_ID']
 
 setup(        name='MIPPY',
-                version=get_version(),
+                version=version,
                 description='Modular Image Processing in Python',
                 author='Robert Flintham',
-                author_email='robert.flintham@uhb.nhs.uk',
+                author_email='rbf906@gmail.com',
                 install_requires=['numpy>=1.15.0',
                                   'scipy>=1.1.0',
                                   'pydicom>=1.0.2',
@@ -73,5 +79,6 @@ setup(        name='MIPPY',
                         'Programming Language :: Python :: 3.6',
                         ],
                 packages=['mippy','mippy.mdicom','mippy.mviewer'],
+                url='https://tree.taiga.io/project/robflintham-mippy/',
                 package_data={'':['resources/*','mviewer/config']}
         )

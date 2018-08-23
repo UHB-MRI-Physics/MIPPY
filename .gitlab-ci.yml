@@ -39,8 +39,7 @@ build:
   artifacts:
     paths:
     - dist/*.whl
-  only:
-    - tags
+    expire_in: 1 week
 
 deploy:
   variables:
@@ -49,7 +48,7 @@ deploy:
     script:
       twine upload dist/*
     only:
-      - tags
+    - tags
   
 
 #pages:
