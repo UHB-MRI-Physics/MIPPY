@@ -45,9 +45,10 @@ deploy-test:
   variables:
     TWINE_USERNAME: $PYPI_USERNAME
     TWINE_PASSWORD: $PYPI_PASSWORD
+    TEST_REPO_URL: https://test.pypi.org/legacy/
   script:
   - python setup.py sdist bdist_wheel
-  - twine upload -u $TWINE_USERNAME -p $TWINE_PASSWORD https://test.pypi.org/legacy/ dist/*
+  - twine upload -u $TWINE_USERNAME -p $TWINE_PASSWORD --repository-url $TEST_REPO_URL dist/*
 
 deploy:
   variables:
@@ -55,7 +56,7 @@ deploy:
     TWINE_PASSWORD: $PYPI_PASSWORD
   script:
   - python setup.py sdist bdist_wheel
-  - twine upload -u $TWINE_USERNAME -p $TWINE_PASSWORD https://test.pypi.org/legacy/ dist/*
+  - twine upload -u $TWINE_USERNAME -p $TWINE_PASSWORD dist/*
   only:
   - tags
   
