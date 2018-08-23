@@ -101,6 +101,8 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
 #        print os.path.split(path)[1]
         
         # Remove any previous datasets just held as "ds" in memory
+        if 'ds' in locals():
+                del(ds)
         ds = None
         #Read file, if not DICOM then ignore
         try:
@@ -110,7 +112,7 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
         except Exception:
                 print(path+'\n...is not a valid DICOM file and is being ignored.')
                 return tags
-        if ds:
+        if ds and not ds is None:
                 #~ print path
                         
                 try:
@@ -148,10 +150,11 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
                         return tags
                 # Unless told otherwise, assume normal MR image storage
                 mode = "Assumed MR Image Storage"
+                sop_class_uid = pydicom.uid.UID(ds.SOPClassUID)
                 try:
-                        mode = str(ds.SOPClassUID)
-                except Exception:
-                        pass
+                        mode = sop_class_uid.name
+                except:
+                        raise
                 if "SOFTCOPY" in mode.upper() or "BASIC TEXT" in mode.upper():
                         # Can't remember why I have these, I think they're possible GE type files???
                         return tags
@@ -247,6 +250,7 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
                                                 ds.is_implicit_VR = False
                                 
                         print(name,"/",date,"/",seriesdesc,"/",i)
+                        print(mode.upper())
                         if not ("SPECTROSCOPY" in mode.upper() or ima_mrs_uid in mode.upper()):
                                 pxfloat=pixel.get_px_array(ds,enhanced,i,bitdepth=8)
                                 if pxfloat is None:
