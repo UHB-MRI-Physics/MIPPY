@@ -32,7 +32,7 @@ before_script:
   - python -m pip install pytest twine wheel
   - python -m pip install -r requirements.txt
 
-UnitTest:
+Run PyTest:
   stage: test
   script:
     - python -m pytest testing
@@ -49,7 +49,7 @@ Build:
     - master
     - tags
 
-Test Deployment:
+Push to TestPyPI:
   stage: deploy
   variables:
     TEST_TWINE_USERNAME: $TEST_PYPI_USERNAME
@@ -60,12 +60,15 @@ Test Deployment:
   only:
     - master
 
-Push To PyPI:
+Push to PyPI:
   stage: deploy
   variables:
     TWINE_USERNAME: $PYPI_USERNAME
     TWINE_PASSWORD: $PYPI_PASSWORD
   script:
+    - pip show twine
+    - echo $TWINE_USERNAME
+    - echo $TWINE_PASSWORD
     - twine upload dist/*
   only:
     - tags
