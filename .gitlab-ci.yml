@@ -41,7 +41,7 @@ build:
       - dist/*.whl
     expire_in: 1 week
   only:
-    -master
+    - master
 
 deploy-test:
   variables:
