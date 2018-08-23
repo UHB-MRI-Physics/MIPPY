@@ -13,6 +13,13 @@ variables:
 #
 # If you want to also cache the installed packages, you have to install
 # them in a virtualenv and cache it as well.
+
+stages:
+  - test
+  - build
+  - deploy-staging
+  - deploy-production
+
 cache:
   paths:
     - .cache/pip
@@ -26,24 +33,27 @@ before_script:
   - python -m pip install pytest twine wheel
   - python -m pip install -e .
 
-test:
+test-stage:
+  stage: test
   script:
-  - python -m pytest testing
+    - python -m pytest testing
 
-build:
+build-stage:
+  stage: build
   script:
-  - python setup.py bdist_wheel
+    - python setup.py bdist_wheel
   ## an alternative approach is to install and run:
   #- pip install dist/*
   # run the command here
   artifacts:
     paths:
-    - dist/*.whl
+      - dist/*.whl
     expire_in: 1 week
   only:
-  - master
+    - master
 
-deploy-test:
+deploy-staging-stage:
+  stage: deploy-staging
   variables:
     TWINE_USERNAME: $PYPI_USERNAME
     TWINE_PASSWORD: $PYPI_PASSWORD
@@ -52,16 +62,17 @@ deploy-test:
   - python setup.py sdist bdist_wheel
   - twine upload -u $TWINE_USERNAME -p $TWINE_PASSWORD --repository-url $TEST_REPO_URL dist/*
 
-deploy:
+deploy-production-stage:
+  stage: deploy-production
   variables:
     TWINE_USERNAME: $PYPI_USERNAME
     TWINE_PASSWORD: $PYPI_PASSWORD
   script:
-  - python setup.py sdist bdist_wheel
-  - twine upload -u $TWINE_USERNAME -p $TWINE_PASSWORD dist/*
+    - python setup.py sdist bdist_wheel
+    - twine upload -u $TWINE_USERNAME -p $TWINE_PASSWORD dist/*
   only:
-  - master
-  - tags
+    - master
+    - tags
   
 
 #pages:
