@@ -61,6 +61,8 @@ deploy-staging-stage:
   script:
   - python setup.py sdist bdist_wheel
   - twine upload -u $TWINE_USERNAME -p $TWINE_PASSWORD --repository-url $TEST_REPO_URL dist/*
+  only:
+    - master
 
 deploy-production-stage:
   stage: deploy-production
@@ -71,7 +73,6 @@ deploy-production-stage:
     - python setup.py sdist bdist_wheel
     - twine upload -u $TWINE_USERNAME -p $TWINE_PASSWORD dist/*
   only:
-    - master
     - tags
   
 
