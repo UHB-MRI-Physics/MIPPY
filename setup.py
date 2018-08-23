@@ -45,16 +45,16 @@ def check_version():
 
 # Test version numbering before running setup
 # Only if not run by pytest
-try:
-    if 'bdist_wheel' in sys.argv:
-        do_check_version = True
-    else:
-        do_check_version = False
-except:
-    do_check_version = False
-if do_check_version:
-    # This should only work if running bdist_wheel locally
-    check_version()
+#~ try:
+    #~ if 'bdist_wheel' in sys.argv:
+        #~ do_check_version = True
+    #~ else:
+        #~ do_check_version = False
+#~ except:
+    #~ do_check_version = False
+#~ if do_check_version:
+    #~ # This should only work if running bdist_wheel locally
+    #~ check_version()
 
 setup(        name='MIPPY',
                 version=get_version(),
