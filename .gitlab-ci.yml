@@ -23,14 +23,14 @@ before_script:
   - pip install virtualenv
   - virtualenv venv
   - source venv/bin/activate
-  - python -m pip install pytest
+  - python -m pip install pytest twine wheel
   - python -m pip install -e .
 
 test:
   script:
   - python -m pytest testing
 
-run:
+build:
   script:
   - python setup.py bdist_wheel
   ## an alternative approach is to install and run:
@@ -39,6 +39,18 @@ run:
   artifacts:
     paths:
     - dist/*.whl
+  only:
+    - tags
+
+deploy:
+  variables:
+    TWINE_USERNAME: $PYPI_USERNAME
+    TWINE_PASSWORD: $PYPI_PASSWORD
+    script:
+      twine upload dist/*
+    only:
+      - tags
+  
 
 #pages:
 #  script:
