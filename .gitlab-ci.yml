@@ -45,10 +45,10 @@ deploy:
   variables:
     TWINE_USERNAME: $PYPI_USERNAME
     TWINE_PASSWORD: $PYPI_PASSWORD
-    script:
-    - twine upload dist/*
-    only:
-    - tags
+  script:
+  - twine upload dist/*
+  only:
+  - tags
   
 
 #pages:
