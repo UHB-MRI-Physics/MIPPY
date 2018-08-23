@@ -65,7 +65,7 @@ if os.environ.get('CI_COMMIT_TAG'):
 else:
         version = os.environ['CI_JOB_ID'] # Use job ID if no commmit tag provided
 
-setup(        name='MIPPY',
+setup(        name='mippy',
                 version=version,
                 description='Modular Image Processing in Python',
                 author='Robert Flintham',
@@ -75,6 +75,7 @@ setup(        name='MIPPY',
                         'Programming Language :: Python :: 3',
                         ],
                 packages=['mippy','mippy.mdicom','mippy.mviewer'],
+				scripts=['scripts/mippy.bat','scripts/mippy.py'],
                 url='https://tree.taiga.io/project/robflintham-mippy/',
                 package_data={'':['resources/*','mviewer/config']}
         )
