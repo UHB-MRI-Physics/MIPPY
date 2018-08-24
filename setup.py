@@ -50,7 +50,7 @@ if os.environ.get('CI_COMMIT_TAG'):
 		else:
 			version = os.environ['CI_COMMIT_TAG']
 else:
-        version = os.environ['CI_JOB_ID'] # Use job ID if no commmit tag provided
+        version = '0.0.'+os.environ['CI_JOB_ID'] # Use job ID if no commmit tag provided
 
 with open('requirements.txt','r') as f:
         requirements = f.readlines()
