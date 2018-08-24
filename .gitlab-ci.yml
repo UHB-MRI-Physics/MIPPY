@@ -17,8 +17,7 @@ variables:
 stages:
   - test
   - build
-  - deploy-staging
-  - deploy-production
+  - deploy
 
 cache:
   paths:
@@ -33,12 +32,12 @@ before_script:
   - python -m pip install pytest twine wheel
   - python -m pip install -r requirements.txt
 
-test:
+Run PyTest:
   stage: test
   script:
     - python -m pytest testing
 
-build:
+Build:
   stage: build
   script:
     - python setup.py sdist bdist_wheel
@@ -50,8 +49,8 @@ build:
     - master
     - tags
 
-deploy-staging:
-  stage: deploy-staging
+Push to TestPyPI:
+  stage: deploy
   variables:
     TEST_TWINE_USERNAME: $TEST_PYPI_USERNAME
     TEST_TWINE_PASSWORD: $TEST_PYPI_PASSWORD
@@ -61,13 +60,13 @@ deploy-staging:
   only:
     - master
 
-deploy-production:
-  stage: deploy-production
+Push to PyPI:
+  stage: deploy
   variables:
     TWINE_USERNAME: $PYPI_USERNAME
     TWINE_PASSWORD: $PYPI_PASSWORD
   script:
-    - twine upload -u $TWINE_USERNAME -p $TWINE_PASSWORD dist/*
+    - twine upload dist/*
   only:
     - tags
   

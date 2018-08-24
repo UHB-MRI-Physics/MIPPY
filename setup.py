@@ -43,16 +43,19 @@ def check_version():
                 sys.exit()
         return
     
-# Determine version number from BUILD tags on gitlab - use BUILD number if not a tagged version
+# Determine version number from BUILD tags on gitlab
 if os.environ.get('CI_COMMIT_TAG'):
-        version = os.environ['CI_COMMIT_TAG']
+		if os.environ['CI_COMMIT_TAG'].startswith('v'):
+			version = os.environ['CI_COMMIT_TAG'][1:]
+		else:
+			version = os.environ['CI_COMMIT_TAG']
 else:
-        version = os.environ['CI_JOB_ID']
+        version = os.environ['CI_JOB_ID'] # Use job ID if no commmit tag provided
 
 with open('requirements.txt','r') as f:
         requirements = f.readlines()
 
-setup(        name='MIPPY',
+setup(       name='mippy',
                 version=version,
                 description='Modular Image Processing in Python',
                 author='Robert Flintham',
@@ -63,6 +66,7 @@ setup(        name='MIPPY',
                         ],
                 install_requires=requirements,
                 packages=['mippy','mippy.mdicom','mippy.mviewer'],
+                scripts=['scripts/mippy.bat','scripts/mippy.py'],
                 url='https://tree.taiga.io/project/robflintham-mippy/',
                 package_data={'':['resources/*','mviewer/config']}
         )
