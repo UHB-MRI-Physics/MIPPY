@@ -1,2 +1,4 @@
 @echo off
-python install_mippy.py
+
+echo %~dp0install_mippy.py
+python %~dp0install_mippy.py
