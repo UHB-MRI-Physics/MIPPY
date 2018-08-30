@@ -2,8 +2,11 @@ from easygui import diropenbox,choicebox,msgbox
 import sys
 import os
 from subprocess import call
+import getpass
 
-DEFAULT_DIR = r'C:\MIPPY'
+user = getpass.getuser()
+
+DEFAULT_DIR = r'C:\MIPPY_'+str(user)
 
 MESSAGE = (
 	'This sets up a MIPPY working directory and creates a shortcut\n'
