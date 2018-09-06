@@ -36,11 +36,13 @@ Run PyTest:
   stage: test
   script:
     - python -m pytest testing
+  retry: 2
 
 Build:
   stage: build
   script:
     - python setup.py sdist bdist_wheel
+  retry: 2
   artifacts:
     paths:
       - dist/*
@@ -57,6 +59,7 @@ Push to TestPyPI:
     TEST_REPO_URL: https://test.pypi.org/legacy/
   script:
     - twine upload -u $TEST_TWINE_USERNAME -p $TEST_TWINE_PASSWORD --repository-url $TEST_REPO_URL dist/*
+  retry: 2
   only:
     - master
 
