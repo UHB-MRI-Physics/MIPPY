@@ -88,6 +88,7 @@ def save_dicom(images,directory,
 		add_all(ds,ref[i])
 		ds.SeriesInstanceUID = ser_uid
 		ds.SOPInstanceUID = generate_uid()
+		ds.StudyInstanceUID = ref[i].StudyInstanceUID
 		
 		if series_description_append is None:
 			ds.SeriesDescription = series_description
@@ -95,6 +96,7 @@ def save_dicom(images,directory,
 			ds.SeriesDescription = ds.SeriesDescription+series_description_append
 		
 		ds.SamplesPerPixel = 1
+		ds.PhotometricInterpretation = 'MONOCHROME2'
 		ds.Rows = np.shape(images)[1]
 		ds.Columns = np.shape(images)[2]
 		ds.WindowCenter = np.min(images)+(np.max(images)-np.min(images))/2
@@ -102,6 +104,11 @@ def save_dicom(images,directory,
 		ds.BitsAllocated = 16
 		ds.BitsStored = 12
 		ds.InstanceNumber = i
+		ds.ImagePositionPatient = ref[i].ImagePositionPatient
+		ds.ImageOrientationPatient = ref[i].ImageOrientationPatient
+		ds.PixelSpacing = ref[i].PixelSpacing
+		ds.HighBit = 11
+		ds.FrameOfReferenceUID = generate_uid()
 		
 		if rescale_slope=='use_ref':
 			ds.RescaleSlope = ref[i].RescaleSlope
@@ -123,8 +130,11 @@ def save_dicom(images,directory,
 			ds.SeriesNumber = ref[i].SeriesNumber+1000
 		else:
 			ds.SeriesNumber=0
-		ds.PixelData = ((images[i]-ds.RescaleIntercept)/ds.RescaleSlope).astype(np.unit16)
-		ds.save_as(os.path.join(directory,path_append,fnames[i]))
+		outdir = os.path.join(directory,path_append)
+		if not os.path.exists(outdir):
+			os.makedirs(outdir)
+		ds.PixelData = ((images[i]-ds.RescaleIntercept)/ds.RescaleSlope).astype(np.uint16)
+		ds.save_as(os.path.join(outdir,fnames[i]))
 	return
 	
 	
