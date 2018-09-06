@@ -127,6 +127,4 @@ def save_dicom(images,directory,
 		ds.save_as(os.path.join(directory,path_append,fnames[i]))
 	return
 	
-	pass
-	
 	
