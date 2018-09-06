@@ -44,9 +44,9 @@ def add_all(dataset1,dataset2):
 
 def save_dicom(images,directory,
 				ref=None,
-				ser_number='add_thousand' ,
+				series_number='add_thousand' ,
 				series_description = "MIPPY saved images",
-				ser_description_append = None,
+				series_description_append = None,
 				path_append = "SAVED",
 				fnames = None,
 				rescale_slope = 1,
