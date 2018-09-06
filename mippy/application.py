@@ -135,7 +135,8 @@ class MIPPYMain(Frame):
                 
                 # Set persistent user directory
                 if 'darwin' in sys.platform or 'linux' in sys.platform:
-                    self.userdir = os.path.join('/home',self.user,'.mippy')
+                    #~ self.userdir = os.path.join('/home',self.user,'.mippy')
+                    self.userdir = os.path.expanduser('~/.mippy')
                 elif 'win' in sys.platform:
                     sys_userdir = os.getenv('APPDATA',os.path.join('C:','Users',self.user))
                     self.userdir = os.path.join(sys_userdir,'.mippy')
