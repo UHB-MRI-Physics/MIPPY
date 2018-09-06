@@ -109,6 +109,7 @@ def save_dicom(images,directory,
 		ds.PixelSpacing = ref[i].PixelSpacing
 		ds.HighBit = 11
 		ds.FrameOfReferenceUID = generate_uid()
+		ds.PixelRepresentation = 0
 		
 		if rescale_slope=='use_ref':
 			ds.RescaleSlope = ref[i].RescaleSlope
@@ -134,6 +135,8 @@ def save_dicom(images,directory,
 		if not os.path.exists(outdir):
 			os.makedirs(outdir)
 		ds.PixelData = ((images[i]-ds.RescaleIntercept)/ds.RescaleSlope).astype(np.uint16)
+		ds.SmallestImagePixelValue = np.min(np.array(ds.PixelData)).astype(np.uint16)
+		ds.LargestImagePixelValue = np.max(np.array(ds.PixelData)).astype(np.uint16)
 		ds.save_as(os.path.join(outdir,fnames[i]))
 	return
 	
