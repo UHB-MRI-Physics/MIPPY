@@ -66,7 +66,7 @@ setup(       name='mippy',
                         ],
                 install_requires=requirements,
                 packages=['mippy','mippy.mdicom','mippy.mviewer'],
-                scripts=['scripts/mippy.bat','scripts/mippy.py','scripts/install_mippy.bat','scripts/install_mippy.py'],
+                scripts=['scripts/mippy.bat','scripts/_mippy.py','scripts/install_mippy.bat','scripts/install_mippy.py'],
                 url='https://tree.taiga.io/project/robflintham-mippy/',
                 package_data={'':['resources/*','mviewer/config']}
         )
