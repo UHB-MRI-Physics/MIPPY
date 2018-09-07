@@ -6,7 +6,7 @@ def test_save_dicom():
 	ds = pydicom.dcmread('test_data/ExampleDICOM/001.IMA')
 	px_data = ds.pixel_array.astype(np.float64)*1000
 	new_shape = (1,np.shape(px_data)[0],np.shape(px_data)[1])
-	save_dicom(px_data.reshape(new_shape),[ds],path='test_data/DCM-out',
+	save_dicom(px_data.reshape(new_shape),'test_data/DCM-out',ref=[ds],
 				fnames=['saved001.DCM'],rescale_slope='use_ref',
 				rescale_intercept='use_ref')
 	ds_loaded = pydicom.dcmread('test_data/DCM-out/saved001.DCM')

@@ -44,16 +44,20 @@ def check_version():
         return
     
 # Determine version number from BUILD tags on gitlab
-if os.environ.get('CI_COMMIT_TAG'):
-		if os.environ['CI_COMMIT_TAG'].startswith('v'):
-			version = os.environ['CI_COMMIT_TAG'][1:]
-		else:
-			version = os.environ['CI_COMMIT_TAG']
-else:
-        version = '0.'+os.environ['CI_JOB_ID'] # Use job ID if no commmit tag provided
+try:
+	if os.environ.get('CI_COMMIT_TAG'):
+			if os.environ['CI_COMMIT_TAG'].startswith('v'):
+				version = os.environ['CI_COMMIT_TAG'][1:]
+			else:
+				version = os.environ['CI_COMMIT_TAG']
+	else:
+		version = '0.'+os.environ['CI_JOB_ID'] # Use job ID if no commmit tag provided
+except KeyError:
+	import datetime
+	version='0.'+str(datetime.datetime.now())[0:23].replace(' ','-').replace(':','')
 
 with open('requirements.txt','r') as f:
-        requirements = f.readlines()
+	requirements = f.readlines()
 
 setup(       name='mippy',
                 version=version,
