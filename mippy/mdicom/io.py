@@ -49,8 +49,8 @@ def save_dicom(images,directory,
 				series_description_append = None,
 				path_append = "SAVED",
 				fnames = None,
-				rescale_slope = 1,
-				rescale_intercept = 0,
+				rescale_slope = 'use_bitdepth',
+				rescale_intercept = 'use_bitdepth',
 				sop_class = 'use_ref',
 				slice_positions = 'use_ref'):
 	
@@ -116,14 +116,14 @@ def save_dicom(images,directory,
 		elif rescale_slope=='use_bitdepth':
 			ds.RescaleSlope = 2**ds.BitsStored / np.max(np.abs(images))
 		else:
-			ds.RescaleSlope = rescale_slope
+			ds.RescaleSlope = 1
 		
 		if rescale_intercept=='use_ref':
 			ds.RescaleIntercept = ref[i].RescaleIntercept
 		elif rescale_intercept=='use_bitdepth':
 			ds.RescaleIntercept = -np.min(np.abs(images))
 		else:
-			ds.RescaleIntercept = rescale_intercept
+			ds.RescaleIntercept = 0
 		
 		if series_number=='same':
 			ds.SeriesNumber = ref[i].SeriesNumber
