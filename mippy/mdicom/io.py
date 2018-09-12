@@ -108,7 +108,7 @@ def save_dicom(images,directory,
 		ds.ImageOrientationPatient = ref[i].ImageOrientationPatient
 		ds.PixelSpacing = ref[i].PixelSpacing
 		ds.HighBit = 11
-		ds.FrameOfReferenceUID = generate_uid()
+		ds.FrameOfReferenceUID = ref[i].FrameOfReferenceUID
 		ds.PixelRepresentation = 0
 		
 		if rescale_slope=='use_ref':

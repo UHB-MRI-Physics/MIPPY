@@ -1,9 +1,9 @@
 from mippy.fileio import *
 
 def test_list_all_files():
-	dir = 'test_data/dirsearch'
-	files_shallow = list_all_files('test_data/DirSearch')
-	files_deep = list_all_files('test_data',recursive=True)
+	dir = 'test_data/DirSearch'
+	files_shallow = list_all_files(dir)
+	files_deep = list_all_files(dir,recursive=True)
 	assert len(files_shallow)==2
 	assert len(files_deep)==5
 
