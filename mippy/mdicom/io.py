@@ -47,7 +47,7 @@ def save_dicom(images,directory,
 				series_number='add_thousand' ,
 				series_description = "MIPPY saved images",
 				series_description_append = None,
-				path_append = "SAVED",
+				path_append = None,
 				fnames = None,
 				rescale_slope = 'use_bitdepth',
 				rescale_intercept = 'use_bitdepth',
@@ -114,16 +114,18 @@ def save_dicom(images,directory,
 		if rescale_slope=='use_ref':
 			ds.RescaleSlope = ref[i].RescaleSlope
 		elif rescale_slope=='use_bitdepth':
-			ds.RescaleSlope = 2**ds.BitsStored / np.max(np.abs(images))
+			ds.RescaleSlope =  np.max(np.abs(images)) / (2**ds.BitsStored-1)
 		else:
 			ds.RescaleSlope = 1
 		
 		if rescale_intercept=='use_ref':
 			ds.RescaleIntercept = ref[i].RescaleIntercept
 		elif rescale_intercept=='use_bitdepth':
-			ds.RescaleIntercept = -np.min(np.abs(images))
+			ds.RescaleIntercept = 0.-np.min(np.abs(images))
 		else:
 			ds.RescaleIntercept = 0
+			
+		#~ print(np.max(images[i]),ds.RescaleSlope,ds.RescaleIntercept)
 		
 		if series_number=='same':
 			ds.SeriesNumber = ref[i].SeriesNumber
@@ -131,7 +133,10 @@ def save_dicom(images,directory,
 			ds.SeriesNumber = ref[i].SeriesNumber+1000
 		else:
 			ds.SeriesNumber=0
-		outdir = os.path.join(directory,path_append)
+		if not path_append is None:
+			outdir = directory+'_'+str(path_append)
+		else:
+			outdir = directory
 		if not os.path.exists(outdir):
 			os.makedirs(outdir)
 		ds.PixelData = ((images[i]-ds.RescaleIntercept)/ds.RescaleSlope).astype(np.uint16)
