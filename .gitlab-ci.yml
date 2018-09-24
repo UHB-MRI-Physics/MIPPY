@@ -70,6 +70,7 @@ Push to PyPI:
     TWINE_PASSWORD: $PYPI_PASSWORD
   script:
     - twine upload dist/*
+  retry: 2
   only:
     - tags
   
