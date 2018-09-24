@@ -1162,7 +1162,7 @@ class MIPPYImage():
             return
         bitdepth = int(ds.BitsStored)
         # DO NOT KNOW IF PIXEL ARRAY ALREADY HANDLES RS AND RI
-        pixels = ds.pixel_array.astype(np.float32)
+        pixels = ds.pixel_array.astype(np.float64)
         try:
             self.rs = float(ds[0x28, 0x1053].value)
         except:
@@ -1238,7 +1238,7 @@ class MIPPYImage():
             print(np.shape(pixel_array))
             pixel_array = np.mean(pixel_array, axis=0)
             print(np.shape(pixel_array))
-        self.px_float = pixel_array.astype(np.float32)
+        self.px_float = pixel_array.astype(np.float64)
         self.rangemax = np.amax(pixel_array)
         self.rangemin = np.amin(pixel_array)
         self.xscale = 1
@@ -1319,8 +1319,8 @@ class MIPPYImage():
         if self.level - self.rangemin < self.window / 2:
             self.window = 2 * (self.level - self.rangemin)
         windowed_px = np.clip(self.px_float, self.level - self.window / 2, self.level + self.window / 2 - 1).astype(
-            np.float32)
-        px_view = np.clip(((windowed_px - np.min(windowed_px)) / self.window * 256.), 0., 255.).astype(np.uint8)
+            np.float64)
+        px_view = np.clip(((windowed_px - np.min(windowed_px)) / self.window * 255.), 0., 255.).astype(np.uint8)
 
         self.image = Image.fromarray(px_view, mode='L')
 
@@ -1434,11 +1434,11 @@ class Image3D():
         ds_sorted = sorted(datasets, key=lambda x: x.ImagePositionPatient[sort_axis], reverse=True)
 
         # Create empty pixel array
-        px = np.zeros((nSlices, rows[0], cols[0])).astype(np.float32)
+        px = np.zeros((nSlices, rows[0], cols[0])).astype(np.float64)
 
         # Populate pixel array with slice data
         for i in range(len(ds_sorted)):
-            px[i] = ds_sorted[i].pixel_array().astype(np.float32)
+            px[i] = ds_sorted[i].pixel_array().astype(np.float64)
         # Store px as an attribute of the object
         self.px = px
 

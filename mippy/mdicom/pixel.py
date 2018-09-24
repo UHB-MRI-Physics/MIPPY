@@ -21,8 +21,22 @@ def get_px_array(ds,enhanced=False,instance=None,bitdepth=None):
                 ri = 0.
         try:
                 ss = float(ds[0x2005,0x100E].value)
+        except KeyError:
+                try:
+                        # Scaling buried per-frame in functional groups sequence
+                        ss = float(ds[0x5200,0x9230][instance-1][0x2005,0x140f][0][0x2005,0x100E].value)
+                except KeyError:
+                        ss = None
+                except:
+                        raise
         except:
-                ss = None
+                raise
+        #~ print("Scaling: RS {},RI {},SS {}".format(rs,ri,ss))
+        if ds.is_little_endian:
+                mode = 'littleendian'
+        else:
+                mode = 'bigendian'
+        #~ print(enhanced,mode)
         if compressed:
                 # Grab raw pixel array
                 #~ pixel_data_unpacked = binascii.unhexlify(ds.PixelData)
@@ -36,7 +50,7 @@ def get_px_array(ds,enhanced=False,instance=None,bitdepth=None):
                                 rows = int(ds.Rows)
                                 cols = int(ds.Columns)
                                 px_bytes = ds.PixelData[(instance-1)*(rows*cols*2):(instance)*(rows*cols*2)]
-                                px_float = px_bytes_to_array(px_bytes,rows,cols,rs=rs,ri=ri,ss=ss)
+                                px_float = px_bytes_to_array(px_bytes,rows,cols,rs=rs,ri=ri,ss=ss,mode=mode)
                         else:
                                 px_float = generate_px_float(ds.pixel_array.astype(np.float64),rs,ri,ss)
                 #~ else:
@@ -82,15 +96,18 @@ def px_bytes_to_array(byte_array,rows,cols,bitdepth=16,mode='littleendian',rs=1,
         if bitdepth==16:
                 if mode=='littleendian':
                         this_dtype = np.dtype('<u2')
-                else:
+                elif mode=='bigendian':
                         this_dtype = np.dtype('>u2')
+                else:
+                        print("Unsupported mode - use either littleendian or bigendian")
+                        return None
         elif bitdepth==8:
                 this_dtype = np.dytpe('u1')
         abytes = np.frombuffer(byte_array, dtype=this_dtype)
 #        print np.mean(abytes)
 #        print np.shape(abytes)
 #        print abytes
-        abytes = abytes.reshape((cols,rows))
+        abytes = abytes.reshape((cols,rows)).astype(np.float64)
         px_float = generate_px_float(abytes,rs,ri,ss)
 #        print np.mean(px_float)
         return px_float

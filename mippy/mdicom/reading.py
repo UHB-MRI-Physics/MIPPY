@@ -73,15 +73,16 @@ def get_dataset(info,tempdir=None):
                         return ds
                 elif not filepath is None:
                         ds = pydicom.dcmread(filepath)
-                        if not 'ENHANCED' in str(ds.SOPClassUID).upper():
+                        if not 'ENHANCED' in ds.SOPClassUID.name.upper():
                                 print("SINGLE DICOM FILE FOUND")
                                 io.save_temp_ds(ds,tempdir,str(ds.SOPInstanceUID)+'.mds')
                                 return ds
                         else:
                                 if not instance is None:
                                         from .mrenhanced import get_frame_ds
+                                        #~ print("FETCHING SPLIT DATASET")
                                         ds_split = get_frame_ds(instance,ds)
-                                        io.save_temp_ds(ds_split,tempdir,str(ds.SOPInstanceUID)+"_"+str(i).zfill(3)+'.mds')
+                                        #~ io.save_temp_ds(ds_split,tempdir,str(ds.SOPInstanceUID)+"_"+str(i).zfill(3)+'.mds')
                                         return ds_split
         
         # If it's got this far, cannot find file or not enough info
@@ -338,6 +339,8 @@ def load_images_from_uids(list_of_tags,uids_to_match,tempdir,multiprocess=False)
         dcm_info = []
         previous_tag = None
         open_file = None
+        # Disabled multiprocessing for loading images into modules due to problems with get_dataset function on Python3
+        multiprocess = False
         if not multiprocess or ('win' in sys.platform and not 'darwin' in sys.platform and len(uids_to_match)<25):
                 for tag in list_of_tags:
                         if tag['instanceuid'] in uids_to_match or tag['seriesuid'] in uids_to_match:
@@ -378,7 +381,7 @@ def load_images_from_uids(list_of_tags,uids_to_match,tempdir,multiprocess=False)
                                                 
                                                 # Removed instruction to save temp ds in MIPPY 2.0 due to problems with pickling
                                                 # the new dataset object.  Can only pickle if loaded from disk??
-                                                # io.save_temp_ds(split_ds,tempdir,tag['instanceuid']+'.mds')
+                                                #~ io.save_temp_ds(split_ds,tempdir,tag['instanceuid']+'.mds')
                                 previous_tag = tag
         else:
                 for tag in list_of_tags:

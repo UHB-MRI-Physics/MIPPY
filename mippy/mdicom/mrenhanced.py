@@ -57,11 +57,11 @@ def get_frame_ds(frame,ds):
     ds_new = pydicom.dataset.FileDataset(filename,{},file_meta=file_meta,preamble=b"\0"*128)
     ds_new.file_meta = ds.file_meta
     ds_new.preamble=bytes("\0"*128,'utf-8')
-    if 'Explicit' in str(ds_new.file_meta.TransferSyntaxUID):
+    if 'Explicit' in ds_new.file_meta.TransferSyntaxUID.name:
         ds_new.is_implicit_VR = False
     else:
         ds_new.is_implicit_VR = True
-    if 'Little' in str(ds_new.file_meta.TransferSyntaxUID):
+    if 'Little' in ds_new.file_meta.TransferSyntaxUID.name:
         ds_new.is_little_endian = True
     else:
         ds_new.is_little_endian = False
@@ -82,7 +82,10 @@ def get_frame_ds(frame,ds):
     # Reset InstanceNumber and number of frames
     ds_new.InstanceNumber = frame
     ds_new.NumberOfFrames = 1
+    # Change SOP Class UID to MR Image Storage
+    ds_new.SOPClassUID = '1.2.840.10008.5.1.4.1.1.4'
     # Return new dataset
+    ds_str = str(ds_new)
     return ds_new
     
 def add_all_simple(dataset1,dataset2):
