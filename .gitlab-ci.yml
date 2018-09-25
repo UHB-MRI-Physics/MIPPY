@@ -59,6 +59,7 @@ Push to TestPyPI:
     TEST_REPO_URL: https://test.pypi.org/legacy/
   script:
     - twine upload -u $TEST_TWINE_USERNAME -p $TEST_TWINE_PASSWORD --repository-url $TEST_REPO_URL dist/*
+    - echo Push completed
   only:
     - master
 
