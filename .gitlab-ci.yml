@@ -59,7 +59,6 @@ Push to TestPyPI:
     TEST_REPO_URL: https://test.pypi.org/legacy/
   script:
     - twine upload -u $TEST_TWINE_USERNAME -p $TEST_TWINE_PASSWORD --repository-url $TEST_REPO_URL dist/*
-  retry: 2
   only:
     - master
 
@@ -70,7 +69,6 @@ Push to PyPI:
     TWINE_PASSWORD: $PYPI_PASSWORD
   script:
     - twine upload dist/*
-  retry: 2
   only:
     - tags
   
