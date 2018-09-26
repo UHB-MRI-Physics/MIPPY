@@ -5,12 +5,12 @@ from scipy.optimize import minimize
 from scipy.ndimage import convolve, gaussian_filter
 
 
-def find_object_geometry(image,subpixel=True):
+def find_object_geometry_edges(image,subpixel=True):
         edges = edge_detect_2d(image.px_float)
         xmin,xmax,ymin,ymax,xc,yc = get_bounding_box(edges)
         return xc,yc,(xmax-xmin)/2,(ymax-ymin)/2
 
-def find_object_geometry_old(image,subpixel=True):
+def find_object_geometry(image,subpixel=True):
         """
         Takes a MIPPY image and finds the best fit of an ellipse or rectangle to the
         object in the image.
