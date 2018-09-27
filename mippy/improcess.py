@@ -98,11 +98,20 @@ def object_fit_ellipse(geo,px_binary):
                         #~ print y, "Skipping"
                         continue
                 else:
-                        xsol = int(np.round(np.sqrt((1.-(((y-yc+1)**2)/(yr**2)))*(xr**2)),0))
+                        try:
+                                xsol = int(np.round(np.sqrt((1.-(((y-yc+1)**2)/(yr**2)))*(xr**2)),0))
+                        except ValueError:
+                                # Square root of negative, probably means this is right on the boundary??  Will only
+                                # be negative due to inaccuracies of computer maths/floating points.  e.g. -10^-12 instead
+                                # of zero.  Assume xsol is zero and move on
+                                xsol = 0
+                        except:
+                                print(y,yc,yr,xr,(1.-(((y-yc+1)**2)/(yr**2)))*(xr**2))
+                                raise
                         #~ print y, xsol
                 y = int(np.round(y,0))
                 xc = int(np.round(xc,0))
-                mask[y,xc-xsol+1:xc+xsol+1]=1.
+                mask[y,xc-xsol:xc+xsol+1]=1.
                 #~ for x in range(xmin,xmax):
                         #~ x = float(x)
                         #~ y = float(y)
