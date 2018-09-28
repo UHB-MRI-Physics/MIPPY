@@ -29,7 +29,7 @@ before_script:
   - pip install virtualenv
   - virtualenv venv
   - source venv/bin/activate
-  - python -m pip install pytest twine wheel
+  - python -m pip install pytest twine==1.11.0 wheel
   - python -m pip install -r requirements.txt
 
 Run PyTest:
@@ -41,7 +41,7 @@ Run PyTest:
 Build:
   stage: build
   script:
-    - python setup.py bdist_wheel
+    - python setup.py sdist bdist_wheel
   retry: 2
   artifacts:
     paths:
