@@ -1,60 +1,59 @@
 from tkinter import *
+from tkinter import messagebox
 from tkinter.ttk import *
+from subprocess import check_output, PIPE, call, Popen
+import json
+import sys
 
 def launch_mippy():
-	import mippy.splash as splash
-	from pkg_resources import resource_filename
-	splashimage = resource_filename('mippy','resources/splash3.jpg')
-	root_window = Tk()
-	with splash.SplashScreen(root_window,splashimage,3.0):
-			from mippy.application import MIPPYMain
-			root_app = MIPPYMain(master = root_window)
-	root_app.mainloop()
-	
-
-
-
-if __name__=='__main__':
-        from tkinter import *
-        from tkinter.ttk import *
-        #~ # Set up logfile in logs directory
-        #~ debug=False
-        #~ print sys.path
-        #~ try:
-                #~ print sys.argv[1]
-                #~ if sys.argv[1]=='debug':
-                        #~ debug=True
-                #~ else:
-                        #~ debug=False
-        #~ except:
-                #~ debug=False
-        #~ if not debug:
-                #~ from mippy.mlogging import setup_logging
-                #~ setup_logging()
-        
-        
-        
-        
-                #~ from datetime import datetime
-                #~ logdir=os.path.join(os.getcwd(),"MIPPY-logs")
-                #~ try:
-                        #~ os.makedirs(logdir)
-                #~ except WindowsError:
-                        #~ pass
-                #~ logpath=os.path.join(logdir,str(datetime.now()).replace(":",".").replace(" ","_")+".txt")
-                #~ # Add capture for stdout and stderr output for log file, and scrollable text box
-                #~ # self.master.logoutput = ScrolledText.ScrolledText(self.master,height=6)
-                #~ #with open(logpath,'wb') as logfile:
-                #~ redir_out = logging.RedirectText(logpath)
-                #~ redir_err = logging.RedirectText(logpath)
-                #~ sys.stdout = redir_out
-                #~ sys.stderr = redir_err
-
         import mippy.splash as splash
         from pkg_resources import resource_filename
         splashimage = resource_filename('mippy','resources/splash3.jpg')
         root_window = Tk()
         with splash.SplashScreen(root_window,splashimage,3.0):
+                # Check for new version of MIPPY on PyPI
+                pip_output = check_output(['pip','list','--outdated','--format=json'])
+                if 'mippy' in [row['name'] for row in json.loads(pip_output)]:
+                        #~ print("Warning! Outdated version of MIPPY detected!")
+                        update = messagebox.askyesno("Update available","An update for MIPPY is available from PyPI.  Would you like to install?")
+                        if update:
+                                #~ call('pip install mippy --upgrade',shell=True)
+                                p = Popen(['pip','install','mippy','--upgrade'],stdin=PIPE,stdout=PIPE,stderr=PIPE)
+                                output,err = p.communicate()
+                                rc = p.returncode
+                                if len(err)>0:
+                                        print(err.decode("utf-8"))
+                                if rc==0:
+                                        messagebox.showinfo("MIPPY Updated","Update successful! Please restart MIPPY.")
+                                else:
+                                        messagebox.showwarning("Oops","Something went wrong. Please restart MIPPY.")
+                                sys.exit()
+                
                 from mippy.application import MIPPYMain
                 root_app = MIPPYMain(master = root_window)
         root_app.mainloop()
+
+
+
+
+if __name__=='__main__':
+        launch_mippy()
+        #~ from tkinter import *
+        #~ from tkinter.ttk import *
+
+
+        #~ import mippy.splash as splash
+        #~ from pkg_resources import resource_filename
+        #~ splashimage = resource_filename('mippy','resources/splash3.jpg')
+        #~ root_window = Tk()
+        #~ with splash.SplashScreen(root_window,splashimage,3.0):
+                
+                #~ # Check for new version of MIPPY on PyPI
+                #~ p - Popen(['program','arg'],stdin=PIPE,stdout=PIPE,stderr=PIPE)
+                #~ output,err = p.communicate(b'pip list --outdated')
+                #~ rc = p.returncode
+                #~ print(output)
+                
+                #~ from mippy.application import MIPPYMain
+                #~ root_app = MIPPYMain(master = root_window)
+        #~ root_app.mainloop()
