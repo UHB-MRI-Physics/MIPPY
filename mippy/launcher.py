@@ -18,7 +18,7 @@ def launch_mippy():
                         update = messagebox.askyesno("Update available","An update for MIPPY is available from PyPI.  Would you like to install?")
                         if update:
                                 #~ call('pip install mippy --upgrade',shell=True)
-                                p = Popen(['pip','install','mippy','--upgrade'],stdin=PIPE,stdout=PIPE,stderr=PIPE)
+                                p = Popen(['pip','install','mippy','--upgrade','--no-cache-dir'],stdin=PIPE,stdout=PIPE,stderr=PIPE)
                                 output,err = p.communicate()
                                 rc = p.returncode
                                 if len(err)>0:

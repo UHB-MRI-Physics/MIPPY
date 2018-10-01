@@ -607,17 +607,20 @@ class MIPPYMain(Frame):
 ##                verpath = resource_filename('mippy','resources/version.info')
 ##                with open(verpath,'rb') as infofile:
 ##                        info = infofile.read()
-                import mippy
-                version = mippy.__version__
-                if 'b' in version:
-                        testing = '(BETA TESTING VERSION)'
-                elif 'a' in version:
-                        testing = '(ALPHA TESTING VERSION)'
-                elif 'rc' in version:
-                        testing = '(Release candidate version)'
-                else:
-                        testing=''
-                info = 'Version '+version+'\n'+testing
+                #~ import mippy
+                #~ version = mippy.__version__
+                #~ if 'b' in version:
+                        #~ testing = '(BETA TESTING VERSION)'
+                #~ elif 'a' in version:
+                        #~ testing = '(ALPHA TESTING VERSION)'
+                #~ elif 'rc' in version:
+                        #~ testing = '(Release candidate version)'
+                #~ else:
+                        #~ testing=''
+                #~ info = 'Version '+version+'\n'+testing
+                from subprocess import Popen,PIPE,check_output
+                output = check_output(['pip','show','mippy'])
+                info = output
                 tkinter.messagebox.showinfo("MIPPY: Version info",info)
                 return
         
