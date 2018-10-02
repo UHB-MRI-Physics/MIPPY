@@ -12,6 +12,7 @@ import time
 import sys
 import pickle
 import os
+import datetime
 
 ########################################
 ########################################
@@ -432,6 +433,7 @@ class MIPPYCanvas(Canvas):
         self.img_scrollbar = None
         self.antialias = antialias
         self.autostats = autostats
+        self.last_clicked = datetime.datetime.now()
 
     def reconfigure(self, event):
         if not self.images == []:
@@ -924,6 +926,7 @@ class MIPPYCanvas(Canvas):
     def left_release(self, event):
         if not self.drawing_enabled:
             return
+        self.last_clicked = datetime.datetime.now()
         if self.drawing_roi:
             self.roi_list = []
             if self.roi_mode == 'rectangle':
@@ -1044,7 +1047,7 @@ class MIPPYCanvas(Canvas):
         """
         if savepath is None:
             from tkinter import filedialog
-            savepath = tkFileDialog.asksaveasfilename(filetypes=(("MIPPY ROI set","*.roiset")),
+            savepath = filedialog.asksaveasfilename(filetypes=(("MIPPY ROI set","*.roiset")),
                                                         defaultextension=".roiset",parent=self.master)
         if savepath is None:
             return
@@ -1060,7 +1063,7 @@ class MIPPYCanvas(Canvas):
         """
         if loadpath is None:
             from tkinter import filedialog
-            loadpath = tkFileDialog.askopenfilename(filetypes=(("MIPPY ROI set","*.roiset")),title="Select ROI set",
+            loadpath = filedialog.askopenfilename(filetypes=(("MIPPY ROI set","*.roiset")),title="Select ROI set",
                                                     parent = self.master)
         if loadpath is None:
             return
