@@ -595,10 +595,10 @@ class MIPPYMain(Frame):
                 return
         
         def report_issue(self):
-                print("Report issue (email)")
-                tkinter.messagebox.showinfo("Issue reporting",'Please include the title of your issue in the subject, and a description in the body of the email.\n\n'+
-                                                        'Where possible, please attach the appropriate log file from MIPPY/logs. Log files are date/time stamped.')
-                webbrowser.open_new('mailto:incoming+rbf906/mippy+DLf59wdUc6H5qfE6Tbiw@gitlab.com;robert.flintham@uhb.nhs.uk')
+                print("Report issue")
+                #~ tkinter.messagebox.showinfo("Issue reporting",'Please include the title of your issue in the subject, and a description in the body of the email.\n\n'+
+                                                        #~ 'Where possible, please attach the appropriate log file from MIPPY/logs. Log files are date/time stamped.')
+                webbrowser.open_new('https://tree.taiga.io/project/robflintham-mippy/issues')
                 return
 
         def display_version_info(self):
