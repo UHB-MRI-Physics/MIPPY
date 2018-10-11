@@ -436,10 +436,10 @@ class MIPPYCanvas(Canvas):
         self.last_clicked = datetime.datetime.now()
 
     def reconfigure(self, event):
+        self.width = event.width - 4
+        self.height = event.height - 4
         if not self.images == []:
             # Already images loaded. Recalculate zoom factor and redraw
-            self.width = event.width - 4
-            self.height = event.height - 4
             oldzoom = self.zoom_factor
             self.zoom_factor = np.min(
                 [float(self.width) / float(self.images[0].columns), float(self.height) / float(self.images[0].rows)])
