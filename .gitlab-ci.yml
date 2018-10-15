@@ -17,7 +17,9 @@ variables:
 stages:
   - test
   - build
+  - build_docs
   - deploy
+  - deploy_docs
 
 cache:
   paths:
@@ -29,7 +31,7 @@ before_script:
   - pip install virtualenv
   - virtualenv venv
   - source venv/bin/activate
-  - python -m pip install pytest twine==1.11.0 wheel
+  - python -m pip install pytest twine==1.11.0 wheel sphinx sphinx_rtd_theme
   - python -m pip install -r requirements.txt
 
 Run PyTest:
@@ -50,6 +52,19 @@ Build:
   only:
     - master
     - tags
+
+Build Docs:
+  stage: build_docs
+  script:
+    - mkdir .public
+    - sphinx-build -E -b html ./doc ./doc/_build
+    - cp -r ./doc/_build/* .public
+  artifacts:
+    paths:
+      - .public
+    only:
+      - master
+      - tags
 
 Push to TestPyPI:
   stage: deploy
@@ -72,6 +87,15 @@ Push to PyPI:
   only:
     - tags
   
+Deploy Docs:
+  stage: deploy_docs
+  script:
+    - mv .public public
+  artifacts:
+    paths:
+      - public
+  only:
+    - tags
 
 #pages:
 #  script:
