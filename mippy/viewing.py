@@ -116,6 +116,34 @@ def get_overlay(ds):
 
 
 def px_bytes_to_array(byte_array, rows, cols, bitdepth=16, mode='littleendian', rs=1, ri=0, ss=None):
+    """
+    Takes a byte-string of pixel value (as in PixelData from a DICOM instance), and converts
+    to a numpy.ndarray of float values.
+    
+    Parameters
+    ---------------------
+    byte array: bytes
+        Byte-string of PixelData
+    rows: int
+        Number of rows in the image
+    cols: int
+        Number of columns in the image
+    bitdepth: int, optional
+        Bit-depth of your byte array (default = 16)
+    mode: str, optional
+        'Endedness' of your byte array (default = 'littleendian')
+    rs: float, optional
+        Rescale slope for the pixel values (default = 1)
+    ri: float, optional
+        Rescale intercept for the pixel values (default = 0)
+    ss: float, optional
+        Additional reciprocal scaling factor often found in Philips images (default = None)
+    
+    Returns
+    --------------
+    numpy.ndarray
+        px_float (2D array of 64-bit float values)
+    """
     if bitdepth == 16:
         if mode == 'littleendian':
             this_dtype = np.dtype('<u2')

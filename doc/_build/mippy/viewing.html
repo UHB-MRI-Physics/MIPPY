@@ -1,0 +1,312 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>mippy.viewing &mdash; mippy  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="mippy.application" href="application.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> mippy
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quick_reference.html">Quick Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="application.html">mippy.application</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">mippy.viewing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#mippycanvas-class">MIPPYCanvas (Class)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#functions">Functions</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">mippy</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>mippy.viewing</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/mippy/viewing.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-mippy.viewing">
+<span id="mippy-viewing"></span><h1>mippy.viewing<a class="headerlink" href="#module-mippy.viewing" title="Permalink to this headline">¶</a></h1>
+<p>This module contains the key image viewing/displaying classes and
+functions in MIPPY.  If you want to work with images on a canvas,
+this is probably the right place to look.</p>
+<div class="section" id="mippycanvas-class">
+<h2>MIPPYCanvas (Class)<a class="headerlink" href="#mippycanvas-class" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="mippy.viewing.MIPPYCanvas">
+<em class="property">class </em><code class="descclassname">mippy.viewing.</code><code class="descname">MIPPYCanvas</code><span class="sig-paren">(</span><em>master</em>, <em>width=256</em>, <em>height=256</em>, <em>bd=0</em>, <em>drawing_enabled=False</em>, <em>autostats=False</em>, <em>antialias=True</em>, <em>use_masks=True</em><span class="sig-paren">)</span><a class="headerlink" href="#mippy.viewing.MIPPYCanvas" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="mippy.viewing.MIPPYCanvas.get_3d_array">
+<code class="descname">get_3d_array</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mippy.viewing.MIPPYCanvas.get_3d_array" title="Permalink to this definition">¶</a></dt>
+<dd><p>Only works if all images are same dimensions</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mippy.viewing.MIPPYCanvas.get_profile">
+<code class="descname">get_profile</code><span class="sig-paren">(</span><em>resolution=1</em>, <em>width=1</em>, <em>interpolate=False</em>, <em>direction='horizontal'</em>, <em>index=0</em><span class="sig-paren">)</span><a class="headerlink" href="#mippy.viewing.MIPPYCanvas.get_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a line profile from the image</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mippy.viewing.MIPPYCanvas.get_roi_pixels">
+<code class="descname">get_roi_pixels</code><span class="sig-paren">(</span><em>rois=[]</em>, <em>tags=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#mippy.viewing.MIPPYCanvas.get_roi_pixels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a LIST of pixel values from an ROI.
+ROIS must be a list of ROI numbers.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mippy.viewing.MIPPYCanvas.load_rois">
+<code class="descname">load_rois</code><span class="sig-paren">(</span><em>loadpath=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mippy.viewing.MIPPYCanvas.load_rois" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads ROIs from a .mroi file</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mippy.viewing.MIPPYCanvas.save_rois">
+<code class="descname">save_rois</code><span class="sig-paren">(</span><em>savepath=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mippy.viewing.MIPPYCanvas.save_rois" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves all ROIs from the current active image only.
+If you want to save all ROIs across all slices, loop the function
+yourself.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mippy.viewing.MIPPYCanvas.show_image">
+<code class="descname">show_image</code><span class="sig-paren">(</span><em>num=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mippy.viewing.MIPPYCanvas.show_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes slice number (which starts from 1, not zero).  Doesn’t do anything
+if there are no images loaded.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mippy.viewing.MIPPYCanvas.update_all_roi_masks">
+<code class="descname">update_all_roi_masks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mippy.viewing.MIPPYCanvas.update_all_roi_masks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Same idea as update_roi_masks, but cycles through all images</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mippy.viewing.MIPPYCanvas.update_roi_masks">
+<code class="descname">update_roi_masks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mippy.viewing.MIPPYCanvas.update_roi_masks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a binary mask of all ROIs</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="mippy.viewing.px_bytes_to_array">
+<code class="descclassname">mippy.viewing.</code><code class="descname">px_bytes_to_array</code><span class="sig-paren">(</span><em>byte_array</em>, <em>rows</em>, <em>cols</em>, <em>bitdepth=16</em>, <em>mode='littleendian'</em>, <em>rs=1</em>, <em>ri=0</em>, <em>ss=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mippy.viewing.px_bytes_to_array" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes a byte-string of pixel value (as in PixelData from a DICOM instance), and converts
+to a numpy.ndarray of float values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>byte array</strong> (<em>bytes</em>) – Byte-string of PixelData</li>
+<li><strong>rows</strong> (<em>int</em>) – Number of rows in the image</li>
+<li><strong>cols</strong> (<em>int</em>) – Number of columns in the image</li>
+<li><strong>bitdepth</strong> (<em>int, optional</em>) – Bit-depth of your byte array (default = 16)</li>
+<li><strong>mode</strong> (<em>str, optional</em>) – ‘Endedness’ of your byte array (default = ‘littleendian’)</li>
+<li><strong>rs</strong> (<em>float, optional</em>) – Rescale slope for the pixel values (default = 1)</li>
+<li><strong>ri</strong> (<em>float, optional</em>) – Rescale intercept for the pixel values (default = 0)</li>
+<li><strong>ss</strong> (<em>float, optional</em>) – Additional reciprocal scaling factor often found in Philips images (default = None)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">px_float (2D array of 64-bit float values)</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy.ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="application.html" class="btn btn-neutral" title="mippy.application" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Robert Flintham
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
