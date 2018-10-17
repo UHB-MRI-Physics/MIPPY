@@ -62,9 +62,9 @@ Build Docs:
   artifacts:
     paths:
       - .public
-    only:
-      - master
-      - tags
+  only:
+    - master
+    - tags
 
 Push to TestPyPI:
   stage: deploy
