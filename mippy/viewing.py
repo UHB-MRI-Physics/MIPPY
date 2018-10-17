@@ -414,6 +414,9 @@ class ImageFlipper(Frame):
 
 
 class MIPPYCanvas(Canvas):
+    """
+    Here is some info on MIPPYCanvas.
+    """
     def __init__(self, master, width=256, height=256, bd=0, drawing_enabled=False, autostats=False, antialias=True,
                  use_masks=True):
         Canvas.__init__(self, master, width=width, height=height, bd=bd, bg='#444444')
@@ -496,6 +499,23 @@ class MIPPYCanvas(Canvas):
         return
 
     def configure_scrollbar(self):
+        """
+        This method expects that a tkinter Scrollbar object has been created as the
+        attribute *img_scrollbar*. It needs to be run after the scrollbar is created to
+        establish the link between the scrollbar and the canvas.
+        
+        Although the scrollbar is created as an attribute of the canvas, you will
+        need to specify the window/frame you want the scrollbar to **appear**
+        on as its master when you construct it.
+        
+        Example:
+        
+        .. code-block:: python
+        
+            my_window.canvas1 = MIPPYCanvas(my_window)
+            my_window.canvas1.img_scrollbar = Scrollbar(my_window, orient='horizontal')
+            my_window.canvas1.configure_scrollbar()
+        """
         if self.img_scrollbar:
             self.img_scrollbar.config(command=self.scroll_images)
             self.img_scrollbar.set(0, 1)

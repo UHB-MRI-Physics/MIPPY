@@ -161,7 +161,25 @@ this is probably the right place to look.</p>
 <dl class="class">
 <dt id="mippy.viewing.MIPPYCanvas">
 <em class="property">class </em><code class="descclassname">mippy.viewing.</code><code class="descname">MIPPYCanvas</code><span class="sig-paren">(</span><em>master</em>, <em>width=256</em>, <em>height=256</em>, <em>bd=0</em>, <em>drawing_enabled=False</em>, <em>autostats=False</em>, <em>antialias=True</em>, <em>use_masks=True</em><span class="sig-paren">)</span><a class="headerlink" href="#mippy.viewing.MIPPYCanvas" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<dd><p>Here is some info on MIPPYCanvas.</p>
+<dl class="method">
+<dt id="mippy.viewing.MIPPYCanvas.configure_scrollbar">
+<code class="descname">configure_scrollbar</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mippy.viewing.MIPPYCanvas.configure_scrollbar" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method expects that a tkinter Scrollbar object has been created as the
+attribute <em>img_scrollbar</em>. It needs to be run after the scrollbar is created to
+establish the link between the scrollbar and the canvas.</p>
+<p>Although the scrollbar is created as an attribute of the canvas, you will
+need to specify the window/frame you want the scrollbar to <strong>appear</strong>
+on as its master when you construct it.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">my_window</span><span class="o">.</span><span class="n">canvas1</span> <span class="o">=</span> <span class="n">MIPPYCanvas</span><span class="p">(</span><span class="n">my_window</span><span class="p">)</span>
+<span class="n">my_window</span><span class="o">.</span><span class="n">canvas1</span><span class="o">.</span><span class="n">img_scrollbar</span> <span class="o">=</span> <span class="n">Scrollbar</span><span class="p">(</span><span class="n">my_window</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s1">&#39;horizontal&#39;</span><span class="p">)</span>
+<span class="n">my_window</span><span class="o">.</span><span class="n">canvas1</span><span class="o">.</span><span class="n">configure_scrollbar</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
 <dt id="mippy.viewing.MIPPYCanvas.get_3d_array">
 <code class="descname">get_3d_array</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mippy.viewing.MIPPYCanvas.get_3d_array" title="Permalink to this definition">¶</a></dt>
 <dd><p>Only works if all images are same dimensions</p>
