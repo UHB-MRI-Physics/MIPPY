@@ -1,4 +1,4 @@
-Useful References
+Useful Resources
 #######################
 
 GUI Design

@@ -3,23 +3,28 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to mippy's documentation!
-=================================
+MIPPY: Modular Image Processing in Python
+==================================================
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+    :maxdepth: 2
+    :caption: About MIPPY:
+
+    intro
+    quick_reference
+    useful_references
    
-   intro
-   quick_reference
-   useful_references
-   mippy/application
-   mippy/viewing
+.. toctree::
+    :maxdepth: 2
+    :caption: MIPPY API:
+   
+    mippy/application
+    mippy/viewing
 
 
 
 Indices and tables
-==================
+==============================
 
 * :ref:`genindex`
 * :ref:`modindex`
