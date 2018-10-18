@@ -17,9 +17,9 @@ variables:
 stages:
   - test
   - build
-  - build_docs
+  #~ - build_docs
   - deploy
-  - deploy_docs
+  #~ - deploy_docs
 
 cache:
   paths:
@@ -53,18 +53,18 @@ Build:
     - master
     - tags
 
-Build Docs:
-  stage: build_docs
-  script:
-    - mkdir .public
-    - sphinx-build -E -b html ./doc ./doc/_build
-    - cp -r ./doc/_build/* .public
-  artifacts:
-    paths:
-      - .public
-  only:
-    - master
-    - tags
+#~ Build Docs:
+  #~ stage: build_docs
+  #~ script:
+    #~ - mkdir .public
+    #~ - sphinx-build -E -b html ./doc ./doc/_build
+    #~ - cp -r ./doc/_build/* .public
+  #~ artifacts:
+    #~ paths:
+      #~ - .public
+  #~ only:
+    #~ - master
+    #~ - tags
 
 Push to TestPyPI:
   stage: deploy
@@ -87,15 +87,15 @@ Push to PyPI:
   only:
     - tags
   
-Deploy Docs:
-  stage: deploy_docs
-  script:
-    - mv .public public
-  artifacts:
-    paths:
-      - public
-  only:
-    - tags
+#~ Deploy Docs:
+  #~ stage: deploy_docs
+  #~ script:
+    #~ - mv .public public
+  #~ artifacts:
+    #~ paths:
+      #~ - public
+  #~ only:
+    #~ - tags
 
 #pages:
 #  script:
