@@ -44,45 +44,33 @@ Software Design
 Source code structure
 ----------------------------
 
-- mippy
-    * application.py
-        # Contains the main GUI class for MIPPY (MIPPYMain)
-    * fileio.py
-        # File reading and writing
-    * improcess.py
-        # General functions for imaging processing/analysis
-    * math.py
-        # Useful math functions
-    * splash.py
-        # Handles splash screen displaying at program startup
-    * threading.py
-        # Multithreading / parallel processing
-    * viewing.py
-        # All main classes and functions to handle image viewing and interaction
-- mippy.mdicom
-	* anon.py
-	    # Functions related to handling anonymous data or removal of patient information
-	* io.py
-	    # Input/output of DICOM files
-	* mrenhanced.py
-	    # Tools for handling the EnhancedMRImageStorage SOP class
-	* mrspectroscopy.py
-	    # Tools for dealing with MR spectroscopy data
-	* pixel.py
-	    # Handling pixel data from DICOM instances
-	* reading.py
-	    # Reading/sorting DICOM files
-	* siemens.py
-	    # Functions specific to SIEMENS equipment and private CSA headers
-- mippy.mviewer
-    * module_main.py
-        # Source code for the "Image Viewer" module in MIPPY
-    * module_config.pyw
-        # Produces the config file required by MIPPY to recognise a module
-- resources
-    # All GUI images and additional files required by MIPPY
-- testing
-    # Unit testing scripts for use with pytest
-- doc
-    # Sphinx/reStructuredText format documentation for use with readthedocs.org
+| mippy
+| +-- doc
+| +-- resources
+| +-- LICENSE
+| +-- README.md
+| +-- requirements.txt
+| +-- ``setup.py``
+| +-- mippy
+|     +-- ``application.py``        *[Contains the main GUI class for MIPPY (MIPPYMain)]*
+|     +-- ``fileio.py``             *[File reading and writing]*
+|     +-- ``improcess.py``          *[General functions for imaging processing/analysis]*
+|     +-- ``launcher.py``           *[Launcher for the MIPPY GUI]*
+|     +-- ``math.py``               *[Useful math functions]*
+|     +-- ``misc.py``               *[Miscellaneous functions]*
+|     +-- ``splash.py``             *[Handles splash screen displaying at program startup]*
+|     +-- ``threading.py``          *[Multithreading / parallel processing]*
+|     +-- ``viewing.py``            *[All main classes and functions to handle image viewing and interaction]*
+|     +-- mdicom
+|         +-- ``anon.py``               *[Functions related to handling anonymous data or removal of patient information]*
+|         +-- ``io.py``                 *[Input/output of DICOM files]*
+|         +-- ``mrenhanced.py``         *[Tools for dealing with MR spectroscopy data]*
+|         +-- ``mrspectroscopy.py``     *[Tools for dealing with MR spectroscopy data]*
+|         +-- ``pixel.py``              *[Handling pixel data from DICOM instances]*
+|         +-- ``reading.py``            *[Reading/sorting DICOM files]*
+|         +-- ``siemens.py``            *[Functions specific to SIEMENS equipment and private CSA headers]*
+|     +-- mviewer
+|         +-- ``module_main.py``        *[Source code for the "Image Viewer" module in MIPPY]*
+|         +-- ``module_config.py``      *[Produces the config file required by MIPPY to recognise a module]*
+|         +-- config
 

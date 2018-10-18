@@ -76,8 +76,19 @@ def display_results(results, master_window):
 
 def quick_display(im_array, master_window):
     """
-    Requires a numpy array and an existing Tk instance to use as a
-    master window.  im_array can be 2D or 3D.
+    Given a 2D or 3D numpy.ndarray, opens a new window and displays the image(s) on
+    a new 256x256 image canvas.  Bit of a quick and dirty function, but occasionally
+    useful.
+    
+    Requires an existing Tk instance to use as a master for the window.
+    
+    Parameters
+    ----------------------
+    im_array: numpy.ndarray
+        2D array of pixel values
+    master_window: tkinter object
+        Open/running tkinter instance or widget
+
     """
     dim = len(np.shape(im_array))
     if dim == 2:
@@ -110,7 +121,7 @@ def get_overlay(ds):
     
     Returns
     ---------------------
-    numpy.ndarray
+    overlay: numpy.ndarray
         2D array of 8-bit integer values
     """
     try:
@@ -154,7 +165,7 @@ def px_bytes_to_array(byte_array, rows, cols, bitdepth=16, mode='littleendian', 
     
     Returns
     --------------
-    numpy.ndarray
+    px_float: numpy.ndarray
         2D array of 64-bit float values
     """
     if bitdepth == 16:
@@ -189,7 +200,7 @@ def generate_px_float(pixels, rs, ri, ss=None):
     
     Returns
     --------------------
-    numpy.ndarray
+    px_float: numpy.ndarray
         N-dimensional array of scaled pixel values. The shape of the output array matched the shape of the input array.
     """
     if ss:
@@ -210,9 +221,9 @@ def get_global_min_and_max(image_list):
     
     Returns
     -------------------------
-    float
+    min: float
         Minimum pixel value
-    float
+    max: float
         Maximum pixel value
     """
     min = np.min(image_list[0].px_float)
@@ -251,7 +262,7 @@ def bits_to_ndarray(bits, shape):
     
     Returns
     -----------------------------
-    numpy.ndarray
+    bitmap: numpy.ndarray
         Binary pixel data of the required shape
     """
     abytes = np.frombuffer(bits, dtype=np.uint8)
@@ -350,7 +361,7 @@ def get_ellipse_coords(center, a, b, n=128):
 
     Returns
     -----------------------------------
-    list
+    coords: list
         List of (x,y) coordinate tuples
     """
     coords_pos = []
@@ -490,13 +501,36 @@ class ROI():
 
 
 class ImageFlipper(Frame):
+    """
+    Toolbar for performing simple flip/rotate functions on images on
+    an instance of MIPPYCanvas. Extends tkinter.Frame.
+    
+    The toolbar has 4 buttons:
+    
+    * Rot R (Rotate clockwise 90 degrees)
+    * Rot L (Rotate anti-clockwise 90 degrees)
+    * Flip H (Reflect through a vertical line down the center of the image)
+    * Flip V (Reflect through a horzontal like across the center of the image)
+    
+    Functions are designed to be invoked by buttons, but could theoretically
+    be invoked with a direct call.
+    
+    Parameters
+    --------------------------
+    master: tkinter widget
+        Master object for displaying the widget (usually a ``tkinter.Frame`` instance)
+    canvas: mippy.viewing.MIPPYCanvas
+        MIPPYCanvas object you want the ImageFlipper toolbar to work with.
+        
+    
+    """
     def __init__(self, master, canvas):
         Frame.__init__(self, master)
         self.canvas = canvas
-        self.rot_left_button = Button(self, text="Rot L", command=lambda: self.rot_left(canvas))
-        self.rot_right_button = Button(self, text="Rot R", command=lambda: self.rot_right(canvas))
-        self.flip_h_button = Button(self, text="Flip H", command=lambda: self.flip_h(canvas))
-        self.flip_v_button = Button(self, text="Flip V", command=lambda: self.flip_v(canvas))
+        self.rot_left_button = Button(self, text="Rot L", command=lambda: self.rot_left())
+        self.rot_right_button = Button(self, text="Rot R", command=lambda: self.rot_right())
+        self.flip_h_button = Button(self, text="Flip H", command=lambda: self.flip_h())
+        self.flip_v_button = Button(self, text="Flip V", command=lambda: self.flip_v())
         self.rot_left_button.grid(row=0, column=0, sticky='nsew')
         self.rot_right_button.grid(row=0, column=1, sticky='nsew')
         self.flip_h_button.grid(row=0, column=2, sticky='nsew')
@@ -508,38 +542,97 @@ class ImageFlipper(Frame):
         self.columnconfigure(3, weight=1)
         return
 
-    def rot_left(self, canvas):
-        for im in canvas.images:
+    def rot_left(self):
+        """
+        Rotates the images through 90 degrees anticlockwise.
+        
+        """
+        for im in self.canvas.images:
             im.rotate_left()
             im.wl_and_display()
-        canvas.show_image()
+        self.canvas.show_image()
         return
 
-    def rot_right(self, canvas):
-        for im in canvas.images:
+    def rot_right(self):
+        """
+        Rotates the images through 90 degrees clockwise.
+        
+        """
+        for im in self.canvas.images:
             im.rotate_right()
             im.wl_and_display()
-        canvas.show_image()
+        self.canvas.show_image()
         return
 
-    def flip_h(self, canvas):
-        for im in canvas.images:
+    def flip_h(self):
+        """
+        Reflects the images about a central vertical axis.
+        
+        """
+        for im in self.canvas.images:
             im.flip_horizontal()
             im.wl_and_display()
-        canvas.show_image()
+        self.canvas.show_image()
         return
 
-    def flip_v(self, canvas):
-        for im in canvas.images:
+    def flip_v(self):
+        """
+        Reflects the images about a central horizontal axis.
+        
+        """
+        for im in self.canvas.images:
             im.flip_vertical()
             im.wl_and_display()
-        canvas.show_image()
+        self.canvas.show_image()
         return
 
 
 class MIPPYCanvas(Canvas):
     """
-    Here is some info on MIPPYCanvas.
+    MIPPYCanvas is an extension of ``tkinter.Canvas`` with additional functionality for working with
+    DICOM images and region-of-interest based image analysis.
+    
+    Parameters
+    -------------------
+    
+    master: tkinter object
+        The tkinter object which will hold the canvas (typically a tkinter.Frame)
+    width: int, optional
+        The on-screen width of the canvas in pixels (default = 256)
+    height: int, optional
+        The on-screen height of the canvas in pixels (default = 256)
+    bd: int, optional
+        Canvas border width (default = 0)
+    drawing_enabled: bool, optional
+        Specifies whether the canvas interacts with left-mouse clicks for ROI drawing (default = False)
+    autostats: bool, optional
+        If True, ROI stats will be printed to stdout immediately whenever an ROI is drawn. (default = False)
+    antialias: bool, optional
+        If True, antialiasing will be applied when scaling images for display. (default = True)
+    use_masks: bool, optional
+        If True, binary ROI masks will be generated whenever an ROI is drawn/updated. This makes it slower to
+        generate the ROI, but much faster to perform stats/analysis on the ROI. (default = True)
+    
+    
+    :ivar int active: The number of the currently displayed image, **indexed from 1** (initial value: 1)
+    :ivar tkinter.StringVar active_str: ``tkinter.StringVar`` instance of ``MIPPYCanvas.active`` (so that image number can be displayed in a ``tkinter.Label``)
+    :ivar bool antialias: If True, antialiasing will be applied when scaling images for display (intial value from Constuctor)
+    :ivar bool autostats: If True, ROI stats will be printed to stdout immediately whenever an ROI is drawn (intial value from Contructor)
+    :ivar bool drawing_enabled: Specifies whether the canvas interacts with left-mouse clicks for ROI drawing (intial value from Constructor)
+    :ivar list images: The list of ``mippy.viewing.MIPPYImage`` objects currently loaded on the MIPPYCanvas (initial value: [ ])
+    :ivar int height: Height of the canvas in pixels (intial value from Constructor)
+    :ivar datetime.datetime last_clicked: The timestamp of the last time the canvas was drawn on using the left mouse button (initial value: ``datetime.datetime.now()``)
+    :ivar tkinter.Frame master: The master tkinter widget on which the canvas is displayed
+    :ivar list roi_list: List of ``mippy.viewing.ROI`` objects currently active on the displayed image (initial value: [ ])
+    :ivar list roi_list_2d: 2D list of ``mippy.viewing.ROI`` objects currently active on all loaded images (initial value: [ [ ] ])
+    :ivar str roi_mode: The currently active ROI drawing mode (inital value: 'rectangle')
+    :ivar bool use_masks: If True, binary ROI masks will be generated whenever an ROI is drawn/updated. This makes it slower to generate the ROI, but much faster to perform stats/analysis on the ROI. (intial value from Constructor)
+    :ivar int width: Width of the canvas in pixels (intial value from Constructor)
+    :ivar float zoom_factor: The scaling factor applied to the raw pixel data for display on the MIPPYCanvas (initial value: 1)
+    
+    
+    
+    
     """
     def __init__(self, master, width=256, height=256, bd=0, drawing_enabled=False, autostats=False, antialias=True,
                  use_masks=True):
@@ -591,6 +684,10 @@ class MIPPYCanvas(Canvas):
         self.last_clicked = datetime.datetime.now()
 
     def reconfigure(self, event):
+        """
+        Detects a rescaling event and adjusts width, height attributes.
+        If images are loaded on canvas, rescale images and rescale ROIs according to new zoom_factor.
+        """
         self.width = event.width - 4
         self.height = event.height - 4
         if not self.images == []:
@@ -609,6 +706,10 @@ class MIPPYCanvas(Canvas):
             pass
 
     def rescale_rois(self, oldzoom, newzoom):
+        """
+        Rescales ROIs to keep up with canvas when the canvas is resized.
+        Only invoked by MIPPYCanvas.reconfigure()
+        """
         self.roi_list_2d[self.active-1] = self.roi_list
         for im in range(len(self.images)):
             for r in range(len(self.roi_list_2d[im])):
@@ -650,6 +751,9 @@ class MIPPYCanvas(Canvas):
                 self.img_scrollbar.set(0, 1)
 
     def scroll_images(self, command, value, mode='unit'):
+        """
+        Responds to the scrollbar to display the correct image as the scrollbar moves
+        """
         if command == 'scroll':
             self.show_image(self.active + int(value))
         elif command == 'moveto':
@@ -658,6 +762,10 @@ class MIPPYCanvas(Canvas):
                 self.show_image(selected_img)
 
     def update_scrollbar(self, value):
+        """
+        Responds to show_image to ensure the scrollbar position always reflects
+        the currently displayed image
+        """
         current_img = float(self.active)
         total_img = float(len(self.images))
         lo = (self.active - 1) / total_img
@@ -665,14 +773,27 @@ class MIPPYCanvas(Canvas):
         self.img_scrollbar.set(lo, hi)
 
     def reset(self):
+        """
+        Unloads all images from the canvas.
+        
+        .. note::
+            Does not automatically remove ROIs from the list, they are only removed
+            when a new set of images are loaded with ``MIPPYCanvas.load_images()``.
+        """
         self.images = []
         self.delete('all')
-        self.active = None
+        self.active = 1
 
     def show_image(self, num=None):
         """
-        Takes slice number (which starts from 1, not zero).  Doesn't do anything
-        if there are no images loaded.
+        Display the requested image.
+        
+        Parameters
+        -------------------
+        num: int
+            The required image number, **indexed from 1**.
+        
+        
         """
         if len(self.images) == 0:
             return
@@ -693,6 +814,11 @@ class MIPPYCanvas(Canvas):
         self.tag_raise('layer1')
 
     def quick_redraw_image(self):
+        """
+        Does a quick redraw of the image layer on the canvas without recalculating
+        the PhotoImage or any other objects, intended only to force the canvas to
+        update.
+        """
         try:
             self.delete('image')
             self.create_image((0, 0), image=self.images[self.active - 1].photoimage, anchor='nw', tags='image')
@@ -706,7 +832,8 @@ class MIPPYCanvas(Canvas):
 
     def update_roi_masks(self):
         """
-        Returns a binary mask of all ROIs
+        Cycles through the active image only and calculates the roi mask for each
+        ROI.
         """
         if self.roi_list == []:
             self.masks = []
@@ -759,8 +886,22 @@ class MIPPYCanvas(Canvas):
 
     def get_roi_pixels(self, rois=[], tags=[]):
         """
-        Returns a LIST of pixel values from an ROI.
-        ROIS must be a list of ROI numbers.
+        Returns a LIST of pixel values from an ROI.  This list has no shape, and needs
+        converting to a ``numpy.ndarray`` to be able to do any useful stats on it.
+        
+        Parameters
+        -----------------------
+        rois: list(int), optional
+            List of indices.  If specified, only the specified positions in
+            ``MIPPYCanvas.roi_list`` will be analysed.
+        tags: list(str), optional
+            List of tags.  If specified, only ROIs with any of the specified tags will
+            be analysed.
+            
+        Returns
+        -----------------------
+        px_list: list
+            1D list of pixel values
         """
         im = self.get_active_image()
         if len(rois) == 0:
@@ -793,6 +934,35 @@ class MIPPYCanvas(Canvas):
             return px
 
     def get_roi_statistics(self, rois=[], tags=[]):
+        """
+        Returns some statistics from ROIs on the canvas.  The stats are returned as a
+        dictionary, where each key contains the values per-ROI as a list.
+        
+        Example:
+        
+        .. code-block:: python
+            
+            stats = my_window.canvas1.get_roi_statistics()
+            
+            # To get the mean of the first ROI...
+            val = stats['mean'][0]
+        
+                
+        Parameters
+        -----------------------
+        rois: list(int), optional
+            List of indices.  If specified, only the specified positions in
+            ``MIPPYCanvas.roi_list`` will be analysed.
+        tags: list(str), optional
+            List of tags.  If specified, only ROIs with any of the specified tags will
+            be analysed.
+            
+        Returns
+        -----------------------
+        stats: dict
+            Results as a dictionary
+
+        """
         if len(self.roi_list) < 1:
             return None
         if self.roi_list[0].roi_type == 'line':
@@ -816,7 +986,36 @@ class MIPPYCanvas(Canvas):
         return stats
 
     def get_profile(self, resolution=1, width=1, interpolate=False, direction='horizontal', index=0):
-        """Returns a line profile from the image"""
+        """
+        Returns a line profile from the image, with interpolation when required.
+        
+        Parameters
+        ---------------------
+        resolution: float, optional
+            The spacing between points in the profile, measured in pixels (default = 1)
+        width: int, optional
+            The width of the profile that should be averaged across, in pixels. Only applies
+            with a 'line' ROI type. (default = 1)
+        interpolate: bool, optional
+            Whether or not interpolation should be performed. If False, nearest neighbour
+            pixel values are taken.  If true, bilinear interpolation is used.  False is not
+            recommended when using resolutions <1. (default = False)
+        direction: str, optional
+            Only applies when using a 'rectangle' ROI 'horizontal' or 'vertical'.  If
+            'horizontal', pixels are averaged vertically to form a 1D profile.  If
+            'vertical', the opposite applies. (default = 'horizontal')
+        index: int, optional
+            The ROI to be used for the profile, with ``index`` representing the position
+            in ``MIPPYCanvas.roi_list``. (default = 0)
+        
+        Returns
+        -------------------------
+        profile: numpy.ndarray
+            1D numpyndarray of the values in the profile
+        x: numpy.ndarray
+            1D numpy.ndarray of the length (x) position of each point in the profile, in pixels
+        
+        """
 
         if not (self.roi_list[index].roi_type == 'line' or self.roi_list[index].roi_type == 'rectangle'):
             print("Not a valid ROI type for profile.  Line or rectangle required.")
@@ -872,6 +1071,32 @@ class MIPPYCanvas(Canvas):
         return profile, np.array(list(range(length_int))) * resolution
 
     def new_roi(self, coords, tags=[], system='canvas', color='yellow'):
+        """
+        Generates a new ROI from a set of coordinates.  Coordinates can be in 'canvas' 
+        coordinates or 'image' coordinates.
+        
+        Usually called from within MIPPY rather than being invoked directly.  For easier
+        ways of generating ROIs programmatically, see ``roi_rectangle``, ``roi_circle`` and 
+        ``roi_ellipse``.
+        
+        Parameters
+        ----------------------------
+        
+        coords: list(tuple)
+            List of (x,y) tuple coordinates defining the boundary of the ROI in a
+            clockwise direction.
+        tags: list(str), optional
+            List of tags for the ROI.  The tags can be used to identify the ROI at a later
+            date.  ``'roi'`` is always appended to this list, so all ROIs have the tag 
+            ``'roi'``. (default = [ ])
+        system: str, optional
+            Either ``'canvas'`` or ``'image'`` to identify the coordinate system/reference 
+            used for ``coords``. (default = 'canvas')
+        color: str, optional
+            Color in which the ROI will be drawn - must be understood by tkinter 
+            (default = 'yellow')
+        
+        """
         if system == 'image':
             coords = self.canvas_coords(coords)
         elif not system == 'canvas':

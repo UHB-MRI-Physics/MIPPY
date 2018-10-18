@@ -9,11 +9,20 @@ functions in MIPPY.  If you want to work with images on a canvas,
 this is probably the right place to look.
 
 
+ImageFlipper (Class)
+========================================
+
+.. autoclass:: ImageFlipper
+    :members:
+
+
 MIPPYCanvas (Class)
 =========================================
 
 .. autoclass:: MIPPYCanvas
     :members:
+    :exclude-members: rescale_rois, reconfigure, scroll_images, update_scrollbar, update_roi_masks, update_all_roi_masks
+    
 
 ROI (Class)
 ==========================================
@@ -36,4 +45,6 @@ Functions
 .. autofunction:: get_overlay
 
 .. autofunction:: px_bytes_to_array
+
+.. autofunction:: quick_display
 
