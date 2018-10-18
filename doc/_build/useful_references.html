@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Quick Reference &mdash; mippy  documentation</title>
+  <title>Useful References &mdash; mippy  documentation</title>
   
 
   
@@ -28,8 +28,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Useful References" href="useful_references.html" />
-    <link rel="prev" title="Introduction" href="intro.html" /> 
+    <link rel="next" title="mippy.application" href="mippy/application.html" />
+    <link rel="prev" title="Quick Reference" href="quick_reference.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -81,8 +81,14 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Quick Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="useful_references.html">Useful References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_reference.html">Quick Reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Useful References</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#gui-design">GUI Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pydicom">Pydicom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#numpy-scipy">Numpy &amp; Scipy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#python-documentation">Python documentation</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="mippy/application.html">mippy.application</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mippy/viewing.html">mippy.viewing</a></li>
 </ul>
@@ -130,13 +136,13 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Quick Reference</li>
+      <li>Useful References</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/quick_reference.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/useful_references.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -149,9 +155,30 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="quick-reference">
-<h1>Quick Reference<a class="headerlink" href="#quick-reference" title="Permalink to this headline">¶</a></h1>
-<p>Here is some text.</p>
+  <div class="section" id="useful-references">
+<h1>Useful References<a class="headerlink" href="#useful-references" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="gui-design">
+<h2>GUI Design<a class="headerlink" href="#gui-design" title="Permalink to this headline">¶</a></h2>
+<p>MIPPY is built on <strong>tkinter</strong>, the default GUI package that comes with Python distributions.  There’s a bit of a learning curve, but the best resource I have found for getting your head around it (and checking your syntax) is the site at <strong>effbot.org</strong>.</p>
+<p><a class="reference external" href="http://effbot.org/tkinterbook">effbot.org/tkinterbook</a></p>
+<p><em>A caveat: This was written for Python2, but MIPPY now only works on Python3.  Nothing much has changed in tkinter, except for the import statements. For more info, see `this answer &lt;https://stackoverflow.com/questions/17843596/difference-between-tkinter-and-tkinter&gt;`_ on StackOverflow.</em></p>
+</div>
+<div class="section" id="pydicom">
+<h2>Pydicom<a class="headerlink" href="#pydicom" title="Permalink to this headline">¶</a></h2>
+<p>The second resource you’ll probably need is the <a class="reference external" href="http://pydicom.github.io/pydicom/stable/">documentation for Pydicom</a>.  For anything to do with reading/writing DICOM files or working with DICOM header information, this is your best bet.</p>
+<p><a class="reference external" href="http://pydicom.github.io/pydicom/stable">http://pydicom.github.io/pydicom/stable</a></p>
+</div>
+<div class="section" id="numpy-scipy">
+<h2>Numpy &amp; Scipy<a class="headerlink" href="#numpy-scipy" title="Permalink to this headline">¶</a></h2>
+<p>MIPPY relies heavily on numpy and scipy, and if you’re working with pixel data then you’ll probably also want to do so.  The documentation for these is <strong>excellent</strong>, and is the same format I’ve tried to use for the API-like parts of the documentation on this site.</p>
+<p>Numpy: <a class="reference external" href="https://docs.scipy.org/doc/numpy-1.15.1/reference/">https://docs.scipy.org/doc/numpy-1.15.1/reference/</a></p>
+<p>Scipy: <a class="reference external" href="https://docs.scipy.org/doc/scipy-1.1.0/reference/">https://docs.scipy.org/doc/scipy-1.1.0/reference/</a></p>
+</div>
+<div class="section" id="python-documentation">
+<h2>Python documentation<a class="headerlink" href="#python-documentation" title="Permalink to this headline">¶</a></h2>
+<p>Most other stuff MIPPY does uses built-in Python libraries. The Python documentation is very good, so it is definitely a recommended resource.</p>
+<p><a class="reference external" href="http://docs.python.org/3/index.html">http://docs.python.org/3/index.html</a></p>
+</div>
 </div>
 
 
@@ -162,10 +189,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="useful_references.html" class="btn btn-neutral float-right" title="Useful References" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="mippy/application.html" class="btn btn-neutral float-right" title="mippy.application" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="intro.html" class="btn btn-neutral" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="quick_reference.html" class="btn btn-neutral" title="Quick Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

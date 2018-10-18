@@ -11,7 +11,8 @@ Welcome to mippy's documentation!
    :caption: Contents:
    
    intro
-   quick_reference   
+   quick_reference
+   useful_references
    mippy/application
    mippy/viewing
 

@@ -98,7 +98,20 @@ def quick_display(im_array, master_window):
 
 def get_overlay(ds):
     """
-    Expects DICOM dataset
+    Given a Pydicom dataset, this extracts and returns the 1-bit bitmap overlay as a
+    2D numpy.ndarray containing values of 0 or 255.
+    
+    If it exists, this bitmap exists in Siemens MRI data as tag (6000,3000).
+    
+    Parameters
+    --------------------
+    ds: pydicom.Dataset.Dataset or pydicom.Dataset.FileDataset
+        Pydicom dataset from which the overlay (6000,3000) should be extracted
+    
+    Returns
+    ---------------------
+    numpy.ndarray
+        2D array of 8-bit integer values
     """
     try:
         bits = ds[0x6000, 0x3000].value
@@ -142,7 +155,7 @@ def px_bytes_to_array(byte_array, rows, cols, bitdepth=16, mode='littleendian', 
     Returns
     --------------
     numpy.ndarray
-        px_float (2D array of 64-bit float values)
+        2D array of 64-bit float values
     """
     if bitdepth == 16:
         if mode == 'littleendian':
@@ -158,6 +171,27 @@ def px_bytes_to_array(byte_array, rows, cols, bitdepth=16, mode='littleendian', 
 
 
 def generate_px_float(pixels, rs, ri, ss=None):
+    """
+    Takes a numpy.ndarray of unscaled integer pixel values (typically 16 bit) and applies
+    the relevant scaling factors from the DICOM header to generate the correct rescaled
+    pixel values.
+    
+    Parameters
+    --------------------------
+    pixels: numpy.ndarray
+        The unscaled integer pixel data
+    rs: float
+        Rescale slope
+    ri: float
+        Rescale intercept
+    ss: float, optional
+        Additional reciprocal scaling factor (typically used in Philips images to get 'real world' values.
+    
+    Returns
+    --------------------
+    numpy.ndarray
+        N-dimensional array of scaled pixel values. The shape of the output array matched the shape of the input array.
+    """
     if ss:
         return (pixels * rs + ri) / (rs * ss)
     else:
@@ -166,7 +200,20 @@ def generate_px_float(pixels, rs, ri, ss=None):
 
 def get_global_min_and_max(image_list):
     """
-    Will only work with MIPPY_8bitviewer type objects
+    Takes a list of MIPPYImage objects and returns the minimum and maximum pixel value
+    from the whole list.
+    
+    Parameters
+    -------------------------
+    image_list: list
+        1D list of MIPPYImage objects, as found in MIPPYCanvas.image_list
+    
+    Returns
+    -------------------------
+    float
+        Minimum pixel value
+    float
+        Maximum pixel value
     """
     min = np.min(image_list[0].px_float)
     max = np.max(image_list[0].px_float)
@@ -191,6 +238,22 @@ def get_global_min_and_max(image_list):
 # ~ return abits.reshape(shape)
 
 def bits_to_ndarray(bits, shape):
+    """
+    Converts an 8-bit byte string of 1-bit pixel data into a numpy.ndarray
+    of ones and zeros.
+    
+    Parameters
+    -----------------------
+    bits: bytes
+        Byte-string containing the 1-bit pixel data
+    shape: tuple
+        The desired output shape as (rows,columns)
+    
+    Returns
+    -----------------------------
+    numpy.ndarray
+        Binary pixel data of the required shape
+    """
     abytes = np.frombuffer(bits, dtype=np.uint8)
     abits = np.zeros(8 * len(abytes), np.uint8)
 
@@ -271,10 +334,24 @@ def get_ellipse_coords(center, a, b, n=128):
     center.
 
     Based on http://mathworld.wolfram.com/Ellipse-LineIntersection.html
+    
+    Parameters
+    ----------------------------------------
+    center: tuple
+        Center coordinate (x,y)
+    a: float
+        Semi-axis length in X direction (like 'X radius')
+    b: float
+        Semi-axis length in Y direction (like 'Y radius')
+    n: int, optional
+        Number of rays to use in the calculation.  The number of coordinates returned around your
+        ellipse will be 2*n.  More rays = finer resolution = 'curvier' ellipse.  However, this takes
+        longer to compute!  Consider going smaller for smaller ellipses. (default = 128)
 
-    a = semiaxis in x direction
-    b = semiaxis in y direction
-    DO NOT CONFUSE THE TWO!
+    Returns
+    -----------------------------------
+    list
+        List of (x,y) coordinate tuples
     """
     coords_pos = []
     coords_neg = []
@@ -302,6 +379,23 @@ def get_ellipse_coords(center, a, b, n=128):
 ########################################
 
 class ROI():
+    """
+    Region of interest objects in MIPPY, as stored in MIPPYCanvas.roi_list and MIPPYCanvas.roi_list_2d
+    
+    Parameters
+    -----------------------
+    coords: list(tuple)
+        list of tuple (x,y) coordinates defining the boundary of the ROI
+    tags: list(str), optional
+        List of string objects used to 'tag' the ROI on the canvas.  The list will always
+        have the string 'roi' appended so ROI objects are ALWAYS tagged 'roi'. (default = [])
+    roi_type: str, optional
+        Specifies the type of ROI for easier processing later on.  If omitted, the type is
+        established as best as possible from the ROI coordinates. (default = None)
+    color: str, optional
+        The color the ROI should appear on a MIPPYCanvas. Colors must be understood by
+        tkinter. (default = 'yellow')    
+    """
     def __init__(self, coords, tags=[], roi_type=None, color='yellow'):
         """
         Expecting a string of 2- or 3-tuples to define bounding coordinates.
@@ -335,6 +429,19 @@ class ROI():
         self.tags = tags
 
     def contains(self, point):
+        """
+        Tests whether a point (x,y) is inside or outside of the ROI object.
+        
+        Parameters
+        -----------------------
+        point: tuple
+            (x,y) coordinate of the point of interest
+            
+        Returns
+        --------------------------
+        bool
+            True or False
+        """
         # Check whether or not the point is within the extreme bounds of the ROI
         # coordinates first...
         # Could do with a faster way of doing this. Originally used self.bbox
@@ -353,7 +460,24 @@ class ROI():
         else:
             return True
 
-    def update(self, xmove=0, ymove=0):
+    def update(self, xmove=0., ymove=0.):
+        """
+        Move an ROI by a specified distance in the X and Y directions (updating the ROI coordinates).
+        One, both or neither distance may be specified.
+        
+        .. note::
+            This does not redraw the ROI on a canvas, it only updates the ROI coordinates.  The
+            canvas/ROI must be redrawn to update on screen.
+        
+        Parameters
+        -----------------------
+        xmove: float, optional
+            The distance moved in the X direction (positive or negative)
+        ymove: float, optional
+            The distance moved in the Y direction (positive or negative)
+        
+        
+        """
         if not (xmove==0 and ymove==0):
             for i in range(len(self.coords)):
                 self.coords[i] = (self.coords[i][0] + xmove, self.coords[i][1] + ymove)
