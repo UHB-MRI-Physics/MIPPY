@@ -21,7 +21,7 @@ MIPPYCanvas (Class)
 
 .. autoclass:: MIPPYCanvas
     :members:
-    :exclude-members: rescale_rois, reconfigure, scroll_images, update_scrollbar, update_roi_masks, update_all_roi_masks
+    :exclude-members: rescale_rois, reconfigure, scroll_images, update_scrollbar, update_roi_masks, update_all_roi_masks, left_click, left_drag, left_release, left_double, right_click, right_drag, right_release, right_double
     
 
 ROI (Class)
