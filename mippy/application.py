@@ -50,7 +50,8 @@ from .threading import multithread
 import imp
 #~ print "Done!"
 
-
+# WEB LINKS
+MIPPYDOCS = r'http://mippy.readthedocs.io'
         
 
 class MIPPYMain(Frame):
@@ -201,7 +202,7 @@ class MIPPYMain(Frame):
                 self.optionsmenu.add_command(label="Disable multiprocessing", command=lambda:self.disable_multiprocessing())
                 # Create and populate "Help" menu
                 self.helpmenu = Menu(self.menubar, tearoff=0)
-                self.helpmenu.add_command(label="Open the wiki",command=lambda:self.load_wiki())
+                self.helpmenu.add_command(label="Open MIPPY documentation",command=lambda:self.load_docs())
                 self.helpmenu.add_command(label="About MIPPY",command=lambda:self.display_version_info())
                 #~ self.helpmenu.add_command(label="View changelog",command=lambda:self.display_changelog())
                 self.helpmenu.add_command(label="Report issue",command=lambda:self.report_issue())
@@ -589,9 +590,9 @@ class MIPPYMain(Frame):
                 self.asktoexit()
                 return
 
-        def load_wiki(self):
-                print("Load wiki")
-                webbrowser.open_new('http://tree.taiga.io/project/robflintham-mippy/wiki/home')
+        def load_docs(self):
+                print("Open documentation")
+                webbrowser.open_new(MIPPYDOCS)
                 return
         
         def report_issue(self):
