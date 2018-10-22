@@ -20,7 +20,11 @@ MIPPY: Modular Image Processing in Python
    
     mippy/application
     mippy/viewing
+    mippy/mdicom/pixel
 
+.. toctree::
+    :maxdepth: 2
+    :caption: MIPPY Modules
 
 
 Indices and tables

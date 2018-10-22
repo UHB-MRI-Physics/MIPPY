@@ -31,7 +31,7 @@ before_script:
   - pip install virtualenv
   - virtualenv venv
   - source venv/bin/activate
-  - python -m pip install pytest twine==1.11.0 wheel sphinx sphinx_rtd_theme
+  - python -m pip install pytest twine==1.11.0 wheel
   - python -m pip install -r requirements.txt
 
 Run PyTest:
@@ -44,12 +44,10 @@ Build:
   stage: build
   script:
     - python setup.py sdist bdist_wheel
-    - ./doc/MakeFile html
   retry: 2
   artifacts:
     paths:
       - dist/*
-      - doc/_build/*
     expire_in: 1 week
   only:
     - master

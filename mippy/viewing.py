@@ -1832,19 +1832,55 @@ class EasyViewer(Frame):
 
 class MIPPYImage():
     """
-    This class wraps up Image.Image and ImageTk.PhotoImage classes so that they can be
-    easily rescaled with whatever window and level for display purposes.  It's only 8-bit so
-    you don't have the biggest dynamic range, but I'm sure I've heard that the eye can't
-    resolve more than 256 shades of grey anyway...
-
-    The actual floating point values are stored as an attribute "px_float", so that the actual
-    scaled values can also be called for any given x,y position.  This should help when
-    constructing an actual viewer.
-
-    I should type "actual" some more...
+    The purpose of MIPPYImage is to have a single object which handles everything
+    required to make images viewable on a Canvas.  It keeps and updates an Image.Image
+    and ImageTk.PhotoImage object, the actual pixel values as px_float, and a few
+    other useful functions to do with image rotation/flipping etc.
+    
+    .. note::
+        This is currently very MRI-specific, and will not work with other DICOM objects.
+        The intention is to generalise this further and remove some of the dependency
+        on e.g. InPlanePhaseEncodingDirection, which will happen in a future version of
+        MIPPY.
+    
+    Parameters
+    ----------------------
+    dicom_dataset: pydicom.Dataset.Dateset / pydicom.Dataset.FileDataset / numpy.ndarray / str
+        The 'image' object to be loaded.  This can be a pydicom-loaded DICOM object, an array
+        of pixel values, or a path to a DICOM file.
+    limitbitdepth: bool, optional
+        If True, it limits the bitdepth of px_float to 8-bit integers. Pixel values are
+        scaled to fit this, so will no longer be representative of the 'true' pixel value.
+        Recommended for use with e.g. reference images/landmarking images where pixel
+        values are unimportant in order to reduce memory burden. (default = False)
+    
+    
+    
+    
+    :ivar numpy.ndarray px_float: 2D pixel value array, indexed as [row,col] or [y,x]
+    :ivar int flip_h: Number of times image has been flipped horizontally since loading. (initial value: 0)
+    :ivar int flip_v: Number of times image has been flipped vertically since loading (initial value: 0)
+    :ivar int rotations: Number of 90-degree rotations the image has been through relative to orientation when loaded. Positive values indicate a clockwise rotation. (initial value: 0)
+    :ivar float rs: Rescale slope (initial value: from DICOM if present, 1 if not)
+    :ivar float ri: Rescale intercept (initial value: from DICOM if present, 1 if not)
+    :ivar float ss: Reciprocal scaling factor, specific to Philips images (initial value: from DICOM if present, None if not)
+    :ivar int rows: Number of rows in image (inital value: from DICOM/pixel array)
+    :ivar int columns: Number of columns in image (inital value: from DICOM/pixel array)
+    :ivar float rangemax: Maximum possible value in MIPPYImage.px_float (taking account of bitdepth and rescaling)
+    :ivar float rangemax: Minimum possible value in MIPPYImage.px_float (taking account of bitdepth and rescaling)
+    :ivar tuple image_position: Position of pixel [0,0] in 3D space relative to patient/isocenter (initial value: from DICOM if available, None if not)
+    :ivar tuple image_orientation: 6-tuple representing the unit vectors for X and Y axes of images (initial value: from DICOM if available, None if not)
+    :ivar str pe_direction: Phase-encoding direction, specific to MRI. Allowed values are ``'ROW'`` or ``'COL'``. (initial value: from DICOM, if available, None if not)
+    :ivar float pixel_bandwidth: The pixel bandwidth in Hz, MRI-specific (initial value: from DICOM if available, None if not)
+    :ivar float xscale: The spacing of pixels in the X direction in mm (initial value: from DICOM if available, 1 if not)
+    :ivar float yscale: The spacing of pixels in the Y direction in mm (initial value: from DICOM if available, 1 if not)
+    :ivar numpy.ndarray overlay: Bitmap overlay for the image (inital value: from DICOM if available, None if not)
+    :ivar PIL.Image.Image image: PIL/pillow ``Image`` object generated from the windowed pixel values (initial value: None)
+    :ivar PIL.ImageTk.PhotoImage photoimage: The final representation of data that can be loaded onto the canvas (initial value: None)
+    
     """
 
-    def __init__(self, dicom_dataset, create_pillow=True, limitbitdepth=False):
+    def __init__(self, dicom_dataset, limitbitdepth=False):
 
         # Need some tags to describe the state of the image
         # Use integers, increment as approrpriate and test with % function
@@ -1881,8 +1917,8 @@ class MIPPYImage():
         self.rows = ds.Rows
         self.columns = ds.Columns
         self.px_float = generate_px_float(pixels, self.rs, self.ri, self.ss)
-        self.rangemax = generate_px_float(np.power(2, bitdepth), self.rs, self.ri, self.ss)
-        self.rangemin = generate_px_float(0, self.rs, self.ri, self.ss)
+        self.rangemax = np.max(generate_px_float(np.power(2, bitdepth), self.rs, self.ri, self.ss))
+        self.rangemin = np.min(generate_px_float(0, self.rs, self.ri, self.ss))
         if limitbitdepth:
             # Added this to try and reduce memory burden on things like MRS reference images where
             # multiple 3D datasets might be loaded
@@ -1936,6 +1972,10 @@ class MIPPYImage():
         return
 
     def construct_from_array(self, pixel_array):
+        """
+        Called within the constructor function __init__ if an array is passed instead
+        of a DICOM object or path to DICOM object.
+        """
         if len(np.shape(pixel_array)) > 2:
             # Assume RGB?
             print(np.shape(pixel_array))
@@ -1955,6 +1995,10 @@ class MIPPYImage():
         return
 
     def swap_phase(self):
+        """
+        Swaps the phase encode direction when image is rotated. Never called
+        explicitly, only ever done as part of a rotation method.
+        """
         if not hasattr(self, 'pe_direction'):
             return
         else:
@@ -1964,11 +2008,25 @@ class MIPPYImage():
                 self.pe_direction == 'ROW'
 
     def swap_dimensions(self):
+        """
+        Swaps dimensions rows and columns when a rotation is performed.
+        Only ever called from rotate method
+        """
         # Standard pythonic way of swapping pointers
         self.rows, self.columns = self.columns, self.rows
         return
 
     def rotate_right(self):
+        """
+        Rotates the image clockwise by 90-degrees.  Only intended to be called
+        using a ``mippy.viewing.ImageFlipper`` toolbar object.
+        
+        .. note::
+            The MIPPYImage.image and MIPPYImage.photoimage are not regenerated
+            as part of this method. It is expected that MIPPYCanvas will trigger
+            this.
+        
+        """
         self.px_float = spim.rotate(self.px_float, 270., order=0, prefilter=False)
         self.rotations += 1
         self.swap_phase()
@@ -1976,6 +2034,16 @@ class MIPPYImage():
         return
 
     def rotate_left(self):
+        """
+        Rotates the image anti-clockwise by 90-degrees.  Only intended to be called
+        using a ``mippy.viewing.ImageFlipper`` toolbar object.
+        
+        .. note::
+            The MIPPYImage.image and MIPPYImage.photoimage are not regenerated
+            as part of this method. It is expected that MIPPYCanvas will trigger
+            this.
+        
+        """
         self.px_float = spim.rotate(self.px_float, 90., order=0, prefilter=False)
         self.rotations -= 1
         self.swap_phase()
@@ -1983,24 +2051,77 @@ class MIPPYImage():
         return
 
     def flip_horizontal(self):
+        """
+        Flips/reflects the image about a central vertical axis. Only intended to be called
+        using a ``mippy.viewing.ImageFlipper`` toolbar object.
+        
+        .. note::
+            The MIPPYImage.image and MIPPYImage.photoimage are not regenerated
+            as part of this method. It is expected that MIPPYCanvas will trigger
+            this.
+        
+        """
         self.px_float = np.fliplr(self.px_float)
         self.flip_h += 1
         return
 
     def flip_vertical(self):
+        """
+        Flips/reflects the image about a central horizontal axis. Only intended to be called
+        using a ``mippy.viewing.ImageFlipper`` toolbar object.
+        
+        .. note::
+            The MIPPYImage.image and MIPPYImage.photoimage are not regenerated
+            as part of this method. It is expected that MIPPYCanvas will trigger
+            this.
+        
+        """
         self.px_float = np.flipud(self.px_float)
         self.flip_v += 1
         return
 
     def get_pt_coords(self, image_coords):
         """
-        Assumes you've passed a tuple (x,y) as your image coordinates
+        Converts image coordinates (x,y) into a 3D-coordinate representing the location
+        of that point in 3D space.
+        
+        .. deprecated:: 2.0
+            These transformations should now always be handled using the
+            ``get_voxel_location`` and ``get_img_coords`` methods in
+            :ref:`mippy-mdicom-pixel`.
+        
         """
         voxel_position = (self.image_position + image_coords[0] * self.xscale * self.image_orientation[0]
                           + image_coords[1] * self.yscale * self.image_orientation[1])
         return (voxel_position[0], voxel_position[1], voxel_position[2])
 
     def wl_and_display(self, window=None, level=None, zoom=None, antialias=True):
+        """
+        Generates the MIPPYImage.image and MIPPYImage.photoimage objects for
+        the specified window and level.  If no window and level are specified,
+        it defaults to the maximum/minimum of the dynamic range of the image.
+        
+        It is not usually necessary to invoke this function - it is primarily used
+        by MIPPYCanvas and MIPPYImage to control the interaction with the mouse.
+        
+        To set your own window/level programmatically, use ``MIPPYCanvas.set_window_level``.
+        
+        Parameters
+        -------------------------
+        
+        window: float, optional
+            Width of the window applied to the pixel values for display
+        level: float, optional
+            Center of the window applied to the pixel values for display
+        zoom: float, optional
+            Zoom-factor to be used when generating the Image and PhotoImage objects, usually
+            taken from the canvas.  If not provided, existing image size is used by default.
+        antialias: bool, optional
+            Specify whether antialiasing is to be used when generating the Image object. This
+            is usually specified by the MIPPYCanvas object.
+        
+        
+        """
         if antialias:
             resampling = Image.ANTIALIAS
         else:
@@ -2036,6 +2157,25 @@ class MIPPYImage():
         return
 
     def resize(self, dim1=256, dim2=256, antialias=True):
+        """
+        Resizes the MIPPYImage.image and MIPPYImage.photoimage objects
+        that are displayed on the canvas.
+        
+        .. note::
+            No transformation of the actual pixel data is performed; this
+            only updates the display image.
+        
+        Parameters
+        -------------------
+        dim1: int, optional
+            Dimension 1 (usually X) in pixels for the resized display image (default = 256)
+        dim2: int, optional
+            Dimension 2 (usually Y) in pixels for the resized display image (default = 256)
+        antialias: bool, optional
+            Specify if antialiasing should be used when resizing the image (default = True)
+            
+        
+        """
         if antialias:
             sampling = Image.ANTIALIAS
         else:
@@ -2045,6 +2185,24 @@ class MIPPYImage():
         return
 
     def zoom(self, zoom, antialias=True):
+        """
+        Resizes the MIPPYImage.image and MIPPYImage.photoimage objects
+        that are displayed on the canvas.
+        
+        .. note::
+            No transformation of the actual pixel data is performed; this
+            only updates the display image.
+        
+        Parameters
+        -------------------
+        zoom: float
+            Zoom factor (relative to size of MIPPYImage.px_float) to be used
+            when rescaling the image
+        antialias: bool, optional
+            Specify if antialiasing should be used when resizing the image (default = True)
+            
+        
+        """
         if antialias:
             sampling = Image.ANTIALIAS
         else:
@@ -2055,11 +2213,18 @@ class MIPPYImage():
         return
 
     def apply_overlay(self):
+        """
+        Applies the bitmap overlay to the display image MIPPYImage.image (if one exists).        
+        """
         if not self.overlay is None:
             self.image.paste(self.overlay, box=(0, 0), mask=self.overlay)
         return
 
     def set_display_image(self):
+        """
+        Generates the MIPPYImage.photoimage for display on the canvas. Only called from within
+        MIPPYImage functions once window-level/zoom/overlay etc are all finished.
+        """
         self.photoimage = ImageTk.PhotoImage(self.image)
         return
 
