@@ -6,7 +6,7 @@ from . import io
 from . import pixel
 from pkg_resources import resource_filename
 from subprocess import call
-import pickle as pickle
+import dill as pickle
 import numpy as np
 import sys
 from PIL import Image
@@ -56,13 +56,13 @@ def get_dataset(info,tempdir=None):
                         enhanced DICOM)
         info[1] = absolute file path
         info[2] = instance number
-        
+
         UID cannot be None. The other two can, but it might not find anything.
         """
         uid = info[0]
         filepath = info[1]
         instance = info[2]
-        
+
         # First, check for UID in temp files
         if not uid is None:
                 temppath = os.path.join(tempdir,str(uid)+'.mds')
@@ -84,7 +84,7 @@ def get_dataset(info,tempdir=None):
                                         ds_split = get_frame_ds(instance,ds)
                                         #~ io.save_temp_ds(ds_split,tempdir,str(ds.SOPInstanceUID)+"_"+str(i).zfill(3)+'.mds')
                                         return ds_split
-        
+
         # If it's got this far, cannot find file or not enough info
         print("CANNOT FIND FILE")
         return None
@@ -100,7 +100,7 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
         if os.path.split(path)[1].startswith("XX_"):
                 return tags
 #        print os.path.split(path)[1]
-        
+
         # Remove any previous datasets just held as "ds" in memory
         if 'ds' in locals():
                 del(ds)
@@ -115,7 +115,7 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
                 return tags
         if ds and not ds is None:
                 #~ print path
-                        
+
                 try:
                         # There has to be a better way of testing this...?
                         # If "ImageType" tag doesn't exist, then it's probably an annoying "XX" type file from Philips
@@ -129,8 +129,8 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
                         'OT' in modality
                         ):
                         return tags
-                
-                transfer_syntax =  str(ds.file_meta[0x2,0x10].value)
+
+                transfer_syntax =  ds.file_meta[0x2,0x10].value.name
                 if 'JPEG' in transfer_syntax:
                         compressed = True
                 else:
@@ -145,7 +145,7 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
                         except Exception:
                                 # If all else fails, just use a generic string
                                 seriesdesc = "Unknown Study Type"
-                
+
                 if "PHOENIXZIPREPORT" in seriesdesc.upper():
                         # Ignore any phoenix zip report files from Siemens
                         return tags
@@ -183,10 +183,10 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
                         except Exception:
                                 # If all else fails, just use a generic string
                                 studydesc = "Unknown Study Type"
-                
+
                 #~ if tags is None:
                         #~ tags = []
-                
+
                 if enhanced:
                         # Set "instance" array to match number of frames
                         instance = np.array(list(range(frames)))+1
@@ -199,23 +199,23 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
                                 print("INSTANCE NUMBER TAG DOESN'T EXIST")
                                 print(path)
                                 raise
-                
+
                 instance_uid = 'UNKNOWN'
-                
+
                 for i in instance:
                         if not enhanced:
                                 instance_uid = ds.SOPInstanceUID
                         else:
                                 # Append instance UID with the frame number to give unique reference to each slice
                                 instance_uid = ds.SOPInstanceUID+"_"+str(i).zfill(4)
-                        
-                        
+
+
                         """
                         Disabled to test Python's built-in JPEG module
                         Reenabled!!!
                         """
                         if compressed:
-                                # Check if temp file already exists for that InstanceUID. If so, read that file. If not, 
+                                # Check if temp file already exists for that InstanceUID. If so, read that file. If not,
                                 # uncompress the file and replace ds. Dataset will get saved as temp file at the end of this
                                 # function.
                                 temppath = os.path.join(tempdir,instance_uid+'.mds')
@@ -245,11 +245,11 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
                                         del(ds)
                                         ds = pydicom.dcmread(outpath)
                                         # Fix for incorrect JPEG UID in file_meta
-                                        if 'JPEG' in str(ds.file_meta.TransferSyntaxUID):
+                                        if 'JPEG' in ds.file_meta.TransferSyntaxUID.name:
                                                 ds.file_meta.TransferSyntaxUID = '1.2.840.10008.1.2.1'
                                                 ds.is_little_endian = True
                                                 ds.is_implicit_VR = False
-                                
+
                         print(name,"/",date,"/",seriesdesc,"/",i)
                         print(mode.upper())
                         if not ("SPECTROSCOPY" in mode.upper() or ima_mrs_uid in mode.upper()):
@@ -272,7 +272,7 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
                                 pxfloat = np.mean(pxfloat,axis=2)
                                 series_uid = series_uid+'.RAW'
                                 seriesdesc = '<MRS> '+seriesdesc
-                        
+
                         # Append the information to the "tag list" object
                         tags.append(dict([('date',date),('time',time),('name',name),('studyuid',study_uid),
                                         ('series',series),('seriesuid',series_uid),('studydesc',studydesc),
@@ -284,9 +284,9 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
                 if not enhanced:
                         if tempdir:
                                 io.save_temp_ds(ds,tempdir,instance_uid+'.mds')
-        
+
         del ds
-                
+
         return tags
 
 def compare_dicom(ds1,ds2,diffs=None,num=None,name=''):
@@ -331,7 +331,7 @@ def compare_dicom(ds1,ds2,diffs=None,num=None,name=''):
                 except:
                         diffs.append((name+str(element.name)+num,'--MISSING--',str(val2)))
                         continue
-        
+
         return diffs
 
 def load_images_from_uids(list_of_tags,uids_to_match,tempdir,multiprocess=False):
@@ -378,7 +378,7 @@ def load_images_from_uids(list_of_tags,uids_to_match,tempdir,multiprocess=False)
                                                         datasets_to_pass.append([split_ds])
                                                 else:
                                                         datasets_to_pass[-1].append(split_ds)
-                                                
+
                                                 # Removed instruction to save temp ds in MIPPY 2.0 due to problems with pickling
                                                 # the new dataset object.  Can only pickle if loaded from disk??
                                                 #~ io.save_temp_ds(split_ds,tempdir,tag['instanceuid']+'.mds')
@@ -392,5 +392,5 @@ def load_images_from_uids(list_of_tags,uids_to_match,tempdir,multiprocess=False)
                 datasets_to_pass = multithread(f,dcm_info)
                 # Group by series, to be flattened later if 1D list required
                 datasets_to_pass = [list(g) for k,g, in itertools.groupby(datasets_to_pass, lambda ds: ds.SeriesInstanceUID)]
-        
+
         return datasets_to_pass

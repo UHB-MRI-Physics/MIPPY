@@ -1,7 +1,8 @@
-import pickle as pickle
+import dill as pickle
 import os
 import sys
 import numpy as np
+import pydicom
 from pydicom.dataset import FileDataset, Dataset
 import pydicom.uid
 from pydicom.uid import generate_uid, PYDICOM_IMPLEMENTATION_UID, ImplicitVRLittleEndian
