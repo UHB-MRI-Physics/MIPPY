@@ -14,9 +14,9 @@ def shmolli_t1_fit(images,inv_times,inv_scheme,rest_periods,rr_interval):
     Given a 2D list of pydicom datasets sorted by inversion time, and provided
     with the inversion scheme (e.g. (5,1,1)), selectively use the inversion times
     to fit T1.
-    
+
     Fitting:
-    
+
     1. If range of values < 2*stdev, assume poor signal and reject (T1=0)
     2. Fit echoes from first inversion only to get T1_first
     3. Calculate difference in acquisition time between first image of first
@@ -26,22 +26,22 @@ def shmolli_t1_fit(images,inv_times,inv_scheme,rest_periods,rr_interval):
     6. Fit all echoes to get T1_full.  T1 = T1_full
     7. Calculate R^2, and set T1=0 if R^2 too low.
     """
-    
+
     inv_times = []
     acq_times = []
     rr_intervals = []
     inv_numbers = [0]*len(images)
-    
+
     ### Determine inversion scheme
     # Collect timing data
     for image in images:
         acq_times.append(float(image.AcquisitionDateTime))
         inv_times.append(float(image.InversionTime))
         rr_intervals.append(float(image.NominalInterval))
-    
+
     # Calculate mean RR interval (should be consistent as nominal anyway)
     rr_mean = np.mean(rr_intervals)
-    
+
     # For each image, see if inversion time is approximately 1 heartbeat after
     # any existing ones.  If it is, assume same inversion.  Use a 200ms window!
     # This loop will only work if images are sorted by inversion time.
@@ -53,20 +53,21 @@ def shmolli_t1_fit(images,inv_times,inv_scheme,rest_periods,rr_interval):
             if -200. < (inv_times[i]-inv_times[j]-rr_mean) < 200.:
                 # Same inversion as inv_times[j]
                 inv_numbers[i]=inv_numbers[j]
-    
+
     # Get 3D pixel array
     px_list = []
     for i in range(len(images)):
         im = MIPPYImage(images[i])
         px_list.append(im.px_float)
-    
+
     im3d = np.array(px_list)
     dim = np.shape(im3d)
-    
+
     # Fit for values from first inversion only
     inv_times = np.array(inv_times)
     inv_numbers = np.array(inv_numbers)
-    
+    T_rec = (acq_times[inv_numbers.index(2)]-acq_times[inv_number.index(1)])*1000
+
     # Initialise T1 and M0 maps
     t1_map = np.zeros(dim).astype(np.float64)
     m0_map = np.zeros(dim).astype(np.float64)
@@ -74,13 +75,25 @@ def shmolli_t1_fit(images,inv_times,inv_scheme,rest_periods,rr_interval):
 
     for y in range(dim[1]):
         for x in range(dim[2]):
-    
+
             init_T1 = 500
             inti_M0 = 1000
-            ydata = im3d[:,y,x]
+            ydata = im3d[inv_numbers==1,y,x]
+            if 3*np.std(ydata)>np.mean(ydata):
+                # Poor signal, ignore this pixel
+                continue
             xdata = inv_times[inv_numbers==1]
             popt,pcov = curve_fit(shmolli_t1_fit,xdata,ydata,init_T1,init_M0)
             perr = np.sqrt(np.diag(pcov))
+
+            # Check whether this is long or short T1
+            if popt[0]<5*T_rec:
+                # Short T1, re-fit with all echoes
+                ydata = im3d[:,y,x]
+                xdata = inv_times
+                popt,pcov = curve_fit(shmolli_t1_fit,xdata,ydata,init_T1,init_M0)
+                perr = np.sqrt(np.diag(pcov))
+
             if popt[0]<perr[0]*2:
                 # Less than 2 standard deviations, assume 0
                 continue
@@ -92,12 +105,19 @@ def shmolli_t1_fit(images,inv_times,inv_scheme,rest_periods,rr_interval):
             SS_res = np.sum((ydata-fit_data)**2)
             SS_tot = np.sum((ydata-np.mean(ydata))**2)
             rsquare = 1. - (SS_res/SS_tot)
-            
+
             # Reject if rsquare<0.5
             if rsqaure<0.5:
                 continue
-            
+
+
+
             # If all conditions above have failed, data is ok.  Add to maps.
             t1_map[y,x] = popt[0]
             m0_map[y,x] = popt[1]
-            
+            rsquare_map[y,x] = rsqaure
+
+    # Dump to text files to open in imagej
+    np.savetxt(r'C:\dump\t1.txt', t1_map)
+    np.savetxt(r'C:\dump\m0.txt', m0_map)
+    np.savetxt(r'C:\dump\rsquare.txt', rsquare_map)
