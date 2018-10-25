@@ -5,3 +5,4 @@ pillow
 nibabel
 matplotlib
 easygui
+dill
