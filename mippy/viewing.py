@@ -1684,6 +1684,13 @@ class MIPPYCanvas(Canvas):
             save file dialog box is opened to generate the path. (default = None)
         
         """
+        
+        # Transform coordinates to image coordinates for saving
+        # This is a bit of a fudge to ensure coordinates are loaded
+        # correctly when loading onto a different size canvas
+        for roi in self.roi_list:
+            roi.coords = self.image_coords(roi.coords)
+        
         if savepath is None:
             from tkinter import filedialog
             savepath = filedialog.asksaveasfilename(filetypes=(("MIPPY ROI set","*.roipickle")),
@@ -1709,6 +1716,9 @@ class MIPPYCanvas(Canvas):
             load file dialog box is opened to generate the path. (default = None)
         
         """
+        
+        
+            
         if loadpath is None:
             from tkinter import filedialog
             loadpath = filedialog.askopenfilename(filetypes=(("MIPPY ROI set","*.roipickle"),("All files",'*')),title="Select ROI set to load",
@@ -1717,6 +1727,13 @@ class MIPPYCanvas(Canvas):
             return
         with open(loadpath,'rb') as f:
             self.roi_list = pickle.load(f)
+            
+        # Transform coordinates to canvas coordinates after loading
+        # This is a bit of a fudge to ensure coordinates are loaded
+        # correctly when loading onto a different size canvas
+        for roi in self.roi_list:
+            roi.coords = self.canvas_coords(roi.coords)
+        
         if self.use_masks:
             self.update_roi_masks()
         self.roi_list_2d[self.active-1] = self.roi_list
