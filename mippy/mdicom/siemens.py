@@ -27,4 +27,26 @@ def get_ascconv(ds):
         #~ for i in range(10):
                 #~ print asc_split[i]
         return asc_split
-        
+
+def get_ascii_value(searchterm,ds):
+    return_value = None
+    header = get_ascconv(ds)
+    found = False
+    for s in header:
+        if searchterm in s[0]:
+            return_value = s[1]
+            found = True
+            break
+    if not found:
+        return None
+    # Disabled this - doesn't appear to hold true....?
+    #~ if return_value=='0x1':
+        #~ return_value = True
+    #~ elif return_value=='0x4':
+        #~ return_value = False
+    else:
+        try:
+            return_value = float(return_value)
+        except:
+            pass
+    return return_value
