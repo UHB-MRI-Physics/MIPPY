@@ -43,7 +43,7 @@ Run PyTest:
 Build:
   stage: build
   script:
-    - python setup.py sdist bdist_wheel
+    - python setup.py sdist bdist_wheel bdist_egg
   retry: 2
   artifacts:
     paths:
