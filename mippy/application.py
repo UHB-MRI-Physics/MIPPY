@@ -672,55 +672,7 @@ class MIPPYMain(Frame):
                                 # Attempted to make this section discrete function for use in modules etc
                                 self.datasets_to_pass = load_images_from_uids(self.sorted_list,self.active_uids,self.tempdir,self.multiprocess)
                                 
-                                #~ self.datasets_to_pass = []
-                                #~ dcm_info = []
-                                #~ previous_tag = None
-                                #~ if not self.multiprocess or ('win' in sys.platform and len(self.active_uids)<25):
-                                        #~ for tag in self.sorted_list:
-                                                #~ if tag['instanceuid'] in self.active_uids:
-                                                        #~ # Check to see if new series
-                                                        #~ if previous_tag:
-                                                                #~ if tag['seriesuid']==previous_tag['seriesuid']:
-                                                                        #~ new_series = False
-                                                                #~ else:
-                                                                        #~ new_series = True
-                                                        #~ else:
-                                                                #~ new_series = True
-                                                        #~ # First, check if dataset is already in temp files
-                                                        #~ temppath = os.path.join(self.tempdir,tag['instanceuid']+'.mds')
-                                                        #~ if os.path.exists(temppath):
-                                                                #~ print "TEMP FILE FOUND",tag['instanceuid']
-                                                                #~ with open(temppath,'rb') as tempfile:
-                                                                        #~ if new_series:
-                                                                                #~ self.datasets_to_pass.append([pickle.load(tempfile)])
-                                                                        #~ else:
-                                                                                #~ self.datasets_to_pass[-1].append(pickle.load(tempfile))
-                                                                        #~ tempfile.close()
-                                                        #~ else:
-                                                                #~ if not tag['path']==self.open_file:
-                                                                        #~ self.open_ds = pydicom.dcmread(tag['path'])
-                                                                        #~ self.open_file = tag['path']
-                                                                #~ if not tag['enhanced']:
-                                                                        #~ if new_series:
-                                                                                #~ self.datasets_to_pass.append([self.open_ds])
-                                                                        #~ else:
-                                                                                #~ self.datasets_to_pass[-1].append(self.open_ds)
-                                                                #~ else:
-                                                                        #~ split_ds = get_frame_ds(tag['instance'],self.open_ds)
-                                                                        #~ if new_series:
-                                                                                #~ self.datasets_to_pass.append([split_ds])
-                                                                        #~ else:
-                                                                                #~ self.datasets_to_pass[-1].append(split_ds)
-                                                                        #~ save_temp_ds(split_ds,self.tempdir,tag['instanceuid']+'.mds')
-                                                        #~ previous_tag = tag
-                                #~ else:
-                                        #~ for tag in self.sorted_list:
-                                                #~ if tag['instanceuid'] in self.active_uids:
-                                                        #~ dcm_info.append((tag['instanceuid'],tag['path'],tag['instance']))
-                                        #~ f = partial(get_dataset,tempdir=self.tempdir)
-                                        #~ self.datasets_to_pass = multithread(f,dcm_info,progressbar=self.progress)
-                                        #~ # Group by series, to be flattened later if 1D list required
-                                        #~ self.datasets_to_pass = [list(g) for k,g, in itertools.groupby(self.datasets_to_pass, lambda ds: ds.SeriesInstanceUID)]
+                                
                         else:
                                 self.datasets_to_pass = []
                                 previous_tag = None
