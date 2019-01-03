@@ -49,6 +49,7 @@ from . import fileio
 from .threading import multithread
 import imp
 #~ print "Done!"
+from zipfile import ZipFile
 
 # WEB LINKS
 MIPPYDOCS = r'http://mippy.readthedocs.io'
@@ -154,6 +155,9 @@ class MIPPYMain(Frame):
                                 sys.path.append(self.moduledir)
                 else:
                         self.moduledir = None
+                
+                # Create a list to hold module eggs
+                self.module_eggs = []
                 
                 # Create variable for export directory
                 self.exportdir = None
@@ -264,10 +268,11 @@ class MIPPYMain(Frame):
                 self.moduleframe.moduletree = Treeview(self.moduleframe)
 
                 # Set names and widths of columns in treeview
-                self.moduleframe.moduletree['columns']=('description','author')
+                self.moduleframe.moduletree['columns']=('description','author','version')
                 self.moduleframe.moduletree.heading('#0',text='Module Name')
                 self.moduleframe.moduletree.heading('description',text='Description')
                 self.moduleframe.moduletree.heading('author',text='Author')
+                self.moduleframe.moduletree.heading('version',text='Version')
 
                 # Create scrollbars
                 self.moduleframe.scrollbarx = Scrollbar(self.moduleframe,orient='horizontal')
@@ -541,6 +546,12 @@ class MIPPYMain(Frame):
                 print("Load module directory")
                 if self.moduledir in sys.path:
                         sys.path.remove(self.moduledir)
+                for eggpath in self.module_eggs:
+                    if eggpath in sys.path:
+                        sys.path.remove(eggpath)
+                        
+                self.moduledir = None
+                self.eggpath = []
                 self.moduledir = tkinter.filedialog.askdirectory(parent=self,initialdir=self.root_dir,title="Select module directory")
                 if not self.moduledir:
                         return
@@ -550,17 +561,62 @@ class MIPPYMain(Frame):
 
         def scan_modules_directory(self):
                 self.module_list = []
+                self.module_eggs = []
                 viewerconfigpath = resource_filename('mippy.mviewer','config')
                 with open(viewerconfigpath,'rb') as file_object:
                         module_info = pickle.load(file_object)
                 module_info['dirname']='mippy.mviewer'
+                module_info['version']=''
                 self.module_list.append(module_info)
                 
                 
                 if not (self.moduledir is None or not self.moduledir):
                         for folder in os.listdir(self.moduledir):
                                 if not os.path.isdir(os.path.join(self.moduledir,folder)):
-                                        continue
+                                        # Might be an egg.  Try and read as an egg...
+                                        if folder.upper().endswith('.EGG'):
+                                            print("{}: It's an egg!!".format(folder))
+                                            
+                                            # Get the properties of the egg
+                                            this_eggpath = os.path.join(self.moduledir,folder)
+                                            with ZipFile(this_eggpath, 'r') as modulezip:
+                                                dirs = []
+                                                pkg_info = {}
+                                                with modulezip.open('EGG-INFO/PKG-INFO', 'r') as pkg_info_file:
+                                                    for row in pkg_info_file.readlines():
+                                                        info = row.decode('utf-8').split(':')
+                                                        if len(info)==2:
+                                                            pkg_info[info[0]]=info[1].rstrip().lstrip()
+                                                # print(pkg_info['Name'],pkg_info['Version'])
+                                                with modulezip.open('EGG-INFO/top_level.txt', 'r') as toplevel:
+                                                    for row in toplevel.readlines():
+                                                        dirs.append(row.decode('utf-8').rstrip().lstrip())
+                                                for zipdir in dirs:
+                                                    if zipdir+'/config' in modulezip.namelist():
+                                                        print(zipdir, "exists")
+                                                        if not this_eggpath in self.module_eggs:
+                                                            self.module_eggs.append(this_eggpath)
+                                                        if not this_eggpath in sys.path:
+                                                            sys.path.append(this_eggpath)
+                                                            print(sys.path[-1])
+                                                        cfg_file = zipdir+'/config'
+                                                        with modulezip.open(cfg_file,'r') as file_object:
+                                                                module_info = pickle.load(file_object)
+                                                        # module_info['dirname']=pkg_info['Name']+'.'+module_info['dirname']
+                                                        module_info['version'] = pkg_info['Version']
+#                                                        removals = []
+#                                                        for found_module in self.module_list:
+#                                                            if module_info['dirname']==found_module['dirname']:
+#                                                                print("CLASH DETECTED")
+#                                                                from packaging import version
+#                                                                if version.parse(module_info['version'])>version.parse(found_module['version']):
+#                                                                    removals.append(found_module)
+#                                                        for mod in removals:
+#                                                            self.module_list.remove(mod)
+                                                        self.module_list.append(module_info)
+                                            continue
+                                        else:
+                                            continue
                                 file_list = os.listdir(os.path.join(self.moduledir,folder))
                                 if (('__init__.py' in file_list or '__init__.pyc' in file_list)
                                         and ('module_main.py' in file_list or 'module_main.pyc' in file_list)
@@ -568,9 +624,22 @@ class MIPPYMain(Frame):
                                         cfg_file = os.path.join(self.moduledir,folder,'config')
                                         with open(cfg_file,'rb') as file_object:
                                                 module_info = pickle.load(file_object)
+                                        module_info['version']='--uncontrolled--'
+#                                        removals = []
+#                                        for found_module in self.module_list:
+#                                            if module_info['dirname']==found_module['dirname']:
+#                                                print("CLASH DETECTED")
+#                                                from packaging import version
+#                                                if version.parse(module_info['version'])>version.parse(found_module['version']):
+#                                                    removals.append(found_module)
+#                                        for mod in removals:
+#                                            self.module_list.remove(mod)
                                         self.module_list.append(module_info)
                                         #~ print module_info
-                        self.module_list = sorted(self.module_list,key=lambda item: item['name'])
+                        from operator import itemgetter
+                        self.module_list = sorted(self.module_list,key=itemgetter('version'),reverse=True)
+                        self.module_list = sorted(self.module_list,key=itemgetter('name'))
+                                                  #key=lambda item: item['name'])
                 
                 try:
                         for item in self.moduleframe.moduletree.get_children():
@@ -580,8 +649,8 @@ class MIPPYMain(Frame):
                         print("New module tree created")
                         pass
                 for module in self.module_list:
-                        self.moduleframe.moduletree.insert('','end',module['dirname'],
-                                text=module['name'],values=(module['description'],module['author']))
+                        self.moduleframe.moduletree.insert('','end',module['dirname']+'^'+module['version'],
+                                text=module['name'],values=(module['description'],module['author'],module['version']))
 
                 #~ self.master.progress = 50.
                 return
@@ -645,7 +714,7 @@ class MIPPYMain(Frame):
                 gc.collect()
                 try:
                         
-                        moduledir = self.moduleframe.moduletree.selection()[0]
+                        moduledir = self.moduleframe.moduletree.selection()[0].split('^')[0]
                         module_name = moduledir+'.module_main'
                         if not module_name in sys.modules:
                                 active_module = importlib.import_module(module_name)
