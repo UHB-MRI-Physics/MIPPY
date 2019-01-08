@@ -123,6 +123,14 @@ class MIPPYMain(Frame):
                 
                 self.user = getpass.getuser()
                 
+                
+                import pkg_resources
+                import sys
+                if sys.argv[0]=='mippydev.py':
+                    self.mippy_version = "DEVELOPMENT_VERSION"
+                else:
+                    self.mippy_version = pkg_resources.get_distribution("mippy").version
+                
                 # Set temp directory
                 if 'darwin' in sys.platform or 'linux' in sys.platform:
                         self.tempdir = '/tmp/MIPPY_temp_'+self.user                        
@@ -714,7 +722,11 @@ class MIPPYMain(Frame):
                 gc.collect()
                 try:
                         
-                        moduledir = self.moduleframe.moduletree.selection()[0].split('^')[0]
+                        selected_module = self.moduleframe.moduletree.selection()[0]
+                        moduledir = selected_module.split('^')[0]
+                        name = self.moduleframe.moduletree.item(selected_module)['text']
+                        version = self.moduleframe.moduletree.item(selected_module)['values'][2]
+                        print(name,version)
                         module_name = moduledir+'.module_main'
                         if not module_name in sys.modules:
                                 active_module = importlib.import_module(module_name)
@@ -764,6 +776,41 @@ class MIPPYMain(Frame):
                         #~ gc.collect()
                         if flatten_list:
                                 self.datasets_to_pass = list(itertools.chain.from_iterable(self.datasets_to_pass))
+                            
+                        # Generate an instance ID for the module, and write useful information to a temp file
+                        # that the module can call on
+                        import datetime
+                        now = datetime.datetime.now()
+                        modstamp = name+'_'+version+'_{:02d}{:02d}{:02d}{:02d}{:02d}{:02d}{:06d}'.format(now.year % 1000,
+                                                                                now.month,
+                                                                                now.day,
+                                                                                now.hour,
+                                                                                now.minute,
+                                                                                now.second,
+                                                                                now.microsecond
+                                                  )
+                        import hashlib
+                        _hash = hashlib.new('md5')
+                        _hash.update(bytes(modstamp,'utf-8'))
+                        instance_id = str(_hash.hexdigest()[0:16]).upper()
+                        #print(instance_id)
+                        
+                        
+                        mod_info = {
+                            'module_name': self.moduleframe.moduletree.item(selected_module)['text'],
+                            'module_version': self.moduleframe.moduletree.item(selected_module)['values'][2],
+                            'image_directory': self.dicomdir,
+                            'user_directory': self.userdir,
+                            'temp_directory': self.tempdir,
+                            'mippy_version': self.mippy_version,
+                            'module_instance': instance_id
+                            }
+                        print(mod_info)
+                        
+                        modinfopath = os.path.join(self.tempdir,instance_id+'.mod')
+                        with open(modinfopath,'wb') as modfile:
+                            pickle.dump(mod_info,modfile)
+                        
                         active_module.execute(self.master,self.dicomdir,self.datasets_to_pass)
                 except:
                         raise
@@ -877,54 +924,4 @@ class MIPPYMain(Frame):
                 return
 
 #########################################################
-
-
-                        
-
-# This launches the application
-
-#~ if __name__=='mippy.application':
-        #~ freeze_support()
-        #~ print "Launching MIPPY..."
-        #~ # Set up logging
-        #~ try:
-                #~ if sys.argv [1]=='debug':
-                        #~ debug_mode=True
-                #~ else:
-                        #~ debug_mode=False
-        #~ except:
-                #~ debug_mode=False
-        #~ if not debug_mode:
-                #~ logpath = os.path.join(os.getcwd(),"MIPPY-logs",str(datetime.now()).replace(":",".").replace(" ","_")+".txt")
-                #~ try:
-                        #~ os.makedirs(os.path.split(logpath)[0])
-                #~ except:
-                        #~ pass
-                #~ with open(logpath,'wb') as logout:
-                        #~ logout.write('LOG FILE\n')
-                #~ redir_out = RedirectText(logpath)
-                #~ redir_err = RedirectText(logpath)
-                #~ sys.stdout = redir_out
-                #~ sys.stderr = redir_err
-                
-        #~ # Start application behind splash screen
-        #~ try:
-                #~ from . import splash
-                #~ splashpath =  resource_filename('mippy','resources/splash.jpg')
-                #~ root_window = Tk()
-                #~ root_window.title("MIPPY: Modular Image Processing in Python")
-                #~ root_window.minsize(650,400)
-                #~ root_path = os.getcwd()
-                #~ if "nt" == os.name:
-                        #~ impath = resource_filename('mippy','resources/brain_orange.ico')
-                #~ else:
-                        #~ impath = '@'+resource_filename('mippy','resources/brain_bw.xbm')
-                #~ root_window.wm_iconbitmap(impath)
-
-                #~ with splash.SplashScreen(root_window,splashpath, 0.5):
-                        #~ root_app = MIPPYMain(master = root_window)
-                #~ root_app.mainloop()
-        #~ except Exception as e:
-                #~ print e
-                #~ tkMessageBox.showerror('ERROR','Error occurred. Please consult log files.')
 
