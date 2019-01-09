@@ -801,6 +801,12 @@ class MIPPYMain(Frame):
                         _hash.update(bytes(modstamp,'utf-8'))
                         instance_id = str(_hash.hexdigest()[0:16]).upper()
                         
+                        # Grab image paths to pass to module
+                        image_paths = []
+                        for tag in self.sorted_list:
+                            if tag['instanceuid'] in self.active_uids:
+                                image_paths.append(tag['path'])
+                        
                         
                         instance_info = {
                             'module_name': self.moduleframe.moduletree.item(selected_module)['text'],
@@ -810,7 +816,8 @@ class MIPPYMain(Frame):
                             'user_directory': self.userdir,
                             'temp_directory': self.tempdir,
                             'mippy_version': self.mippy_version,
-                            'user': self.user
+                            'user': self.user,
+                            'image_paths': image_paths
                             }
                         
                         active_module.execute(self.master,instance_info,self.datasets_to_pass)
