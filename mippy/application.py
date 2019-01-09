@@ -82,6 +82,7 @@ class MIPPYMain(Frame):
                 
                 
                 self.root_dir = os.getcwd()
+                self.dicomdir = None
 
                 # Initialises the GUI as a "Frame" object and gives it the name "master"
                 Frame.__init__(self, master)
@@ -438,6 +439,7 @@ class MIPPYMain(Frame):
 
         def load_image_directory(self):
                 print("Load image directory")
+                prev_dir = self.dicomdir
                 try:
                     # Unpickle previous directory if available
                     with open(os.path.join(self.userdir,'prevdir.cfg'),'rb') as cfg_file:
@@ -447,7 +449,8 @@ class MIPPYMain(Frame):
                     prevdir = r'M:'
                 self.dicomdir = tkinter.filedialog.askdirectory(parent=self,initialdir=prevdir,title="Select image directory")
                 if not self.dicomdir:
-                        return
+                    self.dicomdir = prev_dir
+                    return
                 with open(os.path.join(self.userdir,'prevdir.cfg'),'wb') as cfg_file:
                     pickle.dump(self.dicomdir,cfg_file)
                 self.ask_recursive = tkinter.messagebox.askyesno("Search recursively?","Do you want to include all subdirectories?")
@@ -793,25 +796,20 @@ class MIPPYMain(Frame):
                         _hash = hashlib.new('md5')
                         _hash.update(bytes(modstamp,'utf-8'))
                         instance_id = str(_hash.hexdigest()[0:16]).upper()
-                        #print(instance_id)
                         
                         
-                        mod_info = {
+                        instance_info = {
                             'module_name': self.moduleframe.moduletree.item(selected_module)['text'],
                             'module_version': self.moduleframe.moduletree.item(selected_module)['values'][2],
+                            'module_instance': instance_id,
                             'image_directory': self.dicomdir,
                             'user_directory': self.userdir,
                             'temp_directory': self.tempdir,
                             'mippy_version': self.mippy_version,
-                            'module_instance': instance_id
+                            'user': self.user
                             }
-                        print(mod_info)
                         
-                        modinfopath = os.path.join(self.tempdir,instance_id+'.mod')
-                        with open(modinfopath,'wb') as modfile:
-                            pickle.dump(mod_info,modfile)
-                        
-                        active_module.execute(self.master,self.dicomdir,self.datasets_to_pass)
+                        active_module.execute(self.master,instance_info,self.datasets_to_pass)
                 except:
                         raise
                         print("Did you select a module?")

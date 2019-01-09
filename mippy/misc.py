@@ -46,4 +46,3 @@ def deep_getsizeof(o, ids):
 def getsizeof(an_object):
         from pympler import asizeof
         return asizeof.asizeof(an_object)
-                
