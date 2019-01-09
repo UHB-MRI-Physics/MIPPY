@@ -158,7 +158,11 @@ class MIPPYMain(Frame):
                     os.makedirs(self.userdir)
                 
                 # Set default module directory
-                if os.path.exists(os.path.join(self.root_dir, 'modules')):
+                if os.path.exists(os.path.join(self.userdir,'defaultmodulepath.txt')):
+                    with open(os.path.join(self.userdir,'defaultmodulepath.txt'),'r') as modpathfile:
+                        self.moduledir = modpathfile.readlines()[0].lstrip().rstrip()
+                        print('USING MODULE DIRECTORY: {}'.format(self.moduledir))
+                elif os.path.exists(os.path.join(self.root_dir, 'modules')):
                         self.moduledir = os.path.join(self.root_dir, 'modules')
                         if not self.moduledir in sys.path:
                                 sys.path.append(self.moduledir)
