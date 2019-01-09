@@ -29,17 +29,20 @@ def flatten_series():
         return True
 
 
-def execute(master_window,dicomdir,images):
+def execute(master_window,instance_info,images):
         print("Module loaded...")
         print("Received "+str(len(images))+" image datasets.")
         print(os.getcwd())
         #~ icondir = os.path.join(os.getcwd(),'source','images')
 
 
-
-
-        # Create all GUI elements
-        window = Toplevel(master = master_window)
+        # This is to fix backwards compatibility for anywhere the old dicomdir object
+        # was used
+        dicomdir = instance_info['image_directory']
+    
+        window = Toplevel(master_window)
+        window.instance_info = instance_info
+        window.title("{} {}: {}".format(window.instance_info['module_name'],window.instance_info['mippy_version'],window.instance_info['module_instance']))
         # Create canvas
         if platform.system()=='Linux':
                 canvas_size=320
