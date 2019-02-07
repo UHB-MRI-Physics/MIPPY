@@ -1692,7 +1692,8 @@ class MIPPYCanvas(Canvas):
         # correctly when loading onto a different size canvas
         for roi in self.roi_list:
             roi.coords = self.image_coords(roi.coords)
-            roi.bbox = self.image_coords(roi.bbox)
+            bbox_coords = self.image_coords([(roi.bbox[0],roi.bbox[1]),(roi.bbox[2],roi.bbox[3])])
+            roi.bbox = (bbox_coords[0][0],bbox_coords[0][1],bbox_coords[1][0],bbox_coords[1][1])
         
         if savepath is None:
             from tkinter import filedialog
@@ -1736,7 +1737,8 @@ class MIPPYCanvas(Canvas):
         # correctly when loading onto a different size canvas
         for roi in self.roi_list:
             roi.coords = self.canvas_coords(roi.coords)
-            roi.bbox = self.canvas_coords(roi.bbox)
+            bbox_coords = self.canvas_coords([(roi.bbox[0],roi.bbox[1]),(roi.bbox[2],roi.bbox[3])])
+            roi.bbox = (bbox_coords[0][0],bbox_coords[0][1],bbox_coords[1][0],bbox_coords[1][1])
         
         if self.use_masks:
             self.update_roi_masks()
