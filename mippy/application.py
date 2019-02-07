@@ -154,6 +154,9 @@ class MIPPYMain(Frame):
                 else:
                     tkinter.messagebox.showerror('ERROR', 'Unsupported operating system, please contact the developers.')
                     sys.exit()
+                
+                # Need to add a fix here for offline use as Windows machines can use a network share as appdata directory
+                
                 if not os.path.exists(self.userdir):
                     os.makedirs(self.userdir)
                 

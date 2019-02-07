@@ -903,6 +903,8 @@ class MIPPYCanvas(Canvas):
             1D list of pixel values
         """
         im = self.get_active_image()
+        if len(self.roi_list)==0:
+            return []
         if len(rois) == 0:
             rois = list(range(len(self.roi_list)))
         if len(self.masks) == 0:
@@ -1690,6 +1692,7 @@ class MIPPYCanvas(Canvas):
         # correctly when loading onto a different size canvas
         for roi in self.roi_list:
             roi.coords = self.image_coords(roi.coords)
+            roi.bbox = self.image_coords(roi.bbox)
         
         if savepath is None:
             from tkinter import filedialog
@@ -1733,6 +1736,7 @@ class MIPPYCanvas(Canvas):
         # correctly when loading onto a different size canvas
         for roi in self.roi_list:
             roi.coords = self.canvas_coords(roi.coords)
+            roi.bbox = self.canvas_coords(roi.bbox)
         
         if self.use_masks:
             self.update_roi_masks()
