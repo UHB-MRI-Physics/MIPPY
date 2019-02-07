@@ -1696,8 +1696,8 @@ class MIPPYCanvas(Canvas):
         
         if savepath is None:
             from tkinter import filedialog
-            savepath = filedialog.asksaveasfilename(filetypes=(("ROI","*.roi")),
-                                                        defaultextension=".roi",parent=self.master)
+            savepath = filedialog.asksaveasfilename(filetypes=[("MIPPY Object","*.obj")],
+                                                        defaultextension=".obj",parent=self.master)
         if savepath is None:
             return
         if not os.path.exists(os.path.split(savepath)[0]):
@@ -1712,6 +1712,84 @@ class MIPPYCanvas(Canvas):
             roi.bbox = (bbox_coords[0][0],bbox_coords[0][1],bbox_coords[1][0],bbox_coords[1][1])
         
         return
+    
+    def save_multislice_rois(self,savepath=None):
+        """
+        Saves all ROIs from all slices as a single file.
+        
+        Parameters
+        ----------------
+        savepath: str, optional
+            The absolute path at with which the ROI set should be saved.  If no path is provided, a
+            save file dialog box is opened to generate the path. (default = None)
+        
+        """
+        
+        # Transform coordinates to image coordinates for saving
+        # This is a bit of a fudge to ensure coordinates are loaded
+        # correctly when loading onto a different size canvas
+        for roi_list in self.roi_list_2d:
+            for roi in roi_list:
+                roi.coords = self.image_coords(roi.coords)
+                bbox_coords = self.image_coords([(roi.bbox[0],roi.bbox[1]),(roi.bbox[2],roi.bbox[3])])
+                roi.bbox = (bbox_coords[0][0],bbox_coords[0][1],bbox_coords[1][0],bbox_coords[1][1])
+        
+        if savepath is None:
+            from tkinter import filedialog
+            savepath = filedialog.asksaveasfilename(filetypes=[("MIPPY Object","*.obj")],
+                                                        defaultextension=".obj",parent=self.master)
+        if savepath is None:
+            return
+        
+        if not os.path.exists(os.path.split(savepath)[0]):
+            os.makedirs(os.path.split(savepath)[0])
+            
+        with open(savepath,'wb') as f:
+            pickle.dump(self.roi_list_2d,f)
+        
+        # Put ROI coordinates back to where they need to be
+        for roi_list in self.roi_list_2d:
+            for roi in roi_list:
+                roi.coords = self.canvas_coords(roi.coords)
+                bbox_coords = self.canvas_coords([(roi.bbox[0],roi.bbox[1]),(roi.bbox[2],roi.bbox[3])])
+                roi.bbox = (bbox_coords[0][0],bbox_coords[0][1],bbox_coords[1][0],bbox_coords[1][1])
+    
+    def load_multislice_rois(self,loadpath=None):
+        """
+        Loads all ROIs from a file to all open slices.
+        If you want to load ROIs across multiple slices, loop the function
+        yourself.
+        
+        Parameters
+        ----------------
+        loadpath: str, optional
+            The absolute path at with which the ROI set is saved.  If no path is provided, a
+            load file dialog box is opened to generate the path. (default = None)
+        
+        """
+        if loadpath is None:
+            from tkinter import filedialog
+            loadpath = filedialog.askopenfilename(filetypes=(("MIPPY Object","*.obj"),("All files",'*')),title="Select ROI set to load",
+                                                    parent = self.master)
+        if loadpath is None:
+            return
+        with open(loadpath,'rb') as f:
+            self.roi_list_2d = pickle.load(f)
+            
+        # Transform coordinates to canvas coordinates after loading
+        # This is a bit of a fudge to ensure coordinates are loaded
+        # correctly when loading onto a different size canvas
+        for roi_list in self.roi_list_2d:
+            for roi in roi_list:
+                roi.coords = self.canvas_coords(roi.coords)
+                bbox_coords = self.canvas_coords([(roi.bbox[0],roi.bbox[1]),(roi.bbox[2],roi.bbox[3])])
+                roi.bbox = (bbox_coords[0][0],bbox_coords[0][1],bbox_coords[1][0],bbox_coords[1][1])
+        
+        if self.use_masks:
+            self.update_all_roi_masks()
+        self.show_image(self.active)
+        return
+        
        
     def load_rois(self,loadpath=None):
         """
@@ -1731,7 +1809,7 @@ class MIPPYCanvas(Canvas):
             
         if loadpath is None:
             from tkinter import filedialog
-            loadpath = filedialog.askopenfilename(filetypes=(("ROI","*.roi"),("All files",'*')),title="Select ROI set to load",
+            loadpath = filedialog.askopenfilename(filetypes=(("MIPPY Object","*.obj"),("All files",'*')),title="Select ROI set to load",
                                                     parent = self.master)
         if loadpath is None:
             return
