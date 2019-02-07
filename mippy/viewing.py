@@ -928,7 +928,6 @@ class MIPPYCanvas(Canvas):
                 if len(tags) > 0 and not any([tag in self.roi_list[i].tags for tag in tags]):
                     continue
                 maskflat = self.masks[i, :, :].flatten().tolist()
-                print("Pixels in mask = {}".format(np.sum(maskflat)))
                 pxlist = [pxflat[ind] for ind, val in enumerate(maskflat) if val > 0]
                 px.append(pxlist)
 
@@ -1697,14 +1696,21 @@ class MIPPYCanvas(Canvas):
         
         if savepath is None:
             from tkinter import filedialog
-            savepath = filedialog.asksaveasfilename(filetypes=(("MIPPY ROI set","*.roipickle")),
-                                                        defaultextension=".roipickle",parent=self.master)
+            savepath = filedialog.asksaveasfilename(filetypes=(("ROI","*.roi")),
+                                                        defaultextension=".roi",parent=self.master)
         if savepath is None:
             return
         if not os.path.exists(os.path.split(savepath)[0]):
             os.makedirs(os.path.split(savepath)[0])
         with open(savepath,'wb') as f:
             pickle.dump(self.roi_list,f)
+        
+        # Put ROI coordinates back to where they need to be
+        for roi in self.roi_list:
+            roi.coords = self.canvas_coords(roi.coords)
+            bbox_coords = self.canvas_coords([(roi.bbox[0],roi.bbox[1]),(roi.bbox[2],roi.bbox[3])])
+            roi.bbox = (bbox_coords[0][0],bbox_coords[0][1],bbox_coords[1][0],bbox_coords[1][1])
+        
         return
        
     def load_rois(self,loadpath=None):
@@ -1725,7 +1731,7 @@ class MIPPYCanvas(Canvas):
             
         if loadpath is None:
             from tkinter import filedialog
-            loadpath = filedialog.askopenfilename(filetypes=(("MIPPY ROI set","*.roipickle"),("All files",'*')),title="Select ROI set to load",
+            loadpath = filedialog.askopenfilename(filetypes=(("ROI","*.roi"),("All files",'*')),title="Select ROI set to load",
                                                     parent = self.master)
         if loadpath is None:
             return
