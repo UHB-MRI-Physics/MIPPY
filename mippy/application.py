@@ -158,8 +158,8 @@ class MIPPYMain(Frame):
             #~ self.userdir = os.path.join('/home',self.user,'.mippy')
             self.userdir = os.path.expanduser('~/.mippy')
         elif 'win' in sys.platform:
-            fallback_sys_userdir = os.path.join('C:','Users',self.user)
-            sys_userdir = os.getenv('APPDATA',os.path.join('C:',fallback_sys_userdir))
+            fallback_sys_userdir = os.path.join(r'C:\Users',self.user)
+            sys_userdir = os.getenv('APPDATA',fallback_sys_userdir)
             
             # If sys_userdir not available, default to fallback_userdir
             if not os.access(sys_userdir, os.W_OK):
@@ -234,6 +234,7 @@ class MIPPYMain(Frame):
         # Create and populate "File" menu
         self.filemenu = Menu(self.menubar, tearoff=0)
         self.filemenu.add_command(label="Load new image directory", command=lambda:self.load_image_directory())
+        self.filemenu.add_command(label="Open user home directory", command=lambda:self.open_user_directory())
         self.filemenu.add_command(label="Exit program",command=lambda:self.exit_program())
         # Create and populate "Modules" menu
         self.modulemenu = Menu(self.menubar,tearoff=0)
@@ -393,6 +394,10 @@ class MIPPYMain(Frame):
         self.click_y = event.y
         #~ print "CLICK"
         return
+    
+    def open_user_directory(self):
+        webbrowser.open(self.userdir)
+        return
 
 
 
@@ -481,7 +486,7 @@ class MIPPYMain(Frame):
                 prevdir = pickle.load(cfg_file)
             print("PREV DIRECTORY: {}".format(prevdir))
         except:
-            prevdir = r'M:'
+            prevdir = None
         self.dicomdir = tkinter.filedialog.askdirectory(parent=self,initialdir=prevdir,title="Select image directory")
         if not self.dicomdir:
             self.dicomdir = prev_dir
