@@ -136,7 +136,14 @@ class MIPPYMain(Frame):
         if 'darwin' in sys.platform or 'linux' in sys.platform:
             self.tempdir = '/tmp/MIPPY_temp_'+self.user            
         elif 'win' in sys.platform:
-            sys_temp  = os.getenv("TEMP",r'C:\TEMP')
+            fallback_temp = r'C:\TEMP'
+            sys_temp  = os.getenv("TEMP",fallback_temp)
+            
+            # If sys_temp not accessible, default to fallback_temp
+            if not os.access(sys_temp, os.W_OK):
+                sys_temp = fallback_temp
+                print("System reported temp directory not available - using {}".format(sys_temp))
+            
             self.tempdir = os.path.join(sys_temp,"MIPPY_temp_"+self.user)
         else:
             tkinter.messagebox.showerror('ERROR', 'Unsupported operating system, please contact the developers.')
@@ -145,26 +152,47 @@ class MIPPYMain(Frame):
             os.makedirs(self.tempdir)
         
         # Set persistent user directory
+        self.fallback_userdir = None
+        self.userdir = None
         if 'darwin' in sys.platform or 'linux' in sys.platform:
             #~ self.userdir = os.path.join('/home',self.user,'.mippy')
             self.userdir = os.path.expanduser('~/.mippy')
         elif 'win' in sys.platform:
-            sys_userdir = os.getenv('APPDATA',os.path.join('C:','Users',self.user))
+            fallback_sys_userdir = os.path.join('C:','Users',self.user)
+            sys_userdir = os.getenv('APPDATA',os.path.join('C:',fallback_sys_userdir))
+            
+            # If sys_userdir not available, default to fallback_userdir
+            if not os.access(sys_userdir, os.W_OK):
+                sys_userdir = fallback_sys_userdir
+                print("System reported user directory not available - using {}".format(sys_userdir))
+            
             self.userdir = os.path.join(sys_userdir,'.mippy')
+            self.fallback_userdir = os.path.join(fallback_sys_userdir,'.mippy')
         else:
             tkinter.messagebox.showerror('ERROR', 'Unsupported operating system, please contact the developers.')
             sys.exit()
         
-        # Need to add a fix here for offline use as Windows machines can use a network share as appdata directory
-        
         if not os.path.exists(self.userdir):
             os.makedirs(self.userdir)
+        
+        # If newer files in fallback directory than system reported directory, update files
+        if ('win' in sys.platform
+            and not 'darwin' in sys.platform
+            and os.path.exists(self.fallback_userdir)
+            and not self.fallback_userdir==self.userdir):
+            files_updated = fileio.copyToDir(self.fallback_userdir,self.userdir)
+            if len(files_updated)>0:
+                print("The following fles have been updated in your home directory:")
+                for f in files_updated:
+                        print("- {}".format(f))
         
         # Set default module directory
         if os.path.exists(os.path.join(self.userdir,'defaultmodulepath.txt')):
             with open(os.path.join(self.userdir,'defaultmodulepath.txt'),'r') as modpathfile:
-                self.moduledir = modpathfile.readlines()[0].lstrip().rstrip()
-            print('USING MODULE DIRECTORY: {}'.format(self.moduledir))
+                requested_moduledir = modpathfile.readlines()[0].lstrip().rstrip()
+                if os.path.exists(requested_moduledir):
+                    self.moduledir = requested_moduledir
+                    print('USING MODULE DIRECTORY: {}'.format(self.moduledir))
         elif os.path.exists(os.path.join(self.root_dir, 'modules')):
             self.moduledir = os.path.join(self.root_dir, 'modules')
             if not self.moduledir in sys.path:
