@@ -183,6 +183,8 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
                         except Exception:
                                 # If all else fails, just use a generic string
                                 studydesc = "Unknown Study Type"
+                
+                
 
                 #~ if tags is None:
                         #~ tags = []
@@ -201,6 +203,9 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
                                 raise
 
                 instance_uid = 'UNKNOWN'
+                
+                original_series_uid = series_uid
+                original_series_desc = seriesdesc
 
                 for i in instance:
                         if not enhanced:
@@ -208,6 +213,25 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
                         else:
                                 # Append instance UID with the frame number to give unique reference to each slice
                                 instance_uid = ds.SOPInstanceUID+"_"+str(i).zfill(4)
+                        
+                        # If Real or Imaginary, prepend this to study description and add it to series UID to separate out in
+                        # MIPPY browser window
+                        recon = None
+                        try:
+                                if 'REAL' in ds[0x5200,0x9230][i-1][0x18,0x9226][0][0x8,0x9208].value:
+                                        recon = 'R'
+                                elif 'IMAGINARY' in ds[0x5200,0x9230][i-1][0x18,0x9226][0][0x8,0x9208].value:
+                                        recon = 'I'
+                                elif 'PHASE' in ds[0x5200,0x9230][i-1][0x18,0x9226][0][0x8,0x9208].value:
+                                        recon = 'P'
+                                elif 'MAGNITUDE' in ds[0x5200,0x9230][i-1][0x18,0x9226][0][0x8,0x9208].value:
+                                        recon = 'M'
+                        except KeyError:
+                                pass
+                
+                        if not recon is None:
+                                series_uid = original_series_uid+'_'+recon
+                                seriesdesc = recon+': '+original_series_desc
 
 
                         """
