@@ -208,26 +208,35 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
                 original_series_desc = seriesdesc
 
                 for i in instance:
+                    
+                        recon = None
+                        
+                        
                         if not enhanced:
                                 instance_uid = ds.SOPInstanceUID
+                                
+                                
                         else:
                                 # Append instance UID with the frame number to give unique reference to each slice
                                 instance_uid = ds.SOPInstanceUID+"_"+str(i).zfill(4)
+                                
+                                # If Real or Imaginary, prepend this to study description and add it to series UID to separate out in
+                                # MIPPY browser window
+                                try:
+                                        if 'REAL' in ds[0x5200,0x9230][i-1][0x18,0x9226][0][0x8,0x9208].value:
+                                                recon = 'R'
+                                        elif 'IMAGINARY' in ds[0x5200,0x9230][i-1][0x18,0x9226][0][0x8,0x9208].value:
+                                                recon = 'I'
+                                        elif 'PHASE' in ds[0x5200,0x9230][i-1][0x18,0x9226][0][0x8,0x9208].value:
+                                                recon = 'P'
+                                        elif 'MAGNITUDE' in ds[0x5200,0x9230][i-1][0x18,0x9226][0][0x8,0x9208].value:
+                                                recon = 'M'
+                                except KeyError:
+                                        pass
+                                except:
+                                        raise
                         
-                        # If Real or Imaginary, prepend this to study description and add it to series UID to separate out in
-                        # MIPPY browser window
-                        recon = None
-                        try:
-                                if 'REAL' in ds[0x5200,0x9230][i-1][0x18,0x9226][0][0x8,0x9208].value:
-                                        recon = 'R'
-                                elif 'IMAGINARY' in ds[0x5200,0x9230][i-1][0x18,0x9226][0][0x8,0x9208].value:
-                                        recon = 'I'
-                                elif 'PHASE' in ds[0x5200,0x9230][i-1][0x18,0x9226][0][0x8,0x9208].value:
-                                        recon = 'P'
-                                elif 'MAGNITUDE' in ds[0x5200,0x9230][i-1][0x18,0x9226][0][0x8,0x9208].value:
-                                        recon = 'M'
-                        except KeyError:
-                                pass
+                        
                 
                         if not recon is None:
                                 series_uid = original_series_uid+'_'+recon
@@ -275,7 +284,7 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
                                                 ds.is_implicit_VR = False
 
                         print(name,"/",date,"/",seriesdesc,"/",i)
-                        print(mode.upper())
+#                        print(mode.upper())
                         if not ("SPECTROSCOPY" in mode.upper() or ima_mrs_uid in mode.upper()):
                                 pxfloat=pixel.get_px_array(ds,enhanced,i,bitdepth=8)
                                 if pxfloat is None:
