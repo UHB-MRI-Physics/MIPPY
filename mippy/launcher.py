@@ -14,10 +14,9 @@ def launch_mippy():
         splashimage = resource_filename('mippy','resources/splash3.jpg')
         root_window = Tk()
         with splash.SplashScreen(root_window,splashimage,3.0):
-            
+                urlobj = None
                 # Test if PyPI is accessible
                 try:
-                    urlobj = None
                     urlobj = request.urlopen('https://pypi.org')
                 except urlerror.URLError:
                     # PyPI not accessible - probably no internet connection...
@@ -28,6 +27,7 @@ def launch_mippy():
                 
                 # Check for new version of MIPPY on PyPI
                 if not urlobj is None:
+                    print('Checking for updates to MIPPY on PyPI...')
                     pip_output = check_output(['pip','list','--outdated','--format=json'])
                     if 'mippy' in [row['name'] for row in json.loads(pip_output)]:
                             #~ print("Warning! Outdated version of MIPPY detected!")
@@ -44,6 +44,8 @@ def launch_mippy():
                                     else:
                                             messagebox.showwarning("Oops","Something went wrong. Please restart MIPPY.")
                                     sys.exit()
+                    else:
+                        print('No new version found.')
                 
                 from mippy.application import MIPPYMain
                 root_app = MIPPYMain(master = root_window)
