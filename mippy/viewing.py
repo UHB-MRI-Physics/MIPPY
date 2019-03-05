@@ -635,8 +635,8 @@ class MIPPYCanvas(Canvas):
     
     """
     def __init__(self, master, width=256, height=256, bd=0, drawing_enabled=False, autostats=False, antialias=True,
-                 use_masks=True):
-        Canvas.__init__(self, master, width=width, height=height, bd=bd, bg='#444444')
+                 use_masks=True,bg='#444444'):
+        Canvas.__init__(self, master, width=width, height=height, bd=bd, bg=bg)
         self.master = master
         self.zoom_factor = 1
         self.roi_list = []
