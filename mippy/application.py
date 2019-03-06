@@ -624,6 +624,7 @@ class MIPPYMain(Frame):
             module_info = pickle.load(file_object)
         module_info['dirname']='mippy.mviewer'
         module_info['version']=''
+        module_info['eggpath']=None
         self.module_list.append(module_info)
         
         
