@@ -7,3 +7,5 @@
 _build
 *.pyc
 *.txt
+.idea
+*.xml

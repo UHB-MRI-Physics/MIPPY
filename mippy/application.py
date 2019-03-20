@@ -229,6 +229,16 @@ class MIPPYMain(Frame):
             st = os.stat(dcmdjpeg_copy)
             os.chmod(dcmdjpeg_copy,st.st_mode | stat.S_IEXEC)
 
+        ## Change ttk theme on linux
+
+        if 'darwin' in sys.platform:
+            pass
+        elif 'linux' in sys.platform:
+            s = Style()
+            s.theme_use('default')
+        elif 'win' in sys.platform:
+            dcmdjpegpath = resource_filename('mippy','resources/dcmdjpeg_win.exe')
+
         # Create menu bar for the top of the window
         self.menubar = Menu(master)
         # Create and populate "File" menu
