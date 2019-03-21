@@ -635,7 +635,7 @@ class MIPPYCanvas(Canvas):
     
     """
     def __init__(self, master, width=256, height=256, bd=0, drawing_enabled=False, autostats=False, antialias=True,
-                 use_masks=True,bg='#444444'):
+                 use_masks=True,bg='#444444',limit_loading=True):
         Canvas.__init__(self, master, width=width, height=height, bd=bd, bg=bg)
         self.master = master
         self.zoom_factor = 1
@@ -682,6 +682,7 @@ class MIPPYCanvas(Canvas):
         self.antialias = antialias
         self.autostats = autostats
         self.last_clicked = datetime.datetime.now()
+        self.limit_loading = limit_loading
 
     def reconfigure(self, event):
         """
@@ -1346,7 +1347,7 @@ class MIPPYCanvas(Canvas):
         self.masks = []
         n = 0
 
-        if len(image_list) > 500:
+        if len(image_list) > 500 and self.limit_loading:
             print("More than 500 images - cannot be loaded to canvas.")
             print("Loading first 500 only...")
             image_list = image_list[0:100]
