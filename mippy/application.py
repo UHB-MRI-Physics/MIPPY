@@ -928,7 +928,7 @@ class MIPPYMain(Frame):
                 'image_paths': image_paths,
                 'module_file': active_module.__file__
                 }
-            print(instance_info)
+            # print(instance_info)
             
             active_module.execute(self.master,instance_info,self.datasets_to_pass)
         except:
