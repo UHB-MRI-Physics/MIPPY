@@ -2084,11 +2084,11 @@ class MIPPYImage():
         Called within the constructor function __init__ if an array is passed instead
         of a DICOM object or path to DICOM object.
         """
-        if len(np.shape(pixel_array)) > 2:
-            # Assume RGB?
-            print(np.shape(pixel_array))
-            pixel_array = np.mean(pixel_array, axis=0)
-            print(np.shape(pixel_array))
+#        if len(np.shape(pixel_array)) > 2:
+#            # Assume RGB?
+#            print(np.shape(pixel_array))
+#            pixel_array = np.mean(pixel_array, axis=0)
+#            print(np.shape(pixel_array))
         self.px_float = pixel_array.astype(np.float64)
         self.rangemax = np.amax(pixel_array)
         self.rangemin = np.amin(pixel_array)
@@ -2253,8 +2253,12 @@ class MIPPYImage():
         windowed_px = np.clip(self.px_float, self.level - self.window / 2, self.level + self.window / 2 - 1).astype(
             np.float64)
         px_view = np.clip(((windowed_px - np.min(windowed_px)) / self.window * 255.), 0., 255.).astype(np.uint8)
-
-        self.image = Image.fromarray(px_view, mode='L')
+        
+        if len(np.shape(px_view))>2:
+                # More than 1 value per pixel to worry about (>2 axes), probably RGB
+                self.image = Image.fromarray(px_view, mode='RGB')
+        else:
+            self.image = Image.fromarray(px_view, mode='L')
 
         self.apply_overlay()
         if not size == self.image.size:
