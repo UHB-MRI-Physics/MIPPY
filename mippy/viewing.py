@@ -2269,7 +2269,7 @@ class MIPPYImage():
             np.float64)
         px_view = np.clip(((windowed_px - np.min(windowed_px)) / self.window * 255.), 0., 255.).astype(np.uint8)
         
-        if not self.lut is None:
+        if not self.lut is None and not len(np.shape(px_view))>2:
             px_view_color = np.zeros((self.rows,self.columns,3))
             px_view_color[:,:,0] = np.take(self.lut[0],px_view)
             px_view_color[:,:,1] = np.take(self.lut[1],px_view)
