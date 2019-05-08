@@ -8,22 +8,24 @@ import urllib
 from urllib import request
 from urllib import error as urlerror
 
-def launch_mippy():
+def launch_mippy(skip_update=False):
         import mippy.splash as splash
         from pkg_resources import resource_filename
         splashimage = resource_filename('mippy','resources/splash3.jpg')
         root_window = Tk()
         with splash.SplashScreen(root_window,splashimage,3.0):
                 urlobj = None
-                # Test if PyPI is accessible
-                try:
-                    urlobj = request.urlopen('https://pypi.org')
-                except urlerror.URLError:
-                    # PyPI not accessible - probably no internet connection...
-                    print("Unable to access PyPI - skipping update check...")
-                    pass
-                except:
-                    raise
+                
+                if not skip_update:
+                    # Test if PyPI is accessible
+                    try:
+                        urlobj = request.urlopen('https://pypi.org')
+                    except urlerror.URLError:
+                        # PyPI not accessible - probably no internet connection...
+                        print("Unable to access PyPI - skipping update check...")
+                        pass
+                    except:
+                        raise
                 
                 # Check for new version of MIPPY on PyPI
                 if not urlobj is None:

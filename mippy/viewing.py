@@ -13,6 +13,7 @@ import sys
 import pickle
 import os
 import datetime
+from pkg_resources import resource_filename
 
 ########################################
 ########################################
@@ -20,6 +21,15 @@ import datetime
 GENERIC FUNCTIONS NOT ATTACHED TO CLASSES
 """
 
+def open_lut(name):
+    try:
+        lutpath = resource_filename('mippy','luts/'+name+'.csv')
+    except:
+        print("Unable to find LUT: {}".format(name))
+        raise
+    lut = np.genfromtxt(lutpath,skip_header=1,delimiter=',').swapaxes(0,1).astype(np.uint8)
+    #print(lut[1:4])
+    return lut[1:4]
 
 def display_results(results, master_window):
     """
@@ -1302,7 +1312,7 @@ class MIPPYCanvas(Canvas):
         self.new_roi(coords, tags=tags, color=color)
         return
 
-    def load_images(self, image_list, keep_rois=False, limitbitdepth=False):
+    def load_images(self, image_list, keep_rois=False, limitbitdepth=False, lut=None):
         """
         Loads images onto the canvas, autoscaling pixel values where appropriate
         and automatically windowing to the full range of pixel values provided.
@@ -1355,7 +1365,7 @@ class MIPPYCanvas(Canvas):
         for ref in image_list:
             self.progress(45. * n / len(image_list) + 10)
             self.images.append(MIPPYImage(ref,
-                                          limitbitdepth=limitbitdepth))  # Included limitbitdepth to allow restriction to 8 bit int
+                                          limitbitdepth=limitbitdepth,lut=lut))  # Included limitbitdepth to allow restriction to 8 bit int
             if not keep_rois or not len(self.roi_list_2d) == len(image_list):
                 self.roi_list_2d.append([])
                 self.masks_2d.append([])
@@ -1988,7 +1998,7 @@ class MIPPYImage():
     
     """
 
-    def __init__(self, dicom_dataset, limitbitdepth=False):
+    def __init__(self, dicom_dataset, limitbitdepth=False,lut=None):
 
         # Need some tags to describe the state of the image
         # Use integers, increment as approrpriate and test with % function
@@ -1996,6 +2006,11 @@ class MIPPYImage():
         self.flip_v = 0
         # Describe 90 degrees clockwise as 1 rotation
         self.rotations = 0
+        
+        if not lut is None:
+            self.lut=open_lut(lut)
+        else:
+            self.lut = None
 
         if type(dicom_dataset) is str or type(dicom_dataset) is str:
             ds = pydicom.dcmread(dicom_dataset)
@@ -2253,6 +2268,16 @@ class MIPPYImage():
         windowed_px = np.clip(self.px_float, self.level - self.window / 2, self.level + self.window / 2 - 1).astype(
             np.float64)
         px_view = np.clip(((windowed_px - np.min(windowed_px)) / self.window * 255.), 0., 255.).astype(np.uint8)
+        
+        if not self.lut is None:
+            px_view_color = np.zeros((self.rows,self.columns,3))
+            px_view_color[:,:,0] = np.take(self.lut[0],px_view)
+            px_view_color[:,:,1] = np.take(self.lut[1],px_view)
+            px_view_color[:,:,2] = np.take(self.lut[2],px_view)
+            px_view = px_view_color.astype(np.uint8)
+        
+        
+        #print('px_shape:', np.shape(px_view))
         
         if len(np.shape(px_view))>2:
                 # More than 1 value per pixel to worry about (>2 axes), probably RGB
