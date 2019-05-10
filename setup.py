@@ -45,19 +45,19 @@ def check_version():
     
 # Determine version number from BUILD tags on gitlab
 try:
-	if os.environ.get('CI_COMMIT_TAG'):
-			if os.environ['CI_COMMIT_TAG'].startswith('v'):
-				version = os.environ['CI_COMMIT_TAG'][1:]
-			else:
-				version = os.environ['CI_COMMIT_TAG']
-	else:
-		version = '0.'+os.environ['CI_JOB_ID'] # Use job ID if no commmit tag provided
+    if os.environ.get('CI_COMMIT_TAG'):
+            if os.environ['CI_COMMIT_TAG'].startswith('v'):
+                version = os.environ['CI_COMMIT_TAG'][1:]
+            else:
+                version = os.environ['CI_COMMIT_TAG']
+    else:
+        version = '0.'+os.environ['CI_JOB_ID'] # Use job ID if no commmit tag provided
 except KeyError:
-	import datetime
-	version='0.'+str(datetime.datetime.now())[0:23].replace(' ','-').replace(':','')
+    import datetime
+    version='0.'+str(datetime.datetime.now())[0:23].replace(' ','-').replace(':','')
 
 with open('requirements.txt','r') as f:
-	requirements = f.readlines()
+    requirements = f.readlines()
 
 setup(       name='mippy',
                 version=version,
@@ -72,5 +72,5 @@ setup(       name='mippy',
                 packages=['mippy','mippy.mdicom','mippy.mviewer'],
                 scripts=['scripts/mippy.bat','scripts/_mippy.py','scripts/install_mippy.bat','scripts/install_mippy.py'],
                 url='https://tree.taiga.io/project/robflintham-mippy/',
-                package_data={'':['resources/*','mviewer/config']}
+                package_data={'':['resources/*','mviewer/config','luts/*']}
         )
