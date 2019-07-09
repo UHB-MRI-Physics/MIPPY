@@ -2,6 +2,8 @@ import numpy as np
 from PIL import Image
 import io
 import binascii
+from pydicom.filebase import DicomBytesIO
+from pydicom import dcmread
 
 def get_px_array(ds,enhanced=False,instance=None,bitdepth=None):
         if 'JPEG' in str(ds.file_meta[0x2,0x10].value):
@@ -26,6 +28,10 @@ def get_px_array(ds,enhanced=False,instance=None,bitdepth=None):
                         # Scaling buried per-frame in functional groups sequence
                         ss = float(ds[0x5200,0x9230][instance-1][0x2005,0x140f][0][0x2005,0x100E].value)
                 except KeyError:
+                        ss = None
+                except TypeError:
+                        # Problem with some DICOM encoders (namely PukkaJ) that don't write the 2005,140f tag
+                        # properly.  This is currently unrecoverable, so just assume ss doesn't exist.
                         ss = None
                 except:
                         raise
