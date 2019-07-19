@@ -117,7 +117,7 @@ def save_dicom(images,directory,
 		elif rescale_slope=='use_bitdepth':
 			max = np.max(images)
 			min = np.min(images)
-			ds.RescaleSlope = max-min / (2**ds.BitsStored-1)
+			ds.RescaleSlope = (max-min) / (2**ds.BitsStored-1)
 		elif not rescale_slope is None:
 			try:
 				ds.RescaleSlope = float(rescale_slope)
