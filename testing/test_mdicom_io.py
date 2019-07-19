@@ -26,8 +26,8 @@ def test_save_dicom():
 	#~ print(os.listdir(outdir))
 	ds_loaded = pydicom.dcmread('test_data/DCM-out/saved001.DCM')
 	px = ds_loaded.pixel_array*ds_loaded.RescaleSlope + ds_loaded.RescaleIntercept
-	#~ print(np.max(px),np.max(px_data))
-	#~ print(np.sum(px),np.sum(px_data))
+	print(np.max(px),np.max(px_data))
+	print(np.sum(px),np.sum(px_data))
 	assert np.sum(px)*0.001 >= abs(np.sum(px_data)-np.sum(px))
 	assert ds_loaded.SOPInstanceUID != ds.SOPInstanceUID
 	rmtree(outdir)
