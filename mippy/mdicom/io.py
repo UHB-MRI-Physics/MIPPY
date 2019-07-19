@@ -115,14 +115,26 @@ def save_dicom(images,directory,
 		if rescale_slope=='use_ref':
 			ds.RescaleSlope = ref[i].RescaleSlope
 		elif rescale_slope=='use_bitdepth':
-			ds.RescaleSlope =  np.max(np.abs(images)) / (2**ds.BitsStored-1)
+			max = np.max(images)
+			min = np.min(images)
+			ds.RescaleSlope = max-min / (2**ds.BitsStored-1)
+		elif not rescale_slope is None:
+			try:
+				ds.RescaleSlope = float(rescale_slope)
+			except:
+				ds.RescaleSlope = 1
 		else:
 			ds.RescaleSlope = 1
 		
 		if rescale_intercept=='use_ref':
 			ds.RescaleIntercept = ref[i].RescaleIntercept
 		elif rescale_intercept=='use_bitdepth':
-			ds.RescaleIntercept = 0.-np.min(np.abs(images))
+			ds.RescaleIntercept = 0.+np.min(images)
+		elif not rescale_intercept is None:
+			try:
+				ds.RescaleIntercept = float(rescale_intercept)
+			except:
+				ds.RescaleIntercept = 0
 		else:
 			ds.RescaleIntercept = 0
 			
