@@ -795,7 +795,7 @@ class MIPPYCanvas(Canvas):
         self.delete('all')
         self.active = 1
 
-    def show_image(self, num=None):
+    def show_image(self, num=None, recalculate=False):
         """
         Display the requested image.
         
@@ -813,6 +813,9 @@ class MIPPYCanvas(Canvas):
             self.active_str.set(str(num) + "/" + str(len(self.images)))
             self.update_scrollbar((num - 1.) / len(self.images))
         self.delete('image')
+        if recalculate:
+            for i in range(len(self.images)):
+                self.images[i].wl_and_display(window=self.window, level=self.level, zoom=self.zoom_factor,antialias=self.antialias)
         self.create_image((0, 0), image=self.images[self.active - 1].photoimage, anchor='nw', tags='image')
         self.tag_lower('image')
         self.roi_list = self.roi_list_2d[self.active - 1]
@@ -1310,6 +1313,14 @@ class MIPPYCanvas(Canvas):
             print("Invalid coordinate system specified")
             return
         self.new_roi(coords, tags=tags, color=color)
+        return
+
+    def set_lut(self,lut):
+        for i in range(len(self.images)):
+            if not lut==None:
+                self.images[i].lut=open_lut(lut)
+            else:
+                self.images[i].lut=None
         return
 
     def load_images(self, image_list, keep_rois=False, limitbitdepth=False, lut=None):
