@@ -53,7 +53,7 @@ from zipfile import ZipFile
 
 # WEB LINKS
 MIPPYDOCS = r'http://mippy.readthedocs.io'
-    
+
 
 class MIPPYMain(Frame):
 
@@ -76,11 +76,11 @@ class MIPPYMain(Frame):
         tabs, whatever.  This function can also call other functions should you wish to split
         the code down further.
         """
-        
+
         # IMPORT STATEMENTS - THESE ARE NOT CALLED UNTIL THE APPLICATION IS STARTED
-        
-        
-        
+
+
+
         self.root_dir = os.getcwd()
         self.dicomdir = None
 
@@ -91,9 +91,9 @@ class MIPPYMain(Frame):
         self.master.title("MIPPY: Modular Image Processing in Python")
         #~ self.master.minsize(650,400)
         #~ self.root_path = os.getcwd()
-        
-        
-        
+
+
+
         if "nt" == os.name:
             impath = resource_filename('mippy','resources/brain_orange.ico')
         else:
@@ -106,10 +106,10 @@ class MIPPYMain(Frame):
 
 
 
-        
 
 
-        
+
+
 
         '''
         This section is to determine the host OS, and set up the appropriate temp
@@ -118,39 +118,39 @@ class MIPPYMain(Frame):
         Mac = /tmp
         Linux = /tmp
         '''
-        
+
         # Use parallel processing?
         self.multiprocess = True
-        
+
         self.user = getpass.getuser()
-        
-        
+
+
         import pkg_resources
         import sys
         if sys.argv[0]=='mippydev.py':
             self.mippy_version = "DEVELOPMENT_VERSION"
         else:
             self.mippy_version = pkg_resources.get_distribution("mippy").version
-        
+
         # Set temp directory
         if 'darwin' in sys.platform or 'linux' in sys.platform:
-            self.tempdir = '/tmp/MIPPY_temp_'+self.user            
+            self.tempdir = '/tmp/MIPPY_temp_'+self.user
         elif 'win' in sys.platform:
             fallback_temp = r'C:\TEMP'
             sys_temp  = os.getenv("TEMP",fallback_temp)
-            
+
             # If sys_temp not accessible, default to fallback_temp
             if not os.access(sys_temp, os.W_OK):
                 sys_temp = fallback_temp
                 print("System reported temp directory not available - using {}".format(sys_temp))
-            
+
             self.tempdir = os.path.join(sys_temp,"MIPPY_temp_"+self.user)
         else:
             tkinter.messagebox.showerror('ERROR', 'Unsupported operating system, please contact the developers.')
             sys.exit()
         if not os.path.exists(self.tempdir):
             os.makedirs(self.tempdir)
-        
+
         # Set persistent user directory
         self.fallback_userdir = None
         self.userdir = None
@@ -160,21 +160,21 @@ class MIPPYMain(Frame):
         elif 'win' in sys.platform:
             fallback_sys_userdir = os.path.join(r'C:\Users',self.user)
             sys_userdir = os.getenv('APPDATA',fallback_sys_userdir)
-            
+
             # If sys_userdir not available, default to fallback_userdir
             if not os.access(sys_userdir, os.W_OK):
                 sys_userdir = fallback_sys_userdir
                 print("System reported user directory not available - using {}".format(sys_userdir))
-            
+
             self.userdir = os.path.join(sys_userdir,'.mippy')
             self.fallback_userdir = os.path.join(fallback_sys_userdir,'.mippy')
         else:
             tkinter.messagebox.showerror('ERROR', 'Unsupported operating system, please contact the developers.')
             sys.exit()
-        
+
         if not os.path.exists(self.userdir):
             os.makedirs(self.userdir)
-        
+
         # If newer files in fallback directory than system reported directory, update files
         if ('win' in sys.platform
             and not 'darwin' in sys.platform
@@ -185,7 +185,7 @@ class MIPPYMain(Frame):
                 print("The following fles have been updated in your home directory:")
                 for f in files_updated:
                         print("- {}".format(f))
-        
+
         # Set default module directory
         if os.path.exists(os.path.join(self.userdir,'defaultmodulepath.txt')):
             with open(os.path.join(self.userdir,'defaultmodulepath.txt'),'r') as modpathfile:
@@ -199,32 +199,32 @@ class MIPPYMain(Frame):
                 sys.path.append(self.moduledir)
         else:
             self.moduledir = None
-        
+
         # Create a list to hold module eggs
         self.module_eggs = []
-        
+
         # Create variable for export directory
         self.exportdir = None
-        
+
         # Check status of DCMDJPEG for mac or unix, and set
         # executable if necessary
-        
+
         # Create "working copy" of the correct DCMDJPEG in the temp folder and
         # set executable flag as necessary
-        
+
         if 'darwin' in sys.platform:
             dcmdjpegpath = resource_filename('mippy','resources/dcmdjpeg_mac')
         elif 'linux' in sys.platform:
             dcmdjpegpath = resource_filename('mippy','resources/dcmdjpeg_linux')
         elif 'win' in sys.platform:
             dcmdjpegpath = resource_filename('mippy','resources/dcmdjpeg_win.exe')
-        
+
         dcmdjpeg_copy = os.path.join(self.tempdir,os.path.split(dcmdjpegpath)[1])
-        
+
         shutil.copy(dcmdjpegpath,dcmdjpeg_copy)
-        
+
         #~ print os.stat(dcmdjpeg_copy)
-        
+
         if 'darwin' in sys.platform or 'linux' in sys.platform:
             st = os.stat(dcmdjpeg_copy)
             os.chmod(dcmdjpeg_copy,st.st_mode | stat.S_IEXEC)
@@ -404,7 +404,7 @@ class MIPPYMain(Frame):
         self.click_y = event.y
         #~ print "CLICK"
         return
-    
+
     def open_user_directory(self):
         webbrowser.open(self.userdir)
         return
@@ -507,7 +507,7 @@ class MIPPYMain(Frame):
 
         #~ self.path_list = []
         self.active_series = None
-        
+
         # Check for appropriate mippydb object in the chosen directory
         if self.ask_recursive:
             self.mippydbpath = os.path.join(self.dicomdir,"mippydb_r")
@@ -531,7 +531,7 @@ class MIPPYMain(Frame):
 
     def filter_dicom_files(self):
         self.tag_list = []
-        
+
         if self.multiprocess and not (('win' in sys.platform and not 'darwin' in sys.platform)
                                 and len(self.path_list)<20):
             f = partial(collect_dicomdir_info,tempdir=self.tempdir)
@@ -549,7 +549,7 @@ class MIPPYMain(Frame):
         # This should sort the list into your initial order for the tree - maybe implement a more customised sort if necessary?
         from operator import itemgetter
         self.sorted_list = sorted(self.tag_list, key=itemgetter('name','date','time','studyuid','series','seriesuid','instance','instanceuid'))
-        
+
         # Uncomment this block to enable mippydb objects in image directory
         #~ if self.ask_recursive:
             #~ self.mippydbpath = os.path.join(self.dicomdir,"mippydb_r")
@@ -593,7 +593,7 @@ class MIPPYMain(Frame):
         if repeats_found:
             tkinter.messagebox.showwarning("WARNING",str(n_repeats)+" repeat image UID's found and ignored.")
         self.dirframe.dicomtree.update()
-        
+
         # Run garbage collect to clear anything left in memory unnecessarily
         gc.collect()
 
@@ -602,33 +602,60 @@ class MIPPYMain(Frame):
 
         #~ self.master.progress = 100
         return
-    
+
     def select_modules_directory(self):
         print("Load module directory")
-        if self.moduledir in sys.path:
-            sys.path.remove(self.moduledir)
-        for eggpath in self.module_eggs:
-            if eggpath in sys.path:
-                sys.path.remove(eggpath)
-                
-        for line in sys.path:
-            print(line)
-        
+
+
+        # for line in sys.path:
+        #     print(line)
+        # for line in sys.modules:
+        #     print(line)
+
         # Grab existing module directory to put back if dialog is cancelled
         prev_mod_dir = self.moduledir
-        
+        prev_eggpath = self.module_eggs
+
         self.moduledir = None
         self.moduledir = tkinter.filedialog.askdirectory(parent=self,initialdir=self.root_dir,title="Select module directory")
         if not self.moduledir:
             self.moduledir = prev_mod_dir
             return
 #        sys.path.append(self.moduledir)
+        if prev_mod_dir in sys.path:
+            sys.path = [value for value in sys.path if value!=prev_mod_dir]
+            # sys.path.remove(prev_mod_dir)
+        for eggpath in prev_eggpath:
+            if eggpath in sys.path:
+                sys.path = [value for value in sys.path if value!=eggpath]
+                # sys.path.remove(eggpath)
         self.scan_modules_directory()
-        return        
+        return
 
     def scan_modules_directory(self):
+        # Remove old module eggs from sys.path
+        # try:
+        #     to_remove = []
+        #     for pathname in sys.path:
+        #         if os.path.split(pathname)[1] in self.module_list:
+        #             to_remove.append(pathname)
+        #         if os.oath.split(pathname)[1] in self.module_eggs:
+        #             to_remove.append(pathname)
+        #     for pathname in to_remove:
+        #         print("Removing {} from sys.path".format(pathname))
+        #         sys.path.pop(pathname)
+        # except AttributeError:
+        #     print("First module list loading - if it isn't, there is a problem")
+
+
+        importlib.invalidate_caches()
+
+        for mod in sys.modules:
+            print(mod)
+
         self.module_list = []
         self.module_eggs = []
+        self.hidden_modules = []
         viewerconfigpath = resource_filename('mippy.mviewer','config')
         with open(viewerconfigpath,'rb') as file_object:
             module_info = pickle.load(file_object)
@@ -636,15 +663,15 @@ class MIPPYMain(Frame):
         module_info['version']=''
         module_info['eggpath']=None
         self.module_list.append(module_info)
-        
-        
+
+
         if not (self.moduledir is None or not self.moduledir):
             for folder in os.listdir(self.moduledir):
                 if not os.path.isdir(os.path.join(self.moduledir,folder)):
                     # Might be an egg.  Try and read as an egg...
                     if folder.upper().endswith('.EGG'):
                         print("{}: It's an egg!!".format(folder))
-                        
+
                         # Get the properties of the egg
                         this_eggpath = os.path.join(self.moduledir,folder)
                         with ZipFile(this_eggpath, 'r') as modulezip:
@@ -668,7 +695,7 @@ class MIPPYMain(Frame):
                                                 print("Existing module found! {}".format(mod))
                                                 to_remove.append(mod)
                                         for mod in to_remove:
-                                            sys.modules.pop(mod)
+                                            del(sys.modules[mod])
                                         gc.collect()
                                         cfg_file = zipdir+'/config'
                                         if cfg_file in modulezip.namelist():
@@ -683,7 +710,7 @@ class MIPPYMain(Frame):
                                                 # module_info['dirname']=pkg_info['Name']+'.'+module_info['dirname']
                                                 module_info['version'] = pkg_info['Version']
                                                 module_info['eggpath'] = this_eggpath
-                                                
+
                                                 ## CHECK HERE FOR VERSION CLASH
                                                 ##
                                                 ##
@@ -691,28 +718,35 @@ class MIPPYMain(Frame):
                                                     if (module_info['dirname']==mod['dirname'] and
                                                         module_info['version']==mod['version']):
                                                         print("MODULE CLASH: {} {}".format(module_info['dirname'],module_info['version']))
-                                                        self.module_list = []
+                                                        self.module_info = []
                                                         return
-                                                
-                                                
+
+
                                                 self.module_list.append(module_info)
-                                        
+                                        else:
+                                            # Might be a hidden module used by visible ones. Check for __init__.py
+                                            # If found, add directory to hidden imports so they can be cleared when
+                                            # module directory is scanned next
+                                            if zipdir+'/__init__.py' in modulezip.namelist():
+                                                self.hidden_modules.append(zipdir)
+
                         continue
                     else:
                         continue
                 file_list = os.listdir(os.path.join(self.moduledir,folder))
+                # Whether config exists or not, need to remove any reference
+                # to previously loaded modules of these names
+                to_remove = []
+                for mod in sys.modules:
+                    if str(mod).startswith(folder):
+                        print("Existing module found! {}".format(mod))
+                        to_remove.append(mod)
+                for mod in to_remove:
+                    del(sys.modules[mod])
+                    gc.collect()
                 if (('__init__.py' in file_list or '__init__.pyc' in file_list)
                     and ('module_main.py' in file_list or 'module_main.pyc' in file_list)
                     and 'config' in file_list):
-                    # Whether config exists or not, need to remove any reference
-                    # to previously loaded modules of these names
-                    to_remove = []
-                    for mod in sys.modules:
-                        if folder in mod:
-                            print("Existing module found! {}".format(mod))
-                            to_remove.append(mod)
-                    for mod in to_remove:
-                        sys.modules.pop(mod)
                     gc.collect()
                     cfg_file = os.path.join(self.moduledir,folder,'config')
                     with open(cfg_file,'rb') as file_object:
@@ -728,12 +762,12 @@ class MIPPYMain(Frame):
                                 print("MODULE CLASH: {} {}".format(module_info['dirname'],module_info['version']))
                                 self.module_list = []
                                 return
-                            
+
                         self.module_list.append(module_info)
             from operator import itemgetter
             self.module_list = sorted(self.module_list,key=itemgetter('version'),reverse=True)
             self.module_list = sorted(self.module_list,key=itemgetter('name'))
-        
+
         try:
             for item in self.moduleframe.moduletree.get_children():
                 self.moduleframe.moduletree.delete(item)
@@ -746,7 +780,7 @@ class MIPPYMain(Frame):
                 text=module['name'],values=(module['description'],module['author'],module['version']))
 
         #~ self.master.progress = 50.
-        
+
 #        for mod in sys.modules:
 #            print(mod)
         return
@@ -759,7 +793,7 @@ class MIPPYMain(Frame):
         print("Open documentation")
         webbrowser.open_new(MIPPYDOCS)
         return
-    
+
     def report_issue(self):
         print("Report issue")
         #~ tkinter.messagebox.showinfo("Issue reporting",'Please include the title of your issue in the subject, and a description in the body of the email.\n\n'+
@@ -789,7 +823,7 @@ class MIPPYMain(Frame):
         info = output
         tkinter.messagebox.showinfo("MIPPY: Version info",info)
         return
-    
+
     def display_changelog(self):
         """
         This has been removed for the time being.
@@ -808,16 +842,19 @@ class MIPPYMain(Frame):
     def load_selected_module(self):
         # Remove any existing/leftover paths from sys.path
         if self.moduledir in sys.path:
-            sys.path.remove(self.moduledir)
+            sys.path = [value for value in sys.path if value!=self.moduledir]
+            # sys.path.remove(self.moduledir)
         for eggpath in self.module_eggs:
             if eggpath in sys.path:
-                sys.path.remove(eggpath)
-        
+                sys.path = [value for value in sys.path if value!=eggpath]
+                # sys.path.remove(eggpath)
+        importlib.invalidate_caches()
+
         # Run a garbage collect to clear anything left over from previous module loading
         gc.collect()
-        
+
         try:
-            
+
             selected_module = self.moduleframe.moduletree.selection()[0]
             moduledir = selected_module.split('^')[0]
             name = self.moduleframe.moduletree.item(selected_module)['text']
@@ -827,20 +864,41 @@ class MIPPYMain(Frame):
             for mod in self.module_list:
                 if moduledir==mod['dirname'] and version==mod['version']:
                     # Update sys.path with the correct values
+                    print("Found module in module list")
                     if not mod['eggpath'] is None:
-                        sys.path.append(mod['eggpath'])
+                        if not mod['eggpath'] in sys.path:
+                            sys.path.append(mod['eggpath'])
                     else:
-                        sys.path.append(self.moduledir)
-        
+                        if not self.moduledir in sys.path:
+                            sys.path.append(self.moduledir)
+                    print(sys.path)
+            sys.path_importer_cache = {}
+
             # Need to remove any reference
             # to previously loaded modules of this name
             to_remove = []
+            names = [mod['dirname'] for mod in self.module_list]+self.hidden_modules
+            print(names)
             for mod in sys.modules:
-                if moduledir in mod:
-                    to_remove.append(mod)
+                for name in names:
+                    if str(mod).startswith(name):
+                        to_remove.append(mod)
+                # if moduledir in mod:
+                #     to_remove.append(mod)
+                # if name in mod:
+                #     to_remove.append(mod)
+            print(to_remove)
             for mod in to_remove:
-                sys.modules.pop(mod)
-                
+                print("Removing reference to old module {}".format(mod))
+                try:
+                    del(sys.modules[mod])
+                except KeyError:
+                    # Assume already deleted
+                    pass
+
+            # for path in sys.path:
+            #     print(path)
+            print("Loader:\n{}".format(importlib.find_loader(module_name)))
             active_module = importlib.import_module(module_name)
             imp.reload(active_module)
 #            if not module_name in sys.modules:
@@ -867,8 +925,8 @@ class MIPPYMain(Frame):
             if preload_dicom:
                 # Attempted to make this section discrete function for use in modules etc
                 self.datasets_to_pass = load_images_from_uids(self.sorted_list,self.active_uids,self.tempdir,self.multiprocess)
-                
-                
+
+
             else:
                 self.datasets_to_pass = []
                 previous_tag = None
@@ -891,7 +949,7 @@ class MIPPYMain(Frame):
             #~ gc.collect()
             if flatten_list:
                 self.datasets_to_pass = list(itertools.chain.from_iterable(self.datasets_to_pass))
-                
+
             # Generate an instance ID for the module, and write useful information to a temp file
             # that the module can call on
             import datetime
@@ -908,14 +966,14 @@ class MIPPYMain(Frame):
             _hash = hashlib.new('md5')
             _hash.update(bytes(modstamp,'utf-8'))
             instance_id = str(_hash.hexdigest()[0:16]).upper()
-            
+
             # Grab image paths to pass to module
             image_paths = []
             for tag in self.sorted_list:
                 if tag['instanceuid'] in self.active_uids:
                     image_paths.append(tag['path'])
-            
-            
+
+
             instance_info = {
                 'module_name': self.moduleframe.moduletree.item(selected_module)['text'],
                 'module_version': self.moduleframe.moduletree.item(selected_module)['values'][2],
@@ -929,24 +987,24 @@ class MIPPYMain(Frame):
                 'module_file': active_module.__file__
                 }
             # print(instance_info)
-            
+
             active_module.execute(self.master,instance_info,self.datasets_to_pass)
         except:
             raise
             print("Did you select a module?")
             print("Bet you didn't.")
         return
-    
-    
+
+
 
     def clear_temp_dir(self):
         if os.path.exists(self.tempdir):
             shutil.rmtree(self.tempdir)
-            
+
     def view_header(self):
         if not hasattr(self, 'active_uids'):
             tkinter.messagebox.showerror('ERROR','No image selected.')
-            return            
+            return
         if len(self.active_uids)>1:
             tkinter.messagebox.showerror('ERROR','You can only view header for a single image/slice at a time.')
             return
@@ -965,7 +1023,7 @@ class MIPPYMain(Frame):
                 dcm_view.text.see('1.0')
                 dcm_view.text.pack()
         pass
-        
+
     def compare_headers(self):
         if not hasattr(self, 'active_uids'):
             tkinter.messagebox.showerror('ERROR','No image selected.')
@@ -999,9 +1057,9 @@ class MIPPYMain(Frame):
                 dcm_compare.text.insert(END,'2: '+row[2]+'\n','highlight')
         dcm_compare.text.config(state='disabled')
         dcm_compare.text.pack()
-    
+
     def export_dicom(self):
-        
+
         #~ outdir = os.path.join(self.root_dir,"EXPORT")
         if not hasattr(self, 'active_uids'):
             tkinter.messagebox.showerror('ERROR','No images selected.')
@@ -1020,9 +1078,9 @@ class MIPPYMain(Frame):
                 self.progress(float(i)/float(len(self.active_uids))*100.)
         self.progress(0.)
         tkinter.messagebox.showinfo('EXPORT FINISHED','Images have finished exporting to:\n'+self.exportdir)
-        self.exportdir = None        
+        self.exportdir = None
         return
-    
+
     def show_log(self):
         logwin = Toplevel()
         logtext = ScrolledText.ScrolledText(logwin)
@@ -1031,16 +1089,15 @@ class MIPPYMain(Frame):
             for row in text:
                 logtext.insert(END,row+'\n')
         logtext.pack()
-    
+
     def enable_multiprocessing(self):
         self.multiprocess = True
         tkinter.messagebox.showinfo("INFO","Multiprocessing enabled")
         return
-    
+
     def disable_multiprocessing(self):
         self.multiprocess = False
         tkinter.messagebox.showinfo("INFO","Multiprocessing disabled")
         return
 
 #########################################################
-
