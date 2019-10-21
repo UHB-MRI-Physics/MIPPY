@@ -180,7 +180,7 @@ class MIPPYMain(Frame):
             and not 'darwin' in sys.platform
             and os.path.exists(self.fallback_userdir)
             and not self.fallback_userdir==self.userdir):
-            files_updated = fileio.copyToDir(self.fallback_userdir,self.userdir)
+            files_updated = fileio.copyToDir(self.fallback_userdir,self.userdir,ignore='*.json')
             if len(files_updated)>0:
                 print("The following fles have been updated in your home directory:")
                 for f in files_updated:
@@ -485,7 +485,9 @@ class MIPPYMain(Frame):
 
 
     def module_window_click(self,event):
-        print("You clicked on the module window.")
+        # print("You clicked on the module window.")
+        pass
+
 
     def load_image_directory(self):
         print("Load image directory")
@@ -563,7 +565,7 @@ class MIPPYMain(Frame):
     def build_dicom_tree(self):
         #~ print "function_started"
         #~ i=0
-        print(self.dirframe.dicomtree.get_children())
+        # print(self.dirframe.dicomtree.get_children())
         try:
             for item in self.dirframe.dicomtree.get_children():
                 self.dirframe.dicomtree.delete(item)
@@ -650,8 +652,8 @@ class MIPPYMain(Frame):
 
         importlib.invalidate_caches()
 
-        for mod in sys.modules:
-            print(mod)
+        # for mod in sys.modules:
+        #     print(mod)
 
         self.module_list = []
         self.module_eggs = []
@@ -692,14 +694,14 @@ class MIPPYMain(Frame):
                                         to_remove = []
                                         for mod in sys.modules:
                                             if zipdir in mod:
-                                                print("Existing module found! {}".format(mod))
+                                                # print("Existing module found! {}".format(mod))
                                                 to_remove.append(mod)
                                         for mod in to_remove:
                                             del(sys.modules[mod])
                                         gc.collect()
                                         cfg_file = zipdir+'/config'
                                         if cfg_file in modulezip.namelist():
-                                            print(zipdir, "exists")
+                                            # print(zipdir, "exists")
                                             if not this_eggpath in self.module_eggs:
                                                 self.module_eggs.append(this_eggpath)
 #                                            if not this_eggpath in sys.path:
@@ -739,7 +741,7 @@ class MIPPYMain(Frame):
                 to_remove = []
                 for mod in sys.modules:
                     if str(mod).startswith(folder):
-                        print("Existing module found! {}".format(mod))
+                        # print("Existing module found! {}".format(mod))
                         to_remove.append(mod)
                 for mod in to_remove:
                     del(sys.modules[mod])
@@ -771,9 +773,9 @@ class MIPPYMain(Frame):
         try:
             for item in self.moduleframe.moduletree.get_children():
                 self.moduleframe.moduletree.delete(item)
-            print("Existing module tree cleared")
+            # print("Existing module tree cleared")
         except Exception:
-            print("New module tree created")
+            # print("New module tree created")
             pass
         for module in self.module_list:
             self.moduleframe.moduletree.insert('','end',module['dirname']+'^'+module['version'],
@@ -864,21 +866,21 @@ class MIPPYMain(Frame):
             for mod in self.module_list:
                 if moduledir==mod['dirname'] and version==mod['version']:
                     # Update sys.path with the correct values
-                    print("Found module in module list")
+                    # print("Found module in module list")
                     if not mod['eggpath'] is None:
                         if not mod['eggpath'] in sys.path:
                             sys.path.append(mod['eggpath'])
                     else:
                         if not self.moduledir in sys.path:
                             sys.path.append(self.moduledir)
-                    print(sys.path)
+                    # print(sys.path)
             sys.path_importer_cache = {}
 
             # Need to remove any reference
             # to previously loaded modules of this name
             to_remove = []
             names = [mod['dirname'] for mod in self.module_list]+self.hidden_modules
-            print(names)
+            # print(names)
             for mod in sys.modules:
                 for name in names:
                     if str(mod).startswith(name):
@@ -887,9 +889,9 @@ class MIPPYMain(Frame):
                 #     to_remove.append(mod)
                 # if name in mod:
                 #     to_remove.append(mod)
-            print(to_remove)
+            # print(to_remove)
             for mod in to_remove:
-                print("Removing reference to old module {}".format(mod))
+                # print("Removing reference to old module {}".format(mod))
                 try:
                     del(sys.modules[mod])
                 except KeyError:
@@ -898,7 +900,7 @@ class MIPPYMain(Frame):
 
             # for path in sys.path:
             #     print(path)
-            print("Loader:\n{}".format(importlib.find_loader(module_name)))
+            # print("Loader:\n{}".format(importlib.find_loader(module_name)))
             active_module = importlib.import_module(module_name)
             imp.reload(active_module)
 #            if not module_name in sys.modules:
