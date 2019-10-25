@@ -12,7 +12,7 @@ all do.
 
 # Import system/python modules
 #~ print "Importing system modules"
-from pkg_resources import resource_filename
+from pkg_resources import resource_filename, parse_version
 import os
 import tkinter.messagebox
 import tkinter.filedialog
@@ -33,6 +33,7 @@ from functools import partial
 import stat
 import pydicom
 import gc
+import requests
 #~ from multiprocessing import freeze_support
 #~ print "Imports finished!"
 
@@ -665,6 +666,7 @@ class MIPPYMain(Frame):
         module_info['version']=''
         module_info['eggpath']=None
         self.module_list.append(module_info)
+        modules_to_backup = []
 
 
         if not (self.moduledir is None or not self.moduledir):
@@ -681,10 +683,46 @@ class MIPPYMain(Frame):
                             pkg_info = {}
                             with modulezip.open('EGG-INFO/PKG-INFO', 'r') as pkg_info_file:
                                 for row in pkg_info_file.readlines():
-                                    info = row.decode('utf-8').split(':')
+                                    info = row.decode('utf-8').split(':',1)
                                     if len(info)==2:
                                         pkg_info[info[0]]=info[1].rstrip().lstrip()
+                                # print(pkg_info)
                                 # print(pkg_info['Name'],pkg_info['Version'])
+                                # Try to check for newer version of the module
+                                try:
+                                    # print('URL: {}'.format(pkg_info['Home-page']))
+                                    if 'api.bintray.com' in pkg_info['Home-page']:
+                                        r = requests.get(pkg_info['Home-page'])
+                                        print(r.json())
+                                        latest_version = r.json()['latest_version']
+                                        remote_pkg_name = r.json()['name']
+                                        print(folder.replace(pkg_info['Version'],latest_version))
+                                        print("Installed version: {}\nAvailable version: {}".format(pkg_info['Version'],latest_version))
+                                        if parse_version(latest_version)>parse_version(pkg_info['Version']):
+                                            download = tkinter.messagebox.askyesno(title="New version available",
+                                                                message="A newer version of {} is available. Download?".format(remote_pkg_name))
+                                            if download==True:
+                                                # Get file info for latest version
+                                                r = requests.get(pkg_info['Home-page']+'/versions/'+latest_version+'/files')
+                                                r_owner=r.json()[0]['owner']
+                                                r_repo=r.json()[0]['repo']
+                                                r_path=r.json()[0]['path']
+                                                r_url = 'https://dl.bintray.com/'+r_owner+'/'+r_repo+'/'+r_path
+                                                print(r_url)
+                                                r_file = r = requests.get(r_url)
+                                                # Write r_file.content (a byte stream) to the modules folder and move current folder to backups??
+                                                print(r_file)
+                                                with open(os.path.join(self.moduledir,r_path),'wb') as r_outfile:
+                                                    r_outfile.write(r_file.content)
+                                                modules_to_backup.append(this_eggpath)
+                                        elif parse_version(latest_version)<parse_version(pkg_info['Version']):
+                                            print("Local version is newer! Weird...")
+
+                                except requests.exceptions.ConnectionError:
+                                    print("Unable to connect to repository for version check")
+
+
+
                                 with modulezip.open('EGG-INFO/top_level.txt', 'r') as toplevel:
                                     for row in toplevel.readlines():
                                         dirs.append(row.decode('utf-8').rstrip().lstrip())
@@ -731,7 +769,6 @@ class MIPPYMain(Frame):
                                             # module directory is scanned next
                                             if zipdir+'/__init__.py' in modulezip.namelist():
                                                 self.hidden_modules.append(zipdir)
-
                         continue
                     else:
                         continue
@@ -780,6 +817,13 @@ class MIPPYMain(Frame):
         for module in self.module_list:
             self.moduleframe.moduletree.insert('','end',module['dirname']+'^'+module['version'],
                 text=module['name'],values=(module['description'],module['author'],module['version']))
+
+        if len(modules_to_backup)>0:
+            if not os.path.exists(os.path.join(self.moduledir,'prev_versions')):
+                os.makedirs(os.path.join(self.moduledir,'prev_versions'))
+            for mod in modules_to_backup:
+                os.rename(mod,os.path.join(self.moduledir,'prev_versions',os.path.split(mod)[1]))
+            self.scan_modules_directory()
 
         #~ self.master.progress = 50.
 
