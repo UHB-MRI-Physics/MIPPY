@@ -6,3 +6,5 @@ nibabel
 easygui
 dill
 tinydb
+requests
+tkinterhtml

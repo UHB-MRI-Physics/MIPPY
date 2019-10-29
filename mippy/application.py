@@ -896,6 +896,8 @@ class MIPPYMain(Frame):
                 # sys.path.remove(eggpath)
         importlib.invalidate_caches()
 
+        eggpath = None
+
         # Run a garbage collect to clear anything left over from previous module loading
         gc.collect()
 
@@ -912,6 +914,7 @@ class MIPPYMain(Frame):
                     # Update sys.path with the correct values
                     # print("Found module in module list")
                     if not mod['eggpath'] is None:
+                        eggpath = mod['eggpath']
                         if not mod['eggpath'] in sys.path:
                             sys.path.append(mod['eggpath'])
                     else:
@@ -1030,7 +1033,9 @@ class MIPPYMain(Frame):
                 'mippy_version': self.mippy_version,
                 'user': self.user,
                 'image_paths': image_paths,
-                'module_file': active_module.__file__
+                'module_file': active_module.__file__,
+                'egg_path': eggpath,
+                'module_dirname': moduledir
                 }
             # print(instance_info)
 
