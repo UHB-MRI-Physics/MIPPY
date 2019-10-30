@@ -167,8 +167,8 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
                 else:
                         enhanced = False
                         frames = 1
-                study_uid = ds.StudyInstanceUID
-                series_uid = ds.SeriesInstanceUID
+                study_uid = str(ds.StudyInstanceUID)
+                series_uid = str(ds.SeriesInstanceUID)
                 name = str(ds.PatientName)
                 date = ds.StudyDate
                 series = ds.SeriesNumber
@@ -183,8 +183,8 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
                         except Exception:
                                 # If all else fails, just use a generic string
                                 studydesc = "Unknown Study Type"
-                
-                
+
+
 
                 #~ if tags is None:
                         #~ tags = []
@@ -203,23 +203,23 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
                                 raise
 
                 instance_uid = 'UNKNOWN'
-                
+
                 original_series_uid = series_uid
                 original_series_desc = seriesdesc
 
                 for i in instance:
-                    
+
                         recon = None
-                        
-                        
+
+
                         if not enhanced:
-                                instance_uid = ds.SOPInstanceUID
-                                
-                                
+                                instance_uid = str(ds.SOPInstanceUID)
+
+
                         else:
                                 # Append instance UID with the frame number to give unique reference to each slice
-                                instance_uid = ds.SOPInstanceUID+"_"+str(i).zfill(4)
-                                
+                                instance_uid = str(ds.SOPInstanceUID)+"_"+str(i).zfill(4)
+
                                 # If Real or Imaginary, prepend this to study description and add it to series UID to separate out in
                                 # MIPPY browser window
                                 try:
@@ -235,9 +235,9 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
                                         pass
                                 except:
                                         raise
-                        
-                        
-                
+
+
+
                         if not recon is None:
                                 series_uid = original_series_uid+'_'+recon
                                 seriesdesc = recon+': '+original_series_desc

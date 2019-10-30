@@ -576,6 +576,8 @@ class MIPPYMain(Frame):
             pass
         repeats_found = False
         n_repeats = 0
+        uid_list = []
+        to_remove = []
         for scan in self.sorted_list:
             #~ print "Adding to tree: "+scan['path']
             if not self.dirframe.dicomtree.exists(scan['studyuid']):
@@ -586,16 +588,26 @@ class MIPPYMain(Frame):
                 self.dirframe.dicomtree.insert(scan['studyuid'],'end',scan['seriesuid'],
                                             text='Series '+str(scan['series']).zfill(3),
                                             values=('','',scan['seriesdesc']))
-            try:
+            uid = scan['studyuid']+scan['seriesuid']+scan['instanceuid']
+            if not uid in uid_list:
+                uid_list.append(uid)
                 self.dirframe.dicomtree.insert(scan['seriesuid'],'end',scan['instanceuid'],
-                                        text=str(scan['instance']).zfill(3),
+                                        text=str(scan['instanceuid']).zfill(3),
                                         values=('','',''))
-            except:
+            else:
                 repeats_found = True
                 n_repeats+=1
+                to_remove.append(scan)
+        for scan in to_remove:
+            # EXPERIMENTAL - Remove repeated instance from list
+            # print("REMOVED: {}".format(scan['seriesdesc']))
+            self.sorted_list.remove(scan)
+
         if repeats_found:
             tkinter.messagebox.showwarning("WARNING",str(n_repeats)+" repeat image UID's found and ignored.")
         self.dirframe.dicomtree.update()
+        # print("UIDS: {}".format(len(uid_list)))
+        # print("IMS: {}".format(len(self.sorted_list)))
 
         # Run garbage collect to clear anything left in memory unnecessarily
         gc.collect()
