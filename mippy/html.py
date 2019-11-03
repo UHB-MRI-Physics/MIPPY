@@ -2,7 +2,6 @@ from tkinter import *
 from tkinter.ttk import *
 from tkinterhtml import HtmlFrame
 import markdown2
-import imgkit
 import os
 import webbrowser
 import shutil
