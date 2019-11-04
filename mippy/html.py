@@ -61,7 +61,7 @@ def markdown_to_browser(module_window,inline='',filepath=''):
         if os.path.exists(os.path.join(filedir,'img')):
             for img in os.listdir(os.path.join(filedir,'img')):
                 img_paths.append(os.path.join(filedir,'img',img))
-    print(md_content)
+    # print(md_content)
     htmlpath = os.path.join(module_window.instance_info['temp_directory'],module_window.instance_info['module_instance'])
     if not os.path.exists(htmlpath):
         os.makedirs(htmlpath)
