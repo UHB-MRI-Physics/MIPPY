@@ -592,7 +592,7 @@ class MIPPYMain(Frame):
             if not uid in uid_list:
                 uid_list.append(uid)
                 self.dirframe.dicomtree.insert(scan['seriesuid'],'end',scan['instanceuid'],
-                                        text=str(scan['instanceuid']).zfill(3),
+                                        text=str(scan['instance']).zfill(3),
                                         values=('','',''))
             else:
                 repeats_found = True
