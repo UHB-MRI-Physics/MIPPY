@@ -191,7 +191,7 @@ def px_bytes_to_array(byte_array, rows, cols, bitdepth=16, mode='littleendian', 
     return px_float
 
 
-def generate_px_float(pixels, rs, ri, ss=None):
+def generate_px_float(pixels, rs, ri, ss=None, pad_zero=False):
     """
     Takes a numpy.ndarray of unscaled integer pixel values (typically 16 bit) and applies
     the relevant scaling factors from the DICOM header to generate the correct rescaled
@@ -213,6 +213,16 @@ def generate_px_float(pixels, rs, ri, ss=None):
     px_float: numpy.ndarray
         N-dimensional array of scaled pixel values. The shape of the output array matched the shape of the input array.
     """
+    if pad_zero and np.shape(pixels)[0]!=np.shape(pixels)[1]:
+        # Zero pad to make the image square
+        pad_width_col = np.shape(pixels)[0]-np.shape(pixels)[1]
+        pad_width_row = np.shape(pixels)[1]-np.shape(pixels)[0]
+        if pad_width_col>0:
+            # print("Padding columns")
+            pixels = np.pad(pixels,((0,0),(0,pad_width_col)),mode='constant')
+        elif pad_width_row>0:
+            # print("Padding rows")
+            pixels = np.pad(pixels,((0,pad_width_row),(0,0)),mode='constant')
     if ss:
         return (pixels * rs + ri) / (rs * ss)
     else:
@@ -1325,7 +1335,7 @@ class MIPPYCanvas(Canvas):
                 self.images[i].lut=None
         return
 
-    def load_images(self, image_list, keep_rois=False, limitbitdepth=False, lut=None):
+    def load_images(self, image_list, keep_rois=False, limitbitdepth=False, lut=None, pad_zero=False):
         """
         Loads images onto the canvas, autoscaling pixel values where appropriate
         and automatically windowing to the full range of pixel values provided.
@@ -1368,6 +1378,7 @@ class MIPPYCanvas(Canvas):
 
         self.roi_list = []
         self.masks = []
+        self.pad_zero=pad_zero
         n = 0
 
         if len(image_list) > 500 and self.limit_loading:
@@ -1378,7 +1389,8 @@ class MIPPYCanvas(Canvas):
         for ref in image_list:
             self.progress(45. * n / len(image_list) + 10)
             self.images.append(MIPPYImage(ref,
-                                          limitbitdepth=limitbitdepth,lut=lut))  # Included limitbitdepth to allow restriction to 8 bit int
+                                          limitbitdepth=limitbitdepth,lut=lut,
+                                          pad_zero=self.pad_zero))  # Included limitbitdepth to allow restriction to 8 bit int
             if not keep_rois or not len(self.roi_list_2d) == len(image_list):
                 self.roi_list_2d.append([])
                 self.masks_2d.append([])
@@ -2011,12 +2023,13 @@ class MIPPYImage():
 
     """
 
-    def __init__(self, dicom_dataset, limitbitdepth=False,lut=None):
+    def __init__(self, dicom_dataset, limitbitdepth=False,lut=None,pad_zero=False):
 
         # Need some tags to describe the state of the image
         # Use integers, increment as approrpriate and test with % function
         self.flip_h = 0
         self.flip_v = 0
+        self.pad_zero=pad_zero
         # Describe 90 degrees clockwise as 1 rotation
         self.rotations = 0
 
@@ -2052,7 +2065,7 @@ class MIPPYImage():
             self.ss = None
         self.rows = ds.Rows
         self.columns = ds.Columns
-        self.px_float = generate_px_float(pixels, self.rs, self.ri, self.ss)
+        self.px_float = generate_px_float(pixels, self.rs, self.ri, self.ss,self.pad_zero)
         self.rangemax = np.max(generate_px_float(np.power(2, bitdepth), self.rs, self.ri, self.ss))
         self.rangemin = np.min(generate_px_float(0, self.rs, self.ri, self.ss))
         if limitbitdepth:
