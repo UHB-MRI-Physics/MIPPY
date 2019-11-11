@@ -24,7 +24,11 @@ def get_frame_ds_old(frame,ds):
     rows = int(ds_new.Rows)
     cols = int(ds_new.Columns)
 #        print "    Copying pixel data"
-    ds_new.PixelData = ds.PixelData[slicenum*(rows*cols*2):(slicenum+1)*(rows*cols*2)]
+    try:
+        ds_new.PixelData = ds.PixelData[slicenum*(rows*cols*2):(slicenum+1)*(rows*cols*2)]
+    except:
+        # Added to skip pixel data when ds is loaded without
+        pass
 #        print "    Replacing instance number"
     ds_new.InstanceNumber = frame
     ds_new.NumberOfFrames = 1
@@ -37,9 +41,9 @@ def get_frame_ds_old(frame,ds):
     # ds_new = ds_new._replace(_character_set=pydicom.charset.default_encoding)
 #        print "    Returning split dataset"
     print(ds_new)
-    
+
     return ds_new
-        
+
 def get_frame_ds(frame,ds):
     """
     This new function creates a DICOM dataset from scratch rather than performing
@@ -48,12 +52,12 @@ def get_frame_ds(frame,ds):
     slicenum=frame-1    # Frame numbers indexed from 1, not 0
     n_frames = ds.NumberOfFrames
     print("Extracting frame {} of {}".format(frame,n_frames))
-    
+
     file_meta = ds.file_meta
     filename = 'temp'
     suffix = '.dcm'
-    
-    
+
+
     ds_new = pydicom.dataset.FileDataset(filename,{},file_meta=file_meta,preamble=b"\0"*128)
     ds_new.file_meta = ds.file_meta
     ds_new.preamble=bytes("\0"*128,'utf-8')
@@ -87,7 +91,7 @@ def get_frame_ds(frame,ds):
     # Return new dataset
     ds_str = str(ds_new)
     return ds_new
-    
+
 def add_all_simple(dataset1,dataset2):
     for element in dataset2:
         dataset1.add_new(element.tag,element.VR,element.value)
