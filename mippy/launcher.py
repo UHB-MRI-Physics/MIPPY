@@ -15,7 +15,7 @@ def launch_mippy(skip_update=False):
         root_window = Tk()
         with splash.SplashScreen(root_window,splashimage,3.0):
                 urlobj = None
-                
+
                 if not skip_update:
                     # Test if PyPI is accessible
                     try:
@@ -26,17 +26,22 @@ def launch_mippy(skip_update=False):
                         pass
                     except:
                         raise
-                
+
                 # Check for new version of MIPPY on PyPI
                 if not urlobj is None:
                     print('Checking for updates to MIPPY on PyPI...')
-                    pip_output = check_output(['pip','list','--outdated','--format=json'])
+                    if 'win' in sys.platform and not 'darwin' in sys.platform:
+                        this_pip = 'pip'
+                    else:
+                        # Account for dual install of python (2) and python3 on nix systems
+                        this_pip = 'pip3'
+                    pip_output = check_output([this_pip,'list','--outdated','--format=json'])
                     if 'mippy' in [row['name'] for row in json.loads(pip_output)]:
                             #~ print("Warning! Outdated version of MIPPY detected!")
                             update = messagebox.askyesno("Update available","An update for MIPPY is available from PyPI.  Would you like to install?")
                             if update:
                                     #~ call('pip install mippy --upgrade',shell=True)
-                                    p = Popen(['pip','install','mippy','--upgrade','--no-cache-dir'],stdin=PIPE,stdout=PIPE,stderr=PIPE)
+                                    p = Popen([this_pip,'install','mippy','--upgrade','--no-cache-dir'],stdin=PIPE,stdout=PIPE,stderr=PIPE)
                                     output,err = p.communicate()
                                     rc = p.returncode
                                     if len(err)>0:
@@ -48,7 +53,7 @@ def launch_mippy(skip_update=False):
                                     sys.exit()
                     else:
                         print('No new version found.')
-                
+
                 from mippy.application import MIPPYMain
                 root_app = MIPPYMain(master = root_window)
         root_app.mainloop()
@@ -67,13 +72,13 @@ if __name__=='__main__':
         #~ splashimage = resource_filename('mippy','resources/splash3.jpg')
         #~ root_window = Tk()
         #~ with splash.SplashScreen(root_window,splashimage,3.0):
-                
+
                 #~ # Check for new version of MIPPY on PyPI
                 #~ p - Popen(['program','arg'],stdin=PIPE,stdout=PIPE,stderr=PIPE)
                 #~ output,err = p.communicate(b'pip list --outdated')
                 #~ rc = p.returncode
                 #~ print(output)
-                
+
                 #~ from mippy.application import MIPPYMain
                 #~ root_app = MIPPYMain(master = root_window)
         #~ root_app.mainloop()
