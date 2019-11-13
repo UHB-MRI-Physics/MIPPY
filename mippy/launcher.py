@@ -35,9 +35,10 @@ def launch_mippy(skip_update=False):
                     else:
                         # Account for dual install of python (2) and python3 on nix systems
                         this_pip = 'pip3'
-                    pip_output = check_output([this_pip,'list','--outdated','--format=json','--user'])
+                    pip_output = check_output([this_pip,'list','--outdated','--format=json'])
                     if 'mippy' in [row['name'] for row in json.loads(pip_output)]:
-                            #~ print("Warning! Outdated version of MIPPY detected!")
+                            print("Warning! Outdated version of MIPPY detected!")
+                            print("Updated version found")
                             update = messagebox.askyesno("Update available","An update for MIPPY is available from PyPI.  Would you like to install?")
                             if update:
                                     #~ call('pip install mippy --upgrade',shell=True)
@@ -47,8 +48,10 @@ def launch_mippy(skip_update=False):
                                     if len(err)>0:
                                             print(err.decode("utf-8"))
                                     if rc==0:
+                                            print("MIPPY updated")
                                             messagebox.showinfo("MIPPY Updated","Update successful! Please restart MIPPY.")
                                     else:
+                                            print("Problem occurred...")
                                             messagebox.showwarning("Oops","Something went wrong. Please restart MIPPY.")
                                     sys.exit()
                     else:
