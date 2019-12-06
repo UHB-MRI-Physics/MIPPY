@@ -82,7 +82,9 @@ def get_frame_ds(frame,ds):
     # Correct pixel data to be of the correct frame
     rows = int(ds_new.Rows)
     cols = int(ds_new.Columns)
-    ds_new.PixelData = ds.PixelData[slicenum*(rows*cols*2):(slicenum+1)*(rows*cols*2)]
+    # ds_new.PixelData = ds.PixelData[slicenum*(rows*cols*2):(slicenum+1)*(rows*cols*2)]
+    if 'PixelData' in dir(ds_new):
+        ds_new.PixelData = ds.PixelData[slicenum*(rows*cols*2):(slicenum+1)*(rows*cols*2)]
     # Reset InstanceNumber and number of frames
     ds_new.InstanceNumber = frame
     ds_new.NumberOfFrames = 1
