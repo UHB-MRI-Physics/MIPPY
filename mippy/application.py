@@ -120,18 +120,32 @@ class MIPPYMain(Frame):
         Linux = /tmp
         '''
 
-        # Use parallel processing?
-        self.multiprocess = True
+
 
         self.user = getpass.getuser()
 
+        # Check if frozen:
+        import sys
+        if getattr(sys, 'frozen', False):
+            self.frozen = True
+        else:
+            self.frozen = False
+
+        # Use parallel processing?
+        if not self.frozen:
+            self.multiprocess = True
+        else:
+            self.multiprocess = False
+
 
         import pkg_resources
-        import sys
-        if sys.argv[0]=='mippydev.py':
-            self.mippy_version = "DEVELOPMENT_VERSION"
+        if not self.frozen:
+            if sys.argv[0]=='mippydev.py':
+                self.mippy_version = "DEVELOPMENT_VERSION"
+            else:
+                self.mippy_version = pkg_resources.get_distribution("mippy").version
         else:
-            self.mippy_version = pkg_resources.get_distribution("mippy").version
+            self.mippy_version = "FROZEN - UNKNOWN"
 
         # Set temp directory
         if 'darwin' in sys.platform or 'linux' in sys.platform:
@@ -1154,6 +1168,9 @@ class MIPPYMain(Frame):
         logtext.pack()
 
     def enable_multiprocessing(self):
+        if self.frozen:
+            tkinter.messagebox.showerror('ERROR','Multiprocessing can only be enabled when running the development version of MIPPY.')
+            return
         self.multiprocess = True
         tkinter.messagebox.showinfo("INFO","Multiprocessing enabled")
         return

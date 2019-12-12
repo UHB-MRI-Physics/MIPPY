@@ -7,11 +7,18 @@ import sys
 import urllib
 from urllib import request
 from urllib import error as urlerror
+import os
+#from mippy import FROZEN
 
 def launch_mippy(skip_update=False):
         import mippy.splash as splash
         from pkg_resources import resource_filename
-        splashimage = resource_filename('mippy','resources/splash3.jpg')
+        try:
+            splashimage = resource_filename('mippy','resources/splash3.jpg')
+        except TypeError:
+            # Pyinstaller frozen
+            splashimage = os.path.join(os.path.dirname(sys.executable),'mippy','resources','splash3.jpg')
+
         root_window = Tk()
         with splash.SplashScreen(root_window,splashimage,3.0):
                 urlobj = None
