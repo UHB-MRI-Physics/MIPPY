@@ -29,12 +29,12 @@ def save_results(results,name=None,directory=None):
         """
         timestamp = str(datetime.now()).replace(" ","_").replace(":","")[0:21]
         # Truncates at milisecond level
-        
+
         if not name:
                 fname = "RESULTS_"+timestamp+".txt"
         else:
                 fname = name+"_"+timestamp+".txt"
-        
+
         if directory is None:
                 current_dir = os.getcwd()
                 outputdir = os.path.join(current_dir,"Results")
@@ -57,21 +57,22 @@ def export_dicom_file(ds,outdir):
         dir1 = str(ds.PatientName).replace('^','__')+"_"+remove_invalid_characters(ds.PatientID)
         dir2 = ds.StudyDate+"_"+ds.StudyTime
         dir3 = str(ds.SeriesNumber).zfill(4)+"_"+remove_invalid_characters(str(ds.SeriesDescription))
-        
+
         #~ fname1 = str(ds.ImageType).replace('/','-').strip()+"_"
         fname1 = ''.join(str(i)+"_" for i in ds.ImageType)
         fname2 = str(ds.SeriesNumber).zfill(4)+"_"
-        fname3 = str(ds.InstanceNumber).zfill(5)
-        
+        fname3 = str(ds.InstanceNumber).zfill(5)+"_"
+        fname4 = str(ds.SOPInstanceUID)[-8:]
+
         fext = '.DCM'
-        
+
         outdirfull = os.path.join(outdir,dir1,dir2,dir3)
         if not os.path.exists(outdirfull):
                 os.makedirs(outdirfull)
-        
-        ds.save_as(os.path.join(outdirfull,fname1+fname2+fname3+fext))
+
+        ds.save_as(os.path.join(outdirfull,fname1+fname2+fname3+fname4+fext))
         return
-        
+
 def remove_invalid_characters(value):
         deletechars = '\\/:*?"<>|'
         for c in deletechars:
