@@ -37,6 +37,13 @@ def get_px_array(ds,enhanced=False,instance=None,bitdepth=None):
                         raise
         except:
                 raise
+
+        ss = None   # Added in v2.8, attempting to remove problem with quantitative imaging
+                    # on Philips scanners - overrules any additional scaling factor stored
+                    # in the "real world value mapping" tag on Philips MRI and only uses
+                    # the standard rescale slope and intercept
+
+
         #~ print("Scaling: RS {},RI {},SS {}".format(rs,ri,ss))
         if ds.is_little_endian:
                 mode = 'littleendian'
@@ -93,12 +100,13 @@ def get_px_array(ds,enhanced=False,instance=None,bitdepth=None):
                         px_float = px_float.astype(np.uint16)
                 elif bitdepth==32:
                         px_float = px_float.astype(np.float32)
-                
+
 
 
         return px_float
 
 def px_bytes_to_array(byte_array,rows,cols,bitdepth=16,mode='littleendian',rs=1,ri=0,ss=None):
+
         if bitdepth==16:
                 if mode=='littleendian':
                         this_dtype = np.dtype('<u2')
@@ -170,7 +178,7 @@ def get_img_coords(coords,slice_location,slice_orientation,pxspc_x,pxspc_y,slcsp
                                                         [        q[1]*x, q[4]*y, 0., p[1]        ],
                                                         [        q[2]*x, q[5]*y, 0., p[2]        ],
                                                         [        0., 0., 0., 1.                        ]])
-        
+
         if np.linalg.det(trans_arr)==0:
                 # No rotation required, use simple scaling as cannot calculate inverse
                 i = (coords[0]-p[0])/x
@@ -180,7 +188,7 @@ def get_img_coords(coords,slice_location,slice_orientation,pxspc_x,pxspc_y,slcsp
                 else:
                         k=0.
                 return tuple([i,j,k])
-        
+
         inverse_trans_array = np.linalg.inv(trans_arr)
         result = np.matmul(inverse_trans_array,coord_arr)
         return tuple(result[0:3])
@@ -194,4 +202,3 @@ if __name__ == '__main__':
         im_coords = [100,70]
         pt_coords = get_voxel_location(im_coords,position,orient,xspc,yspc)
         print(pt_coords)
-        
