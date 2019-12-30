@@ -14,6 +14,9 @@ import pickle
 import os
 import datetime
 from pkg_resources import resource_filename
+import mippy
+import mippy.mdicom
+from mippy.mdicom.pixel import get_voxel_location
 import uuid
 import copy
 
@@ -2508,6 +2511,44 @@ class MIPPYImage():
         """
         self.photoimage = ImageTk.PhotoImage(self.image)
         return
+
+class MIPPYImage3DCoreg():
+    """
+
+    """
+    def __init__(self, dicom_datasets, limitbitdepth=False,luts=None,pad_zero=False):
+        # Do initial creation of instance using first series passed
+        self.ref_images = []
+        self.ref_geometry = []
+        self.luts = []
+        if luts is None:
+            for i in range(len(dicom_datasets)):
+                self.luts.append(None)
+        else:
+            self.luts = luts
+        for i in range(len(dicom_datasets[0])):
+            self.ref_images.append(MIPPYImage(dicom_datasets[0][i], limitbitdepth=limitbitdepth,lut=self.luts[0],pad_zero=pad_zero))
+            self.ref_geometry.append([np.array(dicom_datasets[0][i].ImagePositionPatient),
+                                        np.array(dicom_datasets[0][i].ImageOrientationPatient),
+                                        float(dicom_datasets[0][i].PixelSpacing[0]),
+                                        float(dicom_datasets[0][i].PixelSpacing[0])])
+
+        # Grab 3D pixel array
+        ref_px = []
+        for image in self.ref_images:
+            ref_px.append(image.px_float)
+        self.ref_px = np.array(ref_px)
+
+        # Generate 3D coordinate array
+        self.ref_coords = np.zeros(np.shape(self.ref_px), dtype=(float,3))
+        for z in range(np.shape(self.ref_coords)[0]):
+            for y in range(np.shape(self.ref_coords)[1]):
+                for x in range(np.shape(self.ref_coords)[2]):
+                    self.ref_coords = get_voxel_location((x,y,z),*self.ref_geometry[z])
+        print(ref_coords)
+
+        return
+
 
 
 class Image3D():
