@@ -1019,6 +1019,7 @@ class MIPPYMain(Frame):
                                 self.datasets_to_pass.append([tag['path']])
                             else:
                                 self.datasets_to_pass[-1].append(tag['path'])
+                        previous_tag = tag
 
                 #~ gc.collect()
             #~ gc.collect()
