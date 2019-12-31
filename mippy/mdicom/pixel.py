@@ -212,6 +212,7 @@ def generate_4d_array(dicom_paths):
         imfiles = dicom_paths
         print("{} images received...".format(len(imfiles)))
     px_list = list(range(len(imfiles)))
+    print(px_list)
     print("Reading the image data; this may take some time")
     # time.sleep(2)
     # time.sleep(2)
@@ -296,10 +297,10 @@ def generate_4d_array(dicom_paths):
                 missing_data = True
             pos = ds.ImagePositionPatient
             ori = ds.ImageOrientationPatient
-            if not np.array(pos) in slice_positions:
-                slice_positions.append(np.array(pos))
-            if not np.array(ori) in orientations:
-                orientations.append(np.array(ori))
+            if not pos in slice_positions:
+                slice_positions.append(pos)
+            if not ori in orientations:
+                orientations.append(ori)
         elif enhanced:
             # Lots of frames per file, but only a single slice per frame
             # Potential hole for Enhanced, assuming only a single file loaded
@@ -309,10 +310,10 @@ def generate_4d_array(dicom_paths):
                 px_list[n] = get_px_array(ds,enhanced,n+1)
                 pos = ds[0x5200,0x9230][n][0x20,0x9113][0].ImagePositionPatient
                 ori = ds[0x5200,0x9230][n][0x20,0x9113][0].ImageOrientationPatient
-                if not np.array(pos) in slice_positions:
-                    slice_positions.append(np.array(pos))
-                if not np.array(ori) in orientations:
-                    orientations.append(np.array(ori))
+                if not pos in slice_positions:
+                    slice_positions.append(pos)
+                if not ori in orientations:
+                    orientations.append(ori)
         else:
             # Mosaic image - all slices in a single image, 1 image per dynamic
             px = ds.pixel_array.astype(np.float64)
@@ -325,20 +326,20 @@ def generate_4d_array(dicom_paths):
                         px_list[(instance-1)*sq*sq+y*sq+x]=np.array(px[y*imrows:(y+1)*imrows,x*imcols:(x+1)*imcols])
             pos = ds.ImagePositionPatient
             ori = ds.ImageOrientationPatient
-            if not np.array(pos) in slice_positions:
-                slice_positions.append(np.array(pos))
-            if not np.array(ori) in orientations:
-                orientations.append(np.array(ori))
+            if not pos in slice_positions:
+                slice_positions.append(pos)
+            if not ori in orientations:
+                orientations.append(ori)
     del(ds)
 
     # Check orientations - should all be identical
-    if len(np.unique(orientations,axis=0))>1:
+    if len(np.unique(np.array(orientations),axis=0))>1:
         print("Slices not all in the same orientation - abandoning")
         return None
 
     # Calculate slice spacing
     if len(slice_positions)>1:
-        slice_spacing = np.linalg.norm(slice_positions[1]-slice_positions[2])
+        slice_spacing = np.linalg.norm(np.array(slice_positions[1])-np.array(slice_positions[2]))
     else:
         slice_spacing = 1.
 
@@ -387,7 +388,7 @@ def generate_4d_array(dicom_paths):
     #~ print dynamics,slices,rows,columns
     tfull = (np.array(range(dynamics)).astype(np.float64))*repetition_time/1000
 
-    geometry = {'position':slice_positions[0],'orientation':orientations[0],
+    geometry = {'position':np.array(slice_positions[0]),'orientation':np.array(orientations[0]),
                 'spacing':(pixel_spacing[0],pixel_spacing[1],slice_spacing)}
 
     return Im4Dfull, geometry
