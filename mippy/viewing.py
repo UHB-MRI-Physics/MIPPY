@@ -2539,13 +2539,15 @@ class MIPPYImage3DCoreg():
             ref_px.append(image.px_float)
         self.ref_px = np.array(ref_px)
 
+        # Generate 4D pixel array?
+
         # Generate 3D coordinate array
         self.ref_coords = np.zeros(np.shape(self.ref_px), dtype=(float,3))
         for z in range(np.shape(self.ref_coords)[0]):
             for y in range(np.shape(self.ref_coords)[1]):
                 for x in range(np.shape(self.ref_coords)[2]):
-                    self.ref_coords = get_voxel_location((x,y,z),*self.ref_geometry[z])
-        print(ref_coords)
+                    self.ref_coords[z,y,x] = get_voxel_location((x,y),*self.ref_geometry[z])
+        print(self.ref_coords)
 
         return
 
