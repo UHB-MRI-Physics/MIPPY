@@ -14,6 +14,8 @@ import pickle
 import os
 import datetime
 from pkg_resources import resource_filename
+import uuid
+import copy
 
 ########################################
 ########################################
@@ -434,6 +436,14 @@ class ROI():
         """
         self.coords = coords
         self.color = color
+        self.tags = []
+        for tag in tags:
+            self.tags.append(tag)
+        self.uuid = str(uuid.uuid4())
+        self.tags.append(str(self.uuid))
+        # print("Tags in ROI init",self.tags)
+        if not 'roi' in self.tags:
+            self.tags.append('roi')
         if not roi_type:
             if len(coords) == 1:
                 self.roi_type = "point"
@@ -455,9 +465,8 @@ class ROI():
             self.roi_type = roi_type
         arr_co = np.array(self.coords)
         self.bbox = (np.min(arr_co[:, 0]), np.min(arr_co[:, 1]), np.max(arr_co[:, 0]), np.max(arr_co[:, 1]))
-        if not 'roi' in tags:
-            tags.append('roi')
-        self.tags = tags
+
+        return
 
     def contains(self, point):
         """
@@ -684,6 +693,10 @@ class MIPPYCanvas(Canvas):
             self.bind('<ButtonRelease-2>', self.right_release)
             self.bind('<Double-Button-2>', self.right_double)
         self.bind('<Configure>', self.reconfigure)
+        self.bind('<Delete>',self.delete_roi)
+        self.bind('c',self.duplicate_roi_keyboard)
+        self.bind('<Shift-Delete>',self.clear_roi_keyboard)
+        self.bind('<Shift-Button-1>',self.shift_left_click)
         self.drawing_roi = False
         self.xmouse = None
         self.ymouse = None
@@ -703,6 +716,16 @@ class MIPPYCanvas(Canvas):
         self.autostats = autostats
         self.last_clicked = datetime.datetime.now()
         self.limit_loading = limit_loading
+        self.linked_rois = True
+        self.active_rois = []
+        self.roi_colors = {'default':'yellow','active':'red'}
+        self.interactive_roi_colors = False
+        self.double_to_clear = False
+
+    def enable_advanced_rois(self):
+        self.linked_rois = False
+        self.interactive_roi_colors = True
+        self.double_to_clear = True
 
     def reconfigure(self, event):
         """
@@ -1144,8 +1167,8 @@ class MIPPYCanvas(Canvas):
             return
         if not 'roi' in tags:
             tags.append('roi')
-        self.draw_roi(coords, tags=tags, color=color)
         self.add_roi(coords, tags=tags, color=color)
+        self.redraw_rois()
         return
 
     def draw_roi(self, coords, tags=[], color='yellow'):
@@ -1169,6 +1192,7 @@ class MIPPYCanvas(Canvas):
         """
         if not 'roi' in tags:
             tags.append('roi')
+        # print(tags)
 
         if not 'polygon' in tags:
             for i in range(len(coords)):
@@ -1224,7 +1248,18 @@ class MIPPYCanvas(Canvas):
         """
         self.delete('roi')
         for roi in self.roi_list:
-            self.draw_roi(roi.coords, roi.tags, color=roi.color)
+            # print("Tags at redrawing",roi.tags)
+            self.draw_roi(roi.coords, tags=roi.tags, color=roi.color)
+        return
+
+    def delete_roi(self,event):
+        """
+        Deletes the active ROI(s)
+        """
+        for roi in self.roi_list:
+            if roi in self.active_rois:
+                self.delete(roi.uuid)
+        self.roi_list = [i for i in self.roi_list if not i in self.active_rois]
         return
 
     def roi_rectangle(self, x_start, y_start, width, height, tags=[], system='canvas', color='yellow'):
@@ -1483,6 +1518,19 @@ class MIPPYCanvas(Canvas):
         self.show_image(self.active)
         return
 
+    def shift_left_click(self,event):
+        self.focus_set()
+        self.xmouse = event.x
+        self.ymouse = event.y
+        self.tempx = event.x
+        self.tempy = event.y
+        for roi in self.roi_list:
+            if roi.contains((self.xmouse, self.ymouse)):
+                roi.color = self.roi_colors['active']
+            if not roi in self.active_rois:
+                self.active_rois.append(roi)
+        self.redraw_rois()
+
     def left_click(self, event):
         """
         Check if drawing enabled, and then check if inside or outside an ROI and act accordingly.
@@ -1491,20 +1539,36 @@ class MIPPYCanvas(Canvas):
         """
         if not self.drawing_enabled:
             return
+        self.focus_set()
         self.xmouse = event.x
         self.ymouse = event.y
         self.tempx = event.x
         self.tempy = event.y
+        self.active_rois = []
         moving = False
         for roi in self.roi_list:
+            # print("UUID",roi.uuid)
+            # print("Tags",roi.tags)
+            current_color = roi.color
+            # print(current_color)
             if roi.contains((self.xmouse, self.ymouse)):
                 moving = True
-                break
+                if not self.linked_rois:
+                    if self.interactive_roi_colors:
+                        roi.color = self.roi_colors['active']
+                    self.active_rois.append(roi)
+
+            else:
+                if self.interactive_roi_colors and not self.linked_rois:
+                    roi.color = self.roi_colors['default']
+        self.redraw_rois()
+
         if not moving:
             self.drawing_roi = True
             # Need to add stuff to detect if "shift" or "ctrl" held when drawing, as
             # in this case, don't want to delete existing ROIs
-            self.delete_rois()
+            if not self.double_to_clear:
+                self.delete_rois()
             self.temp = []
             self.tempcoords.append((self.xmouse, self.ymouse))
 
@@ -1514,81 +1578,109 @@ class MIPPYCanvas(Canvas):
 
         This will need editing in order to handle ROIs individually.
         """
+
         if not self.drawing_enabled:
             return
         xmove = event.x - self.tempx
         ymove = event.y - self.tempy
         if self.drawing_roi:
+            if self.interactive_roi_colors:
+                roi_color = self.roi_colors['active']
+            else:
+                roi_color='yellow'
             if self.roi_mode == 'rectangle' or self.roi_mode == 'ellipse':
-                self.delete('roi')
+                self.delete('roi_drawing')
             if self.roi_mode == 'rectangle':
-                self.create_rectangle((self.xmouse, self.ymouse, event.x, event.y), fill='', outline='yellow',
-                                      tags='roi')
+                self.create_rectangle((self.xmouse, self.ymouse, event.x, event.y), fill='', outline=roi_color,
+                                      tags='roi_drawing')
             elif self.roi_mode == 'ellipse':
-                self.create_oval((self.xmouse, self.ymouse, event.x, event.y), fill='', outline='yellow', tags='roi')
+                self.create_oval((self.xmouse, self.ymouse, event.x, event.y), fill='', outline=roi_color, tags='roi_drawing')
             elif self.roi_mode == 'freehand':
-                self.create_line((self.tempx, self.tempy, event.x, event.y), fill='yellow', width=1, tags='roi')
+                self.create_line((self.tempx, self.tempy, event.x, event.y), fill=roi_color, width=1, tags='roi_drawing')
                 self.tempcoords.append((event.x, event.y))
             elif self.roi_mode == 'line':
-                self.delete('roi')
-                self.create_line((self.xmouse, self.ymouse, event.x, event.y), fill='yellow', width=1, tags='roi')
+                self.delete('roi_drawing')
+                self.create_line((self.xmouse, self.ymouse, event.x, event.y), fill=roi_color, width=1, tags='roi_drawing')
 
         else:
-            self.move('roi', xmove, ymove)
+            if len(self.active_rois)>0:
+                # print(datetime.datetime.now(), len(self.active_rois))
+                for roi in self.active_rois:
+                    # print(roi.uuid)
+                    # print(self.find_withtag(roi.uuid))
+                    self.move(roi.uuid, xmove, ymove)
+            else:
+                self.move('roi', xmove, ymove)
 
         self.tempx = event.x
         self.tempy = event.y
 
     def left_release(self, event):
         """
-        Stop drawing ROIs and create the ROI objects. Also creates a bounding box for the ROI.
+        Stop drawing ROIs and create the ROI objects.
         """
         if not self.drawing_enabled:
             return
         self.last_clicked = datetime.datetime.now()
         if self.drawing_roi:
-            self.roi_list = []
+            if not self.double_to_clear:
+                self.roi_list = []
+            if self.interactive_roi_colors:
+                roi_color = self.roi_colors['active']
+            else:
+                roi_color='yellow'
             if self.roi_mode == 'rectangle':
                 self.add_roi(
-                    [(self.xmouse, self.ymouse), (event.x, self.ymouse), (event.x, event.y), (self.xmouse, event.y)])
+                    [(self.xmouse, self.ymouse), (event.x, self.ymouse), (event.x, event.y), (self.xmouse, event.y)],color=roi_color)
+                # self.draw_roi([(self.xmouse, self.ymouse), (event.x, self.ymouse), (event.x, event.y), (self.xmouse, event.y)],color=roi_color)
             elif self.roi_mode == 'ellipse':
                 positive_coords = []
                 negative_coords = []
                 # http://mathworld.wolfram.com/Ellipse-LineIntersection.html
                 # get points in circle by incrementally adding rays from centre
                 # and getting intersections with ellipse
-                bbox = self.bbox('roi')
+                bbox = self.bbox('roi_drawing')
                 a = (bbox[2] - bbox[0]) / 2
                 b = (bbox[3] - bbox[1]) / 2
                 c = (bbox[0] + a, bbox[1] + b)
-                self.add_roi(get_ellipse_coords(c, a, b, n=2 * max([a, b])))
-                coords = self.roi_list[0].coords
+                self.add_roi(get_ellipse_coords(c, a, b, n=2 * max([a, b])),color=roi_color)
+                # self.draw_roi(get_ellipse_coords(c, a, b, n=2 * max([a, b])),color=roi_color)
+                # coords = self.roi_list[-1].coords
             elif self.roi_mode == 'line':
-                self.add_roi([(self.xmouse, self.ymouse), (event.x, event.y)])
+                self.add_roi([(self.xmouse, self.ymouse), (event.x, event.y)],color=roi_color)
             else:
                 # Freehand
-                self.create_line((self.tempx, self.tempy, self.xmouse, self.ymouse), fill='yellow', width=1, tags='roi')
+                self.create_line((self.tempx, self.tempy, self.xmouse, self.ymouse), fill=roi_color, width=1, tags='roi_drawing')
                 if len(self.tempcoords) > 1:
-                    self.add_roi(self.tempcoords)
+                    self.add_roi(self.tempcoords,color=roi_color)
+                    # self.draw_roi(self.tempcoords,color=roi_color)
+                    self.delete('roi_drawing')
                 else:
-                    self.delete('roi')
+                    self.delete('roi_drawing')
             self.drawing_roi = False
         else:
             total_xmove = event.x - self.xmouse
             total_ymove = event.y - self.ymouse
             if len(self.roi_list) > 0:
                 for roi in self.roi_list:
-                    roi.update(total_xmove, total_ymove)
-                    if self.use_masks:
-                        self.update_roi_masks()
+                    if len(self.active_rois)>0:
+                        if roi in self.active_rois:
+                            roi.update(total_xmove,total_ymove)
+                    else:
+                        roi.update(total_xmove, total_ymove)
+                if self.use_masks:
+                    self.update_roi_masks()
         if self.autostats == True:
             print(self.get_roi_statistics())
         self.tempcoords = []
         self.tempx = None
         self.tempy = None
+        self.delete('roi_drawing')
+        self.redraw_rois()
 
     def left_double(self, event):
-        pass
+        if self.double_to_clear:
+            self.delete_rois()
 
     def right_click(self, event):
         """
@@ -1633,6 +1725,14 @@ class MIPPYCanvas(Canvas):
         if abs(self.xmouse - event.x) < 1 and abs(self.ymouse - event.y) < 1:
             return
         self.set_window_level(self.temp_window, self.temp_level)
+
+    def delete_last_roi(self):
+        """
+        Removed the last ROI created
+        """
+        self.roi_list.pop(-1)
+        self.roi_list_2d[self.active-1] = self.roi_list
+        return
 
     def set_window_level(self, window, level):
         """
@@ -1690,12 +1790,30 @@ class MIPPYCanvas(Canvas):
         if not 'roi' in tags:
             tags.append('roi')
         self.roi_list.append(ROI(coords, tags, roi_type, color=color))
-        bbox = self.roi_list[-1].bbox
+        bbox = self.bbox('roi')
         # DEBUGGING: This line was to draw location of bounding box
         # self.create_rectangle((bbox[0],bbox[1],bbox[2],bbox[3]),outline='cyan',tags='roi')
         self.roi_list_2d[self.active - 1] = self.roi_list
         if self.use_masks:
             self.update_roi_masks()
+        return
+
+    def clear_roi_keyboard(self,event):
+        self.delete_rois()
+        return
+
+    def duplicate_roi_keyboard(self,event):
+        self.duplicate_roi()
+        return
+
+    def duplicate_roi(self):
+        for roi in self.roi_list:
+            if roi in self.active_rois:
+                offset_coords = []
+                for coord in roi.coords:
+                    offset_coords.append((coord[0]+10,coord[1]+10))
+                self.add_roi(offset_coords)
+        self.redraw_rois()
         return
 
     def delete_rois(self):

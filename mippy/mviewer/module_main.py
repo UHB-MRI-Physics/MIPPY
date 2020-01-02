@@ -39,7 +39,7 @@ def execute(master_window,instance_info,images):
         # This is to fix backwards compatibility for anywhere the old dicomdir object
         # was used
         dicomdir = instance_info['image_directory']
-    
+
         window = Toplevel(master_window)
         window.instance_info = instance_info
         window.title("{} {}: {}".format(window.instance_info['module_name'],window.instance_info['mippy_version'],window.instance_info['module_instance']))
@@ -49,6 +49,7 @@ def execute(master_window,instance_info,images):
         else:
                 canvas_size=512
         window.imcanvas = MIPPYCanvas(window,bd=0,width=canvas_size,height=canvas_size,drawing_enabled=True)
+        window.imcanvas.enable_advanced_rois()
         # Open icons for button
         sq_im = resource_filename('mippy','resources/square_roi.png')
         el_im = resource_filename('mippy','resources/ellipse_roi.png')
@@ -98,7 +99,7 @@ def execute(master_window,instance_info,images):
         window.zoomoutbutton.grid(row=8,column=0,sticky='nsew')
 
         window.imcanvas.load_images(images)
-        
+
         window.rowconfigure(0,weight=1)
         window.columnconfigure(0,weight=1)
 
