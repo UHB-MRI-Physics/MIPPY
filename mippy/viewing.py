@@ -694,9 +694,11 @@ class MIPPYCanvas(Canvas):
             self.bind('<Double-Button-2>', self.right_double)
         self.bind('<Configure>', self.reconfigure)
         self.bind('<Delete>',self.delete_roi)
-        self.bind('c',self.duplicate_roi_keyboard)
+        self.bind('<Control-KeyPress-c>',self.duplicate_roi_keyboard)
         self.bind('<Shift-Delete>',self.clear_roi_keyboard)
         self.bind('<Shift-Button-1>',self.shift_left_click)
+        self.bind('<Control-KeyPress-z>',self.undo_draw)
+        self.bind('<Control-Shift-KeyPress-Z>',self.redo_draw)
         self.drawing_roi = False
         self.xmouse = None
         self.ymouse = None
@@ -721,6 +723,7 @@ class MIPPYCanvas(Canvas):
         self.roi_colors = {'default':'yellow','active':'red'}
         self.interactive_roi_colors = False
         self.double_to_clear = False
+        self.roi_recycle = []
 
     def enable_advanced_rois(self):
         self.linked_rois = False
@@ -1256,10 +1259,13 @@ class MIPPYCanvas(Canvas):
         """
         Deletes the active ROI(s)
         """
-        for roi in self.roi_list:
-            if roi in self.active_rois:
-                self.delete(roi.uuid)
+        for roi in self.active_rois:
+            self.delete(roi.uuid)
+            self.roi_recycle.append(roi)
+        while len(self.roi_recycle)>10:
+            self.roi_recycle.pop(0)
         self.roi_list = [i for i in self.roi_list if not i in self.active_rois]
+        self.active_rois = []
         return
 
     def roi_rectangle(self, x_start, y_start, width, height, tags=[], system='canvas', color='yellow'):
@@ -1527,8 +1533,8 @@ class MIPPYCanvas(Canvas):
         for roi in self.roi_list:
             if roi.contains((self.xmouse, self.ymouse)):
                 roi.color = self.roi_colors['active']
-            if not roi in self.active_rois:
-                self.active_rois.append(roi)
+                if not roi in self.active_rois:
+                    self.active_rois.append(roi)
         self.redraw_rois()
 
     def left_click(self, event):
@@ -1556,7 +1562,8 @@ class MIPPYCanvas(Canvas):
                 if not self.linked_rois:
                     if self.interactive_roi_colors:
                         roi.color = self.roi_colors['active']
-                    self.active_rois.append(roi)
+                    if not roi in self.active_rois:
+                        self.active_rois.append(roi)
 
             else:
                 if self.interactive_roi_colors and not self.linked_rois:
@@ -1603,7 +1610,7 @@ class MIPPYCanvas(Canvas):
                 self.create_line((self.xmouse, self.ymouse, event.x, event.y), fill=roi_color, width=1, tags='roi_drawing')
 
         else:
-            if len(self.active_rois)>0:
+            if not self.linked_rois:
                 # print(datetime.datetime.now(), len(self.active_rois))
                 for roi in self.active_rois:
                     # print(roi.uuid)
@@ -1726,12 +1733,33 @@ class MIPPYCanvas(Canvas):
             return
         self.set_window_level(self.temp_window, self.temp_level)
 
+    def undo_draw(self,event):
+        self.delete_last_roi()
+
+    def redo_draw(self,event):
+        self.restore_last_roi()
+
+    def restore_last_roi(self):
+        """
+        Restore the last ROI deleted with undo
+        """
+        if len(self.roi_recycle)>0:
+            self.roi_list.append(self.roi_recycle[-1])
+            self.roi_recycle.pop(-1)
+            self.redraw_rois()
+        return
+
     def delete_last_roi(self):
         """
-        Removed the last ROI created
+        Remove the last ROI created
         """
-        self.roi_list.pop(-1)
-        self.roi_list_2d[self.active-1] = self.roi_list
+        if len(self.roi_list)>0:
+            self.roi_recycle.append(self.roi_list[-1])
+            while len(self.roi_recycle)>10:
+                self.roi_recycle.pop(0)
+            self.roi_list.pop(-1)
+            self.roi_list_2d[self.active-1] = self.roi_list
+            self.redraw_rois()
         return
 
     def set_window_level(self, window, level):
