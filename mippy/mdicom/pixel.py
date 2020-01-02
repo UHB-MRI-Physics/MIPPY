@@ -142,6 +142,9 @@ def get_voxel_location(coords,slice_location,slice_orientation,pxspc_x,pxspc_y,s
         if len(coords)>2:
                 coord_arr = np.array([coords[0],coords[1],coords[2],1.])
                 #~ q2 = np.cross(q[0:3],q[3:6])
+                if len(q)==6:
+                        q2 = np.cross(q[0:3],q[3:6])
+                        q = np.concatenate((q,q2))
                 z = slcspc
                 trans_arr = np.array([        [        q[0]*x, q[3]*y, q[6]*z, p[0]        ],
                                                         [        q[1]*x, q[4]*y, q[7]*z, p[1]        ],
@@ -393,16 +396,40 @@ def generate_4d_array(dicom_paths):
 
     return Im4Dfull, geometry
 
-    #~ np.savetxt(os.path.join(outdir,"Im4D.txt"),Im4Dfull)
+def get_coordinate_array(shape,geometry):
+    """
+    Returns a 3D array the same shape as an image volume containing (x,y,z) coordinate
+    tuples representing the 3D location in patient space of each voxel location.
 
-    #~ Im4Dfull.dump(tempdatafile)
-    #~ tfull.dump(temptimefile)
+    Parameters
+    -------------------
+    shape: tuple
+        A tuple representing the shape of the array, usually obtained using `numpy.shape()`
+    geometry: dict
+        A dictionary of the imaging volume geometry, as returned by generate_4d_array. Must contain
+        the keys `'position'` (numpy array), `'orientation'` (numpy array) and `'spacing'` (3-tuple of
+        x,y,z voxel spacing).
 
-# Load pixel data to canvas
-# Load average across all timepoints for each slice
-# Attempting this in a one-liner using list comprehension and an averaging along first axis
-# im1.load_images([imslice for imslice in np.mean(Im4Dfull,axis=0)])
-# print('Average for all dynamics displayed on canvas')
+
+    """
+
+    coords = np.zeros(shape,dtype=(float,3))
+
+    xvec = geometry['spacing'][0]*geometry['orientation'][0:3]
+    yvec = geometry['spacing'][1]*geometry['orientation'][3:6]
+    zvec = geometry['spacing'][2]*np.cross(geometry['orientation'][0:3],geometry['orientation'][3:6])
+
+    origin = get_voxel_location((0,0,0),geometry['position'],geometry['orientation'],*geometry['spacing'])
+
+    for z in range(shape[0]):
+        for y in range(shape[1]):
+            for x in range(shape[2]):
+                coords[z,y,x] = origin + x*xvec + y*yvec + z*zvec
+
+
+    return coords
+
+
 
 # TEST FUNCTION, ONLY RUNS IF FILE IS CALLED DIRECTLY
 if __name__ == '__main__':
