@@ -2209,6 +2209,12 @@ class MIPPYImage():
             self.ss = float(ds[0x2005, 0x100E].value)
         except:
             self.ss = None
+
+        # Attempt at bugfixing - Philips image scaling throwing off ADC values...
+        # Comment this out if you need ss to be included in the pixel value calculation again
+        # Added in version 2.9.2
+        self.ss = None
+
         self.rows = ds.Rows
         self.columns = ds.Columns
         self.px_float = generate_px_float(pixels, self.rs, self.ri, self.ss,self.pad_zero)

@@ -100,6 +100,9 @@ def execute(master_window,instance_info,images):
 
         window.imcanvas.load_images(images)
 
+        for im in window.imcanvas.images:
+            print("RS: {}; RI: {}; SS: {}".format(im.rs, im.ri, im.ss))
+
         window.rowconfigure(0,weight=1)
         window.columnconfigure(0,weight=1)
 
