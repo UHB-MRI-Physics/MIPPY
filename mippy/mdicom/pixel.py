@@ -421,6 +421,14 @@ def get_coordinate_array(shape,geometry):
 
     origin = get_voxel_location((0,0,0),geometry['position'],geometry['orientation'],*geometry['spacing'])
 
+    # indices = np.indices(shape)
+    # print("indices shape",np.shape(indices))
+    # offsets = (zvec*indices[0].flatten() + yvec*indices[1].flatten() + xvec*indices[2].flatten()).reshape(3,shape)
+    #
+    # coords = coords+origin+offsets
+    #
+    # print(coords)
+
     for z in range(shape[0]):
         for y in range(shape[1]):
             for x in range(shape[2]):
