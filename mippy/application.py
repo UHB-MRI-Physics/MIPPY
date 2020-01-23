@@ -34,6 +34,7 @@ import stat
 import pydicom
 import gc
 import requests
+import csv
 #~ from multiprocessing import freeze_support
 #~ print "Imports finished!"
 
@@ -124,6 +125,16 @@ class MIPPYMain(Frame):
 
         self.user = getpass.getuser()
 
+        # Collect proxy information for requests
+        self.proxy_list = []
+        if os.path.exists('proxies.csv'):
+            with open('proxies.csv','r') as proxy_csv:
+                reader = csv.DictReader(proxy_csv)
+                for row in reader:
+                    self.proxy_list.append(dict(row))
+            print(self.proxy_list)
+
+
         # Check if frozen:
         import sys
         if getattr(sys, 'frozen', False):
@@ -136,6 +147,8 @@ class MIPPYMain(Frame):
             self.multiprocess = True
         else:
             self.multiprocess = False
+
+        print("Multiprocessing is {}".format(self.multiprocess))
 
 
         import pkg_resources
@@ -716,9 +729,45 @@ class MIPPYMain(Frame):
                                 # print(pkg_info['Name'],pkg_info['Version'])
                                 # Try to check for newer version of the module
                                 try:
+                                    # print(pkg_info)
                                     # print('URL: {}'.format(pkg_info['Home-page']))
                                     if 'api.bintray.com' in pkg_info['Home-page']:
-                                        r = requests.get(pkg_info['Home-page'])
+                                        # Check if proxy required, and if proxy requires authentication
+                                        proxies = None
+                                        if len(self.proxy_list)>0:
+                                            auth_required = False
+                                            for proxy in self.proxy_list:
+                                                if proxy['auth_required']:
+                                                    auth_required = True
+                                            # If auth required, collect user/password
+                                            from easygui import multpasswordbox
+                                            fieldNames = ['Username','Password']
+                                            title = 'Proxy authentication required'
+                                            fieldValues = [self.user.lower(),'']
+                                            message = ('Please enter your username and password for the proxy server to check for '
+                                                        'updates to {}'.format(pkg_info['Name']))
+                                            fieldValues = multpasswordbox(message,title,fieldNames, fieldValues)
+
+                                            # make sure that none of the fields was left blank
+                                            while 1:
+                                                if fieldValues == None: break
+                                                errmsg = ""
+                                                for i in range(len(fieldNames)):
+                                                    if fieldValues[i].strip() == "":
+                                                        errmsg = errmsg + ('"%s" is a required field.\n\n' % fieldNames[i])
+                                                if errmsg == "": break # no problems found
+                                                fieldValues = multpasswordbox(errmsg, title, fieldNames, fieldValues)
+                                            if not fieldValues is None:
+                                                proxies = {}
+                                                for proxy in self.proxy_list:
+                                                    proxy_info = '{}://{}:{}@{}:{}'.format(     proxy['protocol'],
+                                                                                                fieldValues[0],
+                                                                                                fieldValues[1],
+                                                                                                proxy['address'],
+                                                                                                proxy['port'])
+                                                    print(proxy_info)
+                                                    proxies[proxy['protocol']]=proxy_info
+                                        r = requests.get(pkg_info['Home-page'],proxies=proxies)
                                         print(r.json())
                                         latest_version = r.json()['latest_version']
                                         remote_pkg_name = r.json()['name']
@@ -729,13 +778,13 @@ class MIPPYMain(Frame):
                                                                 message="A newer version of {} is available. Download?".format(remote_pkg_name))
                                             if download==True:
                                                 # Get file info for latest version
-                                                r = requests.get(pkg_info['Home-page']+'/versions/'+latest_version+'/files')
+                                                r = requests.get(pkg_info['Home-page']+'/versions/'+latest_version+'/files',proxies=proxies)
                                                 r_owner=r.json()[0]['owner']
                                                 r_repo=r.json()[0]['repo']
                                                 r_path=r.json()[0]['path']
                                                 r_url = 'https://dl.bintray.com/'+r_owner+'/'+r_repo+'/'+r_path
                                                 print(r_url)
-                                                r_file = r = requests.get(r_url)
+                                                r_file = r = requests.get(r_url,proxies=proxies)
                                                 # Write r_file.content (a byte stream) to the modules folder and move current folder to backups??
                                                 print(r_file)
                                                 with open(os.path.join(self.moduledir,r_path),'wb') as r_outfile:

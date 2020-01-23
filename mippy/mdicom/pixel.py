@@ -146,13 +146,13 @@ def get_voxel_location(coords,slice_location,slice_orientation,pxspc_x,pxspc_y,s
                         q2 = np.cross(q[0:3],q[3:6])
                         q = np.concatenate((q,q2))
                 z = slcspc
-                trans_arr = np.array([        [        q[0]*x, q[3]*y, q[6]*z, p[0]        ],
+                trans_arr = np.array([                  [        q[0]*x, q[3]*y, q[6]*z, p[0]        ],
                                                         [        q[1]*x, q[4]*y, q[7]*z, p[1]        ],
                                                         [        q[2]*x, q[5]*y, q[8]*z, p[2]        ],
                                                         [        0., 0., 0., 1.                                ]])
         else:
                 coord_arr = np.array([coords[0],coords[1],0.,1.])
-                trans_arr = np.array([        [        q[0]*x, q[3]*y, 0., p[0]        ],
+                trans_arr = np.array([                  [        q[0]*x, q[3]*y, 0., p[0]        ],
                                                         [        q[1]*x, q[4]*y, 0., p[1]        ],
                                                         [        q[2]*x, q[5]*y, 0., p[2]        ],
                                                         [        0., 0., 0., 1.                        ]])
@@ -172,13 +172,13 @@ def get_img_coords(coords,slice_location,slice_orientation,pxspc_x,pxspc_y,slcsp
                         q2 = np.cross(q[0:3],q[3:6])
                         q = np.concatenate((q,q2))
                 z = slcspc
-                trans_arr = np.array([        [        q[0]*x, q[3]*y, q[6]*z, p[0]        ],
+                trans_arr = np.array([                  [        q[0]*x, q[3]*y, q[6]*z, p[0]        ],
                                                         [        q[1]*x, q[4]*y, q[7]*z, p[1]        ],
                                                         [        q[2]*x, q[5]*y, q[8]*z, p[2]        ],
                                                         [        0., 0., 0., 1.                                ]])
         else:
                 coord_arr = np.array([coords[0],coords[1],0.,1.])
-                trans_arr = np.array([        [        q[0]*x, q[3]*y, 0., p[0]        ],
+                trans_arr = np.array([                  [        q[0]*x, q[3]*y, 0., p[0]        ],
                                                         [        q[1]*x, q[4]*y, 0., p[1]        ],
                                                         [        q[2]*x, q[5]*y, 0., p[2]        ],
                                                         [        0., 0., 0., 1.                        ]])
@@ -188,7 +188,7 @@ def get_img_coords(coords,slice_location,slice_orientation,pxspc_x,pxspc_y,slcsp
                 i = (coords[0]-p[0])/x
                 j = (coords[1]-p[1])/y
                 if len(coords)>2:
-                        k = (coords[2]-p[3])/z
+                        k = (coords[2]-p[2])/z
                 else:
                         k=0.
                 return tuple([i,j,k])
@@ -430,6 +430,7 @@ def get_coordinate_array(shape,geometry):
     # print(coords)
 
     for z in range(shape[0]):
+        print("  Slice {} of {}".format(z+1,shape[0]))
         for y in range(shape[1]):
             for x in range(shape[2]):
                 coords[z,y,x] = origin + x*xvec + y*yvec + z*zvec
