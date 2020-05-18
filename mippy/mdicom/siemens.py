@@ -7,11 +7,17 @@ def get_ascii_header(ds):
         Uses nibabel's "nicom" module to extract CSA data
         """
         csa = csar.get_csa_header(ds,'series')
-        try:
-                csa_header = csa['tags']['MrPhoenixProtocol']['items'][0]
-        except TypeError:
+        if not csa is None:
+            try:
+                    csa_header = csa['tags']['MrPhoenixProtocol']['items'][0]
+            except TypeError:
                 csa_header = csa['tags']['MrProtocol']['items'][0]
-        
+
+        if csa is None:
+            # Fall back to returning direct text read of file
+            # This will probably be horrendously slow...
+            with open(ds.filename,'r',errors='replace') as original_file:
+                csa_header = original_file.read()
         return csa_header
 
 def get_ascconv(ds):

@@ -340,7 +340,9 @@ def compare_dicom(ds1,ds2,diffs=None,num=None,name=''):
                                 'WINDOW',
                                 'CSA',                # Still don't really know what CSA is
                                 'PIXEL DATA',
-                                'PADDING']
+                                'PADDING',
+                                'PHOENIX',
+                                'PRIVATE TAG DATA']
         for element in ds1:
                 if any(s in element.name.upper() for s in exclude_list):
                         continue
@@ -348,7 +350,7 @@ def compare_dicom(ds1,ds2,diffs=None,num=None,name=''):
                 try:
                         val2 = ds2[element.tag].value
                 except:
-                        diffs.append((name+str(element.name)+num,str(val1),'--MISSING--'))
+                        diffs.append((name+str(element.name)+num+' '+str(element.tag.group).zfill(4)+','+str(element.tag.element).zfill(4),str(val1),'--MISSING--'))
                         continue
                 if element.VR=="SQ":
                         for i in range(len(val1)):
@@ -356,13 +358,13 @@ def compare_dicom(ds1,ds2,diffs=None,num=None,name=''):
                         continue
                 if not val1==val2:
                         if not any(s in element.name.upper() for s in exclude_list):
-                                diffs.append((name+str(element.name)+num,str(val1),str(val2)))
+                                diffs.append((name+str(element.name)+num+' '+str(element.tag.group).zfill(4)+','+str(element.tag.element).zfill(4),str(val1),str(val2)))
         for element in ds2:
                 val2 = element.value
                 try:
                         val1 = ds1[element.tag].value
                 except:
-                        diffs.append((name+str(element.name)+num,'--MISSING--',str(val2)))
+                        diffs.append((name+str(element.name)+num+' '+str(element.tag.group).zfill(4)+','+str(element.tag.element).zfill(4),'--MISSING--',str(val2)))
                         continue
 
         return diffs
