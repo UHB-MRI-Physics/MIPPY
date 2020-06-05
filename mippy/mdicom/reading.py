@@ -242,6 +242,10 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
                                 series_uid = original_series_uid+'_'+recon
                                 seriesdesc = recon+': '+original_series_desc
 
+                        if enhanced:
+                            series_uid += '_E'
+                            seriesdesc = '[E] '+seriesdesc
+
 
                         """
                         Disabled to test Python's built-in JPEG module
