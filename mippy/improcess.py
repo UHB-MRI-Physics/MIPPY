@@ -10,7 +10,7 @@ def find_object_geometry_edges(image,subpixel=True):
         xmin,xmax,ymin,ymax,xc,yc = get_bounding_box(edges)
         return xc,yc,(xmax-xmin)/2,(ymax-ymin)/2
 
-def find_object_geometry(image,subpixel=True,search_region=None):
+def find_object_geometry(image,subpixel=True,search_region=None,threshold=None,initial_guess='square'):
         """
         Takes a MIPPY image and finds the best fit of an ellipse or rectangle to the
         object in the image.
@@ -18,6 +18,10 @@ def find_object_geometry(image,subpixel=True,search_region=None):
         Returns the centre, shape type and X/Y radius/half length.
 
         Allows you to specify a particular region of the image to search.
+
+        Options for initial fit are 'square' and 'fit_image'. Square assumes the
+        object has equal-ish x and y dimensions. fit_image assumes the image is
+        roughly shaped to the phantom.
         """
         if search_region is None:
             px = image.px_float
@@ -32,14 +36,24 @@ def find_object_geometry(image,subpixel=True,search_region=None):
         shape_px = np.shape(px)
         px_binary = np.zeros(shape_px).astype(np.float64)
         # Make binary
-        threshold = 0.1*np.mean(px[np.where(px>np.percentile(px,75))])
+        if threshold is None:
+            threshold = 0.1*np.mean(px[np.where(px>np.percentile(px,85))])
+        else:
+            threshold = threshold*np.mean(px[np.where(px>np.percentile(px,85))])
+
         px_binary[np.where(px>threshold)] = 1.
         #~ np.savetxt(r"K:\binarypx.txt",px_binary)
         xc=float(shape_px[1]/2)
         yc=float(shape_px[0]/2)
         xr=float(shape_px[1]/3)
         yr=float(shape_px[0]/3)
-        xr=yr=np.min([xr,yr])
+        if initial_guess=='square':
+            xr=yr=np.min([xr,yr])
+        # else initial_guess=fit_image and do nothing
+        elif initial_guess!='fit_image':
+            # Inappropriate selection of initial shape
+            print("initial_guess {} not understood. Please use 'square' or 'fit_image'")
+            return None
         print("Starting values: {},{},{},{}".format(xc,yc,xr,yr))
         print("Fitting ellipse")
         best_ellipse = minimize(object_fit_ellipse,(xc,yc,xr,yr),args=(px_binary),method='Nelder-Mead',options={'maxiter':30})
