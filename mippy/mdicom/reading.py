@@ -360,7 +360,7 @@ def compare_dicom(ds1,ds2,diffs=None,num=None,name=''):
                         for i in range(len(val1)):
                                 compare_dicom(val1[i],val2[i],diffs=diffs,num=i,name=str(element.name)+' >> ')
                         continue
-                if not val1==val2:
+                elif not val1==val2:
                         if not any(s in element.name.upper() for s in exclude_list):
                                 diffs.append((name+str(element.name)+num+' '+str(element.tag.group).zfill(4)+','+str(element.tag.element).zfill(4),str(val1),str(val2)))
         for element in ds2:
