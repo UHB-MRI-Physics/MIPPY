@@ -940,7 +940,15 @@ class MIPPYMain(Frame):
             #~ testing=''
         #~ info = 'Version '+version+'\n'+testing
         from subprocess import Popen,PIPE,check_output
-        output = check_output(['pip','show','mippy'])
+        try:
+            output = check_output(['pip','show','mippy'])
+        except FileNotFoundError:
+            try:
+                output = check_output(['pip3','show','mippy'])
+            except:
+                raise
+        except:
+            raise
         info = output
         tkinter.messagebox.showinfo("MIPPY: Version info",info)
         return
