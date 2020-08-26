@@ -674,7 +674,7 @@ class MIPPYMain(Frame):
         self.scan_modules_directory()
         return
 
-    def scan_modules_directory(self):
+    def scan_modules_directory(self,skip_update=False):
         # Remove old module eggs from sys.path
         # try:
         #     to_remove = []
@@ -731,7 +731,7 @@ class MIPPYMain(Frame):
                                 try:
                                     # print(pkg_info)
                                     # print('URL: {}'.format(pkg_info['Home-page']))
-                                    if 'api.bintray.com' in pkg_info['Home-page']:
+                                    if 'api.bintray.com' in pkg_info['Home-page'] and not skip_update:
                                         # Check if proxy required, and if proxy requires authentication
                                         proxies = None
                                         if len(self.proxy_list)>0:
@@ -898,7 +898,7 @@ class MIPPYMain(Frame):
                 os.makedirs(os.path.join(self.moduledir,'prev_versions'))
             for mod in modules_to_backup:
                 os.rename(mod,os.path.join(self.moduledir,'prev_versions',os.path.split(mod)[1]))
-            self.scan_modules_directory()
+            self.scan_modules_directory(skip_update=True)
 
         #~ self.master.progress = 50.
 
