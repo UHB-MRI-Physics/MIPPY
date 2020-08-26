@@ -54,8 +54,7 @@ def get_frame_ds(frame,ds):
     print("Extracting frame {} of {}".format(frame,n_frames))
 
     file_meta = ds.file_meta
-    filename = 'temp'
-    suffix = '.dcm'
+    filename = ds.filename
 
 
     ds_new = pydicom.dataset.FileDataset(filename,{},file_meta=file_meta,preamble=b"\0"*128)

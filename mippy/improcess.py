@@ -10,24 +10,51 @@ def find_object_geometry_edges(image,subpixel=True):
         xmin,xmax,ymin,ymax,xc,yc = get_bounding_box(edges)
         return xc,yc,(xmax-xmin)/2,(ymax-ymin)/2
 
-def find_object_geometry(image,subpixel=True):
+def find_object_geometry(image,subpixel=True,search_region=None,threshold=None,initial_guess='square'):
         """
         Takes a MIPPY image and finds the best fit of an ellipse or rectangle to the
         object in the image.
-        
+
         Returns the centre, shape type and X/Y radius/half length.
+
+        Allows you to specify a particular region of the image to search.
+
+        Options for initial fit are 'square' and 'fit_image'. Square assumes the
+        object has equal-ish x and y dimensions. fit_image assumes the image is
+        roughly shaped to the phantom.
         """
-        px = image.px_float
+        if search_region is None:
+            px = image.px_float
+            offset = (0,0)
+        else:
+            start_y = search_region[0][0]
+            start_x = search_region[0][1]
+            end_y = search_region[1][0]
+            end_x = search_region[1][1]
+            px = image.px_float[start_y:end_y,start_x:end_x]
+            offset = (start_x,start_y)
         shape_px = np.shape(px)
         px_binary = np.zeros(shape_px).astype(np.float64)
         # Make binary
-        threshold = 0.1*np.mean(px[np.where(px>np.percentile(px,75))])
+        if threshold is None:
+            threshold = 0.1*np.mean(px[np.where(px>np.percentile(px,85))])
+        else:
+            threshold = threshold*np.mean(px[np.where(px>np.percentile(px,85))])
+
         px_binary[np.where(px>threshold)] = 1.
         #~ np.savetxt(r"K:\binarypx.txt",px_binary)
         xc=float(shape_px[1]/2)
         yc=float(shape_px[0]/2)
         xr=float(shape_px[1]/3)
         yr=float(shape_px[0]/3)
+        if initial_guess=='square':
+            xr=yr=np.min([xr,yr])
+        # else initial_guess=fit_image and do nothing
+        elif initial_guess!='fit_image':
+            # Inappropriate selection of initial shape
+            print("initial_guess {} not understood. Please use 'square' or 'fit_image'")
+            return None
+        print("Starting values: {},{},{},{}".format(xc,yc,xr,yr))
         print("Fitting ellipse")
         best_ellipse = minimize(object_fit_ellipse,(xc,yc,xr,yr),args=(px_binary),method='Nelder-Mead',options={'maxiter':30})
         #~ best_ellipse = minimize(object_fit_ellipse,(xc,yc,xr,yr),args=(px_binary),options={'maxiter':10})
@@ -36,13 +63,13 @@ def find_object_geometry(image,subpixel=True):
         best_rectangle = minimize(object_fit_rectangle,(xc,yc,xr,yr),args=(px_binary),method='Nelder-Mead',options={'maxiter':30})
         #~ best_rectangle = minimize(object_fit_rectangle,(xc,yc,xr,yr),args=(px_binary),options={'maxiter':10})
         #~ print best_rectangle.success
-        
+
         ellipse_val = best_ellipse.fun
         rectangle_val = best_rectangle.fun
-        
+
         #~ print ellipse_val
         #~ print rectangle_val
-        
+
         if ellipse_val < rectangle_val:
                 result = best_ellipse.x
                 shapetype='ellipse'
@@ -51,19 +78,18 @@ def find_object_geometry(image,subpixel=True):
                 shapetype='rectangle'
         else:
                 print("Something went wrong")
-        
+
         print(result,shapetype)
-        
-        
+
+
         # Return xc,yc,xr,yr,shapetype
-        if subpixel:
-                return (result[0],result[1],result[2],result[3],shapetype)
-        else:
+        if not subpixel:
                 result[0] = int(np.round(result[0],0))
                 result[1] = int(np.round(result[1],0))
                 result[2] = int(np.round(result[2],0))
                 result[3] = int(np.round(result[3],0))
-                return (result[0],result[1],result[2],result[3],shapetype)
+
+        return (result[0]+offset[0],result[1]+offset[1],result[2],result[3],shapetype)
 
 def object_fit_ellipse(geo,px_binary):
         """
@@ -167,25 +193,25 @@ def edge_detect_2d(im,blur=5,highThreshold=91,lowThreshold=31,ignore_edges=8):
         pixel values back for the edge-filtered image.
         Based on rosettacode.org/wiki/Canny_edge_detector#Python
         """
-        
+
         if ignore_edges>0:
                 im[0:ignore_edges,:]=0
                 im[-ignore_edges:0,:]=0
                 im[:,0:ignore_edges]=0
                 im[:,-ignore_edges:0]=0
-        
+
         # Gaussian blur to remove noise
         im2 = gaussian_filter(im,blur)
-        
+
         # Use sobel filters to get horizontal and vertical gradients
         im3h = convolve(im2,[[-1,0,1],[-2,0,2],[-1,0,1]])
         im3v = convolve(im2,[[1,2,1],[0,0,0],[-1,-2,-1]])
-        
+
         #Get gradient and direction
         grad = np.power(np.power(im3h, 2.0) + np.power(im3v, 2.0), 0.5)
         theta = np.arctan2(im3v, im3h)
         thetaQ = (np.round(theta * (5.0 / np.pi)) + 5) % 5 #Quantize direction
-        
+
         #Non-maximum suppression
         gradSup = grad.copy()
         for r in range(im.shape[0]):
@@ -195,7 +221,7 @@ def edge_detect_2d(im,blur=5,highThreshold=91,lowThreshold=31,ignore_edges=8):
                                 gradSup[r, c] = 0
                                 continue
                         tq = thetaQ[r, c] % 4
- 
+
                         if tq == 0: #0 is E-W (horizontal)
                                 if grad[r, c] <= grad[r, c-1] or grad[r, c] <= grad[r, c+1]:
                                         gradSup[r, c] = 0
@@ -208,29 +234,29 @@ def edge_detect_2d(im,blur=5,highThreshold=91,lowThreshold=31,ignore_edges=8):
                         if tq == 3: #3 is NW-SE
                                 if grad[r, c] <= grad[r-1, c-1] or grad[r, c] <= grad[r+1, c+1]:
                                         gradSup[r, c] = 0
- 
+
         #Double threshold
         strongEdges = (gradSup > highThreshold)
- 
+
         #Strong has value 2, weak has value 1
         thresholdedEdges = np.array(strongEdges, dtype=np.uint8) + (gradSup > lowThreshold)
- 
-        #Tracing edges with hysteresis	
+
+        #Tracing edges with hysteresis
         #Find weak edge pixels near strong edge pixels
         finalEdges = strongEdges.copy()
         currentPixels = []
         for r in range(1, im.shape[0]-1):
-                for c in range(1, im.shape[1]-1):	
+                for c in range(1, im.shape[1]-1):
                         if thresholdedEdges[r, c] != 1:
                                 continue #Not a weak pixel
- 
-                        #Get 3x3 patch	
+
+                        #Get 3x3 patch
                         localPatch = thresholdedEdges[r-1:r+2,c-1:c+2]
                         patchMax = localPatch.max()
                         if patchMax == 2:
                                 currentPixels.append((r, c))
                                 finalEdges[r, c] = 1
- 
+
         #Extend strong edges based on current pixels
         while len(currentPixels) > 0:
                 newPix = []

@@ -10,3 +10,4 @@ requests
 tkinterhtml
 markdown2
 matplotlib
+scikit-image
