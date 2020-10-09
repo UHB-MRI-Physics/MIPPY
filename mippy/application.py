@@ -707,6 +707,15 @@ class MIPPYMain(Frame):
         self.module_list.append(module_info)
         modules_to_backup = []
 
+        dcmmodconfigpath = resource_filename('mippy.mdcmmod','config')
+        with open(dcmmodconfigpath,'rb') as file_object:
+            module_info = pickle.load(file_object)
+        module_info['dirname']='mippy.mdcmmod'
+        module_info['version']=''
+        module_info['eggpath']=None
+        self.module_list.append(module_info)
+        modules_to_backup = []
+
 
         if not (self.moduledir is None or not self.moduledir):
             for folder in os.listdir(self.moduledir):
