@@ -170,16 +170,21 @@ def get_details(win):
         # Single series
         if len(win.images[0])==1:
             # Single image- collect image details
-            win.instance_uid.insert(0,ds.SOPInstanceUID)
-            win.instance_number.insert(0,ds.InstanceNumber)
+            with suppress(AttributeError):
+                win.instance_uid.insert(0,ds.SOPInstanceUID)
+            with suppress(AttributeError):
+                win.instance_number.insert(0,ds.InstanceNumber)
         else:
             # Multiple images - disable image details
             for w in win.image_details:
                 w.config(state='disabled')
         # Collect series details
-        win.series_description.insert(0,ds.SeriesDescription)
-        win.series_number.insert(0,ds.SeriesNumber)
-        win.series_uid.insert(0,ds.SeriesInstanceUID)
+        with suppress(AttributeError):
+            win.series_description.insert(0,ds.SeriesDescription)
+        with suppress(AttributeError):
+            win.series_number.insert(0,ds.SeriesNumber)
+        with suppress(AttributeError):
+            win.series_uid.insert(0,ds.SeriesInstanceUID)
     else:
         # Multiple series - disable series details and image details
         for w in win.series_details:
@@ -205,7 +210,10 @@ def get_details(win):
     with suppress(AttributeError):
         win.accession_number.insert(0,ds.AccessionNumber)
     with suppress(AttributeError):
-        win.study_date.insert(0,ds.StudyDate)
+        _studydate = str(ds.StudyDate)
+        studydate = datetime.date(int(_studydate[0:4]),int(_studydate[4:6]),int(_studydate[6:8]))
+        studydate_str = '/'.join([str(studydate.day).zfill(2),str(studydate.month).zfill(2),str(studydate.year).zfill(4)])
+        win.study_date.insert(0,studydate_str)
     with suppress(AttributeError):
         win.study_time.insert(0,ds.StudyTime)
 
@@ -222,6 +230,22 @@ def get_details(win):
     with suppress(AttributeError):
         win.phonetic.insert(0,ds.PatientName.phonetic)
     with suppress(AttributeError):
-        win.dob.insert(0,ds.PatientBirthDate)
+        _birthdate = str(ds.PatientBirthDate)
+        birthdate = datetime.date(int(_birthdate[0:4]),int(_birthdate[4:6]),int(_birthdate[6:8]))
+        birthdate_str = '/'.join([str(birthdate.day).zfill(2),str(birthdate.month).zfill(2),str(birthdate.year).zfill(4)])
+        win.dob.insert(0,birthdate_str)
     with suppress(AttributeError):
         win.patient_id.insert(0,ds.PatientID)
+
+    # Collect original values so you know what has been changed
+    win.original_details = []
+    for w in win.patient_details:
+        win.original_details.append(w.get())
+    for w in win.study_details:
+        win.original_details.append(w.get())
+    for w in win.series_details:
+        win.original_details.append(w.get())
+    for w in win.image_details:
+        win.original_details.append(w.get())
+
+    return

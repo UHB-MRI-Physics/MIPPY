@@ -5,7 +5,7 @@ pillow
 nibabel
 easygui
 dill
-tinydb
+tinydb<4
 requests
 tkinterhtml
 markdown2
