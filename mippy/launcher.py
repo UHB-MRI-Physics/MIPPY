@@ -40,19 +40,23 @@ def launch_mippy(skip_update=False):
                     print('Checking for updates to MIPPY on PyPI...')
                     if 'win' in sys.platform and not 'darwin' in sys.platform:
                         ver = platform.python_version()
-                        this_pip = 'py -{} -m pip'.format(ver)
-                        print(this_pip)
+                        print(ver)
+                        pip_output = check_output([sys.executable,'-m','pip','list','--outdated','--format=json'])
                     else:
-                        # Account for dual install of python (2) and python3 on nix systems
-                        this_pip = 'pip3'
-                    pip_output = check_output([this_pip,'list','--outdated','--format=json'])
+                        # # Account for dual install of python (2) and python3 on nix systems
+                        # this_pip = 'pip3'
+                        pip_output = check_output(sys.executable,'-m','pip','list','--outdated','--format=json'])
                     if 'mippy' in [row['name'] for row in json.loads(pip_output)]:
                             print("Warning! Outdated version of MIPPY detected!")
                             print("Updated version found")
                             update = messagebox.askyesno("Update available","An update for MIPPY is available from PyPI.  Would you like to install?")
                             if update:
                                     #~ call('pip install mippy --upgrade',shell=True)
-                                    p = Popen([this_pip,'install','mippy','--upgrade','--no-cache-dir','--user'],stdin=PIPE,stdout=PIPE,stderr=PIPE)
+                                    if 'win' in sys.platform and not 'darwin' in sys.platform:
+                                        # ver = platform.python_version()
+                                        p = Popen([sys.executable,'-m','pip','install','mippy','--upgrade','--no-cache-dir'],stdin=PIPE,stdout=PIPE,stderr=PIPE)
+                                    else:
+                                        p = Popen([sys.executable,'-m','pip','install','mippy','--upgrade','--no-cache-dir','--user'],stdin=PIPE,stdout=PIPE,stderr=PIPE)
                                     output,err = p.communicate()
                                     rc = p.returncode
                                     if len(err)>0:
