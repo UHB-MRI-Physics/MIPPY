@@ -40,7 +40,7 @@ def launch_mippy(skip_update=False):
                     print('Checking for updates to MIPPY on PyPI...')
                     if 'win' in sys.platform and not 'darwin' in sys.platform:
                         ver = platform.python_version()
-                        print(ver)
+                        print("Python ".format(ver))
                         pip_output = check_output([sys.executable,'-m','pip','list','--outdated','--format=json'])
                     else:
                         # # Account for dual install of python (2) and python3 on nix systems
