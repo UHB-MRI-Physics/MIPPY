@@ -8,6 +8,7 @@ import urllib
 from urllib import request
 from urllib import error as urlerror
 import os
+import platform
 #from mippy import FROZEN
 
 def launch_mippy(skip_update=False):
@@ -38,7 +39,9 @@ def launch_mippy(skip_update=False):
                 if not urlobj is None:
                     print('Checking for updates to MIPPY on PyPI...')
                     if 'win' in sys.platform and not 'darwin' in sys.platform:
-                        this_pip = 'pip'
+                        ver = platform.python_version()
+                        this_pip = 'py -{} -m pip'.format(ver)
+                        print(this_pip)
                     else:
                         # Account for dual install of python (2) and python3 on nix systems
                         this_pip = 'pip3'
