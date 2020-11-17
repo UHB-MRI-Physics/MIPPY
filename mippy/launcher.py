@@ -45,7 +45,7 @@ def launch_mippy(skip_update=False):
                     else:
                         # # Account for dual install of python (2) and python3 on nix systems
                         # this_pip = 'pip3'
-                        pip_output = check_output(sys.executable,'-m','pip','list','--outdated','--format=json'])
+                        pip_output = check_output([sys.executable,'-m','pip','list','--outdated','--format=json'])
                     if 'mippy' in [row['name'] for row in json.loads(pip_output)]:
                             print("Warning! Outdated version of MIPPY detected!")
                             print("Updated version found")
@@ -54,7 +54,10 @@ def launch_mippy(skip_update=False):
                                     #~ call('pip install mippy --upgrade',shell=True)
                                     if 'win' in sys.platform and not 'darwin' in sys.platform:
                                         # ver = platform.python_version()
-                                        p = Popen([sys.executable,'-m','pip','install','mippy','--upgrade','--no-cache-dir'],stdin=PIPE,stdout=PIPE,stderr=PIPE)
+                                        try:
+                                            p = Popen([sys.executable,'-m','pip','install','mippy','--upgrade','--no-cache-dir'],stdin=PIPE,stdout=PIPE,stderr=PIPE)
+                                        except:
+                                            p = Popen([sys.executable,'-m','pip','install','mippy','--upgrade','--no-cache-dir','--user'],stdin=PIPE,stdout=PIPE,stderr=PIPE)
                                     else:
                                         p = Popen([sys.executable,'-m','pip','install','mippy','--upgrade','--no-cache-dir','--user'],stdin=PIPE,stdout=PIPE,stderr=PIPE)
                                     output,err = p.communicate()
