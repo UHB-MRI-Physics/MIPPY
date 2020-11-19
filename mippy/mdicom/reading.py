@@ -91,6 +91,7 @@ def get_dataset(info,tempdir=None):
 
 
 def collect_dicomdir_info(path,tempdir=None,force_read=False):
+    try:
         tags=[]
         ima_mrs_uid = '1.3.12.2.1107.5.9.1'
         # Variables to contain path to dcmdjpeg for compressed DICOM
@@ -315,7 +316,7 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
                                         ('series',series),('seriesuid',series_uid),('studydesc',studydesc),
                                         ('seriesdesc',seriesdesc),('instance',i),('instanceuid',instance_uid),
                                         ('path',path),('enhanced',enhanced),('compressed',compressed),
-                                        ('px_array',pxfloat)]))
+                                        ('px_array',pxfloat),('state','READ_SUCCESS')]))
                 # Assuming all this has worked, serialise the dataset (ds) for later use, with the instance UID
                 # as the file name
                 if not enhanced:
@@ -325,6 +326,8 @@ def collect_dicomdir_info(path,tempdir=None,force_read=False):
         del ds
 
         return tags
+    except Exception as e:
+        return [{'state':'ERROR','path':path,'exception':e}]
 
 def compare_dicom(ds1,ds2,diffs=None,num=None,name=''):
         if diffs is None:

@@ -561,24 +561,41 @@ class MIPPYMain(Frame):
 
     def filter_dicom_files(self):
         self.tag_list = []
-
+        errors = []
         if self.multiprocess and not (('win' in sys.platform and not 'darwin' in sys.platform)
                                 and len(self.path_list)<20):
             f = partial(collect_dicomdir_info,tempdir=self.tempdir)
             self.tag_list = multithread(f,self.path_list,progressbar=self.progress)
+
             self.tag_list = [item for sublist in self.tag_list for item in sublist]
             self.tag_list = [value for value in self.tag_list if value != []]
+            errors = [value for value in self.tag_list if value['state']=='ERROR']
+            # self.tag_list = [value for value in self.tag_list if not value in errors]
+            self.tag_list = [value for value in self.tag_list if value != None and not value['state']=='ERROR']
         else:
             for p in self.path_list:
                 self.progress(100*(float(self.path_list.index(p))/float(len(self.path_list))))
                 tags = collect_dicomdir_info(p,tempdir=self.tempdir)
                 if not tags is None:
                     for row in tags:
-                        self.tag_list.append(row)
+                        if not row['state']=='ERROR':
+                            self.tag_list.append(row)
+                        else:
+                            errors.append(row)
             self.progress(0.)
         # This should sort the list into your initial order for the tree - maybe implement a more customised sort if necessary?
         from operator import itemgetter
         self.sorted_list = sorted(self.tag_list, key=itemgetter('name','date','time','studyuid','series','seriesuid','instance','instanceuid'))
+
+        if len(errors)>0:
+            logpath = os.path.join(self.tempdir,'readerrors_log.txt')
+            with open(logpath,'w') as outfile:
+                logtext = []
+                for error in errors:
+                    logtext.append('-------------------------------\n{}\n{}'.format(error['path'],error['exception']))
+                outfile.write('\n'.join(logtext))
+            msg = "Some files could not be read. Please check the logfile at:\n{}".format(logpath)
+            tkinter.messagebox.showwarning("WARNING",msg)
 
         # Uncomment this block to enable mippydb objects in image directory
         #~ if self.ask_recursive:
