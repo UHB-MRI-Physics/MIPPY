@@ -1,0 +1,3 @@
+protocol,address,port,auth_required
+http,uhbproxy,3128,1
+https,uhbproxy,3128,1
