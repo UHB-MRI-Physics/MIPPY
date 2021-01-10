@@ -118,9 +118,9 @@ def copyToDir(src, dst, updateonly=True, symlinks=True, ignore=None, forceupdate
                 if symlinks and dryrun is False:
                     copySymLink(fullsrcdir, fulldstdir)
             else:
-                if not os.path.exists(directory) and dryrun is False:
-                    os.makedirs(os.path.join(dst, dir))
-                    shutil.copystat(src, dst)
+                if not os.path.exists(fulldstdir) and dryrun is False:
+                    os.makedirs(fulldstdir)
+                    shutil.copystat(fullsrcdir, fulldstdir)
         for s,d in zip(fullsrcfiles, fulldstfiles):
             if s not in excludefiles:
                 if updateonly:
