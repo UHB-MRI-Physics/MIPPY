@@ -6,8 +6,9 @@ import sys
 def multithread(func,input,progressbar=None,threads=None):
         #~ freeze_support()
         if threads is None:
-                threads=int(cpu_count())
+                threads=int(cpu_count())+1
         pool = Pool(threads)
+        print("Running on {} threads".format(threads))
         result = pool.map_async(func,input,chunksize=1)
         while not result.ready():
                 if not progressbar is None:
@@ -18,7 +19,9 @@ def multithread(func,input,progressbar=None,threads=None):
                 time.sleep(0.1)
         if not progressbar is None:
                 progressbar(0.)
+        print("Closing multiprocessing pool")
         pool.close()
+        print("Joining pool")
         pool.join()
+        print("Fetching pool results")
         return result.get()
-
