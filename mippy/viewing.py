@@ -635,6 +635,8 @@ class MIPPYCanvas(Canvas):
         The on-screen height of the canvas in pixels (default = 256)
     bd: int, optional
         Canvas border width (default = 0)
+    background: str, optional (default = '#444444')
+        Background colour for the canvas in hexadecimal RGB. Defaults to a mid-grey.
     drawing_enabled: bool, optional
         Specifies whether the canvas interacts with left-mouse clicks for ROI drawing (default = False)
     autostats: bool, optional
@@ -644,6 +646,10 @@ class MIPPYCanvas(Canvas):
     use_masks: bool, optional
         If True, binary ROI masks will be generated whenever an ROI is drawn/updated. This makes it slower to
         generate the ROI, but much faster to perform stats/analysis on the ROI. (default = True)
+    limit_loading: bool, optional (default = True)
+        If True, canvas will only load first 500 images provided to save memory.
+    content_type: str, optional (default = 'image')
+        An optional parameter to allow you to specify (and identify) canvases to hold different data types.
 
 
     :ivar int active: The number of the currently displayed image, **indexed from 1** (initial value: 1)
@@ -667,10 +673,11 @@ class MIPPYCanvas(Canvas):
 
     """
     def __init__(self, master, width=256, height=256, bd=0, drawing_enabled=False, autostats=False, antialias=True,
-                 use_masks=True,bg='#444444',limit_loading=True):
+                 use_masks=True,bg='#444444',limit_loading=True,content_type='image'):
         Canvas.__init__(self, master, width=width, height=height, bd=bd, bg=bg)
         self.master = master
         self.zoom_factor = 1
+        self.content_type = content_type
         self.roi_list = []
         self.roi_list_2d = []
         self.masks = []
