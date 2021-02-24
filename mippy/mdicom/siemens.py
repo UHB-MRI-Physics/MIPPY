@@ -6,7 +6,11 @@ def get_ascii_header(ds):
         Expects a pydicom dataset.
         Uses nibabel's "nicom" module to extract CSA data
         """
-        csa = csar.get_csa_header(ds,'series')
+        csa = None
+        try:
+            csa = csar.get_csa_header(ds,'series')
+        except:
+            pass
         if not csa is None:
             try:
                     csa_header = csa['tags']['MrPhoenixProtocol']['items'][0]
