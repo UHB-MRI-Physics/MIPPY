@@ -8,7 +8,7 @@ here = path.abspath(path.dirname(__file__))
 
 
 
-    
+
 ##################################
 
 def get_version():
@@ -42,7 +42,7 @@ def check_version():
                 import sys
                 sys.exit()
         return
-    
+
 # Determine version number from BUILD tags on gitlab
 try:
     if os.environ.get('CI_COMMIT_TAG'):
@@ -69,7 +69,7 @@ setup(       name='mippy',
                         'Programming Language :: Python :: 3',
                         ],
                 install_requires=requirements,
-                packages=['mippy','mippy.mdicom','mippy.mviewer'],
+                packages=['mippy','mippy.mdicom','mippy.mviewer','mippy.mdicom.miners'],
                 scripts=['scripts/mippy.bat','scripts/_mippy.py','scripts/install_mippy.bat','scripts/install_mippy.py'],
                 url='https://tree.taiga.io/project/robflintham-mippy/',
                 package_data={'':['resources/*','mviewer/config','luts/*']}
