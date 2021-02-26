@@ -287,7 +287,7 @@ def get_image_filter(dicom_ds):
     if imfilter_on =='0x1':
         filters.append("ImageFilter")
     if rawfilter_on == '0x1':
-        rawfilter_value = get_ascii_value(dicom_ds,'sRawFilter.lSlope_256')
+        rawfilter_value = int(np.round(get_ascii_value(dicom_ds,'sRawFilter.lSlope_256'),0))
         filters.append(f"RawFilter{rawfilter_value}")
     if ellipticalfilter_on == '0x1':
         ellipticalfilter_mode = get_ascii_value(dicom_ds,'sEllipticalFilter.ucMode')
@@ -328,16 +328,26 @@ def get_uniformity_correction(dicom_ds):
     else:
         # Assume if tag exists, it's on
         norm_filt = True
-    if prescan_on and this_image_norm:
-        return 'PreScanNormalize'
-    elif prescan_on and not this_image_norm:
-        return 'PreScanNormalize-Unfiltered'
-    elif norm_on and this_image_norm:
-        return 'Normalize'
-    elif norm_on and not this_image_norm:
-        return 'Normalize-Unfiltered'
+
+    filters = ""
+    if prescan_on:
+        filters+="PreScanNormalize"
+        if prescan_mode==1: # Moderate mode
+            filters+="-Moderate"
+        elif prescan_mode==2: # Normal mode
+            filters+="-Normal"
+        elif prescan_mode==4: # Broad mode
+            filters+="-Broad"
+        if not this_image_norm:
+            filters+="-Unfiltered"
+    elif norm_on:
+        filters+="Normalize"
+        # Lots of potential modes/settings for this but not sure what they are
+        if not this_image_norm:
+            filters+="-Unfiltered"
     else:
-        return 'None'
+        filters+='None'
+    return filters
 
 def get_distortion_correction(dicom_ds):
     imtype = dicom_ds[0x21,0x1175].value
