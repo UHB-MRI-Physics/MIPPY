@@ -11,3 +11,4 @@ tkinterhtml
 markdown2
 matplotlib
 scikit-image
+pyperclip
