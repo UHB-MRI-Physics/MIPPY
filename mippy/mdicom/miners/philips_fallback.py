@@ -14,20 +14,20 @@ def get_image_orientation(dicom_ds):
     # Check TRA
     if ( abs(orient[0])>abs(orient[1]) and abs(orient[0])>abs(orient[2])
         and abs(orient[4])>abs(orient[3]) and abs(orient[4])>abs(orient[5])):
-            return "TRA"
+        return "TRA"
     # Check SAG
     elif ( abs(orient[1])>abs(orient[0]) and abs(orient[1])>abs(orient[2])
         and abs(orient[5])>abs(orient[3]) and abs(orient[5])>abs(orient[4])):
-            return "SAG"
+        return "SAG"
     # Check COR
     elif ( abs(orient[0])>abs(orient[1]) and abs(orient[0])>abs(orient[2])
         and abs(orient[5])>abs(orient[3]) and abs(orient[5])>abs(orient[4])):
-            return "COR"
+        return "COR"
     else:
         print("ORIENTATION NOT DETECTED", orient)
-            return "UNKNOWN"
+        return "UNKNOWN"
 
-def get_sequence_type(self):
+def get_sequence_type(dicom_ds):
     try:
         seq = dicom_ds.PulseSequenceName
         echo = dicom_ds.EchoPulseSequence
@@ -112,12 +112,12 @@ def get_acq_matrix(dicom_ds):
         matrix = str(matrix[2])+','+str(matrix[1])
         return matrix
 
-def get_recon_matrix(self):
+def get_recon_matrix(dicom_ds):
     rows = dicom_ds.Rows
     cols = dicom_ds.Columns
     return str(cols)+','+str(rows)
 
-def get_acq_slice_thickness(self):
+def get_acq_slice_thickness(dicom_ds):
     if dicom_ds.MRAcquisitionType=='2D':
         return float(dicom_ds.SliceThickness)
     elif dicom_ds.MRAcquisitionType=='3D':
@@ -136,11 +136,11 @@ def get_acq_slice_thickness(self):
         print("Do not understand acquisition acquisition type")
         return "UNKNOWN"
 
-def get_recon_slice_thickness(self):
+def get_recon_slice_thickness(dicom_ds):
     return float(dicom_ds.SliceThickness)
 
-def get_oversampling(self):
-    matrix = [int(a) for a in self.get_acq_matrix().split(',')]
+def get_oversampling(dicom_ds):
+    matrix = [int(a) for a in get_acq_matrix(dicom_ds).split(',')]
     phase_encode = dicom_ds.InPlanePhaseEncodingDirection
     try:
         # Can't remember which versio of Philips headers this works in, but left
@@ -162,8 +162,8 @@ def get_oversampling(self):
 
     return float(oversampling)
 
-def get_phase_encode_direction(self):
-    orient = self.get_image_orientation()
+def get_phase_encode_direction(dicom_ds):
+    orient = get_image_orientation(dicom_ds)
     phase = dicom_ds.InPlanePhaseEncodingDirection
     if orient=='TRA':
         if phase=='ROW':
@@ -193,30 +193,30 @@ def get_phase_encode_direction(self):
         print("Do not understand orientation")
         return "UNKNOWN"
 
-def get_nsa(self):
+def get_nsa(dicom_ds):
     return float(dicom_ds.NumberOfAverages)
 
-def get_TR(self):
+def get_TR(dicom_ds):
     return np.round(float(dicom_ds.RepetitionTime),3)
 
-def get_TE(self):
+def get_TE(dicom_ds):
     try:
         return np.round(float(dicom_ds.EchoTime),3)
     except:
         # Use effective echo time (copied from from per-frame group to create single slice)
         return np.round(dicom_ds.EffectiveEchoTime,3)
 
-def get_TI(self):
+def get_TI(dicom_ds):
     try:
         return np.round(float(dicom_ds.InversionTime),3)
     except AttributeError:
         #print("No inversion time found")
         return "None"
 
-def get_flip_angle(self):
+def get_flip_angle(dicom_ds):
     return float(dicom_ds.FlipAngle)
 
-def get_pat_type(self):
+def get_pat_type(dicom_ds):
     #print("PAT NOT YET SUPPORTED")
     try:
         parallel = dicom_ds[0x2005,0x140f][0].ParallelAcquisition
@@ -231,16 +231,16 @@ def get_pat_type(self):
     #     print("Could not read ParallelAcquisitionTechnique tags")
     #     return "UNKNOWN"
 
-def get_pat_2d(self):
+def get_pat_2d(dicom_ds):
     # print("PAT NOT YET SUPPORTED")
     # Test if EPI
-    seq = self.get_sequence_type()
-    pat = self.get_pat_type()
+    seq = get_sequence_type(dicom_ds)
+    pat = get_pat_type(dicom_ds)
 
     if pat=="UNKNOWN":
         return "UNKNOWN"
 
-     if not pat=="NONE":
+    if not pat=="NONE":
         try:
             pat_factor = dicom_ds[0x2005,0x140f][0].ParallelReductionFactorInPlane
             return pat_factor
@@ -260,19 +260,19 @@ def get_pat_2d(self):
     else:
         return 1.
 
-def get_pat_3d(self):
+def get_pat_3d(dicom_ds):
     # print("PAT NOT YET SUPPORTED")
     return "UNKNOWN"
 
-def get_partial_fourier_phase(self):
+def get_partial_fourier_phase(dicom_ds):
     # print("PARTIAL FOURIER NOT YET SUPPORTED")
     return "UNKNOWN"
 
-def get_partial_fourier_slice(self):
+def get_partial_fourier_slice(dicom_ds):
     # print("PARTIAL FOURIER NOT YET SUPPORTED")
     return "UNKNOWN"
 
-def get_coil_elements(self):
+def get_coil_elements(dicom_ds):
     try:
         coil = dicom_ds[0x18,0x1250].value
         return coil
@@ -282,7 +282,7 @@ def get_coil_elements(self):
 
 # Some comprehension of coil string required.
 # Assume something of the fashion C:HE1-4;SP3;SP5
-def read_coil_string(self,coilstring):
+def read_coil_string(coilstring):
     coils = coilstring.replace('C:','').split(';')
     active_coils = []
     for coil in coils:
@@ -303,10 +303,10 @@ def read_coil_string(self,coilstring):
             active_coils.append(coil)
     return active_coils
 
-def get_bandwidth(self):
+def get_bandwidth(dicom_ds):
     return float(dicom_ds.PixelBandwidth)
 
-def get_image_filter(self):
+def get_image_filter(dicom_ds):
     filtering = ''
     try:
         filtering = dicom_ds[0x18,0x9064].value
@@ -322,7 +322,7 @@ def get_image_filter(self):
     else:
         return 'None'
 
-def get_uniformity_correction(self):
+def get_uniformity_correction(dicom_ds):
     try:
         syncra = dicom_ds[0x2005,0x10a1].value
     except KeyError:
@@ -346,7 +346,7 @@ def get_uniformity_correction(self):
         # probably all be lumped in with CLEAR.
         return 'None'
 
-def get_distortion_correction(self):
+def get_distortion_correction(dicom_ds):
     try:
         dc_tag = dicom_ds[0x2005,0x10a9].value
     except KeyError:
@@ -366,47 +366,47 @@ def get_distortion_correction(self):
 
     return dc_filter_type
 
-def get_study_uid(self):
+def get_study_uid(dicom_ds):
     return str(dicom_ds.StudyInstanceUID)
 
-def get_series_number(self):
+def get_series_number(dicom_ds):
     return dicom_ds.SeriesNumber
 
-def get_series_uid(self):
+def get_series_uid(dicom_ds):
     return str(dicom_ds.SeriesInstanceUID)
 
-def get_instance_number(self):
+def get_instance_number(dicom_ds):
     return dicom_ds.InstanceNumber
 
-def get_sop_uid(self):
+def get_sop_uid(dicom_ds):
     return str(dicom_ds.SOPInstanceUID)
 
-def get_study_date(self):
+def get_study_date(dicom_ds):
     return str(dicom_ds.StudyDate)
 
-def get_study_time(self):
+def get_study_time(dicom_ds):
     return str(dicom_ds.StudyTime)
 
-def get_institution_name(self):
+def get_institution_name(dicom_ds):
     try:
         return str(dicom_ds.InstitutionName)
     except:
         "UNKNOWN"
 
-def get_scanner_model(self):
+def get_scanner_model(dicom_ds):
     return str(dicom_ds.Manufacturer)+' '+str(dicom_ds.ManufacturerModelName)
 
-def get_institution_address(self):
+def get_institution_address(dicom_ds):
     return str(dicom_ds.InstitutionAddress)
 
-def get_department(self):
+def get_department(dicom_ds):
     try:
         return str(dicom_ds.InstitutionalDepartmentName)
     except AttributeError:
         return "UNKNOWN"
 
-def get_station_name(self):
+def get_station_name(dicom_ds):
     return str(dicom_ds.StationName)
 
-def get_field_strength(self):
+def get_field_strength(dicom_ds):
     return float(dicom_ds.MagneticFieldStrength)
