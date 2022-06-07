@@ -1179,7 +1179,12 @@ class MIPPYMain(Frame):
                 ds = pydicom.dcmread(tag['path'])
                 if 'SpectroscopyData' in dir(ds):
                     ds.SpectroscopyData=0
+                dcm_view.text.insert(END,str(ds.file_meta)+'\n')
                 dcm_view.text.insert(END,str(ds))
+                # Try and get Siemens CSA header
+                if 'SIEMENS' in ds.Manufacturer.upper():
+                    from .mdicom.siemens import get_ascconv
+                    dcm_view.text.insert(END,'\n'.join([':\t'.join(a) for a in get_ascconv(ds)]))
                 dcm_view.text.config(state='disabled')
                 dcm_view.text.see('1.0')
                 dcm_view.text.pack()
