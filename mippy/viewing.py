@@ -432,7 +432,7 @@ class ROI():
         The color the ROI should appear on a MIPPYCanvas. Colors must be understood by
         tkinter. (default = 'yellow')
     """
-    def __init__(self, coords, tags=[], roi_type=None, color='yellow'):
+    def __init__(self, coords, tags=[], roi_type=None, color='yellow', geometry={}):
         """
         Expecting a string of 2- or 3-tuples to define bounding coordinates.
         Type of ROI will be inferred from number of points.
@@ -447,7 +447,7 @@ class ROI():
         # print("Tags in ROI init",self.tags)
         if not 'roi' in self.tags:
             self.tags.append('roi')
-        if not roi_type:
+        if roi_type is None:
             if len(coords) == 1:
                 self.roi_type = "point"
             elif len(coords) == 2:
@@ -458,16 +458,19 @@ class ROI():
                   and coords[1][0] == coords[2][0]
                   and coords[2][1] == coords[3][1]):
                 self.roi_type = 'rectangle'
-            elif len(coords) > len(coords[0]):
-                self.roi_type = "3d"
-            elif len(coords) == len(coords[0]):
-                self.roi_type = "polygon"
+            # elif len(coords) > len(coords[0]):    ## Commented out because I don't know what I was trying to do here.
+            #     self.roi_type = "3d"
+            # elif len(coords) == len(coords[0]):
+            #     self.roi_type = "polygon"
+            elif len(coords)>2:
+                self.roi_type = 'polygon'
             else:
                 self.roi_type = "Unknown type"
         else:
             self.roi_type = roi_type
         arr_co = np.array(self.coords)
         self.bbox = (np.min(arr_co[:, 0]), np.min(arr_co[:, 1]), np.max(arr_co[:, 0]), np.max(arr_co[:, 1]))
+        self.geometry = geometry
 
         return
 
@@ -496,12 +499,29 @@ class ROI():
 ##            return False
         if (not self.bbox[0]<=point[0]<=self.bbox[2]
             or not self.bbox[1]<=point[1]<=self.bbox[3]):
+            # print("NOT IN BBOX")
             return False
-        wn = wn_PnPoly(point, self.coords)
-        if wn == 0:
-            return False
+        # print(self.roi_type)
+        if self.roi_type=='ellipse':
+            # Use foci of ellipse to test if in or out
+            # print("TESTING FOR ELLIPSE")
+            a = self.geometry['radius_x']
+            b = self.geometry['radius_y']
+            cx = self.geometry['center'][0]
+            cy = self.geometry['center'][1]
+            # print(cx,cy,a,b,point[0],point[1])
+            magnitude = ((point[0]-cx)**2/a**2)+((point[1]-cy)**2/b**2)
+            # print("M:",magnitude)
+            if magnitude<=1.:
+                return True
+            else:
+                return False
         else:
-            return True
+            wn = wn_PnPoly(point, self.coords)
+            if wn == 0:
+                return False
+            else:
+                return True
 
     def update(self, xmove=0., ymove=0.):
         """
@@ -1143,7 +1163,7 @@ class MIPPYCanvas(Canvas):
 
         return profile, np.array(list(range(length_int))) * resolution
 
-    def new_roi(self, coords, tags=[], system='canvas', color='yellow'):
+    def new_roi(self, coords, tags=[], system='canvas', color='yellow', roi_type = None):
         """
         Generates a new ROI from a set of coordinates.  Coordinates can be in 'canvas'
         coordinates or 'image' coordinates.
@@ -1180,7 +1200,7 @@ class MIPPYCanvas(Canvas):
             return
         if not 'roi' in tags:
             tags.append('roi')
-        self.add_roi(coords, tags=tags, color=color)
+        self.add_roi(coords, tags=tags, color=color, roi_type = roi_type)
         self.redraw_rois()
         return
 
@@ -1313,7 +1333,7 @@ class MIPPYCanvas(Canvas):
         elif not system == 'canvas':
             print("Invalid coordinate system specified")
             return
-        self.new_roi([(x1, y1), (x2, y1), (x2, y2), (x1, y2)], tags=tags, color=color)
+        self.add_roi([(x1, y1), (x2, y1), (x2, y2), (x1, y2)], tags=tags, color=color)
         return
 
     def roi_circle(self, center, radius, tags=[], system='canvas', resolution=128, color='yellow'):
@@ -1339,10 +1359,12 @@ class MIPPYCanvas(Canvas):
         if system == 'image':
             for i in range(len(coords)):
                 coords[i] = tuple(x * self.zoom_factor for x in coords[i])
+            radius_canvas = radius*self.zoom_factor
+            center = (center[0]*self.zoom_factor,center[1]*self.zoom_factor)
         elif not system == 'canvas':
             print("Invalid coordinate system specified")
             return
-        self.new_roi(coords, tags=tags, color=color)
+        self.add_roi(coords, tags=tags, color=color, geometry={'radius_x': radius_canvas, 'radius_y': radius_canvas, 'center': center}, roi_type='ellipse')
         return
 
     def roi_ellipse(self, center, radius_x, radius_y, tags=[], system='canvas', resolution=128, color='yellow'):
@@ -1372,10 +1394,13 @@ class MIPPYCanvas(Canvas):
         if system == 'image':
             for i in range(len(coords)):
                 coords[i] = tuple(x * self.zoom_factor for x in coords[i])
+            radius_x_canvas = radius_x*self.zoom_factor
+            radius_y_canvas = radius_y*self.zoom_factor
+            center = (center[0]*self.zoom_factor,center[1]*self.zoom_factor)
         elif not system == 'canvas':
             print("Invalid coordinate system specified")
             return
-        self.new_roi(coords, tags=tags, color=color)
+        self.add_roi(coords, tags=tags, color=color, geometry={'radius_x': radius_x_canvas, 'radius_y': radius_y_canvas, 'center': center},roi_type='ellipse')
         return
 
     def set_lut(self,lut):
@@ -1568,6 +1593,7 @@ class MIPPYCanvas(Canvas):
             current_color = roi.color
             # print(current_color)
             if roi.contains((self.xmouse, self.ymouse)):
+                print("IN THE ROI")
                 moving = True
                 if not self.linked_rois:
                     if self.interactive_roi_colors:
@@ -1576,6 +1602,7 @@ class MIPPYCanvas(Canvas):
                         self.active_rois.append(roi)
 
             else:
+                print("OUT OF THE ROI")
                 if self.interactive_roi_colors and not self.linked_rois:
                     roi.color = self.roi_colors['default']
         self.redraw_rois()
@@ -1660,7 +1687,7 @@ class MIPPYCanvas(Canvas):
                 a = (bbox[2] - bbox[0]) / 2
                 b = (bbox[3] - bbox[1]) / 2
                 c = (bbox[0] + a, bbox[1] + b)
-                self.add_roi(get_ellipse_coords(c, a, b, n=2 * max([a, b])),color=roi_color)
+                self.add_roi(get_ellipse_coords(c, a, b, n=2 * max([a, b])),color=roi_color,roi_type=self.roi_mode, geometry={'radius_x': a, 'radius_y': b, 'center': c})
                 # self.draw_roi(get_ellipse_coords(c, a, b, n=2 * max([a, b])),color=roi_color)
                 # coords = self.roi_list[-1].coords
             elif self.roi_mode == 'line':
@@ -1806,7 +1833,7 @@ class MIPPYCanvas(Canvas):
             image.wl_and_display(window=self.default_window, level=self.default_level, antialias=self.antialias)
         self.show_image(self.active)
 
-    def add_roi(self, coords, tags=['roi'], roi_type=None, color='yellow'):
+    def add_roi(self, coords, tags=['roi'], roi_type=None, color='yellow',geometry={}):
         """
         Generates the ``mippy.viewing.ROI`` object and updates the canvas ROI lists.
 
@@ -1827,13 +1854,15 @@ class MIPPYCanvas(Canvas):
         """
         if not 'roi' in tags:
             tags.append('roi')
-        self.roi_list.append(ROI(coords, tags, roi_type, color=color))
+        self.roi_list.append(ROI(coords, tags, roi_type, color=color,geometry=geometry))
         bbox = self.bbox('roi')
         # DEBUGGING: This line was to draw location of bounding box
         # self.create_rectangle((bbox[0],bbox[1],bbox[2],bbox[3]),outline='cyan',tags='roi')
         self.roi_list_2d[self.active - 1] = self.roi_list
         if self.use_masks:
             self.update_roi_masks()
+        self.redraw_rois()
+        # self.update()
         return
 
     def clear_roi_keyboard(self,event):
