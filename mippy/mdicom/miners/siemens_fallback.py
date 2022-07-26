@@ -63,7 +63,11 @@ def get_image_orientation(dicom_ds):
 
 def get_sequence_type(dicom_ds):
     try:
-        seq = dicom_ds.SequenceName
+        if 'SequenceName' in dir(dicom_ds):
+            seq = dicom_ds.SequenceName
+        elif 'PulseSequenceName' in dir(dicom_ds):
+            seq = dicom_ds.PulseSequenceName
+
     except:
         # Quick and dirty exception for newer Siemens enhanced format
         seq = dicom_ds[0x21,0x1177].value
