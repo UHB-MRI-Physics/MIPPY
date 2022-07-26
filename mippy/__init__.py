@@ -4,3 +4,5 @@ if getattr(sys, 'frozen', False):
     FROZEN = True
 else:
     FROZEN = False
+
+# Here is another random comment
