@@ -39,6 +39,8 @@ Run PyTest:
   script:
     - python -m pytest testing
   retry: 2
+  only:
+    - master
 
 Build:
   stage: build
