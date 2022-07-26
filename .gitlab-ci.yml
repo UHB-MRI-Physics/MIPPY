@@ -41,6 +41,8 @@ Run PyTest:
   retry: 2
   only:
     - master
+  except:
+    - merge_requests
 
 Build:
   stage: build
@@ -54,6 +56,8 @@ Build:
   only:
     - master
     - tags
+  except:
+    - merge_requests
 
 #~ Build Docs:
   #~ stage: build_docs
@@ -78,6 +82,8 @@ Push to TestPyPI:
     - twine upload -u $TEST_TWINE_USERNAME -p $TEST_TWINE_PASSWORD --repository-url $TEST_REPO_URL dist/*
   only:
     - master
+  except:
+    - merge_requests
 
 Push to PyPI:
   stage: deploy
@@ -88,6 +94,8 @@ Push to PyPI:
     - twine upload dist/*
   only:
     - tags
+  except:
+    - merge_requests
 
 #~ Deploy Docs:
   #~ stage: deploy_docs
