@@ -60,7 +60,7 @@ def get_image_orientation(dicom_ds):
     else:
         print("ORIENTATION NOT DETECTED", orient)
         return "UNKNOWN"
-        # added in PulseSequenceName
+        # added in PulseSequenceName for vida
 def get_sequence_type(dicom_ds):
     try:
         if 'SequenceName' in dir(dicom_ds):
