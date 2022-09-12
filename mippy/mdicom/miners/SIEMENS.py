@@ -60,17 +60,9 @@ def get_image_orientation(dicom_ds):
     else:
         print("ORIENTATION NOT DETECTED", orient)
         return "UNKNOWN"
-        # added in PulseSequenceName for vida to solve breast module issues
-def get_sequence_type(dicom_ds):
-    try:
-        if 'SequenceName' in dir(dicom_ds):
-            seq = dicom_ds.SequenceName
-        elif 'PulseSequenceName' in dir(dicom_ds):
-            seq = dicom_ds.PulseSequenceName
 
-    except:
-        # Quick and dirty exception for newer Siemens enhanced format
-        seq = dicom_ds[0x21,0x1177].value
+def get_sequence_type(dicom_ds):
+    seq = dicom_ds[0x18,0x9005].value
     if "se2d" in seq:
         return "SE 2D"
     elif "epfid2d" in seq:
@@ -96,52 +88,25 @@ def get_sequence_type(dicom_ds):
         return "UNKNOWN"
 
 def get_fov(dicom_ds):
-    try:
-        fov = str(dicom_ds[0x51,0x100c].value)
-        fov = fov.split(" ")[1]
-        fov = fov.split("*")
-        return ",".join(str(dim) for dim in fov)
-    except:
-        pxspc_x = dicom_ds.PixelSpacing[0]
-        pxspc_y = dicom_ds.PixelSpacing[1]
-        rows = dicom_ds.Rows
-        cols = dicom_ds.Columns
-        fov = str(int(np.round(pxspc_x*cols,0)))+","+str(int(np.round(pxspc_y*rows,0)))
-        return fov
+    pxspc_x = dicom_ds.PixelSpacing[0]
+    pxspc_y = dicom_ds.PixelSpacing[1]
+    rows = dicom_ds.Rows
+    cols = dicom_ds.Columns
+    fov = str(int(np.round(pxspc_x*cols,0)))+","+str(int(np.round(pxspc_y*rows,0)))
+    return fov
 
 def get_acq_matrix(dicom_ds):
-    try:
-        matrix = dicom_ds.AcquisitionMatrix
-    except AttributeError:
-        # AcquisitionMatrix tag doesn't exist. Need to
-        # work it out from other tags.
-        phase = dicom_ds.InPlanePhaseEncodingDirection
-        freq_steps = dicom_ds[0x18,0x9058].value
-        phase_steps = dicom_ds[0x18,0x9231].value
-        # phase_3d = self.dicom[0x18,0x9232].value
-        if phase=='ROW':
-            matrix = str(phase_steps)+','+str(freq_steps)
-            return matrix
-        elif phase=='COLUMN':
-            matrix = str(freq_steps)+','+str(phase_steps)
-            return matrix
-
-    # This needs explanation!
-    # You get a 4-long list of values, in this order.
-    # [ FREQ-ROWS, FREQ-COLS, PHASE-ROWS, PHASE-COLS ]
-    # So if you phase encode by column, you'll get
-    # [ VALUE, zero, zero, VALUE ]
-    # And if you phase encode by row, you'll get
-    # [ zero, VALUE, VALUE, zero ]
-    if not matrix[0]==0:
-        # Column phase encoding
-        # Row in [0], Column in [3]
-        matrix = str(matrix[0])+','+str(matrix[3])
+    # This does not take account of partial fourier. I don't know whether the
+    # effects of partial fourier are already included in phase encode lines, or
+    # if this is number of lines before applying PF ???
+    base_resolution = int(np.round(get_ascii_value(dicom_ds,'sKSpace.lBaseResolution'),0))
+    phase_encode_lines = int(np.round(get_ascii_value(dicom_ds,'sKSpace.lPhaseEncodingLines'),0))
+    phase = dicom_ds.InPlanePhaseEncodingDirection
+    if phase=='ROW':
+        matrix = str(phase_encode_lines)+','+str(base_resolution)
         return matrix
-    else:
-        # Row phase encoding
-        # Row in [2], Column in [1]
-        matrix = str(matrix[2])+','+str(matrix[1])
+    elif phase=='COLUMN':
+        matrix = str(base_resolution)+','+str(phase_encode_lines)
         return matrix
 
 def get_recon_matrix(dicom_ds):
@@ -153,23 +118,23 @@ def get_acq_slice_thickness(dicom_ds):
     if dicom_ds.MRAcquisitionType=='2D':
         return float(dicom_ds.SliceThickness)
     elif dicom_ds.MRAcquisitionType=='3D':
-        try:
-            slice_resolution = dicom_ds[0x19,0x1017].value
-            slice_thickness = dicom_ds.SliceThickness
-            if slice_resolution<1:
-                acq_slice_thickness = slice_thickness / slice_resolution
-                return float(acq_slice_thickness)
-            else:
-                return float(slice_thickness)
-        except KeyError:
-            print("Cannot read slice resolution tag")
-            return "UNKNOWN"
+        slice_resolution = get_ascii_value(dicom_ds,'sKSpace.dSliceResolution')
+        slice_thickness = dicom_ds.SliceThickness
+        if slice_resolution<1.:
+            acq_slice_thickness = slice_thickness / slice_resolution
+            return float(acq_slice_thickness)
+        else:
+            return float(slice_thickness)
     else:
         print("Do not understand acquisition acquisition type")
         return "UNKNOWN"
 
 def get_oversampling(dicom_ds):
-    oversampling = get_ascii_value(dicom_ds,'sKSpace.dPhaseOversamplingForDialog')
+    # Do not know how this tag actually presents. Expect errors if you have
+    # images with oversampling on.
+    oversampling = dicom_ds.OversamplingPhase
+    if oversampling=='NONE':
+        oversampling = None
 
     if not oversampling is None:
         return float(oversampling)
@@ -222,6 +187,7 @@ def get_TE(dicom_ds):
         return np.round(float(dicom_ds.EchoTime),3)
     except:
         # Use effective echo time (copied from from per-frame group to create single slice)
+        # XA20 seems to write this instead of actual echo time...
         return np.round(dicom_ds.EffectiveEchoTime,3)
 
 def get_TI(dicom_ds):
@@ -248,11 +214,13 @@ def get_pat_3d(dicom_ds):
 
 def get_partial_fourier_phase(dicom_ds):
 #        print("PARTIAL FOURIER NOT YET SUPPORTED")
-    return "UNKNOWN"
+    phase_partial_fourier = get_ascii_value(dicom_ds,'sKSpace.ucPhasePartialFourier')/16
+    return phase_partial_fourier
 
 def get_partial_fourier_slice(dicom_ds):
 #        print("PARTIAL FOURIER NOT YET SUPPORTED")
-    return "UNKNOWN"
+    slice_partial_fourier = get_ascii_value(dicom_ds,'sKSpace.ucSlicePartialFourier')/16
+    return slice_partial_fourier
 
 def get_coil_elements(dicom_ds):
     try:
@@ -311,20 +279,41 @@ def get_bandwidth(dicom_ds):
     return float(dicom_ds.PixelBandwidth)
 
 def get_image_filter(dicom_ds):
-    imtype = dicom_ds.ImageType
-    if 'FILT' in imtype:
-        return "ImageFilter"
+    filters = []
+    imfilter_on = get_ascii_value(dicom_ds,'sImageFilter.ucOn')
+    rawfilter_on = get_ascii_value(dicom_ds,'sRawFilter.ucOn')
+    ellipticalfilter_on = get_ascii_value(dicom_ds,'sEllipticalFilter.ucOn')
+    b1filter_on = get_ascii_value(dicom_ds,'sBiFiCFilter.ucOn')
+    if imfilter_on =='0x1':
+        filters.append("ImageFilter")
+    if rawfilter_on == '0x1':
+        rawfilter_value = int(np.round(get_ascii_value(dicom_ds,'sRawFilter.lSlope_256'),0))
+        filters.append(f"RawFilter{rawfilter_value}")
+    if ellipticalfilter_on == '0x1':
+        ellipticalfilter_mode = get_ascii_value(dicom_ds,'sEllipticalFilter.ucMode')
+        if ellipticalfilter_mode == 1:
+            filters.append("EllipticalFilter2D")
+        elif ellipticalfilter_mode == 2:
+            filters.append("EllipticalFilter3D")
+    if b1filter_on == '0x1':
+        # B1 filter mode available, but not understood so not included yet
+        filters.append("B1Filter")
+    if len(filters)>0:
+        return ';'.join(filters)
     else:
         return 'None'
 
 def get_uniformity_correction(dicom_ds):
-    imtype = dicom_ds.ImageType
+    imtype = dicom_ds[0x21,0x1175].value
+    # Appears to be a private version of legacy ImageType tag. Will do the job for now
+    # and actually appears to be only difference between filtered and unfiltered images
     if 'NORM' in imtype:
         this_image_norm = True
     else:
         this_image_norm = False
     prescan = get_ascii_value(dicom_ds,'sPreScanNormalizeFilter.ucOn')
     norm_filt = get_ascii_value(dicom_ds,'sNormalizeFilter.ucOn')
+    prescan_mode = get_ascii_value(dicom_ds,'sPreScanNormalizeFilter.ucMode')
     if prescan is None:
         prescan_on = False
     elif prescan == '0x1':
@@ -339,19 +328,31 @@ def get_uniformity_correction(dicom_ds):
     else:
         # Assume if tag exists, it's on
         norm_filt = True
-    if prescan_on and this_image_norm:
-        return 'PreScanNormalize'
-    elif prescan_on and not this_image_norm:
-        return 'PreScanNormalize-Unfiltered'
-    elif norm_on and this_image_norm:
-        return 'Normalize'
-    elif norm_on and not this_image_norm:
-        return 'Normalize-Unfiltered'
+
+    filters = ""
+    if prescan_on:
+        filters+="PreScanNormalize"
+        if prescan_mode==1: # Moderate mode
+            filters+="-Moderate"
+        elif prescan_mode==2: # Normal mode
+            filters+="-Normal"
+        elif prescan_mode==4: # Broad mode
+            filters+="-Broad"
+        if not this_image_norm:
+            filters+="-Unfiltered"
+    elif norm_on:
+        filters+="Normalize"
+        # Lots of potential modes/settings for this but not sure what they are
+        if not this_image_norm:
+            filters+="-Unfiltered"
     else:
-        return 'None'
+        filters+='None'
+    return filters
 
 def get_distortion_correction(dicom_ds):
-    imtype = dicom_ds.ImageType
+    imtype = dicom_ds[0x21,0x1175].value
+    # Appears to be a private version of legacy ImageType tag. Will do the job for now
+    # and actually appears to be only difference between filtered and unfiltered images
     if 'DIS2D' in imtype:
         this_image_dc = '2D'
     elif 'DIS3D' in imtype:
@@ -360,7 +361,7 @@ def get_distortion_correction(dicom_ds):
         this_image_dc = False
 
     try:
-        # Fudge for XA data
+        # Fudge for XA data - tags unfiltered images as DISTORTED
         if dicom_ds[0x8,0x9206].value=='DISTORTED':
             this_image_dc = False
         else:
