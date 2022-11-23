@@ -1247,14 +1247,14 @@ class MIPPYMain(Frame):
         self.exportdir = None
         return
 
-    def show_log(self):
-        logwin = Toplevel()
-        logtext = ScrolledText.ScrolledText(logwin)
-        with open(self.logpath,'rb') as logfile:
-            text = logfile.readlines()
-            for row in text:
-                logtext.insert(END,row+'\n')
-        logtext.pack()
+    # def show_log(self):
+    #     logwin = Toplevel()
+    #     logtext = ScrolledText.ScrolledText(logwin)
+    #     with open(self.logpath,'rb') as logfile:
+    #         text = logfile.readlines()
+    #         for row in text:
+    #             logtext.insert(END,row+'\n')
+    #     logtext.pack()
 
     def enable_multiprocessing(self):
         if self.frozen:
